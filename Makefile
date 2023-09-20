@@ -1,7 +1,7 @@
 
 NIXOS_CONFIG_DIR := $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
 NIX_OS := $(shell uname | tr '[:upper:]' '[:lower:]')
-NIX_HOSTNAME := $(shell hostname | tr '[:upper:]' '[:lower:]')
+NIX_HOSTNAME := $(shell hostname -s | tr '[:upper:]' '[:lower:]')
 NIX_USER := $(shell id -un | tr '[:upper:]' '[:lower:]')
 UNAME := $(shell uname)
 

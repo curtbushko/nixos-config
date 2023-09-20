@@ -18,7 +18,7 @@
     };
 
   outputs = { self, nixpkgs, home-manager, darwin, nix-colors, ... }@inputs: let
-    mkDarwin = import ./lib/mkdarwin.nix inputs;
+    mkDarwin = import ./lib/mkdarwin.nix;
 
   in {
     darwinConfigurations.m1-air = mkDarwin "m1-air" {
