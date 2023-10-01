@@ -1,94 +1,45 @@
 {
-  description = "Darwin and eventually NixOS config";
+  description = "NixOS systems and tools by mitchellh";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-23.05-darwin";
+    # Pin our primary nixpkgs repository. This is the main nixpkgs repository
+    # we'll use for our configurations. Be very careful changing this because
+    # it'll impact your entire system.
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.05";
+
+    # We use the unstable nixpkgs repo for some packages.
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-23.05-darwin";
 
-    home-manager.url = "github:nix-community/home-manager/release-23.05";
-    home-manager.inputs.nixpkgs.follows = "nixpkgs";
-
-    nix-darwin.url = "github:lnl7/nix-darwin";
-    nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
-  };
-
-  outputs =
-    inputs@{ self
-    , nixpkgs
-    , nixpkgs-unstable
-    , nixpkgs-darwin
-    , home-manager
-    , nix-darwin
-    , ...
-    }:
-    let
-      inputs = { inherit nix-darwin home-manager nixpkgs nixpkgs-unstable; };
-      # creates correct package sets for specified arch
-      genPkgs = system: import nixpkgs {
-        inherit system;
-        config.allowUnfree = true;
-      };
-      genDarwinPkgs = system: import nixpkgs-darwin {
-        inherit system;
-        config.allowUnfree = true;
-      };
-
-      # creates a nixos system config
-      nixosSystem = system: hostName: username:
-        let
-          pkgs = genPkgs system;
-        in
-        nixpkgs.lib.nixosSystem
-          {
-            inherit system;
-            modules = [
-              # adds unstable to be available in top-level evals (like in common-packages)
-              { _module.args = { unstablePkgs = inputs.nixpkgs-unstable.legacyPackages.${system}; }; }
-
-              ./hosts/nixos/${hostName}.nix # ip address, host specific stuff
-              home-manager.nixosModules.home-manager
-              {
-                networking.hostName = hostName;
-                home-manager.useGlobalPkgs = true;
-                home-manager.useUserPackages = true;
-                home-manager.users.${username} = { imports = [ ./users/${username} ]; };
-              }
-            ];
-          };
-
-      # creates a macos system config
-      darwinSystem = system: hostName: username:
-        let
-          pkgs = genDarwinPkgs system;
-        in
-        nix-darwin.lib.darwinSystem
-          {
-            inherit system inputs;
-            modules = [
-              # adds unstable to be available in top-level evals (like in common-packages)
-              { _module.args = { unstablePkgs = inputs.nixpkgs-unstable.legacyPackages.${system}; }; }
-
-              ./hosts/darwin/${hostName}.nix # ip address, host specific stuff
-              home-manager.darwinModules.home-manager
-              {
-                networking.hostName = hostName;
-                home-manager.useGlobalPkgs = true;
-                home-manager.useUserPackages = true;
-                home-manager.users.${username} = { imports = [ ./users/${username} ]; };
-              }
-            ];
-          };
-    in
-    {
-      darwinConfigurations = {
-        m1-air = darwinSystem "aarch64-darwin" "m1-air" "curtbushko";
-      };
-
-      # TODO: Set this up later
-      # nixosConfigurations = {
-      #   nix-pc = nixosSystem "x86_64-linux" "test" "curtbushko";
-      # };
+    home-manager = {
+      url = "github:nix-community/home-manager/release-23.05";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    darwin = {
+      url = "github:LnL7/nix-darwin";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Other packages
+    zig.url = "github:mitchellh/zig-overlay";
+  };
+
+  outputs = { self, nixpkgs, home-manager, darwin, ... }@inputs:
+    let
+      # Overlays is the list of overlays we want to apply from flake inputs.
+      overlays = [
+        inputs.zig.overlays.default
+      ];
+
+      mkSystem = import ./lib/mksystem.nix {
+        inherit overlays nixpkgs inputs;
+      };
+    in
+    {
+      darwinConfigurations.m1-air = mkSystem "m1-air" {
+        system = "aarch64-darwin";
+        user = "curtbushko";
+        darwin = true;
+      };
+    };
 }
