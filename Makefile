@@ -7,6 +7,11 @@ vars:
 	@echo "UNAME: $(UNAME)"
 	@echo "NIXMACHINE: $(NIXMACHINE)"
 
+# Setup nix
+setup:
+	@echo "Installing Determinate Nix Installer..."
+	curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+
 switch:
 ifeq ($(UNAME), darwin)
 	nix --extra-experimental-features 'nix-command flakes' build ".#darwinConfigurations.${NIXMACHINE}.system" --show-trace

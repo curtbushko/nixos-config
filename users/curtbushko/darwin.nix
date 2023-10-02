@@ -1,33 +1,27 @@
 { inputs, pkgs, ... }:
 
 {
-  nixpkgs.overlays = import ../../lib/overlays.nix ++ [
-    (import ./vim.nix { inherit inputs; })
-  ];
+  nixpkgs.overlays = import ../../lib/overlays.nix;
 
   homebrew = {
     enable = true;
-    casks  = [
-      "1password"
-      "alfred"
-      "cleanshot"
-      "discord"
-      "google-chrome"
-      "hammerspoon"
-      "imageoptim"
-      "istat-menus"
-      "monodraw"
+    casks = [
+      #"discord"
+      "docker"
+      "firefox"
+      "obs"
+      "obsidian"
       "rectangle"
-      "screenflow"
+      "syncthing"
       "slack"
-      "spotify"
+      "vlc"
     ];
   };
 
   # The user should already exist, but we need to set this up so Nix knows
   # what our home directory is (https://github.com/LnL7/nix-darwin/issues/423).
-  users.users.mitchellh = {
-    home = "/Users/mitchellh";
-    shell = pkgs.fish;
+  users.users.curtbushko = {
+    home = "/Users/curtbushko";
+    shell = pkgs.zsh;
   };
 }

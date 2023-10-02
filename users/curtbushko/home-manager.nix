@@ -3,7 +3,6 @@
 { config, lib, pkgs, ... }:
 
 let
-  sources = import ../../nix/sources.nix;
   isDarwin = pkgs.stdenv.isDarwin;
   isLinux = pkgs.stdenv.isLinux;
 
@@ -41,11 +40,10 @@ in
     pkgs.tree
     pkgs.watch
 
+    pkgs.go
     pkgs.gopls
     pkgs.zigpkgs.master
 
-    # Node is required for Copilot.vim
-    pkgs.nodejs
   ] ++ (lib.optionals isDarwin [
     # This is automatically setup on Linux
     pkgs.cachix
@@ -71,51 +69,13 @@ in
     MANPAGER = "${manpager}/bin/manpager";
   };
 
-  home.file.".gdbinit".source = ./gdbinit;
-  home.file.".inputrc".source = ./inputrc;
-
-  xdg.configFile = {
-    "i3/config".text = builtins.readFile ./i3;
-    "rofi/config.rasi".text = builtins.readFile ./rofi;
-
-    # tree-sitter parsers
-    "nvim/parser/proto.so".source = "${pkgs.tree-sitter-proto}/parser";
-    "nvim/queries/proto/folds.scm".source =
-      "${sources.tree-sitter-proto}/queries/folds.scm";
-    "nvim/queries/proto/highlights.scm".source =
-      "${sources.tree-sitter-proto}/queries/highlights.scm";
-    "nvim/queries/proto/textobjects.scm".source =
-      ./textobjects.scm;
-  } // (if isDarwin then {
-    # Rectangle.app. This has to be imported manually using the app.
-    "rectangle/RectangleConfig.json".text = builtins.readFile ./RectangleConfig.json;
-  } else { }) // (if isLinux then {
-    "ghostty/config".text = builtins.readFile ./ghostty.linux;
-  } else { });
-
   #---------------------------------------------------------------------
   # Programs
   #---------------------------------------------------------------------
-
-  programs.gpg.enable = !isDarwin;
-
   programs.bash = {
     enable = true;
     shellOptions = [ ];
     historyControl = [ "ignoredups" "ignorespace" ];
-    initExtra = builtins.readFile ./bashrc;
-
-    shellAliases = {
-      ga = "git add";
-      gc = "git commit";
-      gco = "git checkout";
-      gcp = "git cherry-pick";
-      gdiff = "git diff";
-      gl = "git prettylog";
-      gp = "git push";
-      gs = "git status";
-      gt = "git tag";
-    };
   };
 
   programs.direnv = {
@@ -134,43 +94,6 @@ in
     };
   };
 
-  programs.fish = {
-    enable = true;
-    interactiveShellInit = lib.strings.concatStrings (lib.strings.intersperse "\n" ([
-      "source ${sources.theme-bobthefish}/functions/fish_prompt.fish"
-      "source ${sources.theme-bobthefish}/functions/fish_right_prompt.fish"
-      "source ${sources.theme-bobthefish}/functions/fish_title.fish"
-      (builtins.readFile ./config.fish)
-      "set -g SHELL ${pkgs.fish}/bin/fish"
-    ]));
-
-    shellAliases = {
-      ga = "git add";
-      gc = "git commit";
-      gco = "git checkout";
-      gcp = "git cherry-pick";
-      gdiff = "git diff";
-      gl = "git prettylog";
-      gp = "git push";
-      gs = "git status";
-      gt = "git tag";
-    } // (if isLinux then {
-      # Two decades of using a Mac has made this such a strong memory
-      # that I'm just going to keep it consistent.
-      pbcopy = "xclip";
-      pbpaste = "xclip -o";
-    } else { });
-
-    plugins = map
-      (n: {
-        name = n;
-        src = sources.${n};
-      }) [
-      "fish-fzf"
-      "fish-foreign-env"
-      "theme-bobthefish"
-    ];
-  };
 
   #TODO: Add git
 
@@ -181,25 +104,7 @@ in
     goPrivate = [ "github.com/curtbushko" "github.com/hashicorp" "rfc822.mx" ];
   };
 
-  programs.tmux = {
-    enable = true;
-    terminal = "xterm-256color";
-    shortcut = "l";
-    secureSocket = false;
-
-    extraConfig = ''
-      set -ga terminal-overrides ",*256col*:Tc"
-
-      set -g @dracula-show-battery false
-      set -g @dracula-show-network false
-      set -g @dracula-show-weather false
-
-      bind -n C-k send-keys "clear"\; send-keys "Enter"
-
-      run-shell ${sources.tmux-pain-control}/pain_control.tmux
-      run-shell ${sources.tmux-dracula}/dracula.tmux
-    '';
-  };
+  #TODO Add tmux
 
   programs.alacritty = {
     settings = {
@@ -220,21 +125,6 @@ in
     extraConfig = builtins.readFile ./kitty;
   };
 
-  programs.i3status = {
-    enable = isLinux;
-    general = {
-      colors = true;
-      color_good = "#8C9440";
-      color_bad = "#A54242";
-      color_degraded = "#DE935F";
-    };
-
-    modules = {
-      ipv6.enable = false;
-      "wireless _first_".enable = false;
-      "battery all".enable = false;
-    };
-  };
 
   # programs.neovim = {
   #   enable = true;
@@ -275,22 +165,4 @@ in
   #   extraConfig = (import ./vim-config.nix) { inherit sources; };
   # };
 
-  services.gpg-agent = {
-    enable = isLinux;
-    pinentryFlavor = "tty";
-
-    # cache the keys forever so we don't get asked for a password
-    defaultCacheTtl = 31536000;
-    maxCacheTtl = 31536000;
-  };
-
-  xresources.extraConfig = builtins.readFile ./Xresources;
-
-  # Make cursor not tiny on HiDPI screens
-  home.pointerCursor = lib.mkIf (isLinux) {
-    name = "Vanilla-DMZ";
-    package = pkgs.vanilla-dmz;
-    size = 128;
-    x11.enable = true;
-  };
 }
