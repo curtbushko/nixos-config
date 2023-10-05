@@ -30,7 +30,6 @@ in
   # not a huge list.
   home.packages = [
     pkgs.asciinema
-    pkgs.bat
     pkgs.fd
     pkgs.fzf
     pkgs.gh
@@ -40,7 +39,6 @@ in
     pkgs.tree
     pkgs.watch
 
-    pkgs.go
     pkgs.gopls
     pkgs.zigpkgs.master
 
@@ -71,6 +69,9 @@ in
 
   imports = [
     #nix-colors.homeManagerModules.default
+    ./bat.nix
+    ./git.nix
+    ./go.nix
     ./starship.nix
   ];
 
@@ -102,14 +103,6 @@ in
     };
   };
 
-
-  #TODO: Add git
-
-  programs.go = {
-    enable = true;
-    goPath = "code/go";
-    goPrivate = [ "github.com/curtbushko" "github.com/hashicorp" "rfc822.mx" ];
-  };
 
   #TODO Add tmux
 
