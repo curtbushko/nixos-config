@@ -72,9 +72,9 @@ in
     ./bat.nix
     ./git.nix
     ./go.nix
+    ./neovim.nix
     ./starship.nix
     ./zsh.nix
-
   ];
 
   #---------------------------------------------------------------------
@@ -115,20 +115,10 @@ in
       };
     };
   };
-
-
+ 
   #TODO Add tmux
-
 
   programs.kitty = {
     extraConfig = builtins.readFile ./kitty;
   };
-
-
-  programs.neovim = {
-     enable = true;
-     withPython3 = true;
-     extraConfig = "lua << EOF\n" + builtins.readFile ./nvim/init.lua + "\nEOF";
-   };
-
 }
