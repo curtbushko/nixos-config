@@ -72,7 +72,6 @@ in
     ./bat.nix
     ./git.nix
     ./go.nix
-    ./neovim.nix
     ./starship.nix
     ./zsh.nix
 
@@ -81,6 +80,21 @@ in
   #---------------------------------------------------------------------
   # Programs
   #---------------------------------------------------------------------
+  programs.alacritty = {
+    settings = {
+      env.TERM = "xterm-256color";
+
+      key_bindings = [
+        { key = "K"; mods = "Command"; chars = "ClearHistory"; }
+        { key = "V"; mods = "Command"; action = "Paste"; }
+        { key = "C"; mods = "Command"; action = "Copy"; }
+        { key = "Key0"; mods = "Command"; action = "ResetFontSize"; }
+        { key = "Equals"; mods = "Command"; action = "IncreaseFontSize"; }
+        { key = "Subtract"; mods = "Command"; action = "DecreaseFontSize"; }
+      ];
+    };
+  };
+
   programs.bash = {
     enable = true;
     shellOptions = [ ];
@@ -105,63 +119,16 @@ in
 
   #TODO Add tmux
 
-  programs.alacritty = {
-    settings = {
-      env.TERM = "xterm-256color";
-
-      key_bindings = [
-        { key = "K"; mods = "Command"; chars = "ClearHistory"; }
-        { key = "V"; mods = "Command"; action = "Paste"; }
-        { key = "C"; mods = "Command"; action = "Copy"; }
-        { key = "Key0"; mods = "Command"; action = "ResetFontSize"; }
-        { key = "Equals"; mods = "Command"; action = "IncreaseFontSize"; }
-        { key = "Subtract"; mods = "Command"; action = "DecreaseFontSize"; }
-      ];
-    };
-  };
 
   programs.kitty = {
     extraConfig = builtins.readFile ./kitty;
   };
 
 
-  # programs.neovim = {
-  #   enable = true;
-  #   withPython3 = true;
-  #
-  #   plugins = with pkgs; [
-  #     customVim.vim-copilot
-  #     customVim.vim-cue
-  #     customVim.vim-fish
-  #     customVim.vim-fugitive
-  #     customVim.vim-glsl
-  #     customVim.vim-misc
-  #     customVim.vim-pgsql
-  #     customVim.vim-tla
-  #     customVim.vim-zig
-  #     customVim.pigeon
-  #     customVim.AfterColors
-  #
-  #     customVim.vim-nord
-  #     customVim.nvim-comment
-  #     customVim.nvim-lspconfig
-  #     customVim.nvim-plenary # required for telescope
-  #     customVim.nvim-telescope
-  #     customVim.nvim-treesitter
-  #     customVim.nvim-treesitter-playground
-  #     customVim.nvim-treesitter-textobjects
-  #
-  #     vimPlugins.vim-airline
-  #     vimPlugins.vim-airline-themes
-  #     vimPlugins.vim-eunuch
-  #     vimPlugins.vim-gitgutter
-  #
-  #     vimPlugins.vim-markdown
-  #     vimPlugins.vim-nix
-  #     vimPlugins.typescript-vim
-  #   ];
-  #
-  #   extraConfig = (import ./vim-config.nix) { inherit sources; };
-  # };
+  programs.neovim = {
+     enable = true;
+     withPython3 = true;
+     extraConfig = "lua << EOF\n" + builtins.readFile ./nvim/init.lua + "\nEOF";
+   };
 
 }
