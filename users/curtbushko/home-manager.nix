@@ -69,18 +69,26 @@ in
     MANPAGER = "${manpager}/bin/manpager";
   };
 
+  imports = [
+    #nix-colors.homeManagerModules.default
+    ./starship.nix
+  ];
+
   #---------------------------------------------------------------------
   # Programs
   #---------------------------------------------------------------------
+  programs.zsh = {
+    enable = true;
+  };
+
   programs.bash = {
     enable = true;
     shellOptions = [ ];
     historyControl = [ "ignoredups" "ignorespace" ];
   };
-
+  
   programs.direnv = {
     enable = true;
-
     config = {
       whitelist = {
         prefix = [
@@ -96,7 +104,6 @@ in
 
 
   #TODO: Add git
-
 
   programs.go = {
     enable = true;
