@@ -72,16 +72,15 @@ in
     ./bat.nix
     ./git.nix
     ./go.nix
+    ./neovim.nix
     ./starship.nix
+    ./zsh.nix
+
   ];
 
   #---------------------------------------------------------------------
   # Programs
   #---------------------------------------------------------------------
-  programs.zsh = {
-    enable = true;
-  };
-
   programs.bash = {
     enable = true;
     shellOptions = [ ];
