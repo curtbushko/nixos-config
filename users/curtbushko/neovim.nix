@@ -1,8 +1,6 @@
 {
-  programs.nixvim = {
+  programs.neovim = {
     enable = true;
-
-    colorschemes.tokyonight.enable = true;
-    plugins.lightline.enable = true;
   };
+  xdg.configFile.nvim.source = ./nvim;
 }

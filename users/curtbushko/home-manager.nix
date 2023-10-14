@@ -19,17 +19,19 @@ in
   # to use the old state version.
   home.stateVersion = "18.09";
 
+  # Let home manager manage itself
+  programs.home-manager.enable = true;
+
+
   xdg.enable = true;
 
   #---------------------------------------------------------------------
   # Packages
   #---------------------------------------------------------------------
-
-  # Packages I always want installed. Most packages I install using
-  # per-project flakes sourced with direnv and nix-shell, so this is
-  # not a huge list.
   home.packages = [
     pkgs.asciinema
+    pkgs.cargo
+    pkgs.exa
     pkgs.fd
     pkgs.fzf
     pkgs.gh
@@ -40,6 +42,7 @@ in
     pkgs.watch
 
     pkgs.gopls
+    pkgs.golangci-lint
     pkgs.zigpkgs.master
 
   ] ++ (lib.optionals isDarwin [
@@ -57,7 +60,6 @@ in
   #---------------------------------------------------------------------
   # Env vars and dotfiles
   #---------------------------------------------------------------------
-
   home.sessionVariables = {
     LANG = "en_US.UTF-8";
     LC_CTYPE = "en_US.UTF-8";
@@ -67,11 +69,13 @@ in
     MANPAGER = "${manpager}/bin/manpager";
   };
 
+
   imports = [
     #nix-colors.homeManagerModules.default
     ./bat.nix
     ./git.nix
     ./go.nix
+    ./helix.nix
     ./neovim.nix
     ./starship.nix
     ./zsh.nix
@@ -115,7 +119,8 @@ in
       };
     };
   };
- 
+
+
   #TODO Add tmux
 
   programs.kitty = {

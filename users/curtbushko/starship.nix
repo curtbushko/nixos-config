@@ -1,67 +1,41 @@
 {
-  programs.starship = {
-    enable = true;
-    settings = {
-      # add_newline = false;
-      format = "$shlvl$shell$username$hostname$nix_shell$git_branch$git_commit$git_state$git_status$directory$jobs$cmd_duration$character";
-      shlvl = {
-        disabled = false;
-        symbol = "ﰬ";
-        style = "bright-red bold";
-      };
-      shell = {
-        disabled = false;
-        format = "$indicator";
-        fish_indicator = "";
-        bash_indicator = "[BASH](bright-white) ";
-        zsh_indicator = "[ZSH](bright-white) ";
-      };
-      username = {
-        style_user = "bright-white bold";
-        style_root = "bright-red bold";
-      };
-      hostname = {
-        style = "bright-green bold";
-        ssh_only = true;
-      };
-      nix_shell = {
-        symbol = "";
-        format = "[$symbol$name]($style) ";
-        style = "bright-purple bold";
-      };
-      git_branch = {
-        only_attached = true;
-        format = "[$symbol$branch]($style) ";
-        symbol = "שׂ";
-        style = "bright-yellow bold";
-      };
-      git_commit = {
-        only_detached = true;
-        format = "[ﰖ$hash]($style) ";
-        style = "bright-yellow bold";
-      };
-      git_state = {
-        style = "bright-purple bold";
-      };
-      git_status = {
-        style = "bright-green bold";
-      };
-      directory = {
-        read_only = " ";
-        truncation_length = 0;
-      };
-      cmd_duration = {
-        format = "[$duration]($style) ";
-        style = "bright-blue";
-      };
-      jobs = {
-        style = "bright-green bold";
-      };
-      character = {
-        success_symbol = "[\\$](bright-green bold)";
-        error_symbol = "[\\$](bright-red bold)";
-      };
+    programs.starship = {
+        enable = true;
+        enableZshIntegration = true;
+        settings = {
+            add_newline = true;
+            format = "[░▒▓](#a3aed2)[  ](bg:#a3aed2 fg:#090c0c)[](bg:#769ff0 fg:#a3aed2)$directory[](fg:#769ff0 bg:#394260)$git_branch$git_status[](fg:#394260 bg:#212736)$golang[](fg:#212736 bg:#1d2230)$character";
 
+            directory = {
+                truncation_symbol = "…/";
+                truncation_length = 3;
+                format = "[ $path ]($style)";
+                style = "fg:#e3e5e5 bg:#769ff0";
+            };
+            directory.substitutions = {
+                "Documents" = "󰈙 ";
+                "Downloads" = " ";
+                "Music" = " ";
+                "Pictures" = " ";
+                "ghostty" = "󰊠";
+                "consul-k8s" = "󱃾";
+                "nixos-config" = "󱄅";
+            };
+            git_branch = {
+                symbol = "";
+                only_attached = true;
+                format = "[[ $symbol $branch ](fg:#769ff0 bg:#394260)]($style)";
+                style = "bg:#394260";
+            };
+            git_status = {
+                style = "bg:#394260";
+                format = "[[($all_status$ahead_behind )](fg:#769ff0 bg:#394260)]($style)";
+            };
+            golang = {
+                symbol = "";
+                style = "bg:#212736";
+                format = "[[ $symbol ($version) ](fg:#769ff0 bg:#212736)]($style)";
+            };
+        };
     };
-  };
 }
