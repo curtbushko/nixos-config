@@ -19,7 +19,12 @@
       url = "github:LnL7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-   
+ 
+    nixvim = {
+      url = "github:nix-community/nixvim";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Other packages
     zig.url = "github:mitchellh/zig-overlay";
   };

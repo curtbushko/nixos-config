@@ -3,6 +3,7 @@
 { config, lib, pkgs, ... }:
 
 let
+
   isDarwin = pkgs.stdenv.isDarwin;
   isLinux = pkgs.stdenv.isLinux;
 
@@ -22,9 +23,9 @@ in
   # Let home manager manage itself
   programs.home-manager.enable = true;
 
-
   xdg.enable = true;
 
+  #xdg.configFile."./nvim/lazyvim.json".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/nvim/lazyvim.json";
   #---------------------------------------------------------------------
   # Packages
   #---------------------------------------------------------------------
