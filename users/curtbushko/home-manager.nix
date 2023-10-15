@@ -77,7 +77,7 @@ in
     ./git.nix
     ./go.nix
     ./helix.nix
-    ./nixvim/default.nix
+    ./nixvim.nix
     ./starship.nix
     ./zsh.nix
   ];

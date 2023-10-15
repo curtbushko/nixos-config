@@ -1,48 +1,25 @@
 {
-  pkgs,
-  lib,
-  ...
-}: {
-  imports = [
-    # ./barbar.nix # Buffer tabs
-    ./bufferline.nix # Buffer tabs
-    ./colorizer.nix # Colorize hex codes and such (CSS, HTML, etc.)
-    ./colorscheme.nix # Colorscheme setup
-    ./comment.nix # Toggle comments
-    ./copilot.nix # Large language model autocomplete
-    ./gitsigns.nix # Git status in gutter
-    ./lspsaga.nix # LSP UI
-    ./telescope.nix # Fuzzy finder, file browser, etc.
-    ./treesitter.nix # Syntax highlighting
-    ./trouble.nix # LSP diagnostics
-    # ./workspace.nix # Workspace management
-    # ./persistence.nix # Persistent sessions
-    ./session-manager.nix # Session management
-    ./indent-blankline.nix # Indentation guides
-  ];
-
-  home.sessionVariables.EDITOR = "nvim";
-  home.sessionVariables.VTE_VERSION = "5803";
+ home.sessionVariables.VTE_VERSION = "5803";
 
   programs.nixvim = {
     enable = true;
 
     viAlias = true;
-    vimAlias = true;
+    vimalias = true;
 
     package = pkgs.neovim-unwrapped;
 
     globals.mapleader = " ";
 
     options = {
-      # Mouse support
+      # mouse support
       mouse = "a";
       mousemoveevent = true;
 
-      # Background
+      # background
       background = "dark";
 
-      # Enable filetype indentation
+      # enable filetype indentation
       #filetype plugin indent on
 
       termguicolors = true;
@@ -106,12 +83,7 @@
     # };
 
     extraPlugins = with pkgs.vimPlugins; [
-      # editorconfig-nvim
-      # hologram-nvim
-      vim-just
-      vim-visual-multi
       # vim-wakatime
-      flutter-tools-nvim
     ];
   };
 }
