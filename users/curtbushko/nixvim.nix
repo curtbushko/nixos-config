@@ -1,13 +1,9 @@
 {
- home.sessionVariables.VTE_VERSION = "5803";
-
   programs.nixvim = {
     enable = true;
 
     viAlias = true;
     vimalias = true;
-
-    package = pkgs.neovim-unwrapped;
 
     globals.mapleader = " ";
 
@@ -78,12 +74,5 @@
       };
     };
 
-    # plugins.nvim-cmp = {
-    #   enable = true;
-    # };
-
-    extraPlugins = with pkgs.vimPlugins; [
-      # vim-wakatime
-    ];
   };
 }

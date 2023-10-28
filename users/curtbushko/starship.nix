@@ -20,6 +20,7 @@
                 "ghostty" = "󰊠";
                 "consul-k8s" = "󱃾";
                 "nixos-config" = "󱄅";
+                "github.com/curtbushko" = "";
             };
             git_branch = {
                 symbol = "";

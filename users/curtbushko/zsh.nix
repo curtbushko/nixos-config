@@ -3,6 +3,7 @@ programs.zsh = {
         enable = true;
         enableAutosuggestions = true;
         enableCompletion = true;
+        defaultKeymap = "viins";
         enableVteIntegration = true;
         history.expireDuplicatesFirst = true;
         history.ignoreDups = true;
@@ -42,10 +43,13 @@ programs.zsh = {
             srcdirs = "echo SRC=$SRC, DEST=$DEST";
             src = "export SRC=$PWD; srcdirs";
             dest = "export DEST=$PWD; srcdirs";
+            cdsrc = "cd $SRC";
+            cddest = "cd $DEST";
             cdfoo = "cd $FOO";
             cdbar = "cd $BAR";
             cdbaz = "cd $BAZ";
             vi = "nvim";
+            vim = "nvim";
             reload = "source ~/.zshrc";
             cdworkspace = "cd $WORKSPACE";
             cdgithub = "cd $GITHUB";
@@ -79,7 +83,7 @@ programs.zsh = {
             hg = "history |grep $1";
             gaa = "git add -A";
             gp = "echo 'Pulling... ' && git pull";
-            gP = "echo 'Pushing...' && git push --set-upstream origin $(git_current_branch)";
+            gP = "echo 'Pushing...' && git push --set-upstream origin $(git branch --show-current)";
             gcm = "git commit --message";
             gcmsg = "git commit --message";
             gwta = ". git-worktree-add";
