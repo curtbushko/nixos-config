@@ -44,6 +44,8 @@
 
   environment.shells = with pkgs; [ bashInteractive zsh fish ];
   environment.systemPackages = with pkgs; [
+    luajitPackages.tl
+    libvterm-neovim
     cachix
   ];
 }

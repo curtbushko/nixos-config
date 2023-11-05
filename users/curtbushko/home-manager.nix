@@ -36,8 +36,10 @@ in
     pkgs.fd
     pkgs.fzf
     pkgs.gh
+    pkgs.gnused
     pkgs.htop
     pkgs.jq
+    pkgs.python3
     pkgs.ripgrep
     pkgs.tree
     pkgs.watch
@@ -76,7 +78,6 @@ in
     ./bat.nix
     ./git.nix
     ./go.nix
-    ./helix.nix
     ./neovim.nix
     ./starship.nix
     ./zsh.nix
@@ -105,7 +106,7 @@ in
     shellOptions = [ ];
     historyControl = [ "ignoredups" "ignorespace" ];
   };
-  
+ 
   programs.direnv = {
     enable = true;
     config = {
