@@ -43,6 +43,8 @@ in
     pkgs.ripgrep
     pkgs.tree
     pkgs.watch
+    pkgs.yt-dlp
+    pkgs.zoxide
 
     pkgs.gopls
     pkgs.golangci-lint

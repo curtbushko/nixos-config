@@ -28,3 +28,9 @@ update:
 # Use this when you start getting weird 'file not found' errors from nix-store
 repair:
 	sudo nix-store --repair --verify --check-contents
+
+# Add the channels before building Nixos
+channels:
+	sudo nix-channel --add https://nixos.org/channels/nixos-unstable
+	sudo nix-channel --add https://nixos.org/channels/nixpgks-unstable
+	sudo nix-channel --update
