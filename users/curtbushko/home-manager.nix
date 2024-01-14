@@ -82,6 +82,8 @@ in
     ./go.nix
     ./neovim.nix
     ./starship.nix
+    ./tmux.nix
+    ./tmuxinator.nix
     ./zsh.nix
   ];
 
