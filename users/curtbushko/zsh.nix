@@ -104,6 +104,7 @@
             work = "$DDCCTL set input 27";
             home = "$DDCCTL set input 17";
             pc = "$DDCCTL set input 15";
+            ghostty-release = "zig build -Dstatic=true -Doptimize=ReleaseFast && cd macos && xcodebuild -configuration Release";
         };
         initExtra = ''
             if [ -f $HOME/.private.post.source ]; then
