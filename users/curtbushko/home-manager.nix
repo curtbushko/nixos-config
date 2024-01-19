@@ -39,6 +39,7 @@ in
     pkgs.gnused
     pkgs.htop
     pkgs.jq
+    pkgs.lazygit
     pkgs.python3
     pkgs.ripgrep
     pkgs.tree
@@ -82,8 +83,6 @@ in
     ./go.nix
     ./neovim.nix
     ./starship.nix
-    ./tmux.nix
-    ./tmuxinator.nix
     ./zsh.nix
   ];
 
