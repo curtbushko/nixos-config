@@ -1,6 +1,11 @@
 {
   programs.zellij = {
     enable = true;
-    theme = "tokyo night";
+    settings = {
+        theme = "tokyo-night";
+        #simplified_ui =  true;
+        default_layout = "compact";
+        pane_frames = true;
+    };
   };
 }

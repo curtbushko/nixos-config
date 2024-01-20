@@ -24,6 +24,9 @@ in
   programs.home-manager.enable = true;
 
   xdg.enable = true;
+  xdg.configFile = {
+    "ghostty/config".text = builtins.readFile ./ghostty.config;
+  };
 
   #xdg.configFile."./nvim/lazyvim.json".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/nvim/lazyvim.json";
   #---------------------------------------------------------------------
