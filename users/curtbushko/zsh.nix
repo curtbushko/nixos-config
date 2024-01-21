@@ -78,6 +78,7 @@
             kubedebug = "kubectl run -i --tty curt-kubedebug --image=alpine -- bash";
             tf = "terraform";
             gitreset = "git reset --hard HEAD^";
+            ghostty-release = "zig build -Dstatic=true -Doptimize=ReleaseFast && direnv deny && cd macos && sh -c xcodebuild -configuration Release";
             gs = "git status";
             pr = "gh pr view --web";
             hg = "history |grep $1";
@@ -104,7 +105,8 @@
             work = "$DDCCTL set input 27";
             home = "$DDCCTL set input 17";
             pc = "$DDCCTL set input 15";
-            ghostty-release = "zig build -Dstatic=true -Doptimize=ReleaseFast && direnv deny && cd macos && sh -c xcodebuild -configuration Release";
+            zux = "zellij -s *";
+            ztitle = "zellij action rename-tab";
         };
         initExtra = ''
             if [ -f $HOME/.private.post.source ]; then
