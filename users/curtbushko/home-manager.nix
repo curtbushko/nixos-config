@@ -42,8 +42,10 @@ in
     pkgs.gnused
     pkgs.htop
     pkgs.jq
+    pkgs.kubectl
     pkgs.lazygit
     pkgs.python3
+    pkgs.ranger
     pkgs.ripgrep
     pkgs.tree
     pkgs.watch

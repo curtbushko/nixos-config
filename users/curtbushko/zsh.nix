@@ -105,7 +105,8 @@
             work = "$DDCCTL set input 27";
             home = "$DDCCTL set input 17";
             pc = "$DDCCTL set input 15";
-            zux = "zellij -s *";
+            zattach = "zellij attach coding";
+            zux = "zellij -s coding";
             ztitle = "zellij action rename-tab";
         };
         initExtra = ''
