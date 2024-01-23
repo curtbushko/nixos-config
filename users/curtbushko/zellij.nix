@@ -154,22 +154,22 @@
                 shared_except "locked" {
                 //    bind "Ctrl g" { SwitchToMode "Locked"; }
                     bind "Alt q" { Quit; }
-                    bind "Ctrl n" "Alt n" { NewPane; }
-                    bind "Ctrl h" "Alt h" "Alt Left" { MoveFocusOrTab "Left"; }
-                    bind "Ctrl l" "Alt l" "Alt Right" { MoveFocusOrTab "Right"; }
-                    bind "Ctrl j" "Alt j" "Alt Down" { MoveFocus "Down"; }
-                    bind "Ctrl k" "Alt k" "Alt Up" { MoveFocus "Up"; }
-                    bind "Ctrl =" "Alt =" { Resize "Increase"; }
-                    bind "Ctrl -" "Alt -" { Resize "Decrease"; }
-                    bind "Ctrl 1" "Alt 1" { GoToTab 1; SwitchToMode "Normal"; }
-                    bind "Ctrl 2" "Alt 2" { GoToTab 2; SwitchToMode "Normal"; }
-                    bind "Ctrl 3" "Alt 3" { GoToTab 3; SwitchToMode "Normal"; }
-                    bind "Ctrl 4" "Alt 4" { GoToTab 4; SwitchToMode "Normal"; }
-                    bind "Ctrl 5" "Alt 5" { GoToTab 5; SwitchToMode "Normal"; }
-                    bind "Ctrl 6" "Alt 6" { GoToTab 6; SwitchToMode "Normal"; }
-                    bind "Ctrl 7" "Alt 7" { GoToTab 7; SwitchToMode "Normal"; }
-                    bind "Ctrl 8" "Alt 8" { GoToTab 8; SwitchToMode "Normal"; }
-                    bind "Ctrl 9" "Alt 9" { GoToTab 9; SwitchToMode "Normal"; }
+                    bind "Alt n" { NewPane; }
+                    bind "Alt h" "Alt Left" { MoveFocusOrTab "Left"; }
+                    bind "Alt l" "Alt Right" { MoveFocusOrTab "Right"; }
+                    bind "Alt j" "Alt Down" { MoveFocus "Down"; }
+                    bind "Alt k" "Alt Up" { MoveFocus "Up"; }
+                    bind "Alt =" { Resize "Increase"; }
+                    bind "Alt -" { Resize "Decrease"; }
+                    bind "Alt 1" { GoToTab 1; SwitchToMode "Normal"; }
+                    bind "Alt 2" { GoToTab 2; SwitchToMode "Normal"; }
+                    bind "Alt 3" { GoToTab 3; SwitchToMode "Normal"; }
+                    bind "Alt 4" { GoToTab 4; SwitchToMode "Normal"; }
+                    bind "Alt 5" { GoToTab 5; SwitchToMode "Normal"; }
+                    bind "Alt 6" { GoToTab 6; SwitchToMode "Normal"; }
+                    bind "Alt 7" { GoToTab 7; SwitchToMode "Normal"; }
+                    bind "Alt 8" { GoToTab 8; SwitchToMode "Normal"; }
+                    bind "Alt 9" { GoToTab 9; SwitchToMode "Normal"; }
 
                 //    bind "Alt [" { PreviousSwapLayout; }
                 //    bind "Alt ]" { NextSwapLayout; }

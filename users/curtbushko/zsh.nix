@@ -64,6 +64,11 @@
             cdnvim = "cd $DOTFILES/nvim/.config/nvim";
             cdscripts = "cd $SCRIPTS";
             lsscripts = "ls $SCRIPTS";
+            cdhashi = "cd $GITHUB/hashicorp";
+            cdk8s = "cd $GITHUB/hashicorp/consul-k8s";
+            cdconsul = "cd $GITHUB/hashicorp/consul";
+            cddataplane = "cd $GITHUB/hashicorp/consul-dataplane";
+            cdworkflows = "cd $GITHUB/hashicorp/consul-k8s-workflows";
             kube = "kubectl";
             kubeclt = "kubectl";
             k = "kubectl";
@@ -94,8 +99,8 @@
             gwtr = ". git-worktree-checkout-remote";
             gwtcr = ". git-worktree-checkout-remote";
             weztitle = "wezterm cli set-tab-title";
-            ls = "exa -la --ignore-glob=.DS_Store";
-            tree = "exa -aT --git-ignore --ignore-glob=.git";
+            ls = "eza -la --ignore-glob=.DS_Store";
+            tree = "eza -aT --git-ignore --ignore-glob=.git";
             tmuxwork = "tmuxinator start work";
             tmuxhome = "tmuxinator start home";
             tmuxkill = "tmux kill-server";

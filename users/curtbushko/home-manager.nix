@@ -40,6 +40,7 @@ in
     pkgs.fzf
     pkgs.gh
     pkgs.gnused
+    pkgs.helm
     pkgs.htop
     pkgs.jq
     pkgs.kubectl
