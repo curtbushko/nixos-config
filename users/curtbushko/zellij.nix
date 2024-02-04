@@ -388,49 +388,49 @@
         text = ''
             layout {
                 tab name="codeone" focus=true {
+                    pane size=1 borderless=true {
+                        plugin location="zellij:compact-bar"
+                    }
                     pane split_direction="vertical" {
                         pane name="T1P1" focus=true cwd="/home/curtbushko/workspace/github.com"
                         pane name="T1P2" cwd="/home/curtbushko/workspace/github.com"
                     }
+                }
+                tab name="codetwo" {
                     pane size=1 borderless=true {
                         plugin location="zellij:compact-bar"
                     }
-                }
-                tab name="codetwo" {
                     pane split_direction="vertical" {
                         pane name="T2P1" cwd="/home/curtbushko/workspace/github.com"
                         pane name="T2P2" cwd="/home/curtbushko/workspace/github.com"
                     }
+                }
+                tab name="codethree" {
                     pane size=1 borderless=true {
                         plugin location="zellij:compact-bar"
                     }
-                }
-                tab name="codethree" {
                     pane split_direction="vertical" {
                         pane name="T3P1" cwd="/home/curtbushko/workspace/github.com"
                         pane name="T3P2" cwd="/home/curtbushko/workspace/github.com"
                     }
+                }
+                tab name="shell" {
                     pane size=1 borderless=true {
                         plugin location="zellij:compact-bar"
                     }
-                }
-                tab name="shell" {
                     pane split_direction="vertical" {
                         pane name="T4P1" cwd="/home/curtbushko/workspace/github.com"
                         pane name="T4P2" cwd="/home/curtbushko/workspace/github.com"
                         pane name="T4P3" cwd="/home/curtbushko/workspace/github.com"
                     }
                     pane name="T4P4" cwd="/home/curtbushko/workspace/github.com"
-                    pane size=1 borderless=true {
-                        plugin location="zellij:compact-bar"
-                    }
                 }
                 tab name="kb" {
-                    pane name="T5P1" split_direction="vertical" {
-                        pane name="T5P1" cwd="/home/curtbushko/sync/kb"
-                    }
                     pane size=1 borderless=true {
                         plugin location="zellij:compact-bar"
+                    }
+                    pane name="T5P1" split_direction="vertical" {
+                        pane name="T5P1" cwd="/home/curtbushko/sync/kb"
                     }
                 }
             }

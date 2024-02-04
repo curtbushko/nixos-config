@@ -35,12 +35,13 @@ in
   home.packages = [
     pkgs.asciinema
     pkgs.cargo
+    pkgs.crawl
+    pkgs.crawlTiles
     pkgs.exa
     pkgs.fd
     pkgs.fzf
     pkgs.gh
     pkgs.gnused
-    pkgs.helm
     pkgs.htop
     pkgs.jq
     pkgs.kubectl
@@ -99,7 +100,6 @@ in
   programs.alacritty = {
     settings = {
       env.TERM = "xterm-256color";
-
       key_bindings = [
         { key = "K"; mods = "Command"; chars = "ClearHistory"; }
         { key = "V"; mods = "Command"; action = "Paste"; }
