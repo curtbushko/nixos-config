@@ -12,7 +12,7 @@ return {
     keys = {
       {
         "<leader>tf",
-        "<CMD>:ToggleTerm float_opts.width=20 direction=float<CR>",
+        "<CMD>ToggleTerm float_opts.width=20 direction=float<CR>",
         desc = " Float",
       },
     },

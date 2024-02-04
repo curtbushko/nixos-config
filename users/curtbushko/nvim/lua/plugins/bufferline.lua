@@ -1,7 +1,7 @@
 return {
   "akinsho/bufferline.nvim",
   keys = {
-    { "<leader>bb", "<CMD>Telescope buffers<CR>", desc = " Buffers (telescope)" },
+    { "<leader>bb", "<CMD>Telescope buffers<CR>", desc = " Telescope Buffers" },
     { "<leader>bc", "<CMD>bd<CR>", desc = "󰅚 Close Buffer" },
     { "<leader>bC", "<CMD>bdelete!<CR>", desc = "󰅚 Force Close Buffer" },
     { "<leader>bo", "<CMD>BufferLineCloseOthers<CR>", desc = "󰅚 Close Others" },

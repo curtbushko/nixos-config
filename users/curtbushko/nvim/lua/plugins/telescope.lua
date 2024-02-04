@@ -187,6 +187,7 @@ return {
       build = "make",
       config = function()
         require("telescope").load_extension("fzf")
+        require("telescope").load_extension("harpoon")
         require("telescope").load_extension("yank_history")
         require("telescope").load_extension("todo-comments")
         require("telescope").load_extension("file_browser")
