@@ -36,6 +36,11 @@
       };
     in
     {
+      nixosConfigurations.gamingrig = mkSystem "gamingrig" rec {
+        system = "x86_64-linux";
+        user = "curtbushko";
+      };
+
       darwinConfigurations.m1-air = mkSystem "m1-air" {
         system = "aarch64-darwin";
         user = "curtbushko";
