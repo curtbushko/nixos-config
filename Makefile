@@ -32,5 +32,5 @@ repair:
 # Add the channels before building Nixos
 channels:
 	sudo nix-channel --add https://nixos.org/channels/nixos-unstable
-	sudo nix-channel --add https://nixos.org/channels/nixpgks-unstable
+	sudo nix-channel --add https://nixos.org/channels/nixpkgs-unstable
 	sudo nix-channel --update
