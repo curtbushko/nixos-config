@@ -92,6 +92,7 @@ in
     ./starship.nix
     ./zellij.nix
     ./zsh.nix
+    ./hyprland.nix
   ];
 
   #---------------------------------------------------------------------
@@ -132,8 +133,6 @@ in
     };
   };
 
-
-  #TODO Add tmux
 
   programs.kitty = {
     extraConfig = builtins.readFile ./kitty;
