@@ -27,22 +27,11 @@
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
   # Select internationalisation properties.
-  # i18n.defaultLocale = "en_US.UTF-8";
-  # console = {
-  #   font = "Lat2-Terminus16";
-  #   keyMap = "us";
-  #   useXkbConfig = true; # use xkb.options in tty.
-  # };
+  i18n.defaultLocale = "en_US.UTF-8";
+  console = {
+	font = "Lat2-Terminus16";
+  };
 
-  # Enable the X11 windowing system.
-  # services.xserver.enable = true;
-
-
-  
-
-  # Configure keymap in X11
-  # services.xserver.xkb.layout = "us";
-  # services.xserver.xkb.options = "eurosign:e,caps:escape";
 
   # Enable CUPS to print documents.
   # services.printing.enable = true;
@@ -54,21 +43,48 @@
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.curtbushko = {
-     isNormalUser = true;
-     extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
-     packages = with pkgs; [
-       tree
-     ];
-   };
+  # Font setup
+  fonts = {
+	fontDir.enable = true;
+	fonts = with pkgs; [
+		fira-code
+		font-awesome_5
+		jetbrains-mono
+		nerdfonts
+		noto-fonts
+		noto-fonts-extra
+		noto-fonts-emoji
+		powerline-fonts
+	];
+	fontconfig = {
+		enable = true; 
+		antialias = true;
+		
+		defaultFonts = {
+			monospace = [ "Jetbrains Mono" "Noto Mono" ];
+			serif = [ "Noto Serif" ];
+			sansSerif = [ "Noto Sans" ];
+			emoji = [ "Noto Color Emoji" ];
+		};
+	};
+  };  
+
+  # Nixpkgs Setup
+  nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.allowUnsupportedSystem = true;
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-     wget
+     cachix
      git
+     gnumake
+     killall
+     pciutils
+     rxvt_unicode
+     vim
+     wget
+     xclip
    ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -83,35 +99,76 @@
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
+  services.openssh.settings.PasswordAuthentication = true;
+  services.openssh.settings.PermitRootLogin = "no";
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
+  networking.firewall.enable = false;
 
-  # Copy the NixOS configuration file and link it from the resulting system
-  # (/run/current-system/configuration.nix). This is useful in case you
-  # accidentally delete configuration.nix.
-  system.copySystemConfiguration = true;
+  # Enable the X11 windowing system.
+  services.xserver = {
+	enable = false;
+	#layout = "us";
+     	# dpi = 220; # Mitchell had this... do I need it for my widescreen monitor?
 
-  # This option defines the first version of NixOS you have installed on this particular machine,
-  # and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.
-  #
-  # Most users should NEVER change this value after the initial install, for any reason,
-  # even if you've upgraded your system to a new NixOS release.
-  #
-  # This value does NOT affect the Nixpkgs version your packages and OS are pulled from,
-  # so changing it will NOT upgrade your system.
-  #
-  # This value being lower than the current NixOS release does NOT mean your system is
-  # out of date, out of support, or vulnerable.
-  #
-  # Do NOT change this value unless you have manually inspected all the changes it would make to your configuration,
-  # and migrated your data accordingly.
-  #
-  # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion .
-  system.stateVersion = "23.11"; # Did you read the comment?
+	#desktopManager = {
+	#	xterm.enable = false;
+	#	wallpaper.mode = "fill";
+	#};
+
+	#displayManager = {
+	#	defaultSession = "none+i3";
+	#	lightdm.enable = true;
+	#};
+
+	#windowManager = {
+	#	i3.enable = true;
+	#};
+  };
+
+
+
+  # Enable OpenGL
+  hardware.opengl = {
+	enable = true; 
+	driSupport = true;
+	driSupport32Bit = true;
+  };
+
+  services.xserver.videoDrivers = ["nvidia"];
+
+  hardware.nvidia = {
+	# Modesetting is required.
+	modesetting.enable = true;
+
+	# Nvidia power management. Experimental, and can cause sleep/suspend to fail.
+	powerManagement.enable = false;
+	# Fine-grained power management. Turns off GPU when not in use.
+	# Experimental and only works on modern Nvidia GPUs (Turing or newer).
+	powerManagement.finegrained = false;
+
+	# Use the NVidia open source kernel module (not to be confused with the
+	# independent third-party "nouveau" open source driver).
+	# Support is limited to the Turing and later architectures. Full list of
+	# supported GPUs is at:
+	# https://github.com/NVIDIA/open-gpu-kernel-modules#compatible-gpus
+	# Only available from driver 515.43.04+
+	# Currently alpha-quality/buggy, so false is currently the recommended setting.
+	open = false;
+
+	# Enable the Nvidia settings menu,
+	# accessible via `nvidia-settings`.
+	nvidiaSettings = true;
+
+	# Optionally, you may need to select the approprate driver version for your specifc GPU.
+	package = config.boot.kernelPackages.nvidiaPackages.stable;
+  };
+
+  # Do not change - ever
+  system.stateVersion = "23.11";
 
 }
 

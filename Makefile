@@ -34,3 +34,7 @@ channels:
 	sudo nix-channel --add https://nixos.org/channels/nixos-unstable
 	sudo nix-channel --add https://nixos.org/channels/nixpkgs-unstable
 	sudo nix-channel --update
+
+# With so many switches, things can get full
+clean:
+	sudo nix-collect-garbage --delete-older-than 5d

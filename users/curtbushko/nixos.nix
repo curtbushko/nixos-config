@@ -8,7 +8,7 @@
   # Since we're using fish as our shell
   programs.zsh.enable = true;
 
-  users.users.mitchellh = {
+  users.users.curtbushko = {
     isNormalUser = true;
     home = "/home/curtbushko";
     extraGroups = [ "docker" "wheel" ];

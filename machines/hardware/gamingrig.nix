@@ -8,10 +8,15 @@
     [ (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
-  boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" ];
-  boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-amd" ];
-  boot.extraModulePackages = [ ];
+  boot = {
+  	initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" "nvidia" ];
+  	initrd.kernelModules = [ ];
+  	kernelModules = [ "kvm-amd" "nvidia" ];
+  	extraModulePackages = [ config.boot.kernelPackages.nvidia_x11 ];
+	blacklistedKernelModules = [ "amdgpu" ];
+  	#kernelParams = [ "modules_blacklist=amdgpu" ]; # blacklist integerated GPU
+  	#kernelParams = [ "pci=realloc" ]; # blacklist integerated GPU
+  };
 
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/7a8af706-056c-4b9e-8b94-5e1564e6a568";
