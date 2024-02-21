@@ -12,21 +12,22 @@
             docs  = "$HOME/Documents";
             vids  = "$HOME/Videos";
             dl    = "$HOME/Downloads";
-            nixcfg  = "$HOME/workspace/github.com/curtbushko/nixos-config";
+            nixos-config  = "$HOME/workspace/github.com/curtbushko/nixos-config";
         };
         # environment variables
         sessionVariables = {
-            SYNCTHING = "$HOME/Sync";
-            SCRIPTS = "$HOME/scripts";
-            WALLPAPERS = "$HOME/Sync/wallpapers";
-            KB = "$HOME/Sync/KB";
-            DOTFILES = "$HOME/.dotfiles";
-            ZIGBIN = "$HOME/bin/zig";
-            WORKSPACE = "$HOME/workspace";
-            GITHUB = "$HOME/workspace/github.com";
-            GHOSTTY = "$HOME/workspace/github.com/mitchellh/ghostty";
             BUSHKO = "$HOME/workspace/github.com/curtbushko";
             DDCCTL = "$HOME/.dotfiles/bin/m1ddc";
+            DOTFILES = "$HOME/.dotfiles";
+            GHOSTTY = "$HOME/workspace/github.com/mitchellh/ghostty";
+            GITHUB = "$HOME/workspace/github.com";
+            KB = "$HOME/Sync/KB";
+            NIXOS_CONFIG = "$HOME/workspace/github.com/curtbushko/nixos-config";
+            SCRIPTS = "$HOME/scripts";
+            SYNCTHING = "$HOME/Sync";
+            WORKSPACE = "$HOME/workspace";
+            WALLPAPERS = "$HOME/Sync/wallpapers";
+            ZIGBIN = "$HOME/bin/zig";
         };
         shellAliases = {
             ".." = "cd ..";
@@ -59,6 +60,7 @@
             cddot = "cd $DOTFILES";
             cddotfiles = "cd $DOTFILES";
             cdnvim = "cd $DOTFILES/nvim/.config/nvim";
+            cdnixosconfig = "cd $NIXOS_CONFIG";
             cdscripts = "cd $SCRIPTS";
             lsscripts = "ls $SCRIPTS";
             cdhashi = "cd $GITHUB/hashicorp";

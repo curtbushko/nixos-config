@@ -68,6 +68,8 @@ in
     pkgs.rofi
     pkgs.zathura
     pkgs.xfce.xfce4-terminal
+    pkgs.clang
+    pkgs.cmake
   ]);
 
   #---------------------------------------------------------------------
@@ -92,7 +94,6 @@ in
     ./starship.nix
     ./zellij.nix
     ./zsh.nix
-    ./hyprland.nix
   ];
 
   #---------------------------------------------------------------------
