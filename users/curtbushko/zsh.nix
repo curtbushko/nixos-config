@@ -13,6 +13,7 @@
             vids  = "$HOME/Videos";
             dl    = "$HOME/Downloads";
             nixos-config  = "$HOME/workspace/github.com/curtbushko/nixos-config";
+            ghostty  = "$HOME/workspace/github.com/mitchellh/ghostty";
         };
         # environment variables
         sessionVariables = {
@@ -25,6 +26,7 @@
             NIXOS_CONFIG = "$HOME/workspace/github.com/curtbushko/nixos-config";
             SCRIPTS = "$HOME/scripts";
             SYNCTHING = "$HOME/Sync";
+            TERM = "xterm-256color";
             WORKSPACE = "$HOME/workspace";
             WALLPAPERS = "$HOME/Sync/wallpapers";
             ZIGBIN = "$HOME/bin/zig";
@@ -70,7 +72,7 @@
             cdworkflows = "cd $GITHUB/hashicorp/consul-k8s-workflows";
             cls = "tput reset";
             gitreset = "git reset --hard HEAD^";
-            ghostty-release = "zig build -Dstatic=true -Doptimize=ReleaseFast && direnv deny && cd macos && xcodebuild -configuration Release";
+            ghostty-release = "zig build -Dstatic=true -Doptimize=ReleaseFast && direnv deny && cd macos && xcodebuild -target Ghostty -configuration Release";
             gs = "git status";
             pr = "gh pr view --web";
             hg = "history |grep $1";
@@ -113,6 +115,7 @@
             zattach = "zellij attach coding";
             zux = "zellij -s coding";
             ztitle = "zellij action rename-tab";
+            zkill = "zellij kill-session coding";
         };
         initExtra = ''
             if [ -f $HOME/.private.post.source ]; then

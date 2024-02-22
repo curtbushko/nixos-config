@@ -58,7 +58,7 @@ in
     pkgs.golangci-lint
     pkgs.zigpkgs.master
 
-  ] ++ (lib.optionals isDarwin [
+  ] ++ (lib.opionals isDarwin [
     # This is automatically setup on Linux
     pkgs.cachix
     pkgs.tailscale
@@ -82,6 +82,8 @@ in
     EDITOR = "nvim";
     PAGER = "less -FirSwX";
     MANPAGER = "${manpager}/bin/manpager";
+    PATH = "$HOME/scripts:$PATH";
+    TERM = "xterm-256color";
   };
 
 
