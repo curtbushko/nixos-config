@@ -58,7 +58,7 @@ in
     pkgs.golangci-lint
     pkgs.zigpkgs.master
 
-  ] ++ (lib.opionals isDarwin [
+  ] ++ (lib.optionals isDarwin [
     # This is automatically setup on Linux
     pkgs.cachix
     pkgs.tailscale
