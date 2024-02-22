@@ -114,6 +114,7 @@
             pc = "$DDCCTL set input 15";
             zattach = "zellij attach coding";
             zux = "zellij -s coding";
+            zdel = "zellij delete-session coding";
             ztitle = "zellij action rename-tab";
             zkill = "zellij kill-session coding";
         };
