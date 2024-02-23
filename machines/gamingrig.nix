@@ -1,4 +1,4 @@
-# Edit this config6uration file to define what should be installed on
+# Edit this configuration file to define what should be installed on
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
@@ -36,9 +36,16 @@
   # Enable CUPS to print documents.
   # services.printing.enable = true;
 
-  # Enable sound.
+  # Enable sound with pipewire.
   sound.enable = true;
-  hardware.pulseaudio.enable = true;
+  security.rtkit.enable = true;
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+    jack.enable = true;
+  };
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
@@ -76,15 +83,26 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-     cachix
-     git
-     gnumake
-     killall
-     pciutils
-     rxvt_unicode
-     vim
-     wget
-     xclip
+    cachix
+    git
+    gnumake
+    killall
+    pciutils
+    rxvt_unicode
+    vim
+    wget
+    xclip
+    waybar
+    (waybar.overrideAttrs (oldAttrs: {
+        mesonFlags = oldAttrs.mesonFlags ++ [ "-Dexperimental=true"];
+        })
+    )
+    dunst # notifications
+    libnotify # notifications too.
+    swww # wallpapers
+
+    rofi # app launcher
+    rofi-wayland
    ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -106,31 +124,29 @@
   # Or disable the firewall altogether.
   networking.firewall.enable = false;
 
-  # Enable the X11 windowing system.
+  # Xserver settings
   services.xserver = {
-	enable = false;
-	#layout = "us";
-     	# dpi = 220; # Mitchell had this... do I need it for my widescreen monitor?
-
-	#desktopManager = {
-	#	xterm.enable = false;
-	#	wallpaper.mode = "fill";
-	#};
-
-	#displayManager = {
-	#	defaultSession = "none+i3";
-	#	lightdm.enable = true;
-	#};
-
-	#windowManager = {
-	#	i3.enable = true;
-	#};
+    enable = true;
+    videoDrivers = ["nvidia"];
+    layout = "us";
+    xkbVariant = "";
+    displayManager.gdm.enable = true;
   };
 
   programs.hyprland = {
     enable = true;
     xwayland.enable = true;
   };
+
+  # If your cursor becomes invisible
+  environment.variables.WLR_NO_HARDWARE_CURSORS = "1";
+  # Hint electron apps to use wayland
+  environment.variables.NIXOS_OZONE_WL = "1";
+
+  # For accessing resources outside of the sandbox
+  xdg.portal.enable = true;
+  xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+
 
   # Enable OpenGL
   hardware.opengl = {
@@ -139,7 +155,6 @@
 	driSupport32Bit = true;
   };
 
-  services.xserver.videoDrivers = ["nvidia"];
 
   hardware.nvidia = {
 	# Modesetting is required.
@@ -166,6 +181,12 @@
 
 	# Optionally, you may need to select the approprate driver version for your specifc GPU.
 	package = config.boot.kernelPackages.nvidiaPackages.stable;
+  };
+
+  # Docker
+  virtualisation = {
+    libvirtd.enable = true;
+    docker.enable = true;
   };
 
   # Do not change - ever
