@@ -1,5 +1,6 @@
 return {
   {
-    "p00f/nvim-ts-rainbow",
+    "gbprod/yanky.nvim",
+    opts = {},
   },
 }
