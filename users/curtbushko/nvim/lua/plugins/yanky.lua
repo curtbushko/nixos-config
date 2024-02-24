@@ -1,6 +1,10 @@
 return {
   {
     "gbprod/yanky.nvim",
-    opts = {},
+    opts = {
+            ring = {
+                storage = "shada",
+            },
+        },
   },
 }
