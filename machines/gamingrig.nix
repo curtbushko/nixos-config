@@ -85,6 +85,7 @@
     cachix
     git
     gnumake
+    gcc
     killall
     pciutils
     rxvt_unicode

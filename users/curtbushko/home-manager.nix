@@ -37,7 +37,7 @@ in
     pkgs.cargo
     pkgs.crawl
     pkgs.crawlTiles
-    pkgs.exa
+    pkgs.eza
     pkgs.fd
     pkgs.fzf
     pkgs.gh
@@ -70,6 +70,7 @@ in
     pkgs.xfce.xfce4-terminal
     pkgs.clang
     pkgs.cmake
+    pkgs.sqlite
   ]);
 
   #---------------------------------------------------------------------

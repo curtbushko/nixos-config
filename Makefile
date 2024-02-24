@@ -23,7 +23,7 @@ endif
 
 # Update all your packages
 update:
-	nix flake update
+	nix --extra-experimental-features 'nix-command flakes' flake update
 
 # Use this when you start getting weird 'file not found' errors from nix-store
 repair:
