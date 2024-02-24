@@ -66,15 +66,14 @@
 	fontconfig = {
 		enable = true; 
 		antialias = true;
-		
 		defaultFonts = {
-			monospace = [ "Jetbrains Mono" "Noto Mono" ];
-			serif = [ "Noto Serif" ];
-			sansSerif = [ "Noto Sans" ];
+			monospace = [ "JetbrainsMono Nerd Font Mono" "Noto Mono" ];
+			sansSerif = [ "JetbrainsMono Nerd Font Mono" "Noto Mono" ];
+			serif = [ "JetbrainsMono Nerd Font Mono" "Noto Mono" ];
 			emoji = [ "Noto Color Emoji" ];
 		};
 	};
-  };  
+  };
 
   # Nixpkgs Setup
   nixpkgs.config.allowUnfree = true;
