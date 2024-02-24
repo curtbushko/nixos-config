@@ -18,6 +18,7 @@
   # Pick only one of the below networking options.
   #networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
   networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
+  networking.interfaces.eno1.wakeOnLan.enable = true; 
 
   # Set your time zone.
   time.timeZone = "America/Toronto";
@@ -53,7 +54,7 @@
   # Font setup
   fonts = {
 	fontDir.enable = true;
-	fonts = with pkgs; [
+	packages = with pkgs; [
 		fira-code
 		font-awesome_5
 		jetbrains-mono
@@ -131,6 +132,7 @@
     layout = "us";
     xkbVariant = "";
     displayManager.gdm.enable = true;
+    displayManager.gdm.autoSuspend = false;
   };
 
   programs.hyprland = {
