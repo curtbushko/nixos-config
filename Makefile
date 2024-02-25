@@ -9,8 +9,10 @@ vars:
 
 # Setup nix
 setup:
+ifeq ($(UNAME), darwin)
 	@echo "Installing Determinate Nix Installer..."
 	curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+endif
 
 switch:
 ifeq ($(UNAME), darwin)
