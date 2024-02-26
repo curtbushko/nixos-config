@@ -11,7 +11,7 @@ name:
 
 let
   # The config files for this system.
-  machineConfig = ../machines/${name}.nix;
+  machineConfig = ../hosts/${name}/configuration.nix;
   userOSConfig = ../users/${user}/${if darwin then "darwin" else "nixos" }.nix;
   userHMConfig = ../users/${user}/home-manager.nix;
 
