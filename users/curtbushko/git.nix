@@ -9,6 +9,7 @@
         push.autoSetupRemote = true;
         pull = { ff = "only"; };
         url."ssh://git@github.com".insteadOf = "https://github.com";
+        oh-my-zsh = { hide-dirty = "1"; }; # this stops slowdowns in some repos with zsh
     };
     delta = { 
         enable = true; 
