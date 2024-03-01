@@ -12,7 +12,7 @@ name:
 let
   # The config files for this system.
   machineConfig = ../hosts/${name}/configuration.nix;
-  userOSConfig = ../users/${user}/${if darwin then "darwin" else "nixos" }.nix;
+  userOSConfig = ../hosts/${name}/user.nix;
   userHMConfig = ../users/${user}/home-manager.nix;
 
   # NixOS vs nix-darwin functionst
