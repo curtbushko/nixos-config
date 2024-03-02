@@ -14,24 +14,9 @@
   # Packages
   #---------------------------------------------------------------------
   home.packages = [
-    pkgs.asciinema
     pkgs.cargo
     pkgs.crawl
     pkgs.crawlTiles
-    pkgs.eza
-    pkgs.fd
-    pkgs.fzf
-    pkgs.gnused
-    pkgs.htop
-    pkgs.jq
-    pkgs.kubectl
-    pkgs.python3
-    pkgs.ranger
-    pkgs.ripgrep
-    pkgs.tree
-    pkgs.watch
-    pkgs.yt-dlp
-    pkgs.zoxide
 
     pkgs.zigpkgs.master
 
@@ -56,30 +41,16 @@
 
   imports = [
     #nix-colors.homeManagerModules.default
-    ../../modules/bat.nix
     ../../modules/git
     ../../modules/go
     ../../modules/neovim
     ../../modules/shells
     ../../modules/terminals
+    ../../modules/tools
   ];
 
   #---------------------------------------------------------------------
   # Programs
   #---------------------------------------------------------------------
  
-  programs.direnv = {
-    enable = true;
-    config = {
-      whitelist = {
-        prefix = [
-          "$HOME/code/go/src/github.com/hashicorp"
-          "$HOME/code/go/src/github.com/mitchellh"
-          "$HOME/code/go/src/github.com/curtbushko"
-        ];
-
-        exact = [ "$HOME/.envrc" ];
-      };
-    };
-  };
 }
