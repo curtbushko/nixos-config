@@ -58,4 +58,9 @@
       st = "status";
     };
   };
+
+  home.packages = [ 
+    pkgs.gh
+    pkgs.lazygit
+  ];
 }

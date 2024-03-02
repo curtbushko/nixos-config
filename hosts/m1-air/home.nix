@@ -21,12 +21,10 @@
     pkgs.eza
     pkgs.fd
     pkgs.fzf
-    pkgs.gh
     pkgs.gnused
     pkgs.htop
     pkgs.jq
     pkgs.kubectl
-    pkgs.lazygit
     pkgs.python3
     pkgs.ranger
     pkgs.ripgrep
@@ -35,24 +33,12 @@
     pkgs.yt-dlp
     pkgs.zoxide
 
-    pkgs.gopls
-    pkgs.golangci-lint
     pkgs.zigpkgs.master
 
-  ] ++ (lib.optionals isDarwin [
-    # This is automatically setup on Linux
+    # Darwin only
     pkgs.cachix
     pkgs.tailscale
-  ]) ++ (lib.optionals (isLinux) [
-    pkgs.chromium
-    pkgs.firefox
-    pkgs.rofi
-    pkgs.zathura
-    pkgs.xfce.xfce4-terminal
-    pkgs.clang
-    pkgs.cmake
-    pkgs.sqlite
-  ]);
+  ];
 
   #---------------------------------------------------------------------
   # Env vars and dotfiles
@@ -71,11 +57,9 @@
   imports = [
     #nix-colors.homeManagerModules.default
     ../../modules/bat.nix
-    ../../modules/git.nix
-    ../../modules/go.nix
-    ../../modules/neovim.nix
-    ../../modules/starship.nix
-    ../../modules/zellij.nix
+    ../../modules/git
+    ../../modules/go
+    ../../modules/neovim
     ../../modules/shells
     ../../modules/terminals
   ];
