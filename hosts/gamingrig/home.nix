@@ -35,23 +35,11 @@
     pkgs.yt-dlp
     pkgs.zoxide
 
-    pkgs.gopls
-    pkgs.golangci-lint
     pkgs.zigpkgs.master
 
-  ] ++ (lib.optionals isDarwin [
-    # This is automatically setup on Linux
+    # Darwin specific
     pkgs.cachix
     pkgs.tailscale
-  ]) ++ (lib.optionals (isLinux) [
-    pkgs.chromium
-    pkgs.firefox
-    pkgs.rofi
-    pkgs.zathura
-    pkgs.xfce.xfce4-terminal
-    pkgs.clang
-    pkgs.cmake
-    pkgs.sqlite
   ]);
 
   #---------------------------------------------------------------------
@@ -72,10 +60,10 @@
     #nix-colors.homeManagerModules.default
     ../../modules/bat.nix
     ../../modules/git.nix
-    ../../modules/go.nix
     ../../modules/neovim.nix
     ../../modules/starship.nix
     ../../modules/zellij.nix
+    ../../modules/go
     ../../modules/shells
     ../../modules/terminals
   ];
