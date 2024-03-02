@@ -24,9 +24,9 @@ in
   programs.home-manager.enable = true;
 
   xdg.enable = true;
-  xdg.configFile = {
-    "ghostty/config".text = builtins.readFile ./ghostty.config;
-  };
+  #xdg.configFile = {
+  #  "ghostty/config".text = builtins.readFile ./ghostty.config;
+  #};
 
   #xdg.configFile."./nvim/lazyvim.json".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/nvim/lazyvim.json";
   #---------------------------------------------------------------------
@@ -90,13 +90,13 @@ in
 
   imports = [
     #nix-colors.homeManagerModules.default
-    ../bat.nix
-    ../git.nix
-    ../go.nix
-    ../neovim.nix
-    ../starship.nix
-    ../zellij.nix
-    ../zsh.nix
+    ../../modules/bat.nix
+    ../../modules/git.nix
+    ../../modules/go.nix
+    ../../modules/neovim.nix
+    ../../modules/starship.nix
+    ../../modules/zellij.nix
+    ../../modules/shells
   ];
 
   #---------------------------------------------------------------------
