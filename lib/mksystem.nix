@@ -13,7 +13,7 @@ let
   # The config files for this system.
   machineConfig = ../hosts/${name}/configuration.nix;
   userOSConfig = ../hosts/${name}/user.nix;
-  userHMConfig = ../users/${user}/home-manager.nix;
+  userHMConfig = ../modules/home-manager.nix;
 
   # NixOS vs nix-darwin functionst
   systemFunc = if darwin then inputs.darwin.lib.darwinSystem else nixpkgs.lib.nixosSystem;

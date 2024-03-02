@@ -90,13 +90,13 @@ in
 
   imports = [
     #nix-colors.homeManagerModules.default
-    ./bat.nix
-    ./git.nix
-    ./go.nix
-    ./neovim.nix
-    ./starship.nix
-    ./zellij.nix
-    ./zsh.nix
+    ../bat.nix
+    ../git.nix
+    ../go.nix
+    ../neovim.nix
+    ../starship.nix
+    ../zellij.nix
+    ../zsh.nix
   ];
 
   #---------------------------------------------------------------------
