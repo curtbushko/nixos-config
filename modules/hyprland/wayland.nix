@@ -12,6 +12,11 @@
     enable = true;
     videoDrivers = ["nvidia"];
     layout = "us";
+    xkb = {
+      layout = "us";
+      variant = "";
+      options = "caps:escape";
+    };
 
     displayManager.sddm = {
       enable = true;

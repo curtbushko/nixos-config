@@ -46,7 +46,6 @@
     #nix-colors.homeManagerModules.default
     ../../modules/git
     ../../modules/go
-    ../../modules/hyperland
     ../../modules/neovim
     ../../modules/shells
     ../../modules/terminals
