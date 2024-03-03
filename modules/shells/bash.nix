@@ -1,7 +1,7 @@
 {
   programs.bash = {
     enable = true;
-    shellOptions = [ ];
-    historyControl = [ "ignoredups" "ignorespace" ];
+    shellOptions = [];
+    historyControl = ["ignoredups" "ignorespace"];
   };
 }

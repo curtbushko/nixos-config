@@ -1,11 +1,15 @@
-{ config, lib, pkgs, ... }:
 {
-    programs.go = {
-        enable = true;
-    };
+  config,
+  lib,
+  pkgs,
+  ...
+}: {
+  programs.go = {
+    enable = true;
+  };
 
-    home.packages = [
-        pkgs.gopls
-        pkgs.golangci-lint
-    ];
+  home.packages = [
+    pkgs.gopls
+    pkgs.golangci-lint
+  ];
 }

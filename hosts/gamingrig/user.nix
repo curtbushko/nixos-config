@@ -1,7 +1,8 @@
-{ pkgs, inputs, ... }:
-
 {
-
+  pkgs,
+  inputs,
+  ...
+}: {
   # Add ~/.local/bin to PATH
   environment.localBinInPath = true;
 
@@ -11,7 +12,7 @@
   users.users.curtbushko = {
     isNormalUser = true;
     home = "/home/curtbushko";
-    extraGroups = [ "docker" "wheel" ];
+    extraGroups = ["docker" "wheel"];
     shell = pkgs.zsh;
   };
 }

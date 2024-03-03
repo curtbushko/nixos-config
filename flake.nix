@@ -21,35 +21,39 @@
     };
 
     neovim-nightly-overlay = {
-        url = "github:nix-community/neovim-nightly-overlay";
-        inputs.nixpkgs.follows = "nixpkgs-unstable";
+      url = "github:nix-community/neovim-nightly-overlay";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
     # Other packages
     zig.url = "github:mitchellh/zig-overlay";
   };
 
-  outputs = { self, nixpkgs, home-manager, darwin, ... }@inputs:
-    let
-      # Overlays is the list of overlays we want to apply from flake inputs.
-      overlays = [
-        inputs.zig.overlays.default
-      ];
+  outputs = {
+    self,
+    nixpkgs,
+    home-manager,
+    darwin,
+    ...
+  } @ inputs: let
+    # Overlays is the list of overlays we want to apply from flake inputs.
+    overlays = [
+      inputs.zig.overlays.default
+    ];
 
-      mkSystem = import ./lib/mksystem.nix {
-        inherit overlays nixpkgs inputs;
-      };
-    in
-    {
-      nixosConfigurations.gamingrig = mkSystem "gamingrig" rec {
-        system = "x86_64-linux";
-        user = "curtbushko";
-      };
-
-      darwinConfigurations.m1-air = mkSystem "m1-air" {
-        system = "aarch64-darwin";
-        user = "curtbushko";
-        darwin = true;
-      };
+    mkSystem = import ./lib/mksystem.nix {
+      inherit overlays nixpkgs inputs;
     };
+  in {
+    nixosConfigurations.gamingrig = mkSystem "gamingrig" rec {
+      system = "x86_64-linux";
+      user = "curtbushko";
+    };
+
+    darwinConfigurations.m1-air = mkSystem "m1-air" {
+      system = "aarch64-darwin";
+      user = "curtbushko";
+      darwin = true;
+    };
+  };
 }

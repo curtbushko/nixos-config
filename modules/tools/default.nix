@@ -1,11 +1,16 @@
-{ config, lib, pkgs, ... }:
 {
-    imports = [
-        ./bat.nix
-        ./direnv.nix
-    ];
+  config,
+  lib,
+  pkgs,
+  ...
+}: {
+  imports = [
+    ./bat.nix
+    ./direnv.nix
+  ];
 
   home.packages = [
+    pkgs.alejandra
     pkgs.asciinema
     pkgs.eza
     pkgs.fd
@@ -21,8 +26,5 @@
     pkgs.watch
     pkgs.yt-dlp
     pkgs.zoxide
-
   ];
-
-
-} 
+}

@@ -9,7 +9,7 @@
           "$HOME/code/go/src/github.com/curtbushko"
         ];
 
-        exact = [ "$HOME/.envrc" ];
+        exact = ["$HOME/.envrc"];
       };
     };
   };

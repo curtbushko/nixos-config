@@ -1,6 +1,9 @@
-{ inputs, ... }:
-{ config, lib, pkgs, ... }:
-{
+{inputs, ...}: {
+  config,
+  lib,
+  pkgs,
+  ...
+}: {
   # Home-manager 22.11 requires this be set. We never set it so we have
   # to use the old state version.
   home.stateVersion = "18.09";
@@ -14,33 +17,17 @@
   # Packages
   #---------------------------------------------------------------------
   home.packages = [
-    pkgs.asciinema
     pkgs.cargo
-    pkgs.crawl
-    pkgs.crawlTiles
-    pkgs.eza
-    pkgs.fd
-    pkgs.fzf
-    pkgs.gh
-    pkgs.gnused
-    pkgs.htop
-    pkgs.jq
-    pkgs.kubectl
-    pkgs.lazygit
-    pkgs.python3
-    pkgs.ranger
-    pkgs.ripgrep
-    pkgs.tree
-    pkgs.watch
-    pkgs.yt-dlp
-    pkgs.zoxide
 
     pkgs.zigpkgs.master
 
-    # Darwin specific
-    pkgs.cachix
-    pkgs.tailscale
-  ]);
+    pkgs.chromium
+    pkgs.firefox
+    pkgs.rofi
+    pkgs.valgrind
+    pkgs.zathura
+    pkgs.xfce.xfce4-terminal
+  ];
 
   #---------------------------------------------------------------------
   # Env vars and dotfiles
@@ -55,35 +42,14 @@
     TERM = "xterm-256color";
   };
 
-
   imports = [
     #nix-colors.homeManagerModules.default
-    ../../modules/bat.nix
-    ../../modules/git.nix
-    ../../modules/neovim.nix
-    ../../modules/starship.nix
-    ../../modules/zellij.nix
+    ../../modules/git
     ../../modules/go
+    ../../modules/hyperland
+    ../../modules/neovim
     ../../modules/shells
     ../../modules/terminals
+    ../../modules/tools
   ];
-
-  #---------------------------------------------------------------------
-  # Programs
-  #---------------------------------------------------------------------
- 
-  programs.direnv = {
-    enable = true;
-    config = {
-      whitelist = {
-        prefix = [
-          "$HOME/code/go/src/github.com/hashicorp"
-          "$HOME/code/go/src/github.com/mitchellh"
-          "$HOME/code/go/src/github.com/curtbushko"
-        ];
-
-        exact = [ "$HOME/.envrc" ];
-      };
-    };
-  };
 }

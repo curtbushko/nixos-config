@@ -1,6 +1,9 @@
-{ inputs, ... }:
-{ config, lib, pkgs, ... }:
-{
+{inputs, ...}: {
+  config,
+  lib,
+  pkgs,
+  ...
+}: {
   # Home-manager 22.11 requires this be set. We never set it so we have
   # to use the old state version.
   home.stateVersion = "18.09";
@@ -38,7 +41,6 @@
     TERM = "xterm-256color";
   };
 
-
   imports = [
     #nix-colors.homeManagerModules.default
     ../../modules/git
@@ -48,9 +50,4 @@
     ../../modules/terminals
     ../../modules/tools
   ];
-
-  #---------------------------------------------------------------------
-  # Programs
-  #---------------------------------------------------------------------
- 
 }
