@@ -10,7 +10,7 @@
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
-    ../../modules/hyprland
+    ../../modules/nixos
   ];
 
   # Use the systemd-boot EFI boot loader.
