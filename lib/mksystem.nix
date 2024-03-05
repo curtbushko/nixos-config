@@ -4,6 +4,7 @@
   nixpkgs,
   overlays,
   inputs,
+  stylix,
 }: name: {
   system,
   user,
@@ -23,6 +24,10 @@
     if darwin
     then inputs.home-manager.darwinModules
     else inputs.home-manager.nixosModules;
+  stylix =
+    if darwin
+    then stylix.darwinModules.stylix
+    else stylix.homeManagerModules.stylix;
 in
   systemFunc rec {
     inherit system;

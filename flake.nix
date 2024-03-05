@@ -25,6 +25,8 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
+    stylix.url = "github:danth/stylix";
+
     # Other packages
     zig.url = "github:mitchellh/zig-overlay";
   };
