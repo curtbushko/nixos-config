@@ -273,6 +273,7 @@
         "neovim-nightly-overlay": "neovim-nightly-overlay",
         "nixpkgs": "nixpkgs",
         "nixpkgs-unstable": "nixpkgs-unstable",
+        "themes": "themes",
         "zig": "zig"
       }
     },
@@ -288,6 +289,21 @@
       "original": {
         "owner": "nix-systems",
         "repo": "default",
+        "type": "github"
+      }
+    },
+    "themes": {
+      "locked": {
+        "lastModified": 1702496684,
+        "narHash": "sha256-fClxDgKdH62T3nbuq3HXMrgtzsEJbFyj3UCaQdgRuF8=",
+        "owner": "RGBCube",
+        "repo": "ThemeNix",
+        "rev": "9f6d2cda4ba1e1840d8f126086df9a801508de6a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "RGBCube",
+        "repo": "ThemeNix",
         "type": "github"
       }
     },

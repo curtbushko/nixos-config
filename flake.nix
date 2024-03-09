@@ -25,7 +25,10 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-    stylix.url = "github:danth/stylix";
+    # Theming
+    themes = {
+      url = "github:RGBCube/ThemeNix";
+    };
 
     # Other packages
     zig.url = "github:mitchellh/zig-overlay";
@@ -36,15 +39,18 @@
     nixpkgs,
     home-manager,
     darwin,
+    themes,
     ...
   } @ inputs: let
+    theme = themes.tokyo-night-dark;
+
     # Overlays is the list of overlays we want to apply from flake inputs.
     overlays = [
       inputs.zig.overlays.default
     ];
 
     mkSystem = import ./lib/mksystem.nix {
-      inherit overlays nixpkgs inputs;
+      inherit overlays nixpkgs inputs theme;
     };
   in {
     nixosConfigurations.gamingrig = mkSystem "gamingrig" rec {

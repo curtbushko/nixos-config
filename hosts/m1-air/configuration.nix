@@ -1,6 +1,7 @@
 {
   config,
   pkgs,
+  inputs,
   ...
 }: {
   # We install Nix using a separate installer so we don't want nix-darwin

@@ -4,7 +4,7 @@
   nixpkgs,
   overlays,
   inputs,
-  stylix,
+  theme,
 }: name: {
   system,
   user,
@@ -24,10 +24,6 @@
     if darwin
     then inputs.home-manager.darwinModules
     else inputs.home-manager.nixosModules;
-  stylix =
-    if darwin
-    then stylix.darwinModules.stylix
-    else stylix.homeManagerModules.stylix;
 in
   systemFunc rec {
     inherit system;
@@ -46,6 +42,7 @@ in
         home-manager.useUserPackages = true;
         home-manager.users.${user} = import userHMConfig {
           inputs = inputs;
+          theme = theme;
         };
       }
 
@@ -57,7 +54,10 @@ in
           currentSystemName = name;
           currentSystemUser = user;
           inputs = inputs;
+          theme = theme;
         };
       }
     ];
+
+    specialArgs = { inherit theme; };
   }
