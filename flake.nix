@@ -33,7 +33,7 @@
       src = ./.;
 
       snowfall = {
-        namespace = "curtbushko";
+        namespace = "mynamespace";
         meta = {
           name = "curtbushko";
           title = "Curts Flake";
