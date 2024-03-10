@@ -24,6 +24,6 @@
       style = "numbers,changes";
       italic-text = "always";
     };
-    themes.base16.src = pkgs.writeText "base16.tmTheme" theme.tmTheme;
+    #themes.base16.src = pkgs.writeText "base16.tmTheme" theme.tmTheme;
   };
 }

@@ -21,7 +21,7 @@
     };
 
     # Theming
-    themes.url = "github:RGBCube/ThemeNix";
+    #themes.url = "github:RGBCube/ThemeNix";
 
     # Other packages
     zig.url = "github:mitchellh/zig-overlay";
@@ -33,7 +33,7 @@
       src = ./.;
 
       snowfall = {
-        namespace = "mynamespace";
+        namespace = "my-namespace";
         meta = {
           name = "curtbushko";
           title = "Curts Flake";
