@@ -1,29 +1,44 @@
 NIXOS_CONFIG_DIR := $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
-UNAME := $(shell uname | tr '[:upper:]' '[:lower:]')
-NIXMACHINE := $(shell hostname -s | tr '[:upper:]' '[:lower:]')
+OS := $(shell uname | tr '[:upper:]' '[:lower:]')
+ARCH := $(shell uname -m | tr '[:upper:]' '[:lower:]')
+HOST := $(shell hostname -s | tr '[:upper:]' '[:lower:]')
 NIXUSER ?= curtbushko
 DATELOG := "[$(shell date -u +'%Y-%m-%dT%H:%M:%SZ')]"
 
 vars:
-	@echo "UNAME: $(UNAME)"
-	@echo "NIXMACHINE: $(NIXMACHINE)"
+	@echo "OS: $(OS)"
+	@echo "ARCH: $(ARCH)"
+	@echo "HOST: $(HOST)"
 
 # Setup nix
 setup:
-ifeq ($(UNAME), darwin)
+ifeq ($(OS), darwin)
 	@echo "$(DATELOG) Installing Determinate Nix Installer..."
 	curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
 endif
 
 switch:
 	@echo "$(DATELOG) Building nix config"
-ifeq ($(UNAME), darwin)
-	nix --extra-experimental-features 'nix-command flakes' build ".#darwinConfigurations.${NIXMACHINE}.system" --show-trace
-	#nix build ".#darwinConfigurations.${NIXMACHINE}.system"
-	./result/sw/bin/darwin-rebuild switch --flake "$$(pwd)#${NIXMACHINE}"
+ifeq ($(OS), darwin)
+	darwin-rebuild build --flake .
+	#nix --extra-experimental-features 'nix-command flakes' build ".#darwinConfigurations.${HOST}.system" --show-trace
+	#nix build ".#darwinConfigurations.${HOST}.system"
+	#./result/sw/bin/darwin-rebuild switch --flake "$$(pwd)#${HOST}"
+	./result/sw/bin/darwin-rebuild switch --flake .
 else
-	sudo NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nixos-rebuild switch --flake ".#${NIXHOSTNAME}"
+	sudo NIXPKGS_ALLOW_UNSUPPORTED_ARCH=1 nixos-rebuild switch --flake ".#${HOST}"
 endif
+
+test:
+	@echo "$(DATELOG) Testing nix config"
+ifeq ($(OS), darwin)
+	nix --extra-experimental-features 'nix-command flakes' build ".#darwinConfigurations.${HOST}.system" --show-trace
+	#nix build ".#darwinConfigurations.${HOST}.system"
+	./result/sw/bin/darwin-rebuild test --flake "$$(pwd)#${HOST}"
+else
+	sudo NIXPKGS_ALLOW_UNSUPPORTED_ARCH=1 nixos-rebuild test --flake ".#${HOST}"
+endif
+
 
 # Update all your packages
 update:

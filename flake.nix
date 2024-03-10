@@ -1,10 +1,5 @@
 {
-  description = "NixOS systems setup for Darwin and Linux";
-
   inputs = {
-    # Pin our primary nixpkgs repository. This is the main nixpkgs repository
-    # we'll use for our configurations. Be very careful changing this because
-    # it'll impact your entire system.
     nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
 
     # We use the unstable nixpkgs repo for some packages.
@@ -20,48 +15,33 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    neovim-nightly-overlay = {
-      url = "github:nix-community/neovim-nightly-overlay";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    snowfall-lib = {
+      url = "github:snowfallorg/lib";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # Theming
-    themes = {
-      url = "github:RGBCube/ThemeNix";
-    };
+    themes.url = "github:RGBCube/ThemeNix";
 
     # Other packages
     zig.url = "github:mitchellh/zig-overlay";
   };
 
-  outputs = {
-    self,
-    nixpkgs,
-    home-manager,
-    darwin,
-    themes,
-    ...
-  } @ inputs: let
-    theme = themes.tokyo-night-dark;
+  outputs = inputs:
+    inputs.snowfall-lib.mkFlake {
+      inherit inputs;
+      src = ./.;
 
-    # Overlays is the list of overlays we want to apply from flake inputs.
-    overlays = [
-      inputs.zig.overlays.default
-    ];
+      snowfall = {
+        namespace = "curtbushko";
+        meta = {
+          name = "curtbushko";
+          title = "Curts Flake";
+        };
+      };
 
-    mkSystem = import ./lib/mksystem.nix {
-      inherit overlays nixpkgs inputs theme;
+      systems.modules.darwin = with inputs; [
+        home-manager.darwinModules.home-manager
+      ];
     };
-  in {
-    nixosConfigurations.gamingrig = mkSystem "gamingrig" rec {
-      system = "x86_64-linux";
-      user = "curtbushko";
-    };
-
-    darwinConfigurations.m1-air = mkSystem "m1-air" {
-      system = "aarch64-darwin";
-      user = "curtbushko";
-      darwin = true;
-    };
-  };
 }

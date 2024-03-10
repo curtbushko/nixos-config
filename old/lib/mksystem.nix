@@ -59,5 +59,5 @@ in
       }
     ];
 
-    specialArgs = { inherit theme; };
+    specialArgs = {inherit theme;};
   }

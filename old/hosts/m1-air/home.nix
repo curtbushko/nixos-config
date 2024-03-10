@@ -1,4 +1,8 @@
-{inputs, theme, ...}: {
+{
+  inputs,
+  theme,
+  ...
+}: {
   config,
   lib,
   pkgs,

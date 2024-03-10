@@ -5,11 +5,10 @@
   theme,
   ...
 }: {
-
   programs.bat = {
     enable = true;
     config = {
-      theme  = "base16";
+      theme = "base16";
       color = "always";
       style = "numbers,changes";
       italic-text = "always";
