@@ -4,7 +4,6 @@
   nixpkgs,
   overlays,
   inputs,
-  theme,
 }: name: {
   system,
   user,
@@ -42,7 +41,6 @@ in
         home-manager.useUserPackages = true;
         home-manager.users.${user} = import userHMConfig {
           inputs = inputs;
-          theme = theme;
         };
       }
 
@@ -54,10 +52,7 @@ in
           currentSystemName = name;
           currentSystemUser = user;
           inputs = inputs;
-          theme = theme;
         };
       }
     ];
-
-    specialArgs = {inherit theme;};
   }

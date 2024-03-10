@@ -33,15 +33,11 @@
       src = ./.;
 
       snowfall = {
-        namespace = "my-namespace";
+        namespace = "bushko-dev";
         meta = {
           name = "curtbushko";
           title = "Curts Flake";
         };
       };
-
-      systems.modules.darwin = with inputs; [
-        home-manager.darwinModules.home-manager
-      ];
     };
 }

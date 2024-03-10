@@ -39,10 +39,8 @@
     nixpkgs,
     home-manager,
     darwin,
-    themes,
     ...
   } @ inputs: let
-    theme = themes.tokyo-night-dark;
 
     # Overlays is the list of overlays we want to apply from flake inputs.
     overlays = [
@@ -50,7 +48,7 @@
     ];
 
     mkSystem = import ./lib/mksystem.nix {
-      inherit overlays nixpkgs inputs theme;
+      inherit overlays nixpkgs inputs;
     };
   in {
     nixosConfigurations.gamingrig = mkSystem "gamingrig" rec {

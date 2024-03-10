@@ -1,6 +1,5 @@
 {
   inputs,
-  theme,
   ...
 }: {
   config,
