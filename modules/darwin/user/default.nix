@@ -1,27 +1,27 @@
-{ config
-, lib
-, pkgs
-, ...
-}:
-let
-  inherit (lib) types mkIf getExe;
-  inherit (lib.internal) mkOpt;
-
-  cfg = config.curtbushko.user;
-in
 {
-  options.curtbushko.user = {
-    name = mkOpt types.str "curtbushko" "The user account.";
-    email = mkOpt types.str "cbushko@gmail.com" "The email of the user.";
-    fullName = mkOpt types.str "Curt Bushko" "The full name of the user.";
-    uid = mkOpt (types.nullOr types.int) 501 "The uid for the user account.";
+  inputs,
+  pkgs,
+  ...
+}: {
+  homebrew = {
+    enable = true;
+    casks = [
+      #"discord"
+      "docker"
+      "firefox"
+      "obs"
+      "obsidian"
+      "rectangle"
+      "syncthing"
+      "slack"
+      "vlc"
+    ];
   };
 
-  config = {
-    users.users.${cfg.name} = {
-      uid = mkIf (cfg.uid != null) cfg.uid;
-      shell = pkgs.zsh;
-    };
-
+  # The user should already exist, but we need to set this up so Nix knows
+  # what our home directory is (https://github.com/LnL7/nix-darwin/issues/423).
+  users.users.curtbushko = {
+    home = "/Users/curtbushko";
+    shell = pkgs.zsh;
   };
 }
