@@ -33,10 +33,10 @@
       src = ./.;
 
       snowfall = {
-        namespace = "custom";
+        namespace = "curtbushko";
         meta = {
           name = "curtbushko";
-          title = "Curts Flake";
+          title = "Custom Flake";
         };
       };
     };
