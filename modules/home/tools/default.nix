@@ -36,6 +36,7 @@
     pkgs.ripgrep
     pkgs.tree
     pkgs.watch
+    pkgs.watchexec
     pkgs.yt-dlp
     pkgs.zoxide
   ];

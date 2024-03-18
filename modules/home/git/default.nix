@@ -79,5 +79,6 @@
   home.packages = [
     pkgs.gh
     pkgs.lazygit
+    pkgs.git-lfs
   ];
 }
