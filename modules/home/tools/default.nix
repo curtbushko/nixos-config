@@ -24,6 +24,8 @@
   home.packages = [
     pkgs.alejandra
     pkgs.asciinema
+    pkgs.bottom
+    pkgs.difftastic
     pkgs.eza
     pkgs.fd
     pkgs.fzf
@@ -31,6 +33,7 @@
     pkgs.htop
     pkgs.jq
     pkgs.kubectl
+    pkgs.lsd
     pkgs.python3
     pkgs.ranger
     pkgs.ripgrep

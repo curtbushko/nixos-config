@@ -23,5 +23,6 @@
   home.packages = [
     pkgs.gopls
     pkgs.golangci-lint
+    pkgs.gotestsum
   ];
 }

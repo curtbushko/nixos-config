@@ -81,7 +81,7 @@
       cdnvim = "cd $DOTFILES/nvim/.config/nvim";
       cdnixosconfig = "cd $NIXOS_CONFIG";
       cdscripts = "cd $SCRIPTS";
-      lsscripts = "ls $SCRIPTS";
+      lsscripts = "lsd $SCRIPTS";
       cdhashi = "cd $GITHUB/hashicorp";
       cdk8s = "cd $GITHUB/hashicorp/consul-k8s";
       cdconsul = "cd $GITHUB/hashicorp/consul";
@@ -117,10 +117,10 @@
       kns = "kubectl get namespaces";
       kubedebug = "kubectl run -i --tty curt-kubedebug --image=alpine -- bash";
       lg = "lazygit";
-      ls = "exa -la --ignore-glob=.DS_Store";
+      ls = "eza -la --ignore-glob=.DS_Store --icons=always";
       reload = "source ~/.zshrc";
       tf = "terraform";
-      tree = "exa -aT --git-ignore --ignore-glob=.git";
+      tree = "eza -aT --git-ignore --ignore-glob=.git --icons=always";
       vi = "nvim";
       vim = "nvim";
       weather = "curl wttr.in/kitchener";
