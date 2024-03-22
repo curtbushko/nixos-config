@@ -57,5 +57,9 @@
       systems.modules.darwin = with inputs; [
         home-manager.darwinModules.home-manager
       ];
+
+      systems.modules.nixos = with inputs; [
+        home-manager.nixosModules.home-manager
+      ];
     };
 }
