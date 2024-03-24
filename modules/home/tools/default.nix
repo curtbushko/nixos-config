@@ -33,6 +33,7 @@
     pkgs.htop
     pkgs.jq
     pkgs.kubectl
+    pkgs.kind
     pkgs.lsd
     pkgs.python3
     pkgs.ranger
