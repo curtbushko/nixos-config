@@ -133,8 +133,11 @@
     enable = true;
     #videoDrivers = ["nvidia"];
     layout = "us";
+    libinput.enable = true;
     xkbVariant = "";
     displayManager.gdm.enable = true;
+    displayManager.gdm.wayland = true;
+
     displayManager.gdm.autoSuspend = false;
   };
   # Used to disable gdm suspend.
