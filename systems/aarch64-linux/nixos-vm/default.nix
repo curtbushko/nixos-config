@@ -80,8 +80,8 @@
   };
 
   # Nixpkgs Setup
-  nixpkgs.config.allowUnfree = true;
-  nixpkgs.config.allowUnsupportedSystem = true;
+  #nixpkgs.config.allowUnfree = true;
+  #nixpkgs.config.allowUnsupportedSystem = true;
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -199,10 +199,10 @@
   #};
 
   # Docker
-  virtualisation = {
-    libvirtd.enable = true;
-    docker.enable = true;
-  };
+  #virtualisation = {
+  #  libvirtd.enable = true;
+  #  docker.enable = true;
+  #};
 
   system.stateVersion = "23.11"; # Did you read the comment?
 }
