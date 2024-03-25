@@ -10,13 +10,13 @@
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
+    ../../../modules/nixos
   ];
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  # networking.hostName = "nixos"; # Define your hostname.
   # Pick only one of the below networking options.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
   # networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
@@ -25,7 +25,6 @@
   # Pick only one of the below networking options.
   #networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
   networking.networkmanager.enable = true; # Easiest to use and most distros use this by default.
-  networking.interfaces.eno1.wakeOnLan.enable = true;
 
   # Set your time zone.
   time.timeZone = "Americas/Toronto";
@@ -54,34 +53,9 @@
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
-  # Font setup
-  fonts = {
-    fontDir.enable = true;
-    packages = with pkgs; [
-      fira-code
-      font-awesome_5
-      jetbrains-mono
-      nerdfonts
-      noto-fonts
-      noto-fonts-extra
-      noto-fonts-emoji
-      powerline-fonts
-    ];
-    fontconfig = {
-      enable = true;
-      antialias = true;
-      defaultFonts = {
-        monospace = ["JetbrainsMono Nerd Font Mono" "Noto Mono"];
-        sansSerif = ["JetbrainsMono Nerd Font Mono" "Noto Mono"];
-        serif = ["JetbrainsMono Nerd Font Mono" "Noto Mono"];
-        emoji = ["Noto Color Emoji"];
-      };
-    };
-  };
-
   # Nixpkgs Setup
-  #nixpkgs.config.allowUnfree = true;
-  #nixpkgs.config.allowUnsupportedSystem = true;
+  nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.allowUnsupportedSystem = true;
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -128,36 +102,6 @@
   # Or disable the firewall altogether.
   networking.firewall.enable = false;
 
-  # Xserver settings
-  services.xserver = {
-    enable = true;
-    #videoDrivers = ["nvidia"];
-    layout = "us";
-    libinput.enable = true;
-    xkbVariant = "";
-    displayManager.gdm.enable = true;
-    displayManager.gdm.wayland = true;
-
-    displayManager.gdm.autoSuspend = false;
-  };
-  # Used to disable gdm suspend.
-  security.polkit.extraConfig = ''
-    polkit.addRule(function(action, subject) {
-        if (action.id == "org.freedesktop.login1.suspend" ||
-            action.id == "org.freedesktop.login1.suspend-multiple-sessions" ||
-            action.id == "org.freedesktop.login1.hibernate" ||
-            action.id == "org.freedesktop.login1.hibernate-multiple-sessions")
-        {
-            return polkit.Result.NO;
-        }
-    });
-  '';
-
-  programs.hyprland = {
-    enable = true;
-    xwayland.enable = true;
-  };
-
   # If your cursor becomes invisible
   environment.variables.WLR_NO_HARDWARE_CURSORS = "1";
   # Hint electron apps to use wayland
@@ -171,7 +115,7 @@
   #hardware.opengl = {
   #  enable = true;
   #  driSupport = true;
-    #driSupport32Bit = true;
+  #driSupport32Bit = true;
   #};
 
   #hardware.nvidia = {
