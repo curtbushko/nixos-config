@@ -6,6 +6,6 @@
 }: {
   imports = [
     ./hyprland.nix
-    ./wayland.nix
+    ./waybar.nix
   ];
 }

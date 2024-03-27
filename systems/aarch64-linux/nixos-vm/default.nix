@@ -54,8 +54,8 @@
   # services.xserver.libinput.enable = true;
 
   # Nixpkgs Setup
-  nixpkgs.config.allowUnfree = true;
-  nixpkgs.config.allowUnsupportedSystem = true;
+  #nixpkgs.config.allowUnfree = true;
+  #nixpkgs.config.allowUnsupportedSystem = true;
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget

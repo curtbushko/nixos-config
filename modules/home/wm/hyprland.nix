@@ -5,7 +5,7 @@
 }: {
   wayland.windowManager.hyprland = {
     enable = true;
-    nvidia = true;
+    #nvidia = true;
     settings = {
       "$mainMod" = "SUPER";
       "$terminal" = "kitty";
