@@ -10,7 +10,7 @@
   # Xserver settings
   services.xserver = {
     enable = true;
-    videoDrivers = ["nvidia"];
+    #videoDrivers = ["nvidia"];
     layout = "us";
     xkb = {
       layout = "us";
