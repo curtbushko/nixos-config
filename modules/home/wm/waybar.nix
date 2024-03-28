@@ -10,7 +10,7 @@
       primary = {
         mode = "dock";
         layer = "top";
-        height = 40;
+        height = 20;
         margin = "6";
         position = "top";
         modules-left = [
