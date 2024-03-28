@@ -7,6 +7,7 @@
   imports = [
     ./hyprland.nix
     ./waybar.nix
+    ./wayland.nix
     ./rofi.nix
   ];
 

@@ -41,8 +41,8 @@
   security.rtkit.enable = true;
 
   # Nixpkgs Setup
-  nixpkgs.config.allowUnfree = true;
-  nixpkgs.config.allowUnsupportedSystem = true;
+  #nixpkgs.config.allowUnfree = true;
+  #nixpkgs.config.allowUnsupportedSystem = true;
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -96,14 +96,19 @@
   environment.variables.NIXOS_OZONE_WL = "1";
 
   # For accessing resources outside of the sandbox
-  xdg.portal.enable = true;
-  xdg.portal.extraPortals = [pkgs.xdg-desktop-portal-gtk];
+  xdg.portal = {
+    enable = true;
+    wlr.enable = true;
+    extraPortals = [pkgs.xdg-desktop-portal-gtk];
+    config.common.default = "*";
+  };
 
   # Enable OpenGL
   hardware.opengl = {
     enable = true;
     driSupport = true;
     driSupport32Bit = true;
+    extraPackages = with pkgs; [nvidia-vaapi-driver];
   };
 
   hardware.nvidia = {
