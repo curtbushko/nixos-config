@@ -70,18 +70,6 @@
     vim
     wget
     xclip
-    waybar
-    (
-      waybar.overrideAttrs (oldAttrs: {
-        mesonFlags = oldAttrs.mesonFlags ++ ["-Dexperimental=true"];
-      })
-    )
-    dunst # notifications
-    libnotify # notifications too.
-    swww # wallpapers
-
-    rofi # app launcher
-    rofi-wayland
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -111,7 +99,7 @@
   xdg.portal = {
     enable = true;
     wlr.enable = true;
-    extraPortals = [pkgs.xdg-desktop-portal-wlr];
+    extraPortals = [pkgs.xdg-desktop-portal-gtk];
     config.common.default = "*";
   };
 

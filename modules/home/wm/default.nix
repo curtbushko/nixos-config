@@ -11,16 +11,20 @@
   ];
 
   home.packages = with pkgs; [
+    brightnessctl
+    cliphist
     grim
     slurp
     wl-clipboard
 
     eww-wayland
     swww
+    swappy # snapshot tool
+    swaybg
 
     networkmanagerapplet
-
-    rofi-wayland
-    wofi
+    dunst
+    libnotify
+    xdg-utils
   ];
 }

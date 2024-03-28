@@ -25,7 +25,7 @@
         preserve_split = true;
       };
       bind = [
-        "ALT, M, exit,"
+        "$mainMod, M, exit,"
         "$mainMod, Return, exec, $terminal"
         "CTRL, Return, exec, $terminal"
         "$mainMod SHIFT, Q, killactive,"
@@ -117,6 +117,9 @@
       };
       # opengl.nvidia_anti_flicker = 0;
     };
+    extraConfig = ''
+        exec-once = waybar
+    '';
     # systemd.enable = false;
   };
 }
