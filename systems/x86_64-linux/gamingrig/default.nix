@@ -63,6 +63,7 @@
         mesonFlags = oldAttrs.mesonFlags ++ ["-Dexperimental=true"];
       })
     )
+    wayland
     dunst # notifications
     libnotify # notifications too.
     swww # wallpapers
@@ -104,6 +105,7 @@
   };
 
   # Enable OpenGL
+  services.xserver.videoDrivers = ["nvidia"];
   hardware.opengl = {
     enable = true;
     driSupport = true;
