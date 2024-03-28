@@ -25,7 +25,9 @@
         preserve_split = true;
       };
       bind = [
+        "ALT, M, exit,"
         "$mainMod, Return, exec, $terminal"
+        "CTRL, Return, exec, $terminal"
         "$mainMod SHIFT, Q, killactive,"
         "$mainMod, M, exit,"
         "$mainMod, Space, togglefloating,"
