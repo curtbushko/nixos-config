@@ -7,7 +7,12 @@
   programs.waybar = {
     enable = true;
     settings = {
-      mainBar = {
+      primary = {
+        mode = "dock";
+        layer = "top";
+        height = 40;
+        margin = "6";
+        position = "top";
         modules-left = [
           "hyprland/workspaces"
           "hyprland/window"
