@@ -108,9 +108,12 @@
   environment.variables.NIXOS_OZONE_WL = "1";
 
   # For accessing resources outside of the sandbox
-  xdg.portal.enable = true;
-  xdg.portal.extraPortals = [pkgs.xdg-desktop-portal-gtk];
-  xdg.portal.config.common.default = "*";
+  xdg.portal = {
+    enable = true;
+    wlr.enable = true;
+    extraPortals = [pkgs.xdg-desktop-portal-wlr];
+    config.common.default = "*";
+  };
 
   # Enable OpenGL
   hardware.opengl = {
