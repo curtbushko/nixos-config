@@ -7,7 +7,7 @@
     enable = true;
     #nvidia = true;
     settings = {
-      "$mainMod" = "SUPER";
+      "$mainMod" = "ALT";
       "$terminal" = "kitty";
       #"$menu" = "nwg-drawer";
 

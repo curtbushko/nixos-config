@@ -113,11 +113,11 @@
   xdg.portal.config.common.default = "*";
 
   # Enable OpenGL
-  #hardware.opengl = {
-  #  enable = true;
-  #  driSupport = true;
+  hardware.opengl = {
+    enable = true;
+    driSupport = true;
   #driSupport32Bit = true;
-  #};
+  };
 
   #hardware.nvidia = {
   # Modesetting is required.
