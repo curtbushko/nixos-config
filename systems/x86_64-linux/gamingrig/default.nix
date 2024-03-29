@@ -67,6 +67,7 @@
     dunst # notifications
     libnotify # notifications too.
     swww # wallpapers
+    tailscale
 
     rofi # app launcher
     rofi-wayland
@@ -84,6 +85,12 @@
   services.openssh.enable = true;
   services.openssh.settings.PasswordAuthentication = true;
   services.openssh.settings.PermitRootLogin = "no";
+
+  # Enable tailscale
+  services.tailscale.enable = true;
+  # If I decide to turn on the firewall
+  #networking.firewall.allowedUDPPorts = [ ${services.tailscale.port} ];
+
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];

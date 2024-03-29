@@ -129,6 +129,10 @@
       work = "$DDCCTL set input 27";
       home = "$DDCCTL set input 17";
       pc = "$DDCCTL set input 15";
+      # ssh machines
+      sshgamingrig="ssh curtbushko@gamingrig.basilisk-jazz.ts.net";
+      sshm1="ssh curtbushko@m1-air.basilisk-jazz.ts.net";
+      # zellij things
       zattach = "zellij attach coding";
       zux = "zellij -s coding";
       zdel = "zellij delete-session coding";
