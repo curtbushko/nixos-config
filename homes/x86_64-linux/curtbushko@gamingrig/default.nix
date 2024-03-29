@@ -61,6 +61,6 @@
     ../../../modules/home/shells
     ../../../modules/home/terminals
     ../../../modules/home/tools
-    ../../../modules/nixos/wm
+    ../../../modules/home/wm
   ];
 }
