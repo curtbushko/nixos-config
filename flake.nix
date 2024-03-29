@@ -44,6 +44,7 @@
     lib.mkFlake {
       channels-config = {
         allowUnfree = true;
+        allowUnsupportedSystem = true;
         permittedInsecurePackages = [
           # "python-2.7.18.6"
           "electron-25.9.0"
