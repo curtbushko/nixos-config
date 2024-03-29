@@ -3,28 +3,33 @@
   lib,
   pkgs,
   ...
-}: {
+}: let
+  isLinux = pkgs.stdenv.isLinux;
+in {
   imports = [
     ./hyprland.nix
     ./waybar.nix
     ./rofi.nix
   ];
 
-  home.packages = with pkgs; [
-    brightnessctl
-    cliphist
-    grim
-    slurp
-    wl-clipboard
+  home.packages = with pkgs;
+    [
+    ]
+    ++ (lib.optionals isLinux [
+      brightnessctl
+      cliphist
+      grim
+      slurp
+      wl-clipboard
 
-    eww-wayland
-    swww
-    swappy # snapshot tool
-    swaybg
+      eww-wayland
+      swww
+      swappy # snapshot tool
+      swaybg
 
-    networkmanagerapplet
-    dunst
-    libnotify
-    xdg-utils
-  ];
+      networkmanagerapplet
+      dunst
+      libnotify
+      xdg-utils
+    ]);
 }

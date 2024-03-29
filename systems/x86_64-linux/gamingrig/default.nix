@@ -91,7 +91,6 @@
   # If I decide to turn on the firewall
   #networking.firewall.allowedUDPPorts = [ ${services.tailscale.port} ];
 
-
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
   # networking.firewall.allowedUDPPorts = [ ... ];

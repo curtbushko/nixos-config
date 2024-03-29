@@ -2,9 +2,11 @@
   pkgs,
   lib,
   ...
-}: {
+}: let
+  isLinux = pkgs.stdenv.isLinux;
+in {
   wayland.windowManager.hyprland = {
-    enable = true;
+    enable = isLinux;
     #nvidia = true;
     settings = {
       "$mainMod" = "ALT";
@@ -118,7 +120,7 @@
       # opengl.nvidia_anti_flicker = 0;
     };
     extraConfig = ''
-        exec-once = waybar
+      exec-once = waybar
     '';
     # systemd.enable = false;
   };

@@ -3,9 +3,11 @@
   lib,
   pkgs,
   ...
-}: {
+}: let
+  isLinux = pkgs.stdenv.isLinux;
+in {
   programs.waybar = {
-    enable = true;
+    enable = isLinux;
     settings = {
       primary = {
         mode = "dock";
