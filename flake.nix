@@ -20,8 +20,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Theming
-    themes.url = "github:RGBCube/ThemeNix";
+    nix-colors.url = "github:misterio77/nix-colors";
 
     # Other packages
     zig.url = "github:mitchellh/zig-overlay";
@@ -57,6 +56,7 @@
 
       systems.modules.darwin = with inputs; [
         home-manager.darwinModules.home-manager
+        nix-colors.homeManagerModules.default
       ];
 
       systems.modules.nixos = with inputs; [

@@ -21,6 +21,8 @@
   # Let home manager manage itself
   programs.home-manager.enable = true;
 
+  colorScheme = inputs.nix-colors.colorSchemes.gruvbox-dark-medium;
+
   xdg.enable = true;
 
   #---------------------------------------------------------------------
@@ -52,7 +54,7 @@
   };
 
   imports = [
-    #nix-colors.homeManagerModules.default
+    inputs.nix-colors.homeManagerModules.default
     ../../../modules/home/git
     ../../../modules/home/go
     ../../../modules/home/neovim

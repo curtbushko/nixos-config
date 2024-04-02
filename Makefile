@@ -55,6 +55,6 @@ channels:
 clean:
 	sudo nix-collect-garbage --delete-older-than 5d
 
-format:
+fmt:
 	@echo "$(DATELOG) Formatting nix files"
 	alejandra --quiet .
