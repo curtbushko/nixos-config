@@ -70,6 +70,20 @@
     vim
     wget
     xclip
+    waybar
+    (
+      waybar.overrideAttrs (oldAttrs: {
+        mesonFlags = oldAttrs.mesonFlags ++ ["-Dexperimental=true"];
+      })
+    )
+    wayland
+    dunst # notifications
+    libnotify # notifications too.
+    swww # wallpapers
+    tailscale
+
+    rofi # app launcher
+    rofi-wayland
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
