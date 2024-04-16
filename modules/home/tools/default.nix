@@ -15,7 +15,10 @@
   # All other arguments come from the module system.
   config,
   ...
-}: {
+}: let
+  isDarwin = pkgs.stdenv.isDarwin;
+  isLinux = pkgs.stdenv.isLinux;
+in {
   imports = [
     ./bat.nix
     ./direnv.nix
@@ -30,6 +33,7 @@
     pkgs.fd
     pkgs.fzf
     pkgs.gnused
+    pkgs.gum
     pkgs.htop
     pkgs.jq
     pkgs.kubectl
@@ -43,5 +47,12 @@
     pkgs.watchexec
     pkgs.yt-dlp
     pkgs.zoxide
-  ];
+] ++ (lib.optionals isDarwin [
+    pkgs.cachix
+    pkgs.tailscale
+]) ++ (lib.optionals isLinux [
+    pkgs.firefox
+    pkgs.zathura
+]);
+
 }
