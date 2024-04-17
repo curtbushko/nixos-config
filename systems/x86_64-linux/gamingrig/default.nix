@@ -23,6 +23,21 @@
   networking.networkmanager.enable = true; # Easiest to use and most distros use this by default.
   networking.interfaces.eno1.wakeOnLan.enable = true;
 
+  # Work around NetworkManager getting stuck waiting on tailscale0
+  systemd.services.NetworkManager-wait-online = {
+    serviceConfig = {
+      ExecStart = [ "" "${pkgs.networkmanager}/bin/nm-online -q" ];
+    };
+  };
+
+  # Setup auto suspend of gamingrid
+  systemd.sleep.extraConfig = ''
+    AllowSuspend=no
+    AllowHibernation=no
+    AllowHybridSleep=no
+    AllowSuspendThenHibernate=no
+  '';
+
   # Set your time zone.
   time.timeZone = "America/Toronto";
 
