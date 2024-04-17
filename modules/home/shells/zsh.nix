@@ -117,7 +117,7 @@
       kns = "kubectl get namespaces";
       kubedebug = "kubectl run -i --tty curt-kubedebug --image=alpine -- bash";
       lg = "lazygit";
-      ls = "eza -la --ignore-glob=.DS_Store --icons=always";
+      ls = "eza -lao --ignore-glob=.DS_Store --icons=always";
       reload = "source ~/.zshrc";
       tf = "terraform";
       tree = "eza -aT --git-ignore --ignore-glob=.git --icons=always";
