@@ -15,6 +15,7 @@
       "syncthing"
       "slack"
       "vlc"
+      "notunes"
     ];
   };
 

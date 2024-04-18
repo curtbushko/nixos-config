@@ -12,11 +12,11 @@ in {
     settings = [
       {
         layer = "top";
-        height = 2 * cornerRadius;
+        height = 14;
 
-        margin-right = margin;
-        margin-left = margin;
-        margin-top = margin;
+        margin-right = "6px";
+        margin-left = "6px";
+        margin-top = "6px";
 
         modules-left = [
           "hyprland/workspaces"
@@ -131,37 +131,36 @@ in {
     style = ''
       * {
         border: none;
-        border-radius: ${toString cornerRadius}px;
-        font-family: "${font.sans.name}";
+        border-radius: "8px";
       }
 
       .modules-right {
-        margin-right: ${toString padding}px;
+        margin-right: "8px;
       }
 
       #waybar {
-        background: ${base00};
-        color: ${base05};
+        background: rgb(1A1B26);
+        color: rgb(7aa2f7);
       }
 
       #workspaces button:nth-child(1) {
-        color: ${base08};
+        color: rgb(FFEC6E);
       }
 
       #workspaces button:nth-child(2) {
-        color: ${base09};
+        color: rgb(00b0fc);
       }
 
       #workspaces button:nth-child(3) {
-        color: ${base0A};
+        color: rgb(65bcff);
       }
 
       #workspaces button:nth-child(4) {
-        color: ${base0B};
+        color: rgb(019ef3);
       }
 
       #workspaces button:nth-child(5) {
-        color: ${base0C};
+        color: rgb(FFEC6E);
       }
 
       #tray, #pulseaudio, #backlight, #cpu, #memory, #network, #battery, #clock {
@@ -170,7 +169,7 @@ in {
 
       @keyframes blink {
         to {
-          color: ${base05};
+          color: rgb(FFEC6E);
         }
       }
 
@@ -180,7 +179,7 @@ in {
         animation-iteration-count: infinite;
         animation-name: blink;
         animation-timing-function: linear;
-        color: ${base08};
+        color: rgb(65bcff);
       }
     '';
   };
