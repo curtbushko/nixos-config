@@ -9,13 +9,27 @@ in {
     enable = isLinux;
     #nvidia = true;
     settings = {
-      "$MOD" = "ALT";
+      # Variables
+      "$alt" = "ALT";
+      "$super" = "SUPER";
+      # Vim navigation
+      "$left" = "h";
+      "$down" = "j";
+      "$up" = "k";
+      "$right" = "l";
+      # Applications
       "$terminal" = "kitty";
+      "$browser" = "rofi-firefox-wrapper";
 
-      "$rosewater" = "0xfff5e0dc";
-      "$red" = "0xfff38ba8";
-      "$surface1" = "0xff45475a";
-      "$surface0" = "0xff313244";
+      # Tokyonight Night colors
+      "$border-color" = "rgb(A9B1D6)";
+      "$bg-color" = "rgb(1A1B26)";
+      "$inac-bg-color" = "rgb(1A1B26)";
+      "$text-color" = "rgb(F7768E)";
+      "$inac-text-color" = "rgb(A9B1D6)";
+      "$urgent-bg-color" = "rgb(F7768E)";
+      "$indi-color" = "rgb(7AA2F7)";
+      "$urgent-text-color" = "rgb(A9B1D6)";
       env = [
         "QT_QPA_PLATFORM,wayland"
         "QT_QPA_PLATFORMTHEME,qt5ct"
@@ -33,76 +47,95 @@ in {
       xwayland = {force_zero_scaling = true;};
       general = {
         monitor = [
-            "desc:Dell Inc. DELL ULTRASHARP U3219W,3440x1440@60,0x0,1"
+          "desc:Dell Inc. DELL ULTRASHARP U3219W,3440x1440@60,0x0,1"
         ];
         gaps_in = 5;
         gaps_out = 5;
         border_size = 1;
-        "col.active_border" = "$red";
-        #"col.active_border" = "rgb(${c.on_primary})";
-        "col.inactive_border" = "$surface1 $surface0 45deg";
-        #"col.inactive_border" = "rgb(${c.primary});";
+
+        "col.inactive_border" = "$border-color";
+        "col.active_border" = "$border-color";
         "no_border_on_floating" = false;
         layout = "dwindle";
         no_cursor_warps = true;
       };
       bind = [
-        "$MOD, M, exit,"
-        "$MOD, Return, exec, $terminal"
-        "CTRL, Return, exec, $terminal"
-        "$MOD SHIFT, Q, killactive,"
-        "$MOD, M, exit,"
-        "$MOD, Space, togglefloating,"
-        #"$MOD, D, exec, $menu"
-        "$MOD, P, pseudo, # dwindle"
-        "$MOD, R, togglesplit, # dwindle"
-        #"$MOD CTRL, P, exec, ${./scripts/wofi-pass.sh}"
-        #"$MOD SHIFT, G, exec, ${pkgs.sway-contrib.grimshot}/bin/grimshot copy area"
+        "$alt, M, exit,"
 
-        "$MOD, F, fullscreen"
-        "$MOD, E, togglegroup"
+        # Most used applications
+        "$alt, t, exec, $terminal"
+        "$alt, w, exec, $browser"
+        #"$alt, f, exec, $filemanager"
+        "$alt, Return, exec, $terminal"
+        "$alt SHIFT, Q, killactive,"
+        "$alt, Space, exec, rofi -show drun"
+        #"$alt, D, exec, $menu"
+        "$alt, P, pseudo, # dwindle"
+        "$alt, R, togglesplit, # dwindle"
+        #"$alt CTRL, P, exec, ${./scripts/wofi-pass.sh}"
+        #"$alt SHIFT, G, exec, ${pkgs.sway-contrib.grimshot}/bin/grimshot copy area"
 
-        "$MOD, H, movefocus, l"
-        "$MOD, J, movefocus, d"
-        "$MOD, K, movefocus, u"
-        "$MOD, L, movefocus, r"
+        "$alt $super, F, fullscreen"
+        "$alt, E, togglegroup"
 
-        "$MOD SHIFT, H, movewindow, l"
-        "$MOD SHIFT, J, movewindow, d"
-        "$MOD SHIFT, K, movewindow, u"
-        "$MOD SHIFT, L, movewindow, r"
+        # Change focus around
+        "$alt, $left, movefocus, l"
+        "$alt, $down, movefocus, d"
+        "$alt, $up, movefocus, u"
+        "$alt, $right, movefocus, r"
+        # Or use arrow keys
+        "$alt, left, movefocus, l"
+        "$alt, down, movefocus, d"
+        "$alt, up, movefocus, u"
+        "$alt, right, movefocus, r"
 
-        "$MOD, 1, workspace, 1"
-        "$MOD, 2, workspace, 2"
-        "$MOD, 3, workspace, 3"
-        "$MOD, 4, workspace, 4"
-        "$MOD, 5, workspace, 5"
-        "$MOD, 6, workspace, 6"
-        "$MOD, 7, workspace, 7"
-        "$MOD, 8, workspace, 8"
-        "$MOD, 9, workspace, 9"
-        "$MOD, 0, workspace, 10"
+        # Cycle windows
+        "$super, tab, cyclenext"
+        "$super SHIFT, tab, cycleprevious"
 
-        "$MOD SHIFT, 1, movetoworkspace, 1"
-        "$MOD SHIFT, 2, movetoworkspace, 2"
-        "$MOD SHIFT, 3, movetoworkspace, 3"
-        "$MOD SHIFT, 4, movetoworkspace, 4"
-        "$MOD SHIFT, 5, movetoworkspace, 5"
-        "$MOD SHIFT, 6, movetoworkspace, 6"
-        "$MOD SHIFT, 7, movetoworkspace, 7"
-        "$MOD SHIFT, 8, movetoworkspace, 8"
-        "$MOD SHIFT, 9, movetoworkspace, 9"
-        "$MOD SHIFT, 0, movetoworkspace, 10"
+        # Move the focused window
+        "$alt SHIFT, $left, movewindow, l"
+        "$alt SHIFT, $down, movewindow, d"
+        "$alt SHIFT, $up, movewindow, u"
+        "$alt SHIFT, $right, movewindow, r"
+        # Or use arrow keys
+        "$alt SHIFT, left, movewindow, l"
+        "$alt SHIFT, down, movewindow, d"
+        "$alt SHIFT, up, movewindow, u"
+        "$alt SHIFT, right, movewindow, r"
 
-        "$MOD, S, togglespecialworkspace, magic"
-        "$MOD SHIFT, S, movetoworkspace, special:magic"
+        "$alt, 1, workspace, 1"
+        "$alt, 2, workspace, 2"
+        "$alt, 3, workspace, 3"
+        "$alt, 4, workspace, 4"
+        "$alt, 5, workspace, 5"
+        "$alt, 6, workspace, 6"
+        "$alt, 7, workspace, 7"
+        "$alt, 8, workspace, 8"
+        "$alt, 9, workspace, 9"
+        "$alt, 0, workspace, 10"
 
-        "$MOD, mouse_down, workspace, e+1"
-        "$MOD, mouse_up, workspace, e-1"
+        # Move window to workspace
+        "$alt SHIFT, 1, movetoworkspace, 1"
+        "$alt SHIFT, 2, movetoworkspace, 2"
+        "$alt SHIFT, 3, movetoworkspace, 3"
+        "$alt SHIFT, 4, movetoworkspace, 4"
+        "$alt SHIFT, 5, movetoworkspace, 5"
+        "$alt SHIFT, 6, movetoworkspace, 6"
+        "$alt SHIFT, 7, movetoworkspace, 7"
+        "$alt SHIFT, 8, movetoworkspace, 8"
+        "$alt SHIFT, 9, movetoworkspace, 9"
+        "$alt SHIFT, 0, movetoworkspace, 10"
+
+        "$alt, S, togglespecialworkspace, magic"
+        "$alt SHIFT, S, movetoworkspace, special:magic"
+
+        "$alt, mouse_down, workspace, e+1"
+        "$alt, mouse_up, workspace, e-1"
       ];
       bindm = [
-        "$MOD, mouse:272, movewindow"
-        "$MOD, mouse:273, resizewindow"
+        "$alt, mouse:272, movewindow"
+        "$alt, mouse:273, resizewindow"
       ];
       misc = {
         disable_splash_rendering = true;
@@ -163,7 +196,7 @@ in {
       input = {
         repeat_delay = 250;
       };
-            #opengl.nvidia_anti_flicker = 0;
+      #opengl.nvidia_anti_flicker = 0;
     };
     # systemd.enable = false;
   };
