@@ -12,11 +12,11 @@ in {
     settings = [
       {
         layer = "top";
-        height = 14;
+        height = 20;
 
-        margin-right = "6px";
-        margin-left = "6px";
-        margin-top = "6px";
+        margin-right = 6;
+        margin-left = 6;
+        margin-top = 6;
 
         modules-left = [
           "hyprland/workspaces"
@@ -143,45 +143,45 @@ in {
     style = ''
       * {
         border: none;
-        border-radius: "8px";
+        border-radius: 8;
       }
 
       .modules-right {
-        margin-right: "8px;
+        margin-right: 8;
       }
 
       #waybar {
-        background: rgb(1A1B26);
-        color: rgb(7aa2f7);
+        background: #1A1B26;
+        color: #7aa2f7;
       }
 
       #workspaces button:nth-child(1) {
-        color: rgb(FFEC6E);
+        color: #FFEC6E;
       }
 
       #workspaces button:nth-child(2) {
-        color: rgb(00b0fc);
+        color: #00b0fc;
       }
 
       #workspaces button:nth-child(3) {
-        color: rgb(65bcff);
+        color: #65bcff;
       }
 
       #workspaces button:nth-child(4) {
-        color: rgb(019ef3);
+        color: #019ef3;
       }
 
       #workspaces button:nth-child(5) {
-        color: rgb(FFEC6E);
+        color: #FFEC6E;
       }
 
       #tray, #pulseaudio, #backlight, #cpu, #memory, #network, #battery, #clock {
-        margin-left: 20px;
+        margin-left: 20;
       }
 
       @keyframes blink {
         to {
-          color: rgb(FFEC6E);
+          color: #FFEC6E;
         }
       }
 
@@ -191,7 +191,7 @@ in {
         animation-iteration-count: infinite;
         animation-name: blink;
         animation-timing-function: linear;
-        color: rgb(65bcff);
+        color: #65bcff;
       }
     '';
   };

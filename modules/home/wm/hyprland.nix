@@ -91,7 +91,7 @@ in {
 
         # Cycle windows
         "$super, tab, cyclenext"
-        "$super SHIFT, tab, cycleprevious"
+        "$super SHIFT, tab, cyclenext, prev"
 
         # Move the focused window
         "$alt SHIFT, $left, movewindow, l"
