@@ -12,7 +12,7 @@ in {
     settings = [
       {
         layer = "top";
-        height = 20;
+        height = 25;
 
         margin-right = 6;
         margin-left = 6;
@@ -25,21 +25,21 @@ in {
         "hyprland/workspaces" = {
           format = "{icon}";
           format-icons = {
-            "1" = "󱚌";
+            "1" = "";
             "2" = "󰖟";
             "3" = "";
-            "4" = "󰎄";
+            "4" = "󰍹";
             "5" = "󰋩";
             "6" = "";
             "7" = "󰄖";
             "8" = "󰑴";
-            "9" = "󱎓";
           };
           format-icons.default = "";
           format-icons.active = "";
           format-icons.empty = "";
+          active-only = true;
 
-          persistent-workspaces."*" = 9;
+          persistent-workspaces."*" = 8;
         };
 
         modules-center = [
@@ -48,10 +48,8 @@ in {
 
         "hyprland/window" = {
           seperate-outputs = true;
-
           rewrite."(.*) - Discord" = "󰙯 $1";
           rewrite."(.*) — Mozilla Firefox" = "󰖟 $1";
-          rewrite."(.*) — nu" = " $1";
         };
 
         modules-right = [
@@ -155,24 +153,20 @@ in {
         color: #7aa2f7;
       }
 
-      #workspaces button:nth-child(1) {
-        color: #FFEC6E;
+      #workspaces button.focused {
+        color: #ffec6e;
       }
 
-      #workspaces button:nth-child(2) {
-        color: #00b0fc;
+      #workspaces button.active {
+        color: #9ece6a;
       }
 
-      #workspaces button:nth-child(3) {
-        color: #65bcff;
+      #workspaces button.hidden {
+        color: #1A1B26;
       }
 
-      #workspaces button:nth-child(4) {
-        color: #019ef3;
-      }
-
-      #workspaces button:nth-child(5) {
-        color: #FFEC6E;
+      #workspaces button {
+        color: #7aa2f7;
       }
 
       #tray, #pulseaudio, #backlight, #cpu, #memory, #network, #battery, #clock {
