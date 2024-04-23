@@ -61,5 +61,6 @@
     ../../../modules/home/shells
     ../../../modules/home/terminals
     ../../../modules/home/tools
+    ../../../modules/home/scripts
   ];
 }
