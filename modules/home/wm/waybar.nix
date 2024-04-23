@@ -24,10 +24,22 @@ in {
 
         "hyprland/workspaces" = {
           format = "{icon}";
+          format-icons = {
+            "1" = "󱚌";
+            "2" = "󰖟";
+            "3" = "";
+            "4" = "󰎄";
+            "5" = "󰋩";
+            "6" = "";
+            "7" = "󰄖";
+            "8" = "󰑴";
+            "9" = "󱎓";
+          };
           format-icons.default = "";
           format-icons.active = "";
+          format-icons.empty = "";
 
-          persistent-workspaces."*" = 5;
+          persistent-workspaces."*" = 9;
         };
 
         modules-center = [

@@ -46,6 +46,7 @@ in {
       pkgs.tree
       pkgs.watch
       pkgs.watchexec
+      pkgs.yazi
       pkgs.yt-dlp
       pkgs.zoxide
     ]

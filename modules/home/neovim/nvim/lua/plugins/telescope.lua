@@ -19,6 +19,11 @@ return {
         desc = " Find buffers",
       },
       {
+        "<leader>,",
+        "<cmd>Telescope buffers sort_mru=true sort_lastused=true<cr>",
+        desc = " Switch Buffer",
+      },
+      {
         "<leader>fc",
         function()
           require("telescope.builtin").grep_string()
@@ -26,14 +31,9 @@ return {
         desc = "󰯉 Find text under cursor",
       },
       {
-        "<leader>fe",
-        ":Telescope file_browser<CR>",
-        desc = " Explorer (root dir)",
-      },
-      {
-        "<leader>fE",
+        "<leader>fT",
         ":Telescope file_browser hidden=true<CR>",
-        desc = " Explorer (hidden)",
+        desc = " Telescope Explorer (hidden)",
       },
       {
         "<leader>ff",
@@ -42,6 +42,14 @@ return {
         end,
         desc = " Find files",
       },
+      {
+        "<leader><space>",
+        function()
+          require("telescope.builtin").find_files()
+        end,
+        desc = " Find files",
+      },
+
       {
         "<leader>fF",
         function()
@@ -90,6 +98,14 @@ return {
         desc = "󱎸 Grep",
       },
       {
+        "<leader>/",
+        function()
+          require("telescope.builtin").live_grep()
+        end,
+        desc = "󱎸 Grep",
+      },
+
+      {
         "<leader>fs",
         function()
           require("telescope.builtin").lsp_document_symbols()
@@ -110,7 +126,7 @@ return {
             end,
           })
         end,
-        desc = "󱎸  Grep all files (hidden)",
+        desc = "󱎸 Grep all files (hidden)",
       },
       -- git keymaps
       {
@@ -127,6 +143,19 @@ return {
         "<leader>gs",
         ":Telescope git_status<CR>",
         desc = "󱖫 Status",
+      },
+      {
+        "<leader>fR",
+        function()
+          local cwd = vim.fn.getcwd()
+          require("telescope.builtin").oldfiles({ cwd })
+        end,
+        desc = " Recent (cwd)",
+      },
+      {
+        "<leader>:",
+        "<cmd>Telescope command_history<cr>",
+        desc = " Command History",
       },
     },
     -- change some options

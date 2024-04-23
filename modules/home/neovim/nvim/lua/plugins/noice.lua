@@ -24,7 +24,7 @@ return {
       function()
         require("noice").cmd("history")
       end,
-      desc = "Noice History",
+      desc = " Noice History",
     },
     {
       "<leader>una",
