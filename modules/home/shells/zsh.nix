@@ -41,7 +41,6 @@
       GITHUB = "$HOME/workspace/github.com";
       KB = "$HOME/Sync/KB";
       NIXOS_CONFIG = "$HOME/workspace/github.com/curtbushko/nixos-config";
-      SCRIPTS = "$HOME/scripts";
       SYNCTHING = "$HOME/Sync";
       TERM = "xterm-256color";
       WORKSPACE = "$HOME/workspace";
@@ -80,8 +79,6 @@
       cddotfiles = "cd $DOTFILES";
       cdnvim = "cd $DOTFILES/nvim/.config/nvim";
       cdnixosconfig = "cd $NIXOS_CONFIG";
-      cdscripts = "cd $SCRIPTS";
-      lsscripts = "lsd $SCRIPTS";
       cdhashi = "cd $GITHUB/hashicorp";
       cdk8s = "cd $GITHUB/hashicorp/consul-k8s";
       cdconsul = "cd $GITHUB/hashicorp/consul";

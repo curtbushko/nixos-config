@@ -1,0 +1,2 @@
+#!/bin/bash
+gh pr view - -web

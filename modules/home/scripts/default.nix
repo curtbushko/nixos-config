@@ -15,8 +15,36 @@
   # All other arguments come from the module system.
   config,
   ...
-}: {
-pkgs.writeShellScriptBin "my-awesome-script"''
+}: let
+  isLinux = pkgs.stdenv.isLinux;
+
+  my-awesome-script = pkgs.writeShellScriptBin "my-awesome-script" ''
     echo "hello world" | ${pkgs.cowsay}/bin/cowsay | ${pkgs.lolcat}/bin/lolcat
-''
+  '';
+
+  auto-sleep = pkgs.writeShellScriptBin "auto-sleep" ''
+    logged_in_count=$(who | wc -l)
+    # We expect 2 lines of output from `lsof -i:548` at idle: one for output headers, another for the
+    # server listening for connections. More than 2 lines indicates inbound connection(s).
+    afp_connection_count=$(lsof -i:548 | wc -l)
+    if [[ $logged_in_count < 1 && $afp_connection_count < 3 ]]; then
+        systemctl suspend
+    else
+        echo "Not suspending, logged in users: $logged_in_count, connection count: $afp_connection_count"
+    fi
+  '';
+in {
+  home.packages =
+  [
+    my-awesome-script
+  ]
+  ++ (lib.optionals isLinux [
+    auto-sleep
+  ]);
+
+  imports = [
+    ./aocgen.nix
+  ];
+
+
 }

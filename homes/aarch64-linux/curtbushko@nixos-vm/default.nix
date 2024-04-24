@@ -49,7 +49,6 @@
     LC_ALL = "en_US.UTF-8";
     EDITOR = "nvim";
     PAGER = "less -FirSwX";
-    PATH = "$HOME/scripts:$PATH";
     TERM = "xterm-256color";
   };
 
