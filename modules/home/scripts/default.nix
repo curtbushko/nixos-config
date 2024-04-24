@@ -55,12 +55,31 @@
     git-worktree-checkout-remote = pkgs.writeScriptBin "git-worktree-checkout-remote" (builtins.readFile ./git-worktree-checkout-remote);
     git-worktree-switch = pkgs.writeScriptBin "git-worktree-switch" (builtins.readFile ./git-worktree-switch);
     gke-delete-node = pkgs.writeScriptBin "gke-delete-node" (builtins.readFile ./gke-delete-node);
+    gobuildwatcher = pkgs.writeScriptBin "gobuildwatcher" (builtins.readFile ./gobuildwatcher);
+    gotestwatcher = pkgs.writeScriptBin "gotestwatcher" (builtins.readFile ./gotestwatcher);
+    helm-nuke = pkgs.writeScriptBin "helm-nuke" (builtins.readFile ./helm-nuke);
+    jira-ls = pkgs.writeScriptBin "jira-ls" (builtins.readFile ./jira-ls);
+    kubewatcher = pkgs.writeScriptBin "kubewatcher" (builtins.readFile ./kubewatcher);
+    makelintwatcher = pkgs.writeScriptBin "makelintwatcher" (builtins.readFile ./makelintwatcher);
+    makeunitwatcher = pkgs.writeScriptBin "makeunitwatcher" (builtins.readFile ./makeunitwatcher);
 
+
+    nodewatcher = pkgs.writeScriptBin "nodewatcher" (builtins.readFile ./nodewatcher);
+    open-file = pkgs.writeScriptBin "open-file" (builtins.readFile ./open-file);
+    pod-failed-cleanup = pkgs.writeScriptBin "pod-failed-cleanup" (builtins.readFile ./pod-failed-cleanup);
+    pod-security-context = pkgs.writeScriptBin "pod-security-context" (builtins.readFile ./pod-security-context);
+    podwatcher = pkgs.writeScriptBin "podwatcher" (builtins.readFile ./podwatcher);
+    podwatcherwide = pkgs.writeScriptBin "podwatcherwide" (builtins.readFile ./podwatcherwide);
+    postscript-man = pkgs.writeScriptBin "postscript-man" (builtins.readFile ./postscript-man);
+    pr-create = pkgs.writeScriptBin "pr-create" (builtins.readFile ./pr-create);
+    pr-review = pkgs.writeScriptBin "pr-review" (builtins.readFile ./pr-review);
+    pr-view = pkgs.writeScriptBin "pr-view" (builtins.readFile ./pr-view);
+    zigbuildwatcher = pkgs.writeScriptBin "zigbuildwatcher" (builtins.readFile ./zigbuildwatcher);
 in {
   home.packages =
   [
     aocgen
-    containterwatcher
+    containerwatcher
     context
     docker-clean
     docker-image-dates
@@ -80,6 +99,24 @@ in {
     git-worktree-checkout-remote
     git-worktree-switch
     gke-delete-node
+    gobuildwatcher
+    gotestwatcher
+    helm-nuke
+    jira-ls
+    kubewatcher
+    makelintwatcher
+    makeunitwatcher
+    nodewatcher
+    open-file
+    pod-failed-cleanup
+    pod-security-context
+    podwatcher
+    podwatcherwide
+    postscript-man
+    pr-create
+    pr-review
+    pr-view
+    zigbuildwatcher
   ]
   ++ (lib.optionals isLinux [
     auto-sleep

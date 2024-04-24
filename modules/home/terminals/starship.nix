@@ -21,6 +21,7 @@
     enableZshIntegration = true;
     settings = {
       add_newline = true;
+      command_timeout = 1000;
       format = "[░▒▓](#a3aed2)[  ](bg:#a3aed2 fg:#090c0c)$hostname[](bg:#769ff0 fg:#a3aed2)$directory[](fg:#769ff0 bg:#394260)$git_branch$git_status[](fg:#394260 bg:#212736)$golang[](fg:#212736 bg:#1d2230)$character";
       hostname = {
         format = "[ @$hostname ]($style)";
