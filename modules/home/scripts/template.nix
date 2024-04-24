@@ -1,3 +1,12 @@
+# Script Template
+#
+# To use:
+# - Copy this template file to the new script name
+# - Rename SCIPTNAME to the name of the script in the entire file
+# - Insert script in between single quotes ''     ''
+# - Add filename to imports section of ./scripts/default
+# - If LinuxOnly script, make sure SCRIPTNAME is only in the isLinux section of home.packages
+
 {
   # Snowfall Lib provides a customized `lib` instance with access to your flake's library
   # as well as the libraries available from your flake's inputs.
@@ -16,111 +25,17 @@
   config,
   ...
 }: let
-
   isLinux = pkgs.stdenv.isLinux;
-  aocgen = pkgs.writeShellScriptBin "aocgen" ''
+  SCRIPTNAME = pkgs.writeShellScriptBin "SCRIPTNAME" ''
 #!/bin/bash
 
-# Check if a project name was provided
-if [ -z "$1" ]; then
-	echo "Error: missing directory name"
-	exit 1
-fi
+echo "Hello World"
 
-# Check if a module name was provided
-if [ -z "$2" ]; then
-	echo "Error: missing module name"
-	exit 1
-fi
-
-# Create a new directory for the project
-mkdir "$1"
-
-# Create main.go and add a main function that prints "hello world"
-cat >"$1/main.go" <<EOF
-package main
-
-import (
-	"bufio"
-	"fmt"
-	"os"
-)
-
-func main() {
-  fmt.Println("hello world")
-}
-
-func run(filename string) int {
-	input, _ := os.Open(filename)
-	defer input.Close()
-	sc := bufio.NewScanner(input)
-
-	for sc.Scan() {
-    fmt.Println(sc.Text())
-  }
-  return 0
-}
-EOF
-
-# Create main_test.go
-cat >"$1/main_test.go" <<EOF
-package main
-
-import (
-	"testing"
-
-	"github.com/stretchr/testify/assert"
-)
-
-func Test_Run(t *testing.T) {
-	cases := []struct {
-		name     string
-		actual   string
-		expected int
-	}{
-		{
-			name:     "example",
-			actual:   "example.input",
-			expected: 13,
-		},
-		{
-			name:     "large example",
-			actual:   "large.input",
-			expected: 6175,
-		},
-	}
-	for _, c := range cases {
-		t.Run(c.name, func(t *testing.T) {
-			got := run(c.actual)
-			assert.Equal(t, c.expected, got)
-		})
-	}
-}
-EOF
-
-cat >"$1/example.input" <<EOF
-1 2 3
-4 5 6
-EOF
-
-cat >"$1/large.input" <<EOF
-1 2 3
-4 5 6
-7 8 9
-EOF
-
-# Initialize go mod with the provided project name
-cd "$1"
-go mod init "$2"
-
-# Install the testify package for testing
-go get github.com/stretchr/testify/require
-
-''
+'';
 in {
   home.packages =
   [
-    aocgen
+    SCRIPTNAME
   ]
   ++ (lib.optionals isLinux [
     # if linux only

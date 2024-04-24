@@ -16,7 +16,6 @@
   config,
   ...
 }: let
-
   isLinux = pkgs.stdenv.isLinux;
   aocgen = pkgs.writeShellScriptBin "aocgen" ''
 #!/bin/bash
@@ -116,7 +115,7 @@ go mod init "$2"
 # Install the testify package for testing
 go get github.com/stretchr/testify/require
 
-''
+'';
 in {
   home.packages =
   [

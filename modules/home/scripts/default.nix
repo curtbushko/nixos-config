@@ -44,6 +44,45 @@ in {
 
   imports = [
     ./aocgen.nix
+    ./containerwatcher.nix
+    ./context.nix
+    ./convert-sh-to-nix.nix
+    ./docker-clean.nix
+    ./docker-image-dates.nix
+    ./epub-to-mobi.nix
+    ./file-preview.nix
+    ./ghostty-update.nix
+    ./git-checkout.nix
+    ./git-diff.nix
+    ./git-log.nix
+    ./git-migrate-to-new-branch.nix
+    ./git-open.nix
+    ./git-recent.nix
+    ./git-stats.nix
+    ./git-switch.nix
+    ./git-worktree-add.nix
+    ./git-worktree-bare-clone.nix
+    ./git-worktree-checkout-remote.nix
+    ./git-worktree-switch.nix
+    ./gke-delete-node.nix
+    ./gobuildwatcher.nix
+    ./gotestwatcher.nix
+    ./helm-nuke.nix
+    ./jira-ls.nix
+    ./kubewatcher.nix
+    ./makelintwatcher.nix
+    ./makeunitwatcher.nix
+    ./nodewatcher.nix
+    ./open-file.nix
+    ./pod-failed-cleanup.nix
+    ./pod-security-context.nix
+    ./podwatcher.nix
+    ./podwatcherwide.nix
+    ./postscript-man.nix
+    ./pr-create.nix
+    ./pr-review.nix
+    ./pr-view.nix
+    ./zigbuildwatcher.nix
   ];
 
 

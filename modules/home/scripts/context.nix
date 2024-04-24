@@ -17,15 +17,14 @@
   ...
 }: let
   isLinux = pkgs.stdenv.isLinux;
-  pr-create = pkgs.writeShellScriptBin "pr-create" ''
+  context = pkgs.writeShellScriptBin "context" ''
 #!/bin/bash
-
-gh pr create
+kubectl config get-contexts -o name| fzf -e | sed 's/^..//'
 '';
 in {
   home.packages =
   [
-    pr-create
+    context
   ]
   ++ (lib.optionals isLinux [
     # if linux only
