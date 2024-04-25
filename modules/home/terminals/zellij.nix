@@ -188,8 +188,8 @@
               bind "Alt 8" { GoToTab 8; SwitchToMode "Normal"; }
               bind "Alt 9" { GoToTab 9; SwitchToMode "Normal"; }
 
-          //    bind "Alt [" { PreviousSwapLayout; }
-          //    bind "Alt ]" { NextSwapLayout; }
+              bind "Alt [" { PreviousSwapLayout; }
+              bind "Alt ]" { NextSwapLayout; }
           }
           //shared_except "normal" "locked" {
           //    bind "Enter" "Esc" { SwitchToMode "Normal"; }
