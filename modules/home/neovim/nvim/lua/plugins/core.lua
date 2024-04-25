@@ -5,6 +5,8 @@ return {
       defaults = {
         keymaps = false,
       },
+	  news = { lazyvim = false },
     },
   },
 }
+
