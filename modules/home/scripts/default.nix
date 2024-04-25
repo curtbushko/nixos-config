@@ -28,7 +28,8 @@
     # server listening for connections. More than 2 lines indicates inbound connection(s).
     afp_connection_count=$(lsof -i:548 | wc -l)
     if [[ $logged_in_count < 1 && $afp_connection_count < 3 ]]; then
-        systemctl suspend
+        #systemctl suspend
+        echo "Would have suspended, logged in users: $logged_in_count, connection count: $afp_connection_count"
     else
         echo "Not suspending, logged in users: $logged_in_count, connection count: $afp_connection_count"
     fi
@@ -58,12 +59,11 @@
     gobuildwatcher = pkgs.writeScriptBin "gobuildwatcher" (builtins.readFile ./gobuildwatcher);
     gotestwatcher = pkgs.writeScriptBin "gotestwatcher" (builtins.readFile ./gotestwatcher);
     helm-nuke = pkgs.writeScriptBin "helm-nuke" (builtins.readFile ./helm-nuke);
+    hyprstart = pkgs.writeScriptBin "hyprstart" (builtins.readFile ./hyprstart);
     jira-ls = pkgs.writeScriptBin "jira-ls" (builtins.readFile ./jira-ls);
     kubewatcher = pkgs.writeScriptBin "kubewatcher" (builtins.readFile ./kubewatcher);
     makelintwatcher = pkgs.writeScriptBin "makelintwatcher" (builtins.readFile ./makelintwatcher);
     makeunitwatcher = pkgs.writeScriptBin "makeunitwatcher" (builtins.readFile ./makeunitwatcher);
-
-
     nodewatcher = pkgs.writeScriptBin "nodewatcher" (builtins.readFile ./nodewatcher);
     open-file = pkgs.writeScriptBin "open-file" (builtins.readFile ./open-file);
     pod-failed-cleanup = pkgs.writeScriptBin "pod-failed-cleanup" (builtins.readFile ./pod-failed-cleanup);
@@ -120,6 +120,7 @@ in {
   ]
   ++ (lib.optionals isLinux [
     auto-sleep
+    hyprstart
   ]);
 
 }

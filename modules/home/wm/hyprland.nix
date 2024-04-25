@@ -155,7 +155,7 @@ in {
           xray = true;
         };
         dim_inactive = true;
-        dim_strength = "0.3";
+        dim_strength = "0.1";
         fullscreen_opacity = 1;
         drop_shadow = true;
         shadow_ignore_window = true;
