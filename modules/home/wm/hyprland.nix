@@ -7,6 +7,7 @@
 in {
   wayland.windowManager.hyprland = {
     enable = isLinux;
+    systemd.variables = ["--all"];
     #nvidia = true;
     settings = {
       # Variables

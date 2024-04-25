@@ -5,12 +5,15 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }: {
   imports = [
+    inputs.hypridle.homeManagerModules.default
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
     ../../../modules/nixos
+    ../../../modules/home/wm/hypridle.nix
   ];
 
   # Use the systemd-boot EFI boot loader.
@@ -86,6 +89,7 @@
 
     rofi # app launcher
     rofi-wayland
+    hyprland
   ];
 
   # Some programs need SUID wrappers, can be configured further or are

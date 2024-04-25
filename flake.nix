@@ -15,6 +15,19 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    hypridle.url = "github:hyprwm/hypridle";
+
+    hyprland.url = "github:hyprwm/Hyprland";
+
+    hyprland-contrib = {
+      url = "github:hyprwm/contrib";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    hyprlock.url = "github:hyprwm/hyprlock";
+
+    hyprpaper.url = "github:hyprwm/hyprpaper";
+
     snowfall-lib = {
       url = "github:snowfallorg/lib";
       inputs.nixpkgs.follows = "nixpkgs";
