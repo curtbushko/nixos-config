@@ -58,5 +58,6 @@ in {
       pkgs.firefox
       #pkgs.rofi-firefox-wrapper
       pkgs.zathura
+      pkgs.lsof
     ]);
 }

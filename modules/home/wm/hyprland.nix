@@ -23,6 +23,8 @@ in {
 
       # Tokyonight Night colors
       "$border-color" = "rgb(A9B1D6)";
+      "$active-border-color" = "rgb(7AA2F7)";
+      "$active-border-color" = "rgb(A9B1D6)";
       "$bg-color" = "rgb(1A1B26)";
       "$inac-bg-color" = "rgb(1A1B26)";
       "$text-color" = "rgb(F7768E)";
@@ -54,7 +56,7 @@ in {
         border_size = 1;
 
         "col.inactive_border" = "$border-color";
-        "col.active_border" = "$border-color";
+        "col.active_border" = "$active-border-color";
         "no_border_on_floating" = false;
         layout = "dwindle";
         no_cursor_warps = true;

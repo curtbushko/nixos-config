@@ -22,20 +22,8 @@
     echo "hello world" | ${pkgs.cowsay}/bin/cowsay | ${pkgs.lolcat}/bin/lolcat
   '';
 
-  auto-sleep = pkgs.writeShellScriptBin "auto-sleep" ''
-    logged_in_count=$(who | wc -l)
-    # We expect 2 lines of output from `lsof -i:548` at idle: one for output headers, another for the
-    # server listening for connections. More than 2 lines indicates inbound connection(s).
-    afp_connection_count=$(lsof -i:548 | wc -l)
-    if [[ $logged_in_count < 1 && $afp_connection_count < 3 ]]; then
-        #systemctl suspend
-        echo "Would have suspended, logged in users: $logged_in_count, connection count: $afp_connection_count"
-    else
-        echo "Not suspending, logged in users: $logged_in_count, connection count: $afp_connection_count"
-    fi
-  '';
-
     aocgen = pkgs.writeScriptBin "aocgen" (builtins.readFile ./aocgen);
+    auto-sleep = pkgs.writeScriptBin "auto-sleep" (builtins.readFile ./auto-sleep);
     containerwatcher = pkgs.writeScriptBin "containerwatcher" (builtins.readFile ./containerwatcher);
     context = pkgs.writeScriptBin "context" (builtins.readFile ./context);
     docker-clean = pkgs.writeScriptBin "docker-clean" (builtins.readFile ./docker-clean);
