@@ -20,8 +20,10 @@
 in {
   imports = [
     ./hyprland.nix
+    ./hypridle.nix
     ./waybar.nix
     ./rofi.nix
+    #inputs.hypridle.homeManagerModules.default
   ];
 
   home.packages = with pkgs;

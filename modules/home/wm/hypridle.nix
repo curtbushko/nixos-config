@@ -34,19 +34,10 @@
     fi
   '';
 in {
-  # screen idle
-  services.hypridle = {
-    enable = isLinux;
-#    enable = false;
-    # do not do lock for now
-    beforeSleepCmd = "${pkgs.systemd}/bin/loginctl lock-session";
-    lockCmd = lib.getExe config.programs.hyprlock.package;
-
-    listeners = [
-      {
+  xdg.confFile "hypr/hypridle.conf".text = ''
+    listener {
         timeout = 1200;
-        onTimeout = suspendScript.outPath;
-      }
-    ];
-  };
+        onTimeout = suspect-script
+    }
+ '';
 }
