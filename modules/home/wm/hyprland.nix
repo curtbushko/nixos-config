@@ -45,6 +45,7 @@ in {
         "wl-paste --type image --watch cliphist store"
         "xprop -root -f _XWAYLAND_GLOBAL_OUTPUT_SCALE 32c -set _XWAYLAND_GLOBAL_OUTPUT_SCALE 1"
         "waybar"
+        "hypridle"
       ];
       xwayland = {force_zero_scaling = true;};
       general = {

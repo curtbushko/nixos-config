@@ -17,7 +17,7 @@
   ...
 }: let
   isLinux = pkgs.stdenv.isLinux;
-  suspendScript = pkgs.writeShellScript "suspend-script" ''
+  suspend-script = pkgs.writeShellScriptBin "suspend-script" ''
     # only suspend if audio isn't
     music_running=$(${pkgs.pipewire}/bin/pw-cli i all 2>&1 | ${pkgs.ripgrep}/bin/rg running -q)
     logged_in_count=$(who | wc -l)
@@ -34,10 +34,19 @@
     fi
   '';
 in {
-  xdg.confFile "hypr/hypridle.conf".text = ''
+  #imports = [
+  #  inputs.hypridle.homeManagerModules.default
+  #];
+
+  home.packages = [
+    suspend-script
+  ];
+
+  xdg.configFile."hypr/hypridle.conf".text = ''
     listener {
         timeout = 1200;
-        onTimeout = suspect-script
+        onTimeout = suspend-script
     }
  '';
+
 }

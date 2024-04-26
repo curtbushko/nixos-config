@@ -17,32 +17,18 @@
   ...
 }: let
   isLinux = pkgs.stdenv.isLinux;
+
+  lockTime = 1200;
 in {
-  imports = [
-    ./hyprland.nix
-    ./swayidle.nix
-    ./waybar.nix
-    ./rofi.nix
-  ];
-
-  home.packages = with pkgs;
-    [
-    ]
-    ++ (lib.optionals isLinux [
-      brightnessctl
-      cliphist
-      grim
-      slurp
-      wl-clipboard
-
-      eww-wayland
-      swww
-      swappy # snapshot tool
-      swaybg
-
-      networkmanagerapplet
-      dunst
-      libnotify
-      xdg-utils
-    ]);
+  services.swayidle = {
+    enable = true;
+    systemdTarget = "graphical-session.target";
+    timeouts =
+      [
+        {
+          timeout = lockTime;
+          command = "suspend-script";
+        }
+      ]
+  };
 }
