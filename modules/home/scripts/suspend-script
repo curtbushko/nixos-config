@@ -2,16 +2,12 @@
 
 # only suspend if audio isn't
 music_running=$(pw-cli i all 2>&1 | rg running -q)
-logged_in_count=$(who | wc -l)
-# We expect 2 lines of output from `lsof -i:548` at idle: one for output headers, another for the
-# server listening for connections. More than 2 lines indicates inbound connection(s).
-afp_connection_count=$(lsof -i:548 | wc -l)
-if [[ $logged_in_count < 1 && $afp_connection_count < 3 && $music_running == 1 ]]; then
-  #systemctl suspend
-  echo "Would have suspended"
-  echo "logged in users: $logged_in_count, connection count: $afp_connection_count, music_running: $music_running"
+ssh_connection=$(ss | grep ssh | grep -q ESTAB)
+if [[ $ssh_connection -eq 0 && $music_running -eq 0 ]]; then
+	systemctl suspend
+	echo "Would have suspended"
+	echo "ssh connection: $ssh_connection, music_running: $music_running"
 else
-  echo "Not suspending." 
-  echo "logged in users: $logged_in_count, connection count: $afp_connection_count, music_running: $music_running"
+	echo "Not suspending."
+	echo "ssh connection: $ssh_connection, music_running: $music_running"
 fi
-

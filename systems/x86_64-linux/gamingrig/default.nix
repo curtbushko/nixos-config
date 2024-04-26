@@ -20,11 +20,10 @@
         echo "Would have suspended"
         echo "logged in users: $logged_in_count, connection count: $afp_connection_count, music_running: $music_running"
     else
-        echo "Not suspending." 
+        echo "Not suspending."
         echo "logged in users: $logged_in_count, connection count: $afp_connection_count, music_running: $music_running"
     fi
   '';
-
 in {
   imports = [
     # Include the results of the hardware scan.
@@ -185,6 +184,12 @@ in {
   virtualisation = {
     libvirtd.enable = true;
     docker.enable = true;
+  };
+
+  security.pam.services.swaylock = {
+    text = ''      ;
+            auth include login
+    '';
   };
 
   # Do not change - ever

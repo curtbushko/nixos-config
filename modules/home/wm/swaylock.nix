@@ -17,17 +17,11 @@
   ...
 }: let
   isLinux = pkgs.stdenv.isLinux;
-
-  lockTime = 1200;
 in {
-  services.swayidle = {
-    enable = true;
-    systemdTarget = "graphical-session.target";
-    timeouts = [
-      {
-        timeout = lockTime;
-        command = "suspend-script";
-      }
-    ];
-  };
+  home.packages = with pkgs;
+    [
+    ]
+    ++ (lib.optionals isLinux [
+      swaylock
+    ]);
 }

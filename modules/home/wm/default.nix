@@ -20,9 +20,10 @@
 in {
   imports = [
     ./hyprland.nix
-    ./swayidle.nix
     ./waybar.nix
     ./rofi.nix
+    ./swayidle.nix
+    ./swaylock.nix
   ];
 
   home.packages = with pkgs;
@@ -39,6 +40,8 @@ in {
       swww
       swappy # snapshot tool
       swaybg
+      swayidle
+      swaylock
 
       networkmanagerapplet
       dunst

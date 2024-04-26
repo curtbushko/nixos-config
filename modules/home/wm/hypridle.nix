@@ -29,7 +29,7 @@
         echo "Would have suspended"
         echo "logged in users: $logged_in_count, connection count: $afp_connection_count, music_running: $music_running"
     else
-        echo "Not suspending." 
+        echo "Not suspending."
         echo "logged in users: $logged_in_count, connection count: $afp_connection_count, music_running: $music_running"
     fi
   '';
@@ -47,6 +47,5 @@ in {
         timeout = 1200;
         onTimeout = suspend-script
     }
- '';
-
+  '';
 }
