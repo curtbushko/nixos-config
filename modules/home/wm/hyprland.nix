@@ -4,6 +4,9 @@
   ...
 }: let
   isLinux = pkgs.stdenv.isLinux;
+  screenOffCmd = ''swaymsg "output * dpms off"'';
+  suspendCmd = ''swaymsg "output * dpms on"; sleep 1; suspend-script'';
+  resumeCmd = ''swaymsg "output * dpms on"'';
 in {
   wayland.windowManager.hyprland = {
     enable = isLinux;
@@ -32,6 +35,7 @@ in {
       "$urgent-bg-color" = "rgb(F7768E)";
       "$indi-color" = "rgb(7AA2F7)";
       "$urgent-text-color" = "rgb(A9B1D6)";
+
       env = [
         "QT_QPA_PLATFORM,wayland"
         "QT_QPA_PLATFORMTHEME,qt5ct"
@@ -39,13 +43,17 @@ in {
         "QT_AUTO_SCREEN_SCALE_FACTOR,1"
       ];
       exec-once = [
-        #"hyprlock"
+        "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
         "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
         "wl-paste --type text --watch cliphist store"
         "wl-paste --type image --watch cliphist store"
         "xprop -root -f _XWAYLAND_GLOBAL_OUTPUT_SCALE 32c -set _XWAYLAND_GLOBAL_OUTPUT_SCALE 1"
         "waybar"
-        "swayidle -w timeout 1200 suspend-script"
+        "swayidle -w \
+            timeout 30 screenOffCmd \
+            timeout 60 suspendCmd \
+            resume resumeCmd"
+
       ];
       xwayland = {force_zero_scaling = true;};
       general = {

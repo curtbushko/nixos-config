@@ -40,7 +40,6 @@ in {
       swww
       swappy # snapshot tool
       swaybg
-      swayidle
       swaylock
 
       networkmanagerapplet
