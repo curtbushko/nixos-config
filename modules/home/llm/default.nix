@@ -15,50 +15,8 @@
   # All other arguments come from the module system.
   config,
   ...
-}: let
-  isDarwin = pkgs.stdenv.isDarwin;
-  isLinux = pkgs.stdenv.isLinux;
-in {
-  imports = [
-    ./bat.nix
-    ./direnv.nix
+}: {
+  home.packages = [
+    pkgs.pip
   ];
-
-  home.packages =
-    [
-      pkgs.alejandra
-      pkgs.asciinema
-      pkgs.bottom
-      pkgs.difftastic
-      pkgs.eza
-      pkgs.fd
-      pkgs.fzf
-      pkgs.gnused
-      pkgs.gum
-      pkgs.htop
-      pkgs.jq
-      pkgs.kubectl
-      pkgs.kind
-      pkgs.lsd
-      pkgs.pandoc
-      pkgs.python3
-      pkgs.ranger
-      pkgs.ripgrep
-      pkgs.tree
-      pkgs.watch
-      pkgs.watchexec
-      pkgs.yazi
-      pkgs.yt-dlp
-      pkgs.zoxide
-    ]
-    ++ (lib.optionals isDarwin [
-      pkgs.cachix
-      pkgs.tailscale
-    ])
-    ++ (lib.optionals isLinux [
-      pkgs.firefox
-      #pkgs.rofi-firefox-wrapper
-      pkgs.zathura
-      pkgs.lsof
-    ]);
 }

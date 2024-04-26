@@ -36,7 +36,7 @@
 
 in {
   services.swayidle = {
-    enable = true;
+    enable = isLinux;
     systemdTarget = "graphical-session.target";
     timeouts = [
       {

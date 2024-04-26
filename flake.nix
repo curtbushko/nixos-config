@@ -24,12 +24,7 @@
       url = "github:hyprwm/contrib";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    hyprland-plugins = {
-      url = "github:hyprwm/hyprland-plugins";
-      inputs.hyprland.follows = "hyprland";
-    };
-
+    
     hyprlock.url = "github:hyprwm/hyprlock";
 
     hyprpaper.url = "github:hyprwm/hyprpaper";
