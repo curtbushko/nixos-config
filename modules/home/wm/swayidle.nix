@@ -19,33 +19,32 @@
   isLinux = pkgs.stdenv.isLinux;
   hyprctl = "${config.wayland.windowManager.hyprland.package}/bin/hyprctl";
   suspend-script = pkgs.writeShellScriptBin "suspend-script" ''
-    # only suspend if audio isn't
-    music_running=$(${pkgs.pipewire}/bin/pw-cli i all 2>&1 | ${pkgs.ripgrep}/bin/rg running -q)
-    # only suspend if no ssh connections 
-    ssh_connection=$($pkgs.iproute2}/bin/ss | ${pkgs.gnugrep}/bin/grep ssh | ${pkgs.gnugrep}/bin/sh -q ESTAB)
-    if [[ $ssh_connection -eq 0 && $music_running -eq 0 ]]; then
-      ${pkgs.coreutils}/bin/sleep 1
-      ${pkgs.systemd}/bin/systemctl suspend
-	  echo "Would have suspended"
-	  echo "ssh connection: $ssh_connection, music_running: $music_running"
-    else
-	  echo "Not suspending."
-	  echo "ssh connection: $ssh_connection, music_running: $music_running"
-    fi
+     # only suspend if audio isn't
+     music_running=$(${pkgs.pipewire}/bin/pw-cli i all 2>&1 | ${pkgs.ripgrep}/bin/rg running -q)
+     # only suspend if no ssh connections
+     ssh_connection=$($pkgs.iproute2}/bin/ss | ${pkgs.gnugrep}/bin/grep ssh | ${pkgs.gnugrep}/bin/sh -q ESTAB)
+     if [[ $ssh_connection -eq 0 && $music_running -eq 0 ]]; then
+       ${pkgs.coreutils}/bin/sleep 1
+       ${pkgs.systemd}/bin/systemctl suspend
+    echo "Would have suspended"
+    echo "ssh connection: $ssh_connection, music_running: $music_running"
+     else
+    echo "Not suspending."
+    echo "ssh connection: $ssh_connection, music_running: $music_running"
+     fi
   '';
-
 in {
   services.swayidle = {
     enable = isLinux;
     systemdTarget = "graphical-session.target";
     timeouts = [
       {
-        timeout = 30;
+        timeout = 300;
         command = "${hyprctl} dispatch dpms off";
         resumeCommand = "${hyprctl} dispatch dpms on";
       }
       {
-        timeout = 60;
+        timeout = 1200;
         command = "${suspend-script}/bin/suspend-script";
         resumeCommand = "${hyprctl} dispatch dpms on";
       }

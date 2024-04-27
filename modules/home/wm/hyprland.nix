@@ -53,7 +53,6 @@ in {
             timeout 30 screenOffCmd \
             timeout 60 suspendCmd \
             resume resumeCmd"
-
       ];
       xwayland = {force_zero_scaling = true;};
       general = {

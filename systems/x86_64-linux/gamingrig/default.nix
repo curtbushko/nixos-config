@@ -8,7 +8,6 @@
   inputs,
   ...
 }: let
-
   suspend-script = pkgs.writeScriptBin "suspend-script" (builtins.readFile ../../../modules/home/scripts/suspend-script);
 in {
   imports = [
