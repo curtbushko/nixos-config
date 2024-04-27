@@ -40,10 +40,10 @@ in {
       pkgs.kubectl
       pkgs.kind
       pkgs.lsd
-      pkgs.pandoc
       pkgs.python3
       pkgs.ranger
       pkgs.ripgrep
+      pkgs.rustc
       pkgs.tree
       pkgs.watch
       pkgs.watchexec

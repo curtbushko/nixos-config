@@ -30,9 +30,6 @@
   #---------------------------------------------------------------------
   home.packages = [
     pkgs.cargo
-    pkgs.crawl
-    pkgs.crawlTiles
-
     pkgs.zigpkgs.master
 
     # Darwin only
