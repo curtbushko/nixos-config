@@ -24,6 +24,7 @@
 
   aocgen = pkgs.writeScriptBin "aocgen" (builtins.readFile ./aocgen);
   auto-sleep = pkgs.writeScriptBin "auto-sleep" (builtins.readFile ./auto-sleep);
+  build-ghostty = pkgs.writeScriptBin "build-ghostty" (builtins.readFile ./build-ghostty);
   containerwatcher = pkgs.writeScriptBin "containerwatcher" (builtins.readFile ./containerwatcher);
   context = pkgs.writeScriptBin "context" (builtins.readFile ./context);
   docker-clean = pkgs.writeScriptBin "docker-clean" (builtins.readFile ./docker-clean);

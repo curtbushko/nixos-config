@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+GHOSTTY_DIR=${HOME}/workspace/github.com/mitchellh/ghostty
+BIN_DIR=${HOME}/.local/bin
+CUR_DIR=$PWD
+
+mkdir -p ${BIN_DIR}
+OS=$(uname | tr '[:upper:]' '[:lower:]')
+cd ${GHOSTTY_DIR}
+
+if test ${OS} == "darwin"; then
+	echo "Building ${OS} release build in ${GHOSTTY_DIR}"
+	direnv allow . && eval "$(direnv export bash)"
+	zig build -Dstatic=true -Doptimize=ReleaseFast && direnv deny && cd macos && xcodebuild -target Ghostty -configuration Release
+else
+	echo "Building ${OS} release build in ${GHOSTTY_DIR}"
+	direnv allow . && eval "$(direnv export bash)"
+	zig build -Dstatic=true -Doptimize=ReleaseFast
+	cp ${GHOSTTY_DIR}/zig-out/bin/ghostty ${BIN_DIR}
+fi
+echo "Done building ghostty!"
+cd ${CUR_DIR}

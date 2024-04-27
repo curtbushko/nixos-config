@@ -34,6 +34,7 @@
     pkgs.crawlTiles
 
     pkgs.zigpkgs.master
+    pkgs.zls
 
     # Darwin only
     pkgs.cachix

@@ -16,6 +16,15 @@
   config,
   ...
 }: {
+
+  imports = [
+    inputs.ghostty.homeModules.default
+  ];
+
+  programs.ghostty = {
+    enable = true;
+  };
+
   xdg.configFile = {
     "ghostty/config".text = builtins.readFile ./ghostty.config;
   };

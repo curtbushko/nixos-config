@@ -28,9 +28,6 @@ in {
       extensions = with inputs.firefox-addons.packages.${pkgs.system}; [
         bitwarden
         darkreader
-        octotree
-        refined-github
-        sponsorblock
         ublock-origin
       ];
       search.force = true;

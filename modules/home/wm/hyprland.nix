@@ -66,86 +66,100 @@ in {
         "col.inactive_border" = "$border-color";
         "col.active_border" = "$active-border-color";
         "no_border_on_floating" = false;
-        layout = "dwindle";
+        layout = "master";
         no_cursor_warps = true;
       };
       bind = [
-        "$alt, M, exit,"
+        "$super, M, exit,"
 
         # Most used applications
-        "$alt, t, exec, $terminal"
-        "$alt, w, exec, $browser"
+        "$super, t, exec, $terminal"
+        "$super, w, exec, $browser"
         #"$alt, f, exec, $filemanager"
-        "$alt, Return, exec, $terminal"
-        "$alt SHIFT, Q, killactive,"
-        "$alt, Space, exec, rofi -show drun"
+        "$super, Return, exec, $terminal"
+        "$super, Q, killactive,"
+        "$super, Space, exec, rofi -show drun"
         #"$alt, D, exec, $menu"
-        "$alt, P, pseudo, # dwindle"
-        "$alt, R, togglesplit, # dwindle"
+        #"$super, P, pseudo, # dwindle"
+        #"$super, R, togglesplit, # dwindle"
         #"$alt CTRL, P, exec, ${./scripts/wofi-pass.sh}"
         #"$alt SHIFT, G, exec, ${pkgs.sway-contrib.grimshot}/bin/grimshot copy area"
 
         "$alt $super, F, fullscreen"
-        "$alt, E, togglegroup"
+        "$super, E, togglegroup"
 
-        # Change focus around
-        "$alt, $left, movefocus, l"
-        "$alt, $down, movefocus, d"
-        "$alt, $up, movefocus, u"
-        "$alt, $right, movefocus, r"
+        # Change app focus around
+        "$super, $left, movefocus, l"
+        "$super, $down, movefocus, d"
+        "$super, $up, movefocus, u"
+        "$super, $right, movefocus, r"
         # Or use arrow keys
-        "$alt, left, movefocus, l"
-        "$alt, down, movefocus, d"
-        "$alt, up, movefocus, u"
-        "$alt, right, movefocus, r"
+        "$super, left, movefocus, l"
+        "$super, down, movefocus, d"
+        "$super, up, movefocus, u"
+        "$super, right, movefocus, r"
 
         # Cycle windows
-        "$super, tab, cyclenext"
-        "$super SHIFT, tab, cyclenext, prev"
+        "$super, tab, layoutmsg, cyclenext"
+        "$super SHIFT, tab, layoutmsg, cyclenext, prev"
 
         # Move the focused window
-        "$alt SHIFT, $left, movewindow, l"
-        "$alt SHIFT, $down, movewindow, d"
-        "$alt SHIFT, $up, movewindow, u"
-        "$alt SHIFT, $right, movewindow, r"
+        "$super $alt, $left, movewindow, l"
+        "$super $alt, $down, movewindow, d"
+        "$super $alt, $up, movewindow, u"
+        "$super $alt, $right, movewindow, r"
         # Or use arrow keys
-        "$alt SHIFT, left, movewindow, l"
-        "$alt SHIFT, down, movewindow, d"
-        "$alt SHIFT, up, movewindow, u"
-        "$alt SHIFT, right, movewindow, r"
+        "$super $alt, left, movewindow, l"
+        "$super $alt, down, movewindow, d"
+        "$super $alt, up, movewindow, u"
+        "$super $alt, right, movewindow, r"
 
-        "$alt, 1, workspace, 1"
-        "$alt, 2, workspace, 2"
-        "$alt, 3, workspace, 3"
-        "$alt, 4, workspace, 4"
-        "$alt, 5, workspace, 5"
-        "$alt, 6, workspace, 6"
-        "$alt, 7, workspace, 7"
-        "$alt, 8, workspace, 8"
-        "$alt, 9, workspace, 9"
-        "$alt, 0, workspace, 10"
+        "$super, 1, workspace, 1"
+        "$super, 2, workspace, 2"
+        "$super, 3, workspace, 3"
+        "$super, 4, workspace, 4"
+        "$super, 5, workspace, 5"
+        "$super, 6, workspace, 6"
+        "$super, 7, workspace, 7"
+        "$super, 8, workspace, 8"
+        "$super, 9, workspace, 9"
+        "$super, 0, workspace, 10"
 
         # Move window to workspace
-        "$alt SHIFT, 1, movetoworkspace, 1"
-        "$alt SHIFT, 2, movetoworkspace, 2"
-        "$alt SHIFT, 3, movetoworkspace, 3"
-        "$alt SHIFT, 4, movetoworkspace, 4"
-        "$alt SHIFT, 5, movetoworkspace, 5"
-        "$alt SHIFT, 6, movetoworkspace, 6"
-        "$alt SHIFT, 7, movetoworkspace, 7"
-        "$alt SHIFT, 8, movetoworkspace, 8"
-        "$alt SHIFT, 9, movetoworkspace, 9"
-        "$alt SHIFT, 0, movetoworkspace, 10"
+        "$super CTRL, 1, movetoworkspace, 1"
+        "$super CTRL, 2, movetoworkspace, 2"
+        "$super CTRL, 3, movetoworkspace, 3"
+        "$super CTRL, 4, movetoworkspace, 4"
+        "$super CTRL, 5, movetoworkspace, 5"
+        "$super CTRL, 6, movetoworkspace, 6"
+        "$super CTRL, 7, movetoworkspace, 7"
+        "$super CTRL, 8, movetoworkspace, 8"
+        "$super CTRL, 9, movetoworkspace, 9"
+        "$super CTRL, 0, movetoworkspace, 10"
 
-        "$alt, S, togglespecialworkspace, magic"
-        "$alt SHIFT, S, movetoworkspace, special:magic"
+        "$super, S, togglespecialworkspace, magic"
+        "$super SHIFT, S, movetoworkspace, special:magic"
 
-        "$alt, mouse_down, workspace, e+1"
-        "$alt, mouse_up, workspace, e-1"
+        "$super, mouse_down, workspace, e+1"
+        "$super, mouse_up, workspace, e-1"
+
+        # Resize like Rectangle (you must double dispatch to move and resize at the same time)
+        # First 3/4
+        "$super $alt, 1, movewindow, l"
+        "$super $alt, 1, resizeactive, exact 75% 100%"
+        # Last 1/4
+        "$super $alt, 2, movewindow, r"
+        "$super $alt, 2, resizeactive, exact 25% 100%"
+        # First 2/3
+        "$super $alt, 3, movewindow, l"
+        "$super $alt, 3, resizeactive, exact 66% 100%"
+        # Last 1/3
+        "$super $alt, 4, movewindow, r"
+        "$super $alt, 4, resizeactive, exact 33% 100%"
       ];
       bindm = [
-        "$alt, mouse:272, movewindow"
-        "$alt, mouse:273, resizewindow"
+        "$super, mouse:272, movewindow"
+        "$super, mouse:273, resizewindow"
       ];
       misc = {
         disable_splash_rendering = true;
@@ -198,15 +212,40 @@ in {
           "specialWorkspace, 1, 3, fluent_decel, slidevert"
         ];
       };
-      dwindle = {
-        no_gaps_when_only = false;
-        pseudotile = true;
-        preserve_split = true;
+      #dwindle = {
+      #  no_gaps_when_only = false;
+      #  pseudotile = true;
+      #  preserve_split = true;
+      #};
+      master = {
+        orientation = "right";
+        new_is_master = false;
+        mfact = 0.70;
       };
       input = {
         repeat_delay = 250;
       };
-      #opengl.nvidia_anti_flicker = 0;
+      windowrulev2 = [
+        "tile,move 70%, size 30%, class:^(firefox)$"
+        "tile,move 0 0, size 70%, class:^(kitty)"
+        "float,class:^(org.kde.polkit-kde-authentication-agent-1)$"
+        "float,class:^(pavucontrol)$"
+        "float,title:^(Media viewer)$"
+        "float,title:^(Volume Control)$"
+        "float,class:^(Viewnior)$"
+        "float,title:^(DevTools)$"
+        "float,class:^(file_progress)$"
+        "float,class:^(confirm)$"
+        "float,class:^(dialog)$"
+        "float,class:^(download)$"
+        "float,class:^(notification)$"
+        "float,class:^(error)$"
+        "float,class:^(confirmreset)$"
+        "float,title:^(Open File)$"
+        "float,title:^(branchdialog)$"
+        "float,title:^(Confirm to replace files)$"
+        "float,title:^(File Operation Progress)$"
+      ];
     };
     # systemd.enable = false;
   };

@@ -66,6 +66,7 @@ in {
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     cachix
+    dunst # notifications
     git
     gnumake
     gcc
@@ -82,7 +83,6 @@ in {
       })
     )
     wayland
-    dunst # notifications
     libnotify # notifications too.
     swww # wallpapers
     tailscale

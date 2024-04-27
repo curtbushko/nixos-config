@@ -15,9 +15,18 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    devenv = {
+      url = "github:cachix/devenv/latest";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
     firefox-addons = {
       url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    ghostty = {
+      url = "github:clo4/ghostty-hm-module";
     };
 
     hyprland = {
@@ -29,7 +38,7 @@
       url = "github:hyprwm/contrib";
       inputs.nixpkgs.follows = "nixpkgs";
     };
- 
+
     hyprlock.url = "github:hyprwm/hyprlock";
 
     hyprpaper.url = "github:hyprwm/hyprpaper";
