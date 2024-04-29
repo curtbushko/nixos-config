@@ -69,6 +69,7 @@ in {
   home.packages =
     [
       aocgen
+      build-ghostty
       containerwatcher
       context
       docker-clean

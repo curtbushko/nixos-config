@@ -61,15 +61,15 @@
               bind "e" { TogglePaneEmbedOrFloating; SwitchToMode "Normal"; }
               bind "c" { SwitchToMode "RenamePane"; PaneNameInput 0;}
           }
-          move {
-              bind "Alt m" { SwitchToMode "Normal"; }
-              bind "n" "Tab" { MovePane; }
-              bind "p" { MovePaneBackwards; }
-              bind "h" "Left" { MovePane "Left"; }
-              bind "j" "Down" { MovePane "Down"; }
-              bind "k" "Up" { MovePane "Up"; }
-              bind "l" "Right" { MovePane "Right"; }
-          }
+          //move {
+          //    bind "Alt m" { SwitchToMode "Normal"; }
+          //    bind "n" "Tab" { MovePane; }
+          //    bind "p" { MovePaneBackwards; }
+          //   bind "h" "Left" { MovePane "Left"; }
+          //   bind "j" "Down" { MovePane "Down"; }
+          //    bind "k" "Up" { MovePane "Up"; }
+          //    bind "l" "Right" { MovePane "Right"; }
+          //}
           tab {
               bind "Alt t" { SwitchToMode "Normal"; }
               bind "r" { SwitchToMode "RenameTab"; TabNameInput 0; }
@@ -289,7 +289,8 @@
       themes {
           tokyo-night-custom {
            fg "#dfe9ff"
-           bg "#15161e"
+           //bg "#15161e" Changed because I think it was too light?
+           bg "#1A1B26"
            black "#15161e"
            red "#f7768e"
            green "#9ece6a"

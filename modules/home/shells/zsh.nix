@@ -42,7 +42,6 @@
       KB = "$HOME/Sync/KB";
       NIXOS_CONFIG = "$HOME/workspace/github.com/curtbushko/nixos-config";
       SYNCTHING = "$HOME/Sync";
-      TERM = "xterm-256color";
       WORKSPACE = "$HOME/workspace";
       WALLPAPERS = "$HOME/Sync/wallpapers";
       ZIGBIN = "$HOME/bin/zig";
@@ -137,6 +136,9 @@
       zkill = "zellij kill-session coding";
     };
     initExtra = ''
+      if [ ! -L $HOME/.local/bin/ghostty ]; then
+      	ln -s $GHOSTTY/zig-out/bin/ghostty $HOME/.local/bin/ghostty 
+      fi
       if [ -f $HOME/.private.post.source ]; then
           source $HOME/.private.post.source
       fi

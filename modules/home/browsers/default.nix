@@ -15,17 +15,12 @@
   # All other arguments come from the module system.
   config,
   ...
-}: {
-
-  #imports = [
-  #  inputs.ghostty.homeModules.default
-  #];
-
-  #programs.ghostty = {
-  #  enable = true;
-  #};
-
-  xdg.configFile = {
-    "ghostty/config".text = builtins.readFile ./ghostty.config;
-  };
+}: let
+  isDarwin = pkgs.stdenv.isDarwin;
+  isLinux = pkgs.stdenv.isLinux;
+in {
+  imports = [
+    ./brave.nix
+    ./firefox.nix
+  ];
 }

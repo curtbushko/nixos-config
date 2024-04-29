@@ -50,11 +50,12 @@
     LC_ALL = "en_US.UTF-8";
     EDITOR = "nvim";
     PAGER = "less -FirSwX";
-    TERM = "xterm-256color";
+    TERM  = "xterm-256color";
   };
 
   imports = [
     #nix-colors.homeManagerModules.default
+    ../../../modules/home/browsers
     ../../../modules/home/git
     ../../../modules/home/go
     ../../../modules/home/neovim

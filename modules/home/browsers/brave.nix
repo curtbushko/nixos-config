@@ -15,17 +15,29 @@
   # All other arguments come from the module system.
   config,
   ...
-}: {
-
-  #imports = [
-  #  inputs.ghostty.homeModules.default
-  #];
-
-  #programs.ghostty = {
-  #  enable = true;
-  #};
-
-  xdg.configFile = {
-    "ghostty/config".text = builtins.readFile ./ghostty.config;
+}:{
+  programs.chromium = {
+    enable = true;
+    package = pkgs.brave;
+    commandLineArgs = [
+      "--disable-gpu-driver-bug-workarounds"
+      "--use-gl=egl"
+      "--ignore-gpu-blocklist"
+      "--enable-gpu-rasterization"
+      "--enable-zero-copy"
+      "--enable-features=VaapiVideoDecoder,VaapiVideoEncoder,CanvasOopRasterization,UseOzonePlatform"
+      "--disable-features=UseChromeOSDirectVideoDecoder"
+      "--ozone-platform=wayland"
+      "--no-default-browser-check"
+      "--restore-last-session"
+      "--enable-media-router"
+      "--enable-smooth-scrolling"
+    ];
+    extensions = [
+      # Ublock Origin
+      {id = "cjpalhdlnbpafiamejdnhcphjbkeiagm";}
+    ];
   };
+
 }
+

@@ -2,8 +2,11 @@
 GHOSTTY_DIR=${HOME}/workspace/github.com/mitchellh/ghostty
 BIN_DIR=${HOME}/.local/bin
 CUR_DIR=$PWD
+GHOSTTY_RESOURCES_DIR=${HOME}/.local/share/ghostty
 
 mkdir -p ${BIN_DIR}
+mkdir -p ${GHOSTTY_RESOURCES_DIR}
+
 OS=$(uname | tr '[:upper:]' '[:lower:]')
 cd ${GHOSTTY_DIR}
 
@@ -16,6 +19,9 @@ else
 	direnv allow . && eval "$(direnv export bash)"
 	zig build -Dstatic=true -Doptimize=ReleaseFast
 	cp ${GHOSTTY_DIR}/zig-out/bin/ghostty ${BIN_DIR}
+	cp -R ${GHOSTTY_DIR}/zig-out/share/* ${GHOSTTY_RESOURCES_DIR}
+	cp -R ${GHOSTTY_DIR}/zig-out/share/ghostty/* ${GHOSTTY_RESOURCES_DIR}
+
 fi
 echo "Done building ghostty!"
 cd ${CUR_DIR}

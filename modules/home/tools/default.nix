@@ -22,7 +22,6 @@ in {
   imports = [
     ./bat.nix
     ./direnv.nix
-    ./firefox.nix
   ];
 
   home.packages =
@@ -30,6 +29,7 @@ in {
       pkgs.alejandra
       pkgs.asciinema
       pkgs.bottom
+      pkgs.brave
       pkgs.difftastic
       pkgs.eza
       pkgs.fd
