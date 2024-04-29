@@ -20,7 +20,7 @@
   isLinux = pkgs.stdenv.isLinux;
 in {
   imports = [
-    ./brave.nix
+    #./brave.nix
     ./firefox.nix
   ];
 }

@@ -35,7 +35,7 @@
     ];
     extensions = [
       # Ublock Origin
-      {id = "cjpalhdlnbpafiamejdnhcphjbkeiagm";}
+      #{id = "cjpalhdlnbpafiamejdnhcphjbkeiagm";}
     ];
   };
 

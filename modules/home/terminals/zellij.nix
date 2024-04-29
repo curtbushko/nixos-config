@@ -288,15 +288,14 @@
       //
       themes {
           tokyo-night-custom {
-           fg "#dfe9ff"
-           //bg "#15161e" Changed because I think it was too light?
+          fg "#dfe9ff"
            bg "#1A1B26"
            black "#15161e"
            red "#f7768e"
            green "#9ece6a"
            yellow "#ffec6e"
            blue "#7aa2f7"
-              magenta "#bb9af7"
+           magenta "#bb9af7"
            cyan "#65bcff"
            white "#dfe9ff"
            orange "#ff9e64"
@@ -321,7 +320,7 @@
       // Choose the theme that is specified in the themes section.
       // Default: default
       //
-      theme "tokyo-night"
+      theme "tokyo-night-custom"
 
       // The name of the default layout to load on startup
       // Default: "default"
