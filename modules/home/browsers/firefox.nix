@@ -20,7 +20,7 @@
   isLinux = pkgs.stdenv.isLinux;
 in {
   programs.firefox = {
-    enable = true;
+    enable = isLinux;
     profiles.default = {
       id = 0;
       name = "default";

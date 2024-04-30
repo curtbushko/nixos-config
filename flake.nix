@@ -15,19 +15,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    devenv = {
-      url = "github:cachix/devenv/latest";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
-
     firefox-addons = {
       url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    ghostty = {
-      url = "github:clo4/ghostty-hm-module";
-    };
+    #ghostty = {
+    #  url = "github:clo4/ghostty-hm-module";
+    #};
 
     hyprland = {
       url = "github:hyprwm/hyprland";
@@ -72,6 +67,7 @@
       channels-config = {
         allowUnfree = true;
         allowUnsupportedSystem = true;
+        #allowBroken = true;
         permittedInsecurePackages = [
           # "python-2.7.18.6"
           "electron-25.9.0"

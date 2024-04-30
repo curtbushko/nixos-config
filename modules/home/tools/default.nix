@@ -29,7 +29,6 @@ in {
       pkgs.alejandra
       pkgs.asciinema
       pkgs.bottom
-      pkgs.brave
       pkgs.difftastic
       pkgs.eza
       pkgs.fd
@@ -44,7 +43,6 @@ in {
       pkgs.python3
       pkgs.ranger
       pkgs.ripgrep
-      pkgs.rustc
       pkgs.tree
       pkgs.watch
       pkgs.watchexec
