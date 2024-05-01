@@ -67,7 +67,7 @@
       channels-config = {
         allowUnfree = true;
         allowUnsupportedSystem = true;
-        #allowBroken = true;
+        allowBroken = true;
         permittedInsecurePackages = [
           # "python-2.7.18.6"
           "electron-25.9.0"

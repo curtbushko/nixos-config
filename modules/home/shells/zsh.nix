@@ -124,9 +124,9 @@
       # monitor switching
       work = "$DDCCTL set input 27";
       home = "$DDCCTL set input 17";
-      pc = "$DDCCTL set input 15";
+      pc = "wakeonlan e8:9c:25:c3:da:13; $DDCCTL set input 15";
       # ssh machines
-      sshgamingrig = "ssh curtbushko@gamingrig.basilisk-jazz.ts.net";
+      sshgamingrig = "wakeonlan e8:9c:25:c3:da:13; ssh curtbushko@gamingrig.basilisk-jazz.ts.net";
       sshm1 = "ssh curtbushko@m1-air.basilisk-jazz.ts.net";
       # zellij things
       zattach = "zellij attach coding";
