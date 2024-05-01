@@ -31,6 +31,11 @@
     };
   };
 
+  # Setup settings so that I can access the video card devices to control the monitor
+  services.udev.extraRules = ''
+    KERNEL=="i2c-[0-9]*", GROUP="i2c", MODE="0660"
+  '';
+
   # Setup auto suspend of gamingrid
   systemd.sleep.extraConfig = ''
     AllowSuspend=yes

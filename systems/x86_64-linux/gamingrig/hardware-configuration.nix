@@ -15,7 +15,7 @@
   boot = {
     initrd.availableKernelModules = ["nvme" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" "nvidia"];
     initrd.kernelModules = [];
-    kernelModules = ["kvm-amd" "nvidia"];
+    kernelModules = ["kvm-amd" "nvidia" "i2c-dev"]; # i2c-dev is used for monitor controls
     extraModulePackages = [config.boot.kernelPackages.nvidia_x11];
     blacklistedKernelModules = ["amdgpu"];
     #kernelParams = [ "modules_blacklist=amdgpu" ]; # blacklist integerated GPU
@@ -45,4 +45,7 @@
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+
+  # Used for monitor control, might be a duplicate of kernelModules above
+  hardware.i2c.enable = true;
 }

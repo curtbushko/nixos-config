@@ -122,7 +122,7 @@
       weather = "curl wttr.in/kitchener";
       weztitle = "wezterm cli set-tab-title";
       # monitor switching
-      work = "$DDCCTL set input 27";
+      work = "ddcutil setvcp 60 0x1b";
       home = "$DDCCTL set input 17";
       pc = "wakeonlan e8:9c:25:c3:da:13; $DDCCTL set input 15";
       # ssh machines

@@ -57,6 +57,7 @@ in {
     ])
     ++ (lib.optionals isLinux [
       #pkgs.rofi-firefox-wrapper
+      pkgs.ddcutil
       pkgs.zathura
       pkgs.lsof
     ]);
