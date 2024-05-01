@@ -61,15 +61,15 @@
               bind "e" { TogglePaneEmbedOrFloating; SwitchToMode "Normal"; }
               bind "c" { SwitchToMode "RenamePane"; PaneNameInput 0;}
           }
-          //move {
-          //    bind "Alt m" { SwitchToMode "Normal"; }
-          //    bind "n" "Tab" { MovePane; }
-          //    bind "p" { MovePaneBackwards; }
-          //   bind "h" "Left" { MovePane "Left"; }
-          //   bind "j" "Down" { MovePane "Down"; }
-          //    bind "k" "Up" { MovePane "Up"; }
-          //    bind "l" "Right" { MovePane "Right"; }
-          //}
+          move {
+              bind "Alt m" { SwitchToMode "Normal"; }
+              bind "n" "Tab" { MovePane; }
+              bind "p" { MovePaneBackwards; }
+             bind "h" "Left" { MovePane "Left"; }
+             bind "j" "Down" { MovePane "Down"; }
+              bind "k" "Up" { MovePane "Up"; }
+              bind "l" "Right" { MovePane "Right"; }
+          }
           tab {
               bind "Alt t" { SwitchToMode "Normal"; }
               bind "r" { SwitchToMode "RenameTab"; TabNameInput 0; }

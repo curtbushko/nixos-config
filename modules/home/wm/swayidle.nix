@@ -22,7 +22,7 @@
      # only suspend if audio isn't
      music_running=$(${pkgs.pipewire}/bin/pw-cli i all 2>&1 | ${pkgs.ripgrep}/bin/rg running -q)
      # only suspend if no ssh connections
-     ssh_connection=$($pkgs.iproute2}/bin/ss | ${pkgs.gnugrep}/bin/grep ssh | ${pkgs.gnugrep}/bin/sh -q ESTAB)
+     ssh_connection=$(${pkgs.iproute2}/bin/ss | ${pkgs.gnugrep}/bin/grep ssh | ${pkgs.gnugrep}/bin/grep -q ESTAB)
      if [[ $ssh_connection -eq 0 && $music_running -eq 0 ]]; then
        ${pkgs.coreutils}/bin/sleep 5
        ${pkgs.systemd}/bin/systemctl suspend
@@ -41,12 +41,12 @@ in {
       {
         timeout = 15 * 60;
         command = "${hyprctl} dispatch dpms off";
-        resumeCommand = "${hyprctl} dispatch dpms on";
+        resumeCommand = "${hyprctl} dispatch dpms on || true";
       }
       {
-        timeout = 60 * 60;
-        command = "${suspend-script}/bin/suspend-script";
-        resumeCommand = "${hyprctl} dispatch dpms on";
+        timeout = 45 * 60;
+        command = "${hyprctl} dispatch dpms on || true; ${pkgs.coreutils}/bin/sleep 2; ${suspend-script}/bin/suspend-script";
+        resumeCommand = "WAYLAND_DISPLAY=wayland-1 ${hyprctl} dispatch dpms on || true";
       }
       {
         timeout = 120 * 60;

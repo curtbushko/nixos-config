@@ -7,9 +7,7 @@
   pkgs,
   inputs,
   ...
-}: let
-  suspend-script = pkgs.writeScriptBin "suspend-script" (builtins.readFile ../../../modules/home/scripts/suspend-script);
-in {
+}: {
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
@@ -74,6 +72,7 @@ in {
     pciutils
     rxvt_unicode
     vim
+    nix-index
     wget
     xclip
     waybar
@@ -92,7 +91,7 @@ in {
     hyprland
     sway
     swayidle
-    suspend-script
+    cudaPackages.cuda_nvcc
   ];
 
   # Some programs need SUID wrappers, can be configured further or are

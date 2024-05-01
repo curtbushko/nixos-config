@@ -4,9 +4,11 @@
   ...
 }: let
   isLinux = pkgs.stdenv.isLinux;
-  screenOffCmd = ''swaymsg "output * dpms off"'';
-  suspendCmd = ''swaymsg "output * dpms on"; sleep 1; suspend-script'';
-  resumeCmd = ''swaymsg "output * dpms on"'';
+  #screenOffCmd = ''swaymsg "output * dpms off"'';
+  #suspendCmd = ''swaymsg "output * dpms on"; sleep 2; suspend-script'';
+  #hibernateCmd = ''swaymsg "output * dpms on"; sleep 2; hybernate-script'';
+  #resumeCmd = ''swaymsg "output * dpms on"'';
+  wallpaperCmd = "${pkgs.hyprpaper}/bin/hyprpaper";
 in {
   wayland.windowManager.hyprland = {
     enable = isLinux;
@@ -43,30 +45,28 @@ in {
         "QT_AUTO_SCREEN_SCALE_FACTOR,1"
       ];
       exec-once = [
+        wallpaperCmd
         "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
         "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
         "wl-paste --type text --watch cliphist store"
         "wl-paste --type image --watch cliphist store"
         "xprop -root -f _XWAYLAND_GLOBAL_OUTPUT_SCALE 32c -set _XWAYLAND_GLOBAL_OUTPUT_SCALE 1"
         "waybar"
-        "swayidle -w \
-            timeout 30 screenOffCmd \
-            timeout 60 suspendCmd \
-            resume resumeCmd"
       ];
       xwayland = {force_zero_scaling = true;};
       general = {
         monitor = [
           "desc:Dell Inc. DELL ULTRASHARP U3219W,3440x1440@60,0x0,1"
         ];
-        gaps_in = 5;
-        gaps_out = 5;
+        gaps_in = 10;
+        gaps_out = 10;
         border_size = 1;
 
         "col.inactive_border" = "$border-color";
         "col.active_border" = "$active-border-color";
         "no_border_on_floating" = false;
-        layout = "master";
+        #layout = "master";
+        layout = "diwndle";
         no_cursor_warps = true;
       };
       bind = [
@@ -146,10 +146,10 @@ in {
         # Resize like Rectangle (you must double dispatch to move and resize at the same time)
         # First 3/4
         "$super $alt, 1, movewindow, l"
-        "$super $alt, 1, resizeactive, exact 75% 100%"
+        "$super $alt, 1, resizeactive, exact 70% 100%"
         # Last 1/4
         "$super $alt, 2, movewindow, r"
-        "$super $alt, 2, resizeactive, exact 25% 100%"
+        "$super $alt, 2, resizeactive, exact 30% 100%"
         # First 2/3
         "$super $alt, 3, movewindow, l"
         "$super $alt, 3, resizeactive, exact 66% 100%"
@@ -165,6 +165,7 @@ in {
         disable_splash_rendering = true;
         disable_hyprland_logo = true;
         force_default_wallpaper = 0;
+        allow_session_lock_restore = true;
       };
       decoration = {
         rounding = 1;
@@ -212,22 +213,25 @@ in {
           "specialWorkspace, 1, 3, fluent_decel, slidevert"
         ];
       };
-      #dwindle = {
-      #  no_gaps_when_only = false;
-      #  pseudotile = true;
-      #  preserve_split = true;
-      #};
-      master = {
-        orientation = "right";
-        new_is_master = false;
-        mfact = 0.70;
+      dwindle = {
+        no_gaps_when_only = false;
+        pseudotile = true;
+        force_split = 2;  #forces split to the right
+        preserve_split = true;
+        use_active_for_splits = true;
       };
+      #master = {
+      #  orientation = "right";
+      #  new_is_master = false;
+      #};
       input = {
         repeat_delay = 250;
       };
       windowrulev2 = [
-        "tile,move 70%, size 30%, class:^(firefox)$"
-        "tile,move 0 0, size 70%, class:^(kitty)"
+        "move 2288 44, class:(firefox)"
+        "size 1146 1390, class:(firefox)"
+        "move 6 44, class:(com.mitchellh.ghostty)"
+        "size 2270 1390, class:(com.mitchellh.ghostty)"
         "float,class:^(org.kde.polkit-kde-authentication-agent-1)$"
         "float,class:^(pavucontrol)$"
         "float,title:^(Media viewer)$"

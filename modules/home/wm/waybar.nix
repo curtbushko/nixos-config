@@ -54,8 +54,8 @@ in {
 
         modules-right = [
           "tray"
+          "temperature"
           "pulseaudio"
-          "backlight"
           "cpu"
           "memory"
           "network"
@@ -82,21 +82,6 @@ in {
             "󰕿"
             "󰖀"
             "󰕾"
-          ];
-        };
-
-        backlight = {
-          format = "{icon} {percent}%";
-          format-icons = [
-            ""
-            ""
-            ""
-            ""
-            ""
-            ""
-            ""
-            ""
-            ""
           ];
         };
 

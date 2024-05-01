@@ -20,6 +20,7 @@
 in {
   imports = [
     ./hyprland.nix
+    ./hyprpaper.nix
     ./waybar.nix
     ./rofi.nix
     ./swayidle.nix

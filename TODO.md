@@ -1,6 +1,6 @@
 # TODO
 
 - [ ] NixOS: pass through tokyo night theme using nix-colors 
-- [ ] NixOS: wake-on-lan/hypernate/sleep
-- [ ] NixOS: fix firefox size and placement
-- [ ] NixOS: fix terminal startup ordering
+- [ ] NixOS: wake-on-lan
+- [ ] NixOS: wallpaper 
+
