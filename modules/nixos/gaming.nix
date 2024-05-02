@@ -16,19 +16,15 @@
   config,
   ...
 }: let
-  isLinux = pkgs.stdenv.isLinux;
 in {
   programs.steam = {
-     enable = isLinux;
+     enable = true;
      remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
      dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
   };
 
-  home.packages = with pkgs;
-  [
-  ]
-  ++ (lib.optionals isLinux [
+  environment.systemPackages = with pkgs; [
     steam-tui
     steamcmd
-  ]);
+  ];
 }
