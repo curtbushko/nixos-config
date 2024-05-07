@@ -144,11 +144,14 @@ in {
         "$super, mouse_up, workspace, e-1"
 
         # Resize like Rectangle (you must double dispatch to move and resize at the same time)
+        # First 3/4
         "$super $alt, 1, exec, hyprctl dispatcher splitratio exact 0.75"
         "$super $alt, 2, exec, hyprctl dispatcher splitratio exact 0.75"
         # First 2/3
         "$super $alt, 3, exec, hyprctl dispatcher splitratio exact 0.66"
         "$super $alt, 4, exec, hyprctl dispatcher splitratio exact 0.66"
+
+        "$super alt, p, pin"
 
         "$alt CTRL, h, resizeactive, -40 0"
         "$alt CTRL, l, resizeactive, 40 0"
@@ -229,6 +232,12 @@ in {
       };
       windowrulev2 = [
         #"float,class:(firefox)"
+        "size 1148 1380,class:(firefox)"
+        # Make sure nvim is always in these workspaces
+        #"workspace 1,class:(com.mitchellh.ghostty)"
+        #"workspace 2,class:(com.mitchellh.ghostty)"
+        #"workspace 3,class:(com.mitchellh.ghostty)"
+        "pin,class:(com.mitchellh.ghostty)"
         "float,class:^(org.kde.polkit-kde-authentication-agent-1)$"
         "float,class:^(pavucontrol)$"
         "float,title:^(Media viewer)$"

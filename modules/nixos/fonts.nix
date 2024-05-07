@@ -20,10 +20,14 @@
     enable = true;
     antialias = true;
     defaultFonts = {
-      monospace = ["JetbrainsMono Nerd Font Mono" "Noto Mono"];
-      sansSerif = ["JetbrainsMono Nerd Font Mono" "Noto Mono"];
-      serif = ["JetbrainsMono Nerd Font Mono" "Noto Mono"];
+      monospace = ["FiraCode Nerd Font Mono" "Noto Mono"];
+      #monospace = ["JetbrainsMono Nerd Font Mono" "Noto Mono"];
+      sansSerif = ["FiraCode Nerd Font Mono" "Noto Mono"];
+      #sansSerif = ["JetbrainsMono Nerd Font Mono" "Noto Mono"];
+      serif = ["FiraCode Nerd Font Mono" "Noto Mono"];
+      #serif = ["JetbrainsMono Nerd Font Mono" "Noto Mono"];
       emoji = ["Noto Color Emoji"];
+      #emoji = ["Noto Color Emoji"];
     };
   };
 }
