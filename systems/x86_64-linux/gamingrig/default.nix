@@ -96,7 +96,12 @@
     hyprland
     sway
     swayidle
+
+    # Gaming
     cudaPackages.cuda_nvcc
+    lutris
+    protonup-qt
+
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -171,6 +176,13 @@
     # Optionally, you may need to select the approprate driver version for your specifc GPU.
     package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
+
+  programs.steam = {
+     enable = true;
+     remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
+     dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
+  };
+  hardware.steam-hardware.enable = true;
 
   # Docker
   virtualisation = {

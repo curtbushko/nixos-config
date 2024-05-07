@@ -8,4 +8,5 @@
     pulse.enable = true;
     jack.enable = true;
   };
+  hardware.pulseaudio.support32Bit = true;
 }

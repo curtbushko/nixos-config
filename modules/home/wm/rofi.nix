@@ -9,5 +9,10 @@ in {
   programs.rofi = {
     enable = isLinux;
     package = pkgs.rofi-wayland;
+    extraConfig = {
+        modi = "drun";
+        show-icons = true;
+        case-sensitive = false;
+    };
   };
 }

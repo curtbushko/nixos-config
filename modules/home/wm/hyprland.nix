@@ -28,8 +28,9 @@ in {
       "$browser" = "rofi-firefox-wrapper";
 
       # Tokyonight Night colors
-      "$border-color" = "rgb(A9B1D6)";
-      "$active-border-color" = "rgb(7AA2F7)";
+      #"$border-color" = "rgb(A9B1D6)";
+      "$border-color" = "rgb(1A1B26)";
+      "$active-border-color" = "rgb(00b0fc)";
       "$bg-color" = "rgb(1A1B26)";
       "$inac-bg-color" = "rgb(1A1B26)";
       "$text-color" = "rgb(F7768E)";
@@ -65,8 +66,7 @@ in {
         "col.inactive_border" = "$border-color";
         "col.active_border" = "$active-border-color";
         "no_border_on_floating" = false;
-        #layout = "master";
-        layout = "diwndle";
+        layout = "master";
         no_cursor_warps = true;
       };
       bind = [
@@ -144,18 +144,16 @@ in {
         "$super, mouse_up, workspace, e-1"
 
         # Resize like Rectangle (you must double dispatch to move and resize at the same time)
-        # First 3/4
-        "$super $alt, 1, movewindow, l"
-        "$super $alt, 1, resizeactive, exact 70% 100%"
-        # Last 1/4
-        "$super $alt, 2, movewindow, r"
-        "$super $alt, 2, resizeactive, exact 30% 100%"
+        "$super $alt, 1, exec, hyprctl dispatcher splitratio exact 0.75"
+        "$super $alt, 2, exec, hyprctl dispatcher splitratio exact 0.75"
         # First 2/3
-        "$super $alt, 3, movewindow, l"
-        "$super $alt, 3, resizeactive, exact 66% 100%"
-        # Last 1/3
-        "$super $alt, 4, movewindow, r"
-        "$super $alt, 4, resizeactive, exact 33% 100%"
+        "$super $alt, 3, exec, hyprctl dispatcher splitratio exact 0.66"
+        "$super $alt, 4, exec, hyprctl dispatcher splitratio exact 0.66"
+
+        "$alt CTRL, h, resizeactive, -40 0"
+        "$alt CTRL, l, resizeactive, 40 0"
+        "$alt CTRL, k, resizeactive, 0 -40"
+        "$alt CTRL, j, resizeactive, 0 40"
       ];
       bindm = [
         "$super, mouse:272, movewindow"
@@ -213,25 +211,24 @@ in {
           "specialWorkspace, 1, 3, fluent_decel, slidevert"
         ];
       };
-      dwindle = {
-        no_gaps_when_only = false;
-        pseudotile = true;
-        force_split = 2;  #forces split to the right
-        preserve_split = true;
-        use_active_for_splits = true;
-      };
-      #master = {
-      #  orientation = "right";
-      #  new_is_master = false;
+      #dwindle = {
+      #  no_gaps_when_only = false;
+        #pseudotile = true;
+      #  force_split = 2;  #forces split to the right
+        #preserve_split = true;
+      #  use_active_for_splits = true;
       #};
+      master = {
+        orientation = "left";
+        new_is_master = false;
+        new_on_top = true;
+        special_scale_factor = 0.4;
+      };
       input = {
         repeat_delay = 250;
       };
       windowrulev2 = [
-        "move 2288 44, class:(firefox)"
-        "size 1146 1390, class:(firefox)"
-        "move 6 44, class:(com.mitchellh.ghostty)"
-        "size 2270 1390, class:(com.mitchellh.ghostty)"
+        #"float,class:(firefox)"
         "float,class:^(org.kde.polkit-kde-authentication-agent-1)$"
         "float,class:^(pavucontrol)$"
         "float,title:^(Media viewer)$"

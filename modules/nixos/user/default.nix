@@ -10,7 +10,7 @@
   users.users.curtbushko = {
     isNormalUser = true;
     home = "/home/curtbushko";
-    extraGroups = ["networkmanager" "docker" "wheel" "i2c"];
+    extraGroups = ["input" "networkmanager" "docker" "wheel" "i2c"];
     shell = pkgs.zsh;
   };
 }
