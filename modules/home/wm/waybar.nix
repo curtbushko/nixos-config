@@ -12,7 +12,7 @@ in {
     settings = [
       {
         layer = "top";
-        height = 25;
+        height = 32;
 
         margin-right = 6;
         margin-left = 6;
@@ -48,18 +48,20 @@ in {
 
         "hyprland/window" = {
           seperate-outputs = true;
-          rewrite."(.*) - Discord" = "󰙯 $1";
+          rewrite."(.*) - Discord" = "󰈹 $1";
           rewrite."(.*) — Mozilla Firefox" = "󰖟 $1";
+          rewrite."(.*) — Zellij" = " $1";
+          rewrite."(.*)Steam" = "Steam 󰓓";
         };
 
         modules-right = [
           "tray"
-          "temperature"
           "pulseaudio"
           "cpu"
           "memory"
+          "temperature"
+          "custom/gpu"
           "network"
-          "battery"
           "clock"
         ];
 
@@ -87,6 +89,18 @@ in {
 
         cpu.format = " {usage}%";
         memory.format = "󰽘 {}%";
+
+        temperature = {
+            hwmon-path = "/sys/class/hwmon/hwmon1/temp1_input";
+            format = " {temperatureC}°C";
+            critical-threshold = 75;
+        };
+
+        "custom/gpu" = {
+            exec = "nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits";
+            format = " {}°C";
+            interval = 10;
+        };
 
         network = {
           format-disconnected = "󰤮 ";
@@ -154,7 +168,7 @@ in {
         color: #7aa2f7;
       }
 
-      #tray, #pulseaudio, #backlight, #cpu, #memory, #network, #battery, #clock {
+      #tray, #pulseaudio, #cpu, #memory, #temperature, #custom-gpu, #network, #clock {
         margin-left: 20;
       }
 
