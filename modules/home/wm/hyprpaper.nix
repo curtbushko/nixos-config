@@ -6,12 +6,13 @@
   isLinux = pkgs.stdenv.isLinux;
   wallpaper = "/home/curtbushko/wallpapers/cyberpunk_2077_phantom_liberty_katana.jpg";
 in {
-  home.packages = with pkgs; [
-  ]
-  ++ (lib.optionals isLinux [
+  home.packages = with pkgs;
+    [
+    ]
+    ++ (lib.optionals isLinux [
       #pkgs.rofi-firefox-wrapper
-    hyprpaper
-  ]);
+      hyprpaper
+    ]);
 
   xdg.configFile."hypr/hyprpaper.conf" = {
     text = ''

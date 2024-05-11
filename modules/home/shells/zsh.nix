@@ -137,7 +137,7 @@
     };
     initExtra = ''
       if [ ! -L $HOME/.local/bin/ghostty ]; then
-      	ln -s $GHOSTTY/zig-out/bin/ghostty $HOME/.local/bin/ghostty 
+      	ln -s $GHOSTTY/zig-out/bin/ghostty $HOME/.local/bin/ghostty
       fi
       if [ -f $HOME/.private.post.source ]; then
           source $HOME/.private.post.source

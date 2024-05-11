@@ -216,9 +216,9 @@ in {
       };
       #dwindle = {
       #  no_gaps_when_only = false;
-        #pseudotile = true;
+      #pseudotile = true;
       #  force_split = 2;  #forces split to the right
-        #preserve_split = true;
+      #preserve_split = true;
       #  use_active_for_splits = true;
       #};
       master = {

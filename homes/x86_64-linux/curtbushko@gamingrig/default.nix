@@ -21,6 +21,7 @@
   # Let home manager manage itself
   programs.home-manager.enable = true;
 
+  colorScheme = inputs.nix-colors.colorSchemes.tokyo-night-terminal-dark;
   xdg.enable = true;
   #xdg.configFile = {
   #  "ghostty/config".text = builtins.readFile ./ghostty.config;
@@ -50,7 +51,7 @@
     LC_ALL = "en_US.UTF-8";
     EDITOR = "nvim";
     PAGER = "less -FirSwX";
-    TERM  = "xterm-256color";
+    TERM = "xterm-256color";
   };
 
   imports = [
@@ -63,5 +64,6 @@
     ../../../modules/home/terminals
     ../../../modules/home/tools
     ../../../modules/home/wm
+    inputs.nix-colors.homeManagerModules.default
   ];
 }

@@ -10,9 +10,9 @@ in {
     enable = isLinux;
     package = pkgs.rofi-wayland;
     extraConfig = {
-        modi = "drun";
-        show-icons = true;
-        case-sensitive = false;
+      modi = "drun";
+      show-icons = true;
+      case-sensitive = false;
     };
   };
 }

@@ -101,7 +101,6 @@
     cudaPackages.cuda_nvcc
     lutris
     protonup-qt
-
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -178,9 +177,9 @@
   };
 
   programs.steam = {
-     enable = true;
-     remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
-     dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
+    enable = true;
+    remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
+    dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
   };
   hardware.steam-hardware.enable = true;
 

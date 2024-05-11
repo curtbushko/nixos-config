@@ -53,7 +53,6 @@ in {
         command = "${suspend-script}/bin/suspend-script";
         resumeCommand = "${hyprctl} dispatch dpms on";
       }
-
     ];
   };
 }

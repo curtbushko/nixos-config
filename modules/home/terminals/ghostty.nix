@@ -16,7 +16,6 @@
   config,
   ...
 }: {
-
   #imports = [
   #  inputs.ghostty.homeModules.default
   #];
