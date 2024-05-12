@@ -189,7 +189,7 @@ in {
         shadow_range = 50;
         shadow_render_power = 3;
         "col.shadow" = "rgba(00000055)";
-        blurls = ["lockscreen" "waybar" "popups"];
+        blurls = ["lockscreen" "popups"];
       };
       animation = {
         bezier = [

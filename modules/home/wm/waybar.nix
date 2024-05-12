@@ -17,7 +17,6 @@
   ...
 }: let
   isLinux = pkgs.stdenv.isLinux;
-
 in {
   programs.waybar = {
     enable = isLinux;
@@ -26,9 +25,9 @@ in {
         layer = "top";
         position = "top";
         mod = "dock";
-        height = 30;
-        margin-top = 1;
-        margin-bottom = 2;
+        height = 20;
+        margin-top = 0;
+        margin-bottom = 0;
         exclusive = true;
         passthrough = false;
         gtk-layer-shell = true;
@@ -36,7 +35,7 @@ in {
         /*
           Their (avnibilgin) setup:
         *
-        * left: apps / quicklinks /workspaces / taskbar
+        * left: apps / network /workspaces / audio
         * center: clock
         * right: timer /audio-bluetooth-brightness-wifi/system (updates-notifications-copyq/clipboard-power)
         *
@@ -57,52 +56,26 @@ in {
         */
 
         /*
-        Group System
+        ┓ ┏┓┏┓┏┳┓  ┳┳┓┏┓┳┓┳┳┓ ┏┓┏┓
+        ┃ ┣ ┣  ┃   ┃┃┃┃┃┃┃┃┃┃ ┣ ┗┓
+        ┗┛┗┛┻  ┻   ┛ ┗┗┛┻┛┗┛┗┛┗┛┗┛
         */
-        "group/system" = {
+        "group/network" = {
           orientation = "horizontal";
           modules = [
-            "custom/power"
+            "network"
           ];
         };
 
-        "custom/power" = {
-          format = "{}";
-          exec = "echo ; echo  logout";
-          on-click = "~/.config/hypr/scripts/logoutlaunch.sh 2";
-          interval = 86400;
-          tooltip = true;
+        network = {
+          format-wifi = "󰤨 {signalStrength}%";
+          format-ethernet = "󱘖 {ipaddr}  {bandwidthUpBytes}  {bandwidthDownBytes}";
+          tooltip-format = "󱘖 {ipaddr}  {bandwidthUpBytes}  {bandwidthDownBytes}";
+          format-linked = "󱘖 {ifname} (No IP)";
+          format-disconnected = " Disconnected";
+          format-alt = "󰤨 {essid}";
+          interval = 5;
         };
-
-        modules-left = [
-          "group/l-quicklinks"
-          "network"
-          "group/r-quicklinks"
-          "group/l-workspaces"
-          "hyprland/workspaces"
-          "group/r-workspaces"
-          "group/l-taskbar"
-          "pulseaudio"
-          "group/r-taskbar"
-        ];
-
-        modules-center = [
-          "clock"
-        ];
-
-        modules-right = [
-          "group/l-misc"
-          "cpu"
-          "group/r-misc"
-          "group/l-devices"
-          "memory"
-          "custom/gpu"
-          "temperature"
-          "group/r-devices"
-          "group/l-system"
-          "group/system"
-          "group/r-system"
-        ];
 
         "hyprland/workspaces" = {
           on-scroll-up = "hyprctl dispatch workspace -1";
@@ -111,19 +84,6 @@ in {
           active-only = false;
           on-click = "activate";
           persistent-workspaces."*" = 8;
-        };
-
-        "hyprland/window" = {
-          seperate-outputs = true;
-          rewrite."(.*) - Discord" = "󰈹 $1";
-          rewrite."(.*) — Mozilla Firefox" = "󰖟 $1";
-          rewrite."(.*) — Zellij" = " $1";
-          rewrite."(.*)Steam" = "Steam 󰓓";
-        };
-
-        tray = {
-          reverse-direction = true;
-          spacing = 5;
         };
 
         pulseaudio = {
@@ -143,11 +103,73 @@ in {
           ];
         };
 
+        modules-left = [
+          "group/l-network"
+          "group/network"
+          "group/r-network"
+          "group/l-workspaces"
+          "hyprland/workspaces"
+          "group/r-workspaces"
+          "group/l-audio"
+          "pulseaudio"
+          "group/r-audio"
+        ];
+
+        /*
+        ┏┓┏┓┳┓┏┳┓┏┓┳┓  ┳┳┓┏┓┳┓┳┳┓ ┏┓┏┓
+        ┃ ┣ ┃┃ ┃ ┣ ┣┫  ┃┃┃┃┃┃┃┃┃┃ ┣ ┗┓
+        ┗┛┗┛┛┗ ┻ ┗┛┛┗  ┛ ┗┗┛┻┛┗┛┗┛┗┛┗┛
+        */
+
+        clock = {
+          format = "{:%R}";
+          tooltip-format = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
+        };
+
+        modules-center = [
+          "clock"
+        ];
+
+        /*
+        ┳┓┳┏┓┓┏┏┳┓  ┳┳┓┏┓┳┓┳┳┓ ┏┓┏┓
+        ┣┫┃┃┓┣┫ ┃   ┃┃┃┃┃┃┃┃┃┃ ┣ ┗┓
+        ┛┗┻┗┛┛┗ ┻   ┛ ┗┗┛┻┛┗┛┗┛┗┛┗┛
+        */
+
+        "group/system" = {
+          orientation = "horizontal";
+          modules = [
+            "custom/suspend"
+          ];
+        };
+
+        "custom/suspend" = {
+          format = " {}";
+          exec ="echo ; echo  suspend";
+          on-click = "systemctl suspend";
+          interval = 86400;
+          tooltip = false;
+        };
+
+        "group/temp" = {
+          orientation = "horizontal";
+          modules = [
+            "custom/gpu"
+            "temperature"
+          ];
+        };
+
+        "group/resources" = {
+          orientation = "horizontal";
+          modules = [
+            "cpu"
+            "memory"
+          ];
+        };
+
         cpu = {
           interval = 10;
           format = "󰍛 {usage}%";
-          format-alt = "{icon0}{icon1}{icon2}{icon3}";
-          format-icons = ["▁" "▂" "▃" "▄" "▅" "▆" "▇" "█"];
         };
 
         memory.format = "󰽘 {}%";
@@ -164,41 +186,21 @@ in {
           interval = 10;
         };
 
-        network = {
-          format-wifi = "󰤨 {signalStrength}%";
-          format-ethernet = "󱘖 {ipaddr}  {bandwidthUpBytes}  {bandwidthDownBytes}";
-          tooltip-format = "󱘖 {ipaddr}  {bandwidthUpBytes}  {bandwidthDownBytes}";
-          format-linked = "󱘖 {ifname} (No IP)";
-          format-disconnected = " Disconnected";
-          format-alt = "󰤨 {essid}";
-          interval = 5;
-        };
+        modules-right = [
+          "group/l-resources"
+          "group/resources"
+          "group/r-resources"
+          "group/l-temp"
+          "group/temp"
+          "group/r-temp"
+          "group/l-system"
+          "group/system"
+          "group/r-system"
+        ];
 
-        battery = {
-          format = "{icon} {capacity}%";
-          format-charging = "󰂄 {capacity}%";
-          format-plugged = "󰂄 {capacity}%";
-
-          format-icons = [
-            "󰁺"
-            "󰁻"
-            "󰁼"
-            "󰁽"
-            "󰁾"
-            "󰁿"
-            "󰂀"
-            "󰂁"
-            "󰂂"
-            "󰁹"
-          ];
-
-          states.warning = 30;
-          states.critical = 15;
-        };
-
-        clock = {
-          format = "{:%R}";
-          tooltip-format = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
+        tray = {
+          reverse-direction = true;
+          spacing = 5;
         };
       }
     ];
@@ -206,411 +208,315 @@ in {
     style = let
       inherit (inputs.nix-colors.lib.conversions) hexToRGBString;
       toRGBA = color: opacity: "rgba(${hexToRGBString "," (lib.removePrefix "#" color)},${opacity})";
-    in with config.colorScheme.palette; ''
-      /*
-          ┏┓┓ ┏┳┓  ┏┓┏┓┓ ┏┓┳┓┏┓
-          ┃┃┃┃┃┃┃  ┃ ┃┃┃ ┃┃┣┫┗┓
-          ┗┛┗┻┛┛┗  ┗┛┗┛┗┛┗┛┛┗┗┛
-      */
-      @define-color foreground #${base00};
-      @define-color background #${base01};
-      @define-color cursor #afbbe5;
+      colors = config.colorScheme.palette;
+    in
+      with colors; ''
+        /*
+            ┏┓┓ ┏┳┓  ┏┓┏┓┓ ┏┓┳┓┏┓
+            ┃┃┃┃┃┃┃  ┃ ┃┃┃ ┃┃┣┫┗┓
+            ┗┛┗┻┛┛┗  ┗┛┗┛┗┛┗┛┛┗┗┛
+        */
+        @define-color foreground #dfe9ff;
+        @define-color background #${base00};
+        @define-color cursor #afbbe5;
 
-      @define-color color0 #0E1716;
-      @define-color color1 #284B91;
-      @define-color color2 #2A509B;
-      @define-color color3 #3057A9;
-      @define-color color4 #4F67AF;
-      @define-color color5 #5473C9;
-      @define-color color6 #8A739D;
-      @define-color color7 #afbbe5;
-      @define-color color8 #7a82a0;
-      @define-color color9 #284B91;
-      @define-color color10 #2A509B;
-      @define-color color11 #3057A9;
-      @define-color color12 #4F67AF;
-      @define-color color13 #5473C9;
-      @define-color color14 #8A739D;
-      @define-color color15 #afbbe5;
-      /* waybar area/group colors*/
-      @define-color apps rgba(0, 0, 0, 0.6);
-      @define-color quicklinks rgba(0, 0, 0, 0.4);
-      @define-color workspaces rgba(0, 0, 0, 0.6);
-      @define-color taskbar rgba(0, 0, 0, 0.4);
-      @define-color clock @foreground;
-      @define-color misc rgba(0, 0, 0, 0.4);
-      @define-color timer rgba(0, 0, 0, 0.4);
-      @define-color devices rgba(0, 0, 0, 0.6);
+        /* waybar area/group colors*/
+        @define-color network ${toRGBA base02 "1.0"};
+        @define-color workspaces ${toRGBA base05 "1.0"};
+        @define-color audio ${toRGBA base0D "1.0"};
+        @define-color clock @foreground;
+        @define-color resources ${toRGBA base0D "1.0"};
+        @define-color temperature ${toRGBA base05 "1.0"};
+        @define-color system ${toRGBA base02 "1.0"};
 
-      @define-color system ${toRGBA base0D "0.4"};
-      /* workspace text colors */
-      @define-color workspace_fg @foreground;
-      @define-color act_wrk_fg rgba(0, 0, 0, 1);
-      @define-color use_wrk_fg @color5;
-      /* workspace button-background colors */
-      @define-color workspace_bg rgba(0, 0, 0, 0.6);
-      @define-color act_wrk_bg @foreground;
-      /* taskbar button-background colors */
-      @define-color taskbar_bg rgba(255, 255, 255, 0.2);
-      /* updates-widget icon+text colors */
-      @define-color updates_green #a3be8c;
-      @define-color updates_yellow #ff9a3c;
-      @define-color updates_red #dc2f2f;
-      /* tokyo-night colors
-      updates_green = "00b0fc";
-      updates_yellow = "#ffec6e";
-      updates_red = "f7768e";
-      */
+        /* workspace text colors */
+        @define-color workspace_fg @foreground;
+        @define-color act_wrk_fg  ${toRGBA "#dfe9ff" "1"};
+        @define-color use_wrk_fg #${base05};
+        /* workspace button-background colors */
+        @define-color workspace_bg rgba(0, 0, 0, 0.6);
+        @define-color act_wrk_fg #${base00};
+        @define-color act_wrk_bg #${base0D};
 
-      /*
-          ┏┓┏┓┳┓┏┓┳┓┏┓┓
-          ┃┓┣ ┃┃┣ ┣┫┣┫┃
-          ┗┛┗┛┛┗┗┛┛┗┛┗┗┛
-      */
+        /* updates-widget icon+text colors */
+        @define-color updates_green #a3be8c;
+        @define-color updates_yellow #ff9a3c;
+        @define-color updates_red #dc2f2f;
+        /* tokyo-night colors
+        updates_green = "00b0fc";
+        updates_yellow = "#ffec6e";
+        updates_red = "f7768e";
+        */
 
-      * {
-          font-family: "Fira Sans SemiBold";
-          font-weight: bold;
-          font-size: 12px;
-          min-height: 16px;
-      }
+        /*
+            ┏┓┏┓┳┓┏┓┳┓┏┓┓
+            ┃┓┣ ┃┃┣ ┣┫┣┫┃
+            ┗┛┗┛┛┗┗┛┛┗┛┗┗┛
+        */
 
-      window#waybar {
-          color: @foreground;
-          background: transparent;
-      }
+        * {
+            font-family: "Fira Sans SemiBold";
+            font-weight: bold;
+            font-size: 12px;
+            min-height: 0px;
+        }
 
-      tooltip {
-          background: @background;
-          color: @foreground;
-          border-radius: 7px;
-          border-width: 0px;
-      }
+        window#waybar {
+            color: @foreground;
+            background: transparent;
+            padding: 0;
+            margin: 0;
+        }
 
-      /*
-          ┓ ┏┏┓┳┓┓┏┓┏┓┏┓┏┓┏┓┏┓┏┓
-          ┃┃┃┃┃┣┫┃┫ ┗┓┃┃┣┫┃ ┣ ┗┓
-          ┗┻┛┗┛┛┗┛┗┛┗┛┣┛┛┗┗┛┗┛┗┛
-      */
+        tooltip {
+            background: @background;
+            color: @foreground;
+            border-radius: 5px;
+            border-width: 0px;
+        }
 
-      #workspaces {
-          padding: 4px 10px;
-      }
+        /*
+            ┓ ┏┏┓┳┓┓┏┓┏┓┏┓┏┓┏┓┏┓┏┓
+            ┃┃┃┃┃┣┫┃┫ ┗┓┃┃┣┫┃ ┣ ┗┓
+            ┗┻┛┗┛┛┗┛┗┛┗┛┣┛┛┗┗┛┗┛┗┛
+        */
 
-      /* ALL workspace buttons (Focused + Unfocused) */
-      #workspaces button:hover {
-      }
+        #workspaces {
+            padding: 2px 10px;
+        }
 
-      /* Only focused workspace*/
-      #workspaces button.active {
-          color:  @act_wrk_fg;
-          background: @act_wrk_bg;
-          border: none;
-          padding: 1px 2px;
-          margin: 1px 4px;
-          transition: all 0.3s ease-in-out;
-      }
+        /* ALL workspace buttons (Focused + Unfocused) */
+        #workspaces button:hover {
+        }
 
-      /* Unfocused workspace WITH opened Apps
-      !!! Border style is valid for ALL buttons,
-      Set seperate border style for every button. */
-      #workspaces button {
-          color: @workspace_fg;
-          background: @workspace_bg;
-          padding: 1px 2px;
-          margin: 1px 4px;
-          transition: all 0.3s ease-in-out;
-      }
+        /* Only focused workspace*/
+        #workspaces button.active {
+            color:  @act_wrk_fg;
+            background: @act_wrk_bg;
+            border: none;
+            padding: 2px 5px;
+            margin: 2px 2px;
+            transition: all 0.3s ease-in-out;
+        }
 
-      #workspaces button:not(.empty):not(.active) {
-          color: @use_wrk_fg;
-          padding: 1px 2px;
-          margin: 1px 4px;
-      }
+        /* Unfocused workspace WITH opened Apps
+        !!! Border style is valid for ALL buttons,
+        Set seperate border style for every button. */
+        #workspaces button {
+            color: @workspace_fg;
+            background: @workspace_bg;
+            padding: 2px 5px;
+            margin: 2px 2px;
+            transition: all 0.3s ease-in-out;
+        }
 
-      /*
-          OTHER POSSIBLE DESIGN-ATTRIBUTES:
-              #workspaces button.empty
-              #workspaces button.persistent
-              #workspaces button:not(.persistent)
-              #workspaces button:not(.active) usw.
-      */
+        #workspaces button:not(.empty):not(.active) {
+            color: @use_wrk_fg;
+            padding: 2px 5px;
+            margin: 2px 5px;
+        }
 
-      /*
-         ┏┳┓┏┓┏┓┓┏┓┳┓┏┓┳┓
-          ┃ ┣┫┗┓┃┫ ┣┫┣┫┣┫
-          ┻ ┛┗┗┛┛┗┛┻┛┛┗┛┗
-      */
+        /*
+            ┏┓┏┳┓┓┏┏┓┳┓
+            ┃┃ ┃ ┣┫┣ ┣┫
+            ┗┛ ┻ ┛┗┗┛┛┗
+        */
 
-      /*
-      #taskbar.empty {
-          background: transparent;
-      }
-      */
+        #clock {
+            font-family: "Futura Bk BT";
+            font-weight: bold;
+            font-size: 14px;
+            color: @clock;
+            padding: 1px 5px 0px 5px;
+            opacity: 1;
+        }
 
-      #taskbar {
-          padding: 4px 10px;
-      }
+        /*
+        #custom-updates.green {
+            color: @updates_green;
+        }
+        */
 
-      #taskbar button {
-          padding: 1px 4px;
-          margin: 0px 4px;
-      }
+        #custom-updates.yellow {
+            color: @updates_yellow;
+        }
 
-      #taskbar button.active {
-          background: @taskbar_bg;
-          border-radius: 5;
-          transition: all 0.3s ease-in-out;
-      }
+        #custom-updates.red {
+            color: @updates_red;
+        }
 
-      #taskbar button:hover {
-          border-radius: 5;
-          transition: all 0.3s ease-in-out;
-      }
+        /*
+            ┏┓┏┓┳┳┓┳┳┓┏┓┳┓  ┏┓┏┓┳┓┳┓┳┳┓┏┓       ┓  ┳┳┓┏┓┳┓┏┓┳┳┓
+            ┃ ┃┃┃┃┃┃┃┃┃┃┃┃  ┃┃┣┫┃┃┃┃┃┃┃┃┓  ┏┓┏┓┏┫  ┃┃┃┣┫┣┫┃┓┃┃┃
+            ┗┛┗┛┛ ┗┛ ┗┗┛┛┗  ┣┛┛┗┻┛┻┛┻┛┗┗┛  ┗┻┛┗┗┻  ┛ ┗┛┗┛┗┗┛┻┛┗
+        */
 
-      /*
-          ┏┓┏┳┓┓┏┏┓┳┓
-          ┃┃ ┃ ┣┫┣ ┣┫
-          ┗┛ ┻ ┛┗┗┛┛┗
-      */
+        /* inactiv widget modules */
+        #cpu, #memory, #mpris, #custom-spotify, #custom-mode, #custom-gpuinfo, #custom-ddcutil,
+        /* group "system" widgets */
+        #custom-updates, #custom-power, #custom-copyq, #custom-mako,
+        /* group "temperature" widgets */
+        #bluetooth, #pulseaudio, #wireplumber, #network, #custom-ddc_brightness, #custom-screenrecorder,
+        /* group "resources" widgets */
+        #custom-screenrecorder, #custom-resources, #idle_inhibitor,
+        /* group "network" widgets */
+        #custom-filemanager, #custom-browser, #custom-terminal, #custom-editor, #custom-obsidian,
+        /* groups + custom-appmenu */
+        #custom-appmenu, #network, #window, #resources, #temperature, #system {
+            padding: 0px 5px;
+        }
 
-      #clock {
-          font-family: "Futura Bk BT";
-          font-weight: bold;
-          font-size: 14px;
-          color: @clock;
-          padding: 2px 10px 0px 10px;
-          opacity: 1;
-      }
+        /*
+            ┏┓┏┓┓ ┏┏┓┳┓┓ ┳┳┓┏┓  ┳┳┓┏┓┳┓┳┳
+            ┃┃┃┃┃┃┃┣ ┣┫┃ ┃┃┃┣   ┃┃┃┣ ┃┃┃┃
+            ┣┛┗┛┗┻┛┗┛┛┗┗┛┻┛┗┗┛  ┛ ┗┗┛┛┗┗┛
+        */
 
-      #custom-timer {
-          padding: 2px 10px 0px 10px;
-          min-width: 30px;
-      }
+        #l-network, #r-network, #l-workspaces, #r-workspaces, #l-audio, #r-audio, #l-resources, #r-resources, #l-temp, #r-temp, #l-system, #r-system {
+            background: transparent;
+            min-height:0px;
+        }
 
-      /*
-      #custom-updates.green {
-          color: @updates_green;
-      }
-      */
+        /*
+            ┳┓┏┓┏┳┓┓ ┏┏┓┳┓┓┏┓
+            ┃┃┣  ┃ ┃┃┃┃┃┣┫┃┫
+            ┛┗┗┛ ┻ ┗┻┛┗┛┛┗┛┗┛
+        */
 
-      #custom-updates.yellow {
-          color: @updates_yellow;
-      }
+        #l-network {
+            border-left: 10 solid transparent;
+            border-bottom: 30 solid @network;
+            margin-left:0;
+        }
 
-      #custom-updates.red {
-          color: @updates_red;
-      }
+        #r-network {
+            border-left: 15 solid @network;
+            border-bottom: 30 solid transparent;
+            margin-right:-15;
+        }
 
-      /*
-          ┏┓┏┓┳┳┓┳┳┓┏┓┳┓  ┏┓┏┓┳┓┳┓┳┳┓┏┓       ┓  ┳┳┓┏┓┳┓┏┓┳┳┓
-          ┃ ┃┃┃┃┃┃┃┃┃┃┃┃  ┃┃┣┫┃┃┃┃┃┃┃┃┓  ┏┓┏┓┏┫  ┃┃┃┣┫┣┫┃┓┃┃┃
-          ┗┛┗┛┛ ┗┛ ┗┗┛┛┗  ┣┛┛┗┻┛┻┛┻┛┗┗┛  ┗┻┛┗┗┻  ┛ ┗┛┗┛┗┗┛┻┛┗
-      */
+        #network {
+            background: @network;
+        }
+        #group-network {
+            background: @network;
+        }
 
-      /* inactiv widget modules */
-      #cpu, #memory, #mpris, #custom-spotify, #custom-mode, #custom-gpuinfo, #custom-ddcutil,
-      /* group "system" widgets */
-      #custom-updates, #custom-power, #custom-copyq, #custom-mako,
-      /* group "devices" widgets */
-      #bluetooth, #pulseaudio, #wireplumber, #network, #custom-ddc_brightness, #custom-screenrecorder,
-      /* group "misc" widgets */
-      #custom-screenrecorder, #custom-misc, #idle_inhibitor,
-      /* group "quicklinks" widgets */
-      #custom-filemanager, #custom-browser, #custom-terminal, #custom-editor, #custom-obsidian,
-      /* groups + custom-appmenu */
-      #custom-appmenu, #quicklinks, #window, #misc, #devices, #system {
-          padding: 0px 10px;
-      }
+        /*
+            ┓ ┏┏┓┳┓┓┏┓┏┓┏┓┏┓┏┓┏┓┏┓
+            ┃┃┃┃┃┣┫┃┫ ┗┓┃┃┣┫┃ ┣ ┗┓
+            ┗┻┛┗┛┛┗┛┗┛┗┛┣┛┛┗┗┛┗┛┗┛
+        */
 
-      /*
-          ┏┓┏┓┓ ┏┏┓┳┓┓ ┳┳┓┏┓  ┳┳┓┏┓┳┓┳┳
-          ┃┃┃┃┃┃┃┣ ┣┫┃ ┃┃┃┣   ┃┃┃┣ ┃┃┃┃
-          ┣┛┗┛┗┻┛┗┛┛┗┗┛┻┛┗┗┛  ┛ ┗┗┛┛┗┗┛
-      */
+        #l-workspaces {
+            border-left: 15 solid transparent;
+            border-bottom: 30 solid @workspaces;
+            margin-left:0;
+        }
 
-      #l-apps, #r-apps, #l-quicklinks, #r-quicklinks, #l-workspaces, #r-workspaces, #l-taskbar, #r-taskbar, #l-misc, #r-misc, #l-timer, #r-timer, #l-devices, #r-devices, #l-system, #r-system {
-          background: transparent;
-          min-height:0px;
-      }
+        #r-workspaces {
+            border-left: 15 solid @workspaces;
+            border-bottom: 30 solid transparent;
+            margin-right:-15;
+        }
 
-      /*
-          ┏┓┏┓┏┓┏┓
-          ┣┫┃┃┃┃┗┓
-          ┛┗┣┛┣┛┗┛
-      */
+        #workspaces {
+            background: @workspaces;
+        }
 
-      /*  Not necessary because first widget. Removed from (config)
-          modules so bar is flush with left edge of monitor.  */
+        /*
+            ┏┓┳┳┳┓┳┏┓
+            ┣┫┃┃┃┃┃┃┃
+            ┛┗┗┛┻┛┻┗┛
+        */
+        #l-audio {
+            border-left: 15 solid transparent;
+            border-bottom: 30 solid @audio;
+            margin-left:0;
+        }
 
-      #l-apps {
-          border-left: 15 solid transparent;
-          border-bottom: 30 solid @apps;
-          margin-left:0;
-      }
+        #r-audio {
+            border-left: 15 solid @audio;
+            border-bottom: 30 solid transparent;
+            margin-right:-15;
+        }
 
-      #r-apps {
-          border-left: 15 solid @apps;
-          border-bottom: 30 solid transparent;
-          margin-right:-15;
-      }
+        #pulseaudio {
+            background: @audio;
+        }
 
-      #custom-appmenu {
-          background: @apps;
-      }
+        /*
+          ┳┓┏┓┏┓┏┓┳┳┳┓┏┓┏┓┏┓
+          ┣┫┣ ┗┓┃┃┃┃┣┫┃ ┣ ┗┓
+          ┛┗┗┛┗┛┗┛┗┛┛┗┗┛┗┛┗┛
+        */
 
-      /*
-          ┏┓┳┳┳┏┓┓┏┓┓ ┳┳┓┓┏┓┏┓
-          ┃┃┃┃┃┃ ┃┫ ┃ ┃┃┃┃┫ ┗┓
-          ┗┻┗┛┻┗┛┛┗┛┗┛┻┛┗┛┗┛┗┛
-      */
+        #l-resources {
+            border-left: 15 solid transparent;
+            border-bottom: 30 solid @resources;
+            margin-left:0;
+        }
 
-      #l-quicklinks {
-          border-left: 15 solid transparent;
-          border-bottom: 30 solid @quicklinks;
-          margin-left:0;
-      }
+        #r-resources {
+            border-left: 15 solid @resources;
+            border-bottom: 30 solid transparent;
+            margin-right:-15;
+        }
 
-      #r-quicklinks {
-          border-left: 15 solid @quicklinks;
-          border-bottom: 30 solid transparent;
-          margin-right:-15;
-      }
+        #resources {
+            background: @resources;
+        }
 
-      #quicklinks {
-          background: @quicklinks;
-      }
+        /*
+           ┏┳┓┏┓┳┳┓┏┓┏┓┳┓┏┓┏┳┓┳┳┳┓┏┓
+            ┃ ┣ ┃┃┃┃┃┣ ┣┫┣┫ ┃ ┃┃┣┫┣
+            ┻ ┗┛┛ ┗┣┛┗┛┛┗┛┗ ┻ ┗┛┛┗┗┛
+        */
 
-      /*
-          ┓ ┏┏┓┳┓┓┏┓┏┓┏┓┏┓┏┓┏┓┏┓
-          ┃┃┃┃┃┣┫┃┫ ┗┓┃┃┣┫┃ ┣ ┗┓
-          ┗┻┛┗┛┛┗┛┗┛┗┛┣┛┛┗┗┛┗┛┗┛
-      */
+        #l-temp {
+            border-left: 15 solid transparent;
+            border-bottom: 30 solid @temperature;
+            margin-left:0;
+        }
 
-      #l-workspaces {
-          border-left: 15 solid transparent;
-          border-bottom: 30 solid @workspaces;
-          margin-left:0;
-      }
+        #r-temp {
+            border-left: 15 solid @temperature;
+            border-bottom: 30 solid transparent;
+            margin-right:-15;
+        }
 
-      #r-workspaces {
-          border-left: 15 solid @workspaces;
-          border-bottom: 30 solid transparent;
-          margin-right:-15;
-      }
+        #temperature {
+            background: @temperature;
+        }
 
-      #workspaces {
-          background: @workspaces;
-      }
+        #custom-gpu {
+            background: @temperature;
+        }
 
-      /*
-         ┏┳┓┏┓┏┓┓┏┓┳┓┏┓┳┓
-          ┃ ┣┫┗┓┃┫ ┣┫┣┫┣┫
-          ┻ ┛┗┗┛┛┗┛┻┛┛┗┛┗
-      */
+        /*
+            ┏┓┓┏┏┓┏┳┓┏┓┳┳┓
+            ┗┓┗┫┗┓ ┃ ┣ ┃┃┃
+            ┗┛┗┛┗┛ ┻ ┗┛┛ ┗
+        */
 
-      #l-taskbar {
-          border-left: 15 solid transparent;
-          border-bottom: 30 solid @taskbar;
-          margin-left:0;
-      }
+        #l-system {
+            border-left: 15 solid transparent;
+            border-bottom: 30 solid @system;
+            margin-left:0;
+        }
 
-      #r-taskbar {
-          border-left: 15 solid @taskbar;
-          border-bottom: 30 solid transparent;
-          margin-right:-15;
-      }
+        /*  Not necessary because last widget. Removed from (config)
+        modules so bar is flush with right edge of monitor.  */
 
-      #taskbar {
-          background: @taskbar;
-      }
+        #r-system {
+            border-left: 15 solid @system;
+            border-bottom: 30 solid transparent;
+            margin-right:-15;
+        }
 
-      /*
-          ┳┳┓┳┏┓┏┓
-          ┃┃┃┃┗┓┃
-          ┛ ┗┻┗┛┗┛
-      */
-
-      #l-misc {
-          border-left: 15 solid transparent;
-          border-bottom: 30 solid @misc;
-          margin-left:0;
-      }
-
-      #r-misc {
-          border-left: 15 solid @misc;
-          border-bottom: 30 solid transparent;
-          margin-right:-15;
-      }
-
-      #misc {
-          background: @misc;
-      }
-
-      /*
-          ┏┳┓┳┳┳┓┏┓┳┓
-           ┃ ┃┃┃┃┣ ┣┫
-           ┻ ┻  ┗┗┛┛┗
-      */
-
-      #l-timer {
-          border-left: 15 solid transparent;
-          border-bottom: 30 solid @timer;
-          margin-left:0;
-      }
-
-      #r-timer {
-          border-left: 15 solid @timer;
-          border-bottom: 30 solid transparent;
-          margin-right:-15;
-      }
-
-      /*
-          ┳┓┏┓┓┏┳┏┓┏┓┏┓
-          ┃┃┣ ┃┃┃┃ ┣ ┗┓
-          ┻┛┗┛┗┛┻┗┛┗┛┗┛
-      */
-
-      #l-devices {
-          border-left: 15 solid transparent;
-          border-bottom: 30 solid @devices;
-          margin-left:0;
-      }
-
-      #r-devices {
-          border-left: 15 solid @devices;
-          border-bottom: 30 solid transparent;
-          margin-right:-15;
-      }
-
-      #devices {
-          background: @devices;
-      }
-
-      /*
-          ┏┓┓┏┏┓┏┳┓┏┓┳┳┓
-          ┗┓┗┫┗┓ ┃ ┣ ┃┃┃
-          ┗┛┗┛┗┛ ┻ ┗┛┛ ┗
-      */
-
-      #l-system {
-          border-left: 15 solid transparent;
-          border-bottom: 30 solid @system;
-          margin-left:0;
-          }
-
-      /*  Not necessary because last widget. Removed from (config)
-      modules so bar is flush with right edge of monitor.  */
-
-      #r-system {
-          border-left: 15 solid @system;
-          border-bottom: 30 solid transparent;
-          margin-right:-15;
-      }
-
-      #system {
-          background: @system;
-      }
-    '';
+        #system {
+            background: @system;
+        }
+      '';
   };
 }

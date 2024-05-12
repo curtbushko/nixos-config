@@ -22,6 +22,7 @@
   programs.home-manager.enable = true;
 
   colorScheme = inputs.nix-colors.colorSchemes.tokyo-night-terminal-dark;
+
   xdg.enable = true;
   #xdg.configFile = {
   #  "ghostty/config".text = builtins.readFile ./ghostty.config;
@@ -55,7 +56,6 @@
   };
 
   imports = [
-    #nix-colors.homeManagerModules.default
     ../../../modules/home/browsers
     ../../../modules/home/git
     ../../../modules/home/go
@@ -65,5 +65,6 @@
     ../../../modules/home/tools
     ../../../modules/home/wm
     inputs.nix-colors.homeManagerModules.default
+    #../../../modules/home/themes/tokyo-night-neon.nix
   ];
 }
