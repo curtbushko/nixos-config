@@ -30,6 +30,7 @@ in {
       pkgs.asciinema
       pkgs.bottom
       pkgs.difftastic
+      pkgs.curl
       pkgs.eza
       pkgs.fd
       pkgs.fzf

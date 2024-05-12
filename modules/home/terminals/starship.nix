@@ -16,10 +16,10 @@
   config,
   ...
 }: {
-  programs.starship = let 
-      inherit (inputs.nix-colors.lib.conversions) hexToRGBString;
-      toRGBA = color: opacity: "rgba(${hexToRGBString "," (lib.removePrefix "#" color)},${opacity})";
-      colors = config.colorScheme.palette;
+  programs.starship = let
+    inherit (inputs.nix-colors.lib.conversions) hexToRGBString;
+    toRGBA = color: opacity: "rgba(${hexToRGBString "," (lib.removePrefix "#" color)},${opacity})";
+    colors = config.colorScheme.palette;
   in {
     enable = true;
     enableZshIntegration = true;

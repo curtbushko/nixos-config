@@ -145,7 +145,7 @@ in {
 
         "custom/suspend" = {
           format = " {}";
-          exec ="echo ; echo  suspend";
+          exec = "echo ; echo  suspend";
           on-click = "systemctl suspend";
           interval = 86400;
           tooltip = false;
