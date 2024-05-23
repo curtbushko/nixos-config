@@ -128,6 +128,7 @@
       # ssh machines
       sshgamingrig = "wakeonlan e8:9c:25:c3:da:13; ssh curtbushko@gamingrig.basilisk-jazz.ts.net";
       sshm1 = "ssh curtbushko@m1-air.basilisk-jazz.ts.net";
+      sshwork = "ssh curtbushko@curtbushko-X3FR7279D2";
       # zellij things
       zattach = "zellij attach coding";
       zux = "zellij -s coding";
