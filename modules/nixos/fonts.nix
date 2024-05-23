@@ -19,6 +19,16 @@
   fonts.fontconfig = {
     enable = true;
     antialias = true;
+    # Fixes antialias blur
+    hinting = {
+        enable = true;
+        style = "full";
+        autohint = true;
+    };
+    subpixel = {
+        rgba = "rgb"; # Nakes it bolder
+        lcdfilter = "default";
+    };
     defaultFonts = {
       monospace = ["FiraCode Nerd Font Mono" "Noto Mono"];
       #monospace = ["JetbrainsMono Nerd Font Mono" "Noto Mono"];

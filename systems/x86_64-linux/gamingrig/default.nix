@@ -132,6 +132,9 @@
   # Hint electron apps to use wayland
   environment.variables.NIXOS_OZONE_WL = "1";
 
+  # Might help with making fonts clearer
+  environment.variables.FREETYPE_PROPERTIES="truetype:interpreter-version=35";
+
   # For accessing resources outside of the sandbox
   xdg.portal = {
     enable = true;
@@ -148,6 +151,7 @@
     driSupport32Bit = true;
     extraPackages = with pkgs; [nvidia-vaapi-driver];
   };
+
 
   hardware.nvidia = {
     # Modesetting is required.
