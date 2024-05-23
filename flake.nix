@@ -45,9 +45,6 @@
 
     nix-colors.url = "github:misterio77/nix-colors";
 
-    # zellij status plugin
-    zjstatus.url = "github:dj95/zjstatus";
-
     # Other packages
     zig.url = "github:mitchellh/zig-overlay";
   };

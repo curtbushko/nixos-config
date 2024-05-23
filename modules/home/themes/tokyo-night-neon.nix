@@ -3,7 +3,8 @@
     slug = "Tokyo Night Neon";
     name = "Tokyo Night Neon";
     author = "curtbushko";
-    colors = {
+    palette = {
+      base00 = "16161E";
       base01 = "16161E";
       base02 = "2F3549";
       base03 = "444B6A";
@@ -19,6 +20,49 @@
       base0D = "2AC3DE";
       base0E = "BB9AF7";
       base0F = "F7768E";
+      # bg & bg_dark are taken from tokyo-night night
+      bg = "#1a1b26";
+      bg_dark = "#16161e";
+      bg_highlight = "#292e42";
+      terminal_black = "#414868";
+      #fg = "#c0caf5"; # original
+      fg = "#dfe9ff";
+      fg_dark = "#a9b1d6";
+      fg_gutter = "#3b4261";
+      dark3 = "#545c7e";
+      comment = "#565f89";
+      dark5 = "#737aa2";
+      blue0 = "#3d59a1";
+      blue = "#7aa2f7";
+      cyan = "#7dcfff";
+      blue1 = "#2ac3de";
+      blue2 = "#0db9d7";
+      blue5 = "#89ddff";
+      blue6 = "#b4f9f8";
+      blue7 = "#394b70";
+      blue8 = "#00b0fc"; # bright blue that pops. This is what is used for active window borders
+      blue9 = "#019ef3"; # another bright blue that pops
+      magenta = "#bb9af7";
+      magenta2 = "#ff007c";
+      purple = "#9d7cd8";
+      orange = "#ff9e64";
+      #yellow = "#e0af68"; # original
+      yellow = "#FFEC6E";
+      green = "#9ece6a";
+      green1 = "#73daca"; # original
+      green2 = "#41a6b5"; # original
+      # teal = "#1abc9c"; # original
+      teal = "#65bcff";
+      red = "#f7768e";
+      red1 = "#db4b4b";
+      # git_add = "#449dab"; # original
+      git_add = "#7ea454";
+      git_change = "#6183bb";
+      git_delete = "#914c54";
+      # git_signs_add = "#266d6a"; # original
+      git_signs_add = "#7ea454";
+      git_signs_change = "#536c9e";
+      git_signs_delete = "#b2555b";
     };
   };
 }

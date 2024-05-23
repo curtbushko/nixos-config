@@ -85,6 +85,9 @@ in {
         #"$alt CTRL, P, exec, ${./scripts/wofi-pass.sh}"
         #"$alt SHIFT, G, exec, ${pkgs.sway-contrib.grimshot}/bin/grimshot copy area"
 
+        # Paste using rofi
+        "super, V, exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
+
         "$alt $super, F, fullscreen"
         "$super, E, togglegroup"
 

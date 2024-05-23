@@ -216,36 +216,35 @@ in {
             ┃┃┃┃┃┃┃  ┃ ┃┃┃ ┃┃┣┫┗┓
             ┗┛┗┻┛┛┗  ┗┛┗┛┗┛┗┛┛┗┗┛
         */
-        @define-color foreground #dfe9ff;
-        @define-color background #${base00};
+        @define-color foreground #${fg};
+        @define-color background #${bg};
         @define-color cursor #afbbe5;
 
         /* waybar area/group colors*/
-        @define-color network ${toRGBA base02 "1.0"};
-        @define-color workspaces ${toRGBA base05 "1.0"};
-        @define-color audio ${toRGBA base0D "1.0"};
+        @define-color network ${toRGBA bg "1.0"};
+        @define-color workspaces ${toRGBA dark3 "1.0"};
+        @define-color audio ${toRGBA blue "1.0"};
         @define-color clock @foreground;
-        @define-color resources ${toRGBA base0D "1.0"};
-        @define-color temperature ${toRGBA base05 "1.0"};
-        @define-color system ${toRGBA base02 "1.0"};
+        @define-color resources ${toRGBA blue "1.0"};
+        @define-color temperature ${toRGBA dark3 "1.0"};
+        @define-color system ${toRGBA bg "1.0"};
 
         /* workspace text colors */
         @define-color workspace_fg @foreground;
-        @define-color act_wrk_fg  ${toRGBA "#dfe9ff" "1"};
-        @define-color use_wrk_fg #${base05};
+        @define-color act_wrk_fg  #${bg};
+        @define-color use_wrk_fg #${blue8};
         /* workspace button-background colors */
-        @define-color workspace_bg rgba(0, 0, 0, 0.6);
-        @define-color act_wrk_fg #${base00};
-        @define-color act_wrk_bg #${base0D};
+        @define-color workspace_bg ${toRGBA bg "0.9"};
+        @define-color act_wrk_bg ${toRGBA green "0.8"};
 
         /* updates-widget icon+text colors */
-        @define-color updates_green #a3be8c;
-        @define-color updates_yellow #ff9a3c;
-        @define-color updates_red #dc2f2f;
+        @define-color updates_green #${green};
+        @define-color updates_yellow #${yellow};
+        @define-color updates_red #${red};
         /* tokyo-night colors
-        updates_green = "00b0fc";
-        updates_yellow = "#ffec6e";
-        updates_red = "f7768e";
+        updates_green = "#${green}";
+        updates_yellow = "#${yellow}";
+        updates_red = "${red}";
         */
 
         /*
@@ -296,7 +295,7 @@ in {
             border: none;
             padding: 2px 5px;
             margin: 2px 2px;
-            transition: all 0.3s ease-in-out;
+            transition: all 0.2s ease-in-out;
         }
 
         /* Unfocused workspace WITH opened Apps
@@ -307,7 +306,7 @@ in {
             background: @workspace_bg;
             padding: 2px 5px;
             margin: 2px 2px;
-            transition: all 0.3s ease-in-out;
+            transition: all 0.2s ease-in-out;
         }
 
         #workspaces button:not(.empty):not(.active) {

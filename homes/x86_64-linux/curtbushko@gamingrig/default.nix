@@ -21,8 +21,6 @@
   # Let home manager manage itself
   programs.home-manager.enable = true;
 
-  colorScheme = inputs.nix-colors.colorSchemes.tokyo-night-terminal-dark;
-
   xdg.enable = true;
   #xdg.configFile = {
   #  "ghostty/config".text = builtins.readFile ./ghostty.config;
@@ -65,6 +63,7 @@
     ../../../modules/home/tools
     ../../../modules/home/wm
     inputs.nix-colors.homeManagerModules.default
-    #../../../modules/home/themes/tokyo-night-neon.nix
+    # Colorscheme. Still use nix-colors as there are some useful libraries in it.
+    ../../../modules/home/themes/tokyo-night-neon.nix
   ];
 }

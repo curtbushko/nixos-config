@@ -21,7 +21,7 @@
   };
   home.file.zellij = {
     target = ".config/zellij/config.kdl";
-    text = ''
+    text = with config.colorScheme.palette; ''
       // If you'd like to override the default keybindings completely, be sure to change "keybinds" to "keybinds clear-defaults=true"
       keybinds clear-defaults=true {
           //normal {
@@ -289,7 +289,7 @@
       themes {
           tokyo-night-custom {
           fg "#dfe9ff"
-           bg "#1A1B26"
+          bg "#${base01}"
            black "#15161e"
            red "#f7768e"
            green "#9ece6a"

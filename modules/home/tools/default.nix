@@ -61,5 +61,7 @@ in {
       pkgs.ddcutil
       pkgs.zathura
       pkgs.lsof
+      pkgs.remmina # remote desktop client
+      pkgs.sunshine # moonline server for game streaming/remote desktop serving
     ]);
 }
