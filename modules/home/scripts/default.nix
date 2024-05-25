@@ -55,6 +55,7 @@
   makeunitwatcher = pkgs.writeScriptBin "makeunitwatcher" (builtins.readFile ./makeunitwatcher);
   nodewatcher = pkgs.writeScriptBin "nodewatcher" (builtins.readFile ./nodewatcher);
   open-file = pkgs.writeScriptBin "open-file" (builtins.readFile ./open-file);
+  pdf-clean = pkgs.writeScriptBin "pdf-clean" (builtins.readFile ./pdf-clean);
   pod-failed-cleanup = pkgs.writeScriptBin "pod-failed-cleanup" (builtins.readFile ./pod-failed-cleanup);
   pod-security-context = pkgs.writeScriptBin "pod-security-context" (builtins.readFile ./pod-security-context);
   podwatcher = pkgs.writeScriptBin "podwatcher" (builtins.readFile ./podwatcher);
@@ -98,6 +99,7 @@ in {
       makeunitwatcher
       nodewatcher
       open-file
+      pdf-clean
       pod-failed-cleanup
       pod-security-context
       podwatcher

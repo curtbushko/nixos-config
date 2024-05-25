@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# Open current directory in finder
+EXTENTION=".pdf"
+echo "Renaming all ${EXTENTION} files to lowercase, remove spaces, and extra charactes"
+
+SAVEIFS=$IFS
+IFS=$'\n'
+for SRC in $(find * -type f -name "*${EXTENTION}"); do
+	# Strip extension
+	FILE="${SRC%.*}"
+	DEST=$(basename "${FILE}" | tr '[A-Z]' '[a-z]' | tr -d '(),.' | tr '-' ' ' | tr -s ' ' '_')
+	DEST=${DEST}${EXTENTION}
+	if [ "${SRC}" != "${DEST}" ]; then
+		echo "Moving file: ${SRC}"
+		echo "to: ${DEST}"
+		mv "${SRC}" "${DEST}"
+	fi
+done
+IFS=$SAVEIFS

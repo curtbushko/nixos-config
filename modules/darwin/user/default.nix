@@ -5,6 +5,8 @@
 }: {
   homebrew = {
     enable = true;
+    brews  = [];
+    taps = [];
     casks = [
       #"discord"
       "docker"
