@@ -23,14 +23,16 @@
      music_running=$(${pkgs.pipewire}/bin/pw-cli i all 2>&1 | ${pkgs.ripgrep}/bin/rg running -q)
      # only suspend if no ssh connections
      ssh_connection=$(${pkgs.iproute2}/bin/ss | ${pkgs.gnugrep}/bin/grep ssh | ${pkgs.gnugrep}/bin/grep -q ESTAB)
-     if [[ $ssh_connection -eq 0 && $music_running -eq 0 ]]; then
+     # only suspend if not converting pdfs. Also, ignore grep to stop a false positive
+     convert_pdfs=$(${pkgs.ps}/bin/ps -ef | grep -i convert-pdfs.sh | grep -v grep)
+     if [[ $ssh_connection -eq 0 && $music_running -eq 0 && convert_pdfs -eq 0 ]]; then
        ${pkgs.coreutils}/bin/sleep 5
        ${pkgs.systemd}/bin/systemctl suspend
-    echo "Would have suspended"
-    echo "ssh connection: $ssh_connection, music_running: $music_running"
+        echo "Would have suspended"
+        echo "ssh connection: $ssh_connection, music_running: $music_running, convert_pdfs: $convert_pdfs"
      else
-    echo "Not suspending."
-    echo "ssh connection: $ssh_connection, music_running: $music_running"
+        echo "Not suspending."
+        echo "ssh connection: $ssh_connection, music_running: $music_running"
      fi
   '';
 in {
