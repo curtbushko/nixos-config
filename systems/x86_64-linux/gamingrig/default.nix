@@ -179,7 +179,7 @@
     # Optionally, you may need to select the approprate driver version for your specifc GPU.
     package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
-
+ 
   programs.steam = {
     enable = true;
     remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play

@@ -20,47 +20,6 @@
   isLinux = pkgs.stdenv.isLinux;
 in {
   imports = [
-    ./bat.nix
-    ./direnv.nix
+    ./sunshine.nix
   ];
-
-  home.packages =
-    [
-      pkgs.alejandra
-      pkgs.asciinema
-      pkgs.bottom
-      pkgs.difftastic
-      pkgs.curl
-      pkgs.eza
-      pkgs.fd
-      pkgs.fzf
-      pkgs.gnused
-      pkgs.gum
-      pkgs.htop
-      pkgs.jq
-      pkgs.kubectl
-      pkgs.kind
-      pkgs.lsd
-      pkgs.python3
-      pkgs.ranger
-      pkgs.ripgrep
-      pkgs.tree
-      pkgs.watch
-      pkgs.watchexec
-      pkgs.wakeonlan
-      pkgs.yazi
-      pkgs.yt-dlp
-      pkgs.zoxide
-    ]
-    ++ (lib.optionals isDarwin [
-      pkgs.cachix
-      pkgs.tailscale
-    ])
-    ++ (lib.optionals isLinux [
-      #pkgs.rofi-firefox-wrapper
-      pkgs.ddcutil
-      pkgs.zathura
-      pkgs.lsof
-      pkgs.remmina # remote desktop client
-    ]);
 }

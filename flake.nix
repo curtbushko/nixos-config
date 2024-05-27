@@ -66,6 +66,7 @@
     lib.mkFlake {
       channels-config = {
         allowUnfree = true;
+        cudaSupport = true;
         allowUnsupportedSystem = true;
         allowBroken = true;
         permittedInsecurePackages = [

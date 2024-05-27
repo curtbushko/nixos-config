@@ -19,20 +19,22 @@
   isLinux = pkgs.stdenv.isLinux;
   hyprctl = "${config.wayland.windowManager.hyprland.package}/bin/hyprctl";
   suspend-script = pkgs.writeShellScriptBin "suspend-script" ''
+     #!/bin/sh
+     set -x
      # only suspend if audio isn't
-     music_running=$(${pkgs.pipewire}/bin/pw-cli i all 2>&1 | ${pkgs.ripgrep}/bin/rg running -q)
+     #music_running=$(${pkgs.pipewire}/bin/pw-cli i all 2>&1 | ${pkgs.ripgrep}/bin/rg running -q)
      # only suspend if no ssh connections
-     ssh_connection=$(${pkgs.iproute2}/bin/ss | ${pkgs.gnugrep}/bin/grep ssh | ${pkgs.gnugrep}/bin/grep -q ESTAB)
+     ssh_connection=$(${pkgs.iproute2}/bin/ss | ${pkgs.gnugrep}/bin/grep ssh | ${pkgs.gnugrep}/bin/grep ESTAB | ${pkgs.coreutils}/bin/wc -l | ${pkgs.findutils}/bin/xargs )
      # only suspend if not converting pdfs. Also, ignore grep to stop a false positive
-     convert_pdfs=$(${pkgs.ps}/bin/ps -ef | grep -i convert-pdfs.sh | grep -v grep)
-     if [[ $ssh_connection -eq 0 && $music_running -eq 0 && convert_pdfs -eq 0 ]]; then
-       ${pkgs.coreutils}/bin/sleep 5
+     convert_pdfs=$(${pkgs.procps}/bin/ps -ef | ${pkgs.gnugrep}/bin/grep -i "convert-pdfs.sh" | ${pkgs.gnugrep}/bin/grep -v grep | ${pkgs.coreutils}/bin/wc -l | ${pkgs.findutils}/bin/xargs )
+     if [[ $ssh_connection -eq 0 && $convert_pdfs -eq 0 ]]; then
+       ${pkgs.coreutils}/bin/sleep 10 
        ${pkgs.systemd}/bin/systemctl suspend
         echo "Would have suspended"
-        echo "ssh connection: $ssh_connection, music_running: $music_running, convert_pdfs: $convert_pdfs"
+        echo "ssh connection: $ssh_connection, convert_pdfs: $convert_pdfs"
      else
         echo "Not suspending."
-        echo "ssh connection: $ssh_connection, music_running: $music_running"
+        echo "ssh connection: $ssh_connection, convert_pdfs: $convert_pdfs"
      fi
   '';
 in {
@@ -47,7 +49,7 @@ in {
       }
       {
         timeout = 45 * 60;
-        command = "${hyprctl} dispatch dpms on || true; ${pkgs.coreutils}/bin/sleep 2; ${suspend-script}/bin/suspend-script";
+        command = "${hyprctl} dispatch dpms on || true; ${pkgs.coreutils}/bin/sleep 10; ${suspend-script}/bin/suspend-script";
         resumeCommand = "WAYLAND_DISPLAY=wayland-1 ${hyprctl} dispatch dpms on || true";
       }
       {
