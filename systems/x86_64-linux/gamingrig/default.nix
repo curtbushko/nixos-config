@@ -101,6 +101,7 @@
     cudaPackages.cuda_nvcc
     lutris
     protonup-qt
+    #sunshine
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -133,7 +134,7 @@
   environment.variables.NIXOS_OZONE_WL = "1";
 
   # Might help with making fonts clearer
-  environment.variables.FREETYPE_PROPERTIES="truetype:interpreter-version=35";
+  environment.variables.FREETYPE_PROPERTIES = "truetype:interpreter-version=35";
 
   # For accessing resources outside of the sandbox
   xdg.portal = {
@@ -151,7 +152,6 @@
     driSupport32Bit = true;
     extraPackages = with pkgs; [nvidia-vaapi-driver];
   };
-
 
   hardware.nvidia = {
     # Modesetting is required.
@@ -179,14 +179,14 @@
     # Optionally, you may need to select the approprate driver version for your specifc GPU.
     package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
- 
+
   programs.steam = {
     enable = true;
     remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
     dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
   };
   hardware.steam-hardware.enable = true;
-
+ 
   # Docker
   virtualisation = {
     libvirtd.enable = true;

@@ -67,6 +67,8 @@
       channels-config = {
         allowUnfree = true;
         cudaSupport = true;
+        cudaCapabilities = [ "7.2 "];
+        cudaEnableForwardCompat = false;
         allowUnsupportedSystem = true;
         allowBroken = true;
         permittedInsecurePackages = [

@@ -8,6 +8,5 @@
     ./dbus.nix
     ./fonts.nix
     ./pipewire.nix
-    ./sunshine.nix
   ];
 }
