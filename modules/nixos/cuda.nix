@@ -3,6 +3,8 @@
   pkgs,
   ...
 }: {
+  # Taken from: https://nixos.wiki/wiki/CUDA
+  # I figured it'd be better to install at the system level instead of in a shell
   environment.systemPackages = with pkgs; [
     git
     gitRepo
@@ -24,8 +26,8 @@
     stdenv.cc
     binutils
   ];
-  environment.variables.CUDA_PATH=${pkgs.cudatoolkit}
+  environment.variables.CUDA_PATH="${pkgs.cudatoolkit}";
     # export LD_LIBRARY_PATH=${pkgs.linuxPackages.nvidia_x11}/lib
-  environment.variables.EXTRA_LDFLAGS="-L/lib -L${pkgs.linuxPackages.nvidia_x11}/lib"
-  environment.variables.EXTRA_CCFLAGS="-I/usr/include"
+  environment.variables.EXTRA_LDFLAGS="-L/lib -L${pkgs.linuxPackages.nvidia_x11}/lib";
+  environment.variables.EXTRA_CCFLAGS="-I/usr/include";
 }
