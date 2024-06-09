@@ -8,5 +8,6 @@
     ./dbus.nix
     ./fonts.nix
     ./pipewire.nix
+    ./cachix.nix
   ];
 }
