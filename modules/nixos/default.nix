@@ -9,6 +9,6 @@
     ./fonts.nix
     ./pipewire.nix
     ./cachix.nix
-    ./cuda.nix
+    #./cuda.nix
   ];
 }
