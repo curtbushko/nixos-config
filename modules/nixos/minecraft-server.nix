@@ -18,13 +18,7 @@
 }: let
   isLinux = pkgs.stdenv.isLinux;
 in {
-  home.packages = with pkgs;
-    [
-    ]
-    ++ (lib.optionals isLinux [
-      minecraft
-      vulkan-loader
-      #prismlauncher
-      (prismlauncher.override { additionalLibs = [ vulkan-loader ]; })
-    ]);
+    services.minecraft-server = {
+        enable = true;
+    };
 }

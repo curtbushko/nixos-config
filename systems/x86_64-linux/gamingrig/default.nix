@@ -99,6 +99,7 @@
 
     # Gaming
     cudaPackages.cuda_nvcc
+    vulkan-tools
     lutris
     protonup-qt
     #sunshine
