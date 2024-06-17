@@ -20,5 +20,24 @@
 in {
     services.minecraft-server = {
         enable = true;
+        package = pkgs.minecraftServers.vanilla-1-18;
+        dataDir = "/var/lib/minecraft";
+        eula = true;
+        declarative = true;
+        jvmOpts = "-Xms2048m -Xmx6656m";
+        openFirewall = true;
+        serverProperties = {
+            difficulty = "normal";
+            gamemode = "survival";
+            max-players = 3;
+            view-distance = 32;
+            simulation-distance = 8;
+            motd = "D&J Minecraft Server";
+            white-list = true;
+        };
+        whitelist = {
+            Trospar = "79995c56-739b-4e4d-a6a7-c6b15781565d";
+            PumpkinStigen = "5601a49d-1242-41f3-aaf5-13a995617132";
+        };
     };
 }
