@@ -45,17 +45,17 @@ in {
       {
         timeout = 15 * 60;
         command = "${hyprctl} dispatch dpms off";
-        resumeCommand = "${hyprctl} dispatch dpms on || true";
+        resumeCommand = "sleep 3;WAYLAND_DISPLAY=wayland-1 ${hyprctl} dispatch dpms on || true";
       }
       {
         timeout = 45 * 60;
         command = "${hyprctl} dispatch dpms on || true; ${pkgs.coreutils}/bin/sleep 10; ${suspend-script}/bin/suspend-script";
-        resumeCommand = "WAYLAND_DISPLAY=wayland-1 ${hyprctl} dispatch dpms on || true";
+        resumeCommand = "sleep 3; WAYLAND_DISPLAY=wayland-1 ${hyprctl} dispatch dpms on || true";
       }
       {
         timeout = 120 * 60;
         command = "${suspend-script}/bin/suspend-script";
-        resumeCommand = "${hyprctl} dispatch dpms on";
+        resumeCommand = "sleep 3; WAYLAND_DISPLAY=wayland-1 ${hyprctl} dispatch dpms on";
       }
     ];
   };
