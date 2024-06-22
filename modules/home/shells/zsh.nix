@@ -35,6 +35,7 @@
     # environment variables
     sessionVariables = {
       BUSHKO = "$HOME/workspace/github.com/curtbushko";
+      KLEIO = "$HOME/workspace/github.com/kleiovers";
       DDCCTL = "$HOME/.dotfiles/bin/m1ddc";
       DOTFILES = "$HOME/.dotfiles";
       GHOSTTY = "$HOME/workspace/github.com/mitchellh/ghostty";
@@ -70,8 +71,9 @@
       cdgithub = "cd $GITHUB";
       cdghostty = "cd $GHOSTTY";
       cdleetcode = "cd $BUSHKO/leetcode";
-      cddemo = "cd $BUSHKO/cni-demo";
+      cddemo = "cd $BUSHKO/hashicorp-demos";
       cdbushko = "cd $BUSHKO";
+      cdkleio = "cd $KLEIO";
       cdkb = "cd $KB";
       cdsync = "cd $SYNC";
       cddot = "cd $DOTFILES";
