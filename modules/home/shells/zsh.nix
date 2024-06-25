@@ -35,10 +35,10 @@
     # environment variables
     sessionVariables = {
       BUSHKO = "$HOME/workspace/github.com/curtbushko";
-      KLEIO = "$HOME/workspace/github.com/kleiovers";
+      KLEIO = "$HOME/workspace/github.com/kleioverse";
       DDCCTL = "$HOME/.dotfiles/bin/m1ddc";
       DOTFILES = "$HOME/.dotfiles";
-      GHOSTTY = "$HOME/workspace/github.com/mitchellh/ghostty";
+      GHOSTTY = "$HOME/workspace/github.com/ghostty-org/ghostty";
       GITHUB = "$HOME/workspace/github.com";
       KB = "$HOME/Sync/KB";
       NIXOS_CONFIG = "$HOME/workspace/github.com/curtbushko/nixos-config";
@@ -46,6 +46,7 @@
       WORKSPACE = "$HOME/workspace";
       WALLPAPERS = "$HOME/Sync/wallpapers";
       ZIGBIN = "$HOME/bin/zig";
+      DIRENV_WARN_TIMEOUT= "10s";
     };
     shellAliases = {
       ".." = "cd ..";
