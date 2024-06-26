@@ -45,7 +45,7 @@ in {
         ENABLE_COMMAND_BLOCK = "true";
         MODE = "survival";
         DIFFICULTY = "normal";
-        MAX_PLATERS = "3";
+        MAX_PLAYERS = "3";
         VIEW_DISTANCE = "32";
         #WHITELIST_FILE = ;
       };
