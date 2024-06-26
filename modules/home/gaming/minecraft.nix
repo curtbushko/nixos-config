@@ -25,6 +25,6 @@ in {
       minecraft
       vulkan-loader
       #prismlauncher
-      (prismlauncher.override { additionalLibs = [ vulkan-loader ]; })
+      (prismlauncher.override {additionalLibs = [vulkan-loader];})
     ]);
 }

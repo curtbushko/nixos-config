@@ -46,7 +46,7 @@
       WORKSPACE = "$HOME/workspace";
       WALLPAPERS = "$HOME/Sync/wallpapers";
       ZIGBIN = "$HOME/bin/zig";
-      DIRENV_WARN_TIMEOUT= "10s";
+      DIRENV_WARN_TIMEOUT = "10s";
     };
     shellAliases = {
       ".." = "cd ..";
@@ -147,5 +147,10 @@
           source $HOME/.private.post.source
       fi
     '';
+  };
+  programs.zsh.oh-my-zsh = {
+    enable = true;
+    plugins = ["git" "vi-mode"];
+    theme = "agnoster";
   };
 }

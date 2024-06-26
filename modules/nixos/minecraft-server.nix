@@ -29,8 +29,8 @@ in {
         # Need to place non-distributable mods in ./downloads/mods
         # As of Update-10.0.0
         # - Neon Craft 2 v2.2: https://www.curseforge.com/minecraft/mc-mods/neon-craft-2-mod/files/3726051
-       "/var/lib/minecraft/downloads:/downloads"
-       "/var/lib/minecraft:/data"
+        "/var/lib/minecraft/downloads:/downloads"
+        "/var/lib/minecraft:/data"
       ];
       environment = {
         EULA = "true";
@@ -82,3 +82,4 @@ in {
 #        };
 #    };
 #}
+
