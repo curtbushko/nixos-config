@@ -37,7 +37,7 @@ in {
       slurp
       wl-clipboard
 
-      eww-wayland
+      eww
       swww
       swappy # snapshot tool
       swaybg
