@@ -135,7 +135,7 @@
       # zellij things
       zattach = "zellij attach coding";
       zux = "zellij -s coding";
-      zdel = "zellij delete-session coding";
+      zdel = "zellij delete-session coding --force";
       ztitle = "zellij action rename-tab";
       zkill = "zellij kill-session coding";
     };
