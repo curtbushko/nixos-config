@@ -25,7 +25,6 @@
 in {
   wayland.windowManager.hyprland = {
     enable = isLinux;
-    #plugins = [ inputs.hypr-dynamic-cursors.packages.${pkgs.system}.hypr-dynamic-cursors ];
     systemd.variables = ["--all"];
     #nvidia = true;
     settings = {
@@ -72,6 +71,8 @@ in {
       general = {
         monitor = [
           "desc:Dell Inc. DELL ULTRASHARP U3219W,3440x1440@60,0x0,1"
+          # 2024.07.06 - work around a kernel bug with phantom monitors
+          "dest:Unknown-1,disabled"
         ];
         gaps_in = 10;
         gaps_out = 10;
@@ -82,6 +83,11 @@ in {
         "no_border_on_floating" = false;
         layout = "master";
         #no_cursor_warps = true;
+      };
+      debug = {
+        colored_stdout_logs = true;
+        disable_logs = false;
+        enable_stdout_logs = true;
       };
       bind = [
         "$super, M, exit,"

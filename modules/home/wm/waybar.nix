@@ -24,6 +24,7 @@ in {
       {
         layer = "top";
         position = "top";
+        spacing = "-4";
         mod = "dock";
         height = 20;
         margin-top = 0;
@@ -31,30 +32,7 @@ in {
         exclusive = true;
         passthrough = false;
         gtk-layer-shell = true;
-
-        /*
-          Their (avnibilgin) setup:
-        *
-        * left: apps / network /workspaces / audio
-        * center: clock
-        * right: timer /audio-bluetooth-brightness-wifi/system (updates-notifications-copyq/clipboard-power)
-        *
-        * Old Me:
-        *  left: workspaces
-        *  center: hyprland-window
-        *  right: tray?/pulseaudio/cpu/memory/temperature/gpu/network/clock
-        *
-        * New Me:
-        * left: network / pulseaudio / workspaces
-        * center: clock
-        * right: cpu-memory / temperature-gpu
-        *
-        * TODO: group them maybe?
-        * Look for notification icons for whatsapp/discord/slack?
-        * maybe use settings from avnibilgin... some, like memory look good
-        *
-        */
-
+        output = "DP-2";
         /*
         ┓ ┏┓┏┓┏┳┓  ┳┳┓┏┓┳┓┳┳┓ ┏┓┏┓
         ┃ ┣ ┣  ┃   ┃┃┃┃┃┃┃┃┃┃ ┣ ┗┓
@@ -77,6 +55,10 @@ in {
           interval = 5;
         };
 
+        "custom/network-workspaces-separator" = {
+            format = "{}    ";
+        };
+
         "hyprland/workspaces" = {
           on-scroll-up = "hyprctl dispatch workspace -1";
           on-scroll-down = "hyprctl dispatch workspace +1";
@@ -84,6 +66,10 @@ in {
           active-only = false;
           on-click = "activate";
           persistent-workspaces."*" = 8;
+        };
+
+        "custom/workspaces-audio-separator" = {
+            format = "{}    ";
         };
 
         pulseaudio = {
@@ -103,16 +89,17 @@ in {
           ];
         };
 
+        "custom/audio-separator" = {
+            format = "{}    ";
+        };
+
         modules-left = [
-          "group/l-network"
           "group/network"
-          "group/r-network"
-          "group/l-workspaces"
+          "custom/network-workspaces-separator"
           "hyprland/workspaces"
-          "group/r-workspaces"
-          "group/l-audio"
+          "custom/workspaces-audio-separator"
           "pulseaudio"
-          "group/r-audio"
+          "custom/audio-separator"
         ];
 
         /*
@@ -136,28 +123,11 @@ in {
         ┛┗┻┗┛┛┗ ┻   ┛ ┗┗┛┻┛┗┛┗┛┗┛┗┛
         */
 
-        "group/system" = {
-          orientation = "horizontal";
-          modules = [
-            "custom/suspend"
-          ];
+
+        "custom/resources-separator" = {
+            format = "{}    ";
         };
 
-        "custom/suspend" = {
-          format = " {}";
-          exec = "echo ; echo  suspend";
-          on-click = "systemctl suspend";
-          interval = 86400;
-          tooltip = false;
-        };
-
-        "group/temp" = {
-          orientation = "horizontal";
-          modules = [
-            "custom/gpu"
-            "temperature"
-          ];
-        };
 
         "group/resources" = {
           orientation = "horizontal";
@@ -174,6 +144,18 @@ in {
 
         memory.format = "󰽘 {}%";
 
+        "custom/resources-temperature-separator" = {
+            format = "{}    ";
+        };
+
+        "group/temp" = {
+          orientation = "horizontal";
+          modules = [
+            "custom/gpu"
+            "temperature"
+          ];
+        };
+
         temperature = {
           hwmon-path = "/sys/class/hwmon/hwmon1/temp1_input";
           format = "󰍛 {temperatureC}°C";
@@ -186,16 +168,32 @@ in {
           interval = 10;
         };
 
+        "custom/temperature-system-separator" = {
+            format = "{}    ";
+        };
+
+        "group/system" = {
+          orientation = "horizontal";
+          modules = [
+            "custom/suspend"
+          ];
+        };
+
+        "custom/suspend" = {
+          format = " {}";
+          exec = "echo ; echo  suspend";
+          on-click = "systemctl suspend";
+          interval = 86400;
+          tooltip = false;
+        };
+
         modules-right = [
-          "group/l-resources"
+          "custom/resources-separator"
           "group/resources"
-          "group/r-resources"
-          "group/l-temp"
+          "custom/resources-temperature-separator"
           "group/temp"
-          "group/r-temp"
-          "group/l-system"
+          "custom/temperature-system-separator"
           "group/system"
-          "group/r-system"
         ];
 
         tray = {
@@ -366,39 +364,19 @@ in {
         }
 
         /*
-            ┏┓┏┓┓ ┏┏┓┳┓┓ ┳┳┓┏┓  ┳┳┓┏┓┳┓┳┳
-            ┃┃┃┃┃┃┃┣ ┣┫┃ ┃┃┃┣   ┃┃┃┣ ┃┃┃┃
-            ┣┛┗┛┗┻┛┗┛┛┗┗┛┻┛┗┗┛  ┛ ┗┗┛┛┗┗┛
-        */
-
-        #l-network, #r-network, #l-workspaces, #r-workspaces, #l-audio, #r-audio, #l-resources, #r-resources, #l-temp, #r-temp, #l-system, #r-system {
-            background: transparent;
-            min-height:0px;
-        }
-
-        /*
             ┳┓┏┓┏┳┓┓ ┏┏┓┳┓┓┏┓
             ┃┃┣  ┃ ┃┃┃┃┃┣┫┃┫
             ┛┗┗┛ ┻ ┗┻┛┗┛┛┗┛┗┛
         */
-
-        #l-network {
-            border-left: 10 solid transparent;
-            border-bottom: 30 solid @network;
-            margin-left:0;
-        }
-
-        #r-network {
-            border-left: 15 solid @network;
-            border-bottom: 30 solid transparent;
-            margin-right:-15;
-        }
-
         #network {
             background: @network;
         }
         #group-network {
             background: @network;
+        }
+        #custom-network-workspaces-separator {
+           background: linear-gradient(120deg, @network 50%, #${dark3} 50%);
+           color: @network;
         }
 
         /*
@@ -406,21 +384,12 @@ in {
             ┃┃┃┃┃┣┫┃┫ ┗┓┃┃┣┫┃ ┣ ┗┓
             ┗┻┛┗┛┛┗┛┗┛┗┛┣┛┛┗┗┛┗┛┗┛
         */
-
-        #l-workspaces {
-            border-left: 15 solid transparent;
-            border-bottom: 30 solid @workspaces;
-            margin-left:0;
-        }
-
-        #r-workspaces {
-            border-left: 15 solid @workspaces;
-            border-bottom: 30 solid transparent;
-            margin-right:-15;
-        }
-
         #workspaces {
             background: @workspaces;
+        }
+        #custom-workspaces-audio-separator {
+           background: linear-gradient(120deg, @workspaces 50%, #${blue} 50%);
+           color: @workspaces;
         }
 
         /*
@@ -428,20 +397,12 @@ in {
             ┣┫┃┃┃┃┃┃┃
             ┛┗┗┛┻┛┻┗┛
         */
-        #l-audio {
-            border-left: 15 solid transparent;
-            border-bottom: 30 solid @audio;
-            margin-left:0;
-        }
-
-        #r-audio {
-            border-left: 15 solid @audio;
-            border-bottom: 30 solid transparent;
-            margin-right:-15;
-        }
-
         #pulseaudio {
             background: @audio;
+        }
+        #custom-audio-separator {
+           background: linear-gradient(120deg, @audio 50%, transparent 50%);
+           color: @audio;
         }
 
         /*
@@ -449,21 +410,16 @@ in {
           ┣┫┣ ┗┓┃┃┃┃┣┫┃ ┣ ┗┓
           ┛┗┗┛┗┛┗┛┗┛┛┗┗┛┗┛┗┛
         */
-
-        #l-resources {
-            border-left: 15 solid transparent;
-            border-bottom: 30 solid @resources;
-            margin-left:0;
+        #custom-resources-separator {
+           background: linear-gradient(120deg, transparent 50%, #${blue} 50%);
+           color: @resources;
         }
-
-        #r-resources {
-            border-left: 15 solid @resources;
-            border-bottom: 30 solid transparent;
-            margin-right:-15;
-        }
-
         #resources {
             background: @resources;
+        }
+        #custom-resources-temperature-separator {
+           background: linear-gradient(120deg, @resources 50%, #${dark3} 50%);
+           color: @resources;
         }
 
         /*
@@ -471,25 +427,15 @@ in {
             ┃ ┣ ┃┃┃┃┃┣ ┣┫┣┫ ┃ ┃┃┣┫┣
             ┻ ┗┛┛ ┗┣┛┗┛┛┗┛┗ ┻ ┗┛┛┗┗┛
         */
-
-        #l-temp {
-            border-left: 15 solid transparent;
-            border-bottom: 30 solid @temperature;
-            margin-left:0;
-        }
-
-        #r-temp {
-            border-left: 15 solid @temperature;
-            border-bottom: 30 solid transparent;
-            margin-right:-15;
-        }
-
         #temperature {
             background: @temperature;
         }
-
         #custom-gpu {
             background: @temperature;
+        }
+        #custom-temperature-system-separator {
+           background: linear-gradient(120deg, @temperature 50%, #${bg} 50%);
+           color: @temperature;
         }
 
         /*
@@ -497,22 +443,6 @@ in {
             ┗┓┗┫┗┓ ┃ ┣ ┃┃┃
             ┗┛┗┛┗┛ ┻ ┗┛┛ ┗
         */
-
-        #l-system {
-            border-left: 15 solid transparent;
-            border-bottom: 30 solid @system;
-            margin-left:0;
-        }
-
-        /*  Not necessary because last widget. Removed from (config)
-        modules so bar is flush with right edge of monitor.  */
-
-        #r-system {
-            border-left: 15 solid @system;
-            border-bottom: 30 solid transparent;
-            margin-right:-15;
-        }
-
         #system {
             background: @system;
         }

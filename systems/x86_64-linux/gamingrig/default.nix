@@ -87,6 +87,14 @@
       })
     )
     wayland
+    xwayland
+    (
+        # 2024.07.06 - Use and older version of xwayland because it is 
+        # having flickering problems when gaming in hyprland.
+        xwayland.overrideAttrs (oldAttrs: {
+            version = "23.2.7";
+        })
+    )
     libnotify # notifications too.
     swww # wallpapers
     tailscale
