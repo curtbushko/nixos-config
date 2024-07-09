@@ -18,16 +18,7 @@ return {
       keys[#keys + 1] = { "<leader>q", false }
       keys[#keys + 1] = { "<leader>ff", false }
     end,
-    dependencies = {
-      {
-        "SmiteshP/nvim-navbuddy",
-        dependencies = {
-          "SmiteshP/nvim-navic",
-          "MunifTanjim/nui.nvim",
-        },
-        opts = { lsp = { auto_attach = true } },
-      },
-    },
+    dependencies = {},
     opts = {
       diagnostics = {
         virtual_text = false,
