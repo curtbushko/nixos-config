@@ -68,7 +68,9 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
+    alsa-oss
     cachix
+    cmake
     dunst # notifications
     git
     gnumake

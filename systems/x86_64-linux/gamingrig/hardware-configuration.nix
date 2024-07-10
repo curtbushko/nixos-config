@@ -18,6 +18,7 @@
     kernelModules = ["kvm-amd" "nvidia" "i2c-dev"]; # i2c-dev is used for monitor controls
     extraModulePackages = [config.boot.kernelPackages.nvidia_x11];
     blacklistedKernelModules = ["amdgpu"];
+    kernelParams = [ "nvidia-drm.fbdev=1" ];
     #kernelParams = [ "modules_blacklist=amdgpu" ]; # blacklist integerated GPU
     #kernelParams = [ "pci=realloc" ]; # blacklist integerated GPU
   };

@@ -5,6 +5,7 @@
 }: {
   environment.systemPackages = with pkgs; [
     wayland
+    egl-wayland
   ];
 
   # Xserver settings

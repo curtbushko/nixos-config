@@ -24,6 +24,7 @@ in {
     ++ (lib.optionals isLinux [
       minecraft
       vulkan-loader
+      glfw
       #prismlauncher
       (prismlauncher.override {additionalLibs = [vulkan-loader];})
     ]);
