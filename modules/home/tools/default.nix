@@ -20,6 +20,7 @@
   isLinux = pkgs.stdenv.isLinux;
 in {
   imports = [
+    ./atuin.nix
     ./bat.nix
     ./direnv.nix
   ];
