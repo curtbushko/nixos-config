@@ -64,15 +64,6 @@ map("n", "gb", "<C-o>", { desc = "Go back" })
 --map("n", "<leader>ct", "<CMD>Telescope lsp_type_definitions<CR>", { desc = " Type Definitions" })
 -- map("n", "<leader>   w = { function() require("telescope.builtin").lsp_workspace_symbols() end, "Workspace symbols" },
 
--- Yanky
-map("n", "y", "<Plug>(YankyYank)", { remap = true, silent = true })
-map("n", "p", "<Plug>(YankyPutAfter)", { remap = true, silent = true })
-map("n", "P", "<Plug>(YankyPutBefore)", { remap = true, silent = true })
-map("n", "gp", "<Plug>(YankyGPutAfter)", { remap = true, silent = true })
-map("n", "gP", "<Plug>(YankyGPutBefore)", { remap = true, silent = true })
-map("n", "<c-n>", "<Plug>(YankyCycleForward)", { remap = true, silent = true })
-map("n", "<c-p>", "<Plug>(YankyCycleBackward)", { remap = true, silent = true })
-
 -- DAP mappings:
 map("n", "<F1>", ":lua require('dap').toggle_breakpoint()<CR>", { remap = true, silent = true })
 map("n", "<F2>", ":GoDebug<CR>", { remap = true, silent = true })

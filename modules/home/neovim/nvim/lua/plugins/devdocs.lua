@@ -10,7 +10,7 @@ return {
     cmd_args = { "-s dracula" }, -- example using glow { "-s", "dark", "-w", "80" }
   },
   keys = {
-    { "<leader>D", group = "Devdocs", icon = { icon = " ", color = "cyan" } },
+    { "<leader>D", group = "+Devdocs", icon = { icon = " ", color = "cyan" } },
     { "<leader>Db", "<CMD>DevdocsOpenFloat bash<CR>", desc = "󱆃 Bash" },
     { "<leader>Dd", "<CMD>DevdocsOpenFloat docker<CR>", desc = "󰡨 Docker" },
     { "<leader>Dg", "<CMD>DevdocsOpenFloat go<CR>", desc = "󰟓 Golang" },
