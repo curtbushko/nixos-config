@@ -42,6 +42,9 @@ in {
       pkgs.kubectl
       pkgs.kind
       pkgs.lsd
+      pkgs.nil  # language server
+      pkgs.nixd #language server for nix
+      pkgs.nodejs_22
       pkgs.python3
       pkgs.ranger
       pkgs.ripgrep
@@ -51,6 +54,7 @@ in {
       pkgs.wakeonlan
       pkgs.yazi
       pkgs.yt-dlp
+      pkgs.unzip
       pkgs.zoxide
     ]
     ++ (lib.optionals isDarwin [

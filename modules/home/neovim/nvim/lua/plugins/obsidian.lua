@@ -31,14 +31,14 @@ return {
     -- :ObsidianLinkNew to create a new note and link it to an in-line visual selection of text. This command has one optional argument: the title of the new note. If not given, the selected text will be used as the title.
     -- :ObsidianFollowLink to follow a note reference under the cursor.
     --
-    keys = {
-      { "<leader>Ob", "<CMD>ObsidianBacklinks<CR>", desc = " Backlinks" },
-      { "<leader>Od", "<CMD>ObsidianToday<CR>", desc = " New Daily Note" },
-      { "<leader>Of", "gf", desc = " Follow Link" },
-      { "<leader>Ol", "<CMD>ObsidianLink<CR>", desc = " Link" },
-      { "<leader>Om", "<CMD>ObsidianLinkNew<CR>", desc = " New Note from Link" },
-      { "<leader>On", "<CMD>ObsidianNew<CR>", desc = " New Note" },
-      { "<leader>Oy", "<CMD>ObsidianYesterday<CR>", desc = " Yesterdays Daily Note" },
+       keys = {
+      { "<leader>Ob", "<CMD>ObsidianBacklinks<CR>", desc = "backlinks" },
+      { "<leader>Od", "<CMD>ObsidianToday<CR>", desc = "new daily note" },
+      { "<leader>Of", "gf", desc = "follow link" },
+      { "<leader>Ol", "<CMD>ObsidianLink<CR>", desc = "link" },
+      { "<leader>Om", "<CMD>ObsidianLinkNew<CR>", desc = "new note from link" },
+      { "<leader>On", "<CMD>ObsidianNew<CR>", desc = "new note" },
+      { "<leader>Oy", "<CMD>ObsidianYesterday<CR>", desc = "yesterdays daily note" },
     },
   },
 }

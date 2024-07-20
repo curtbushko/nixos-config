@@ -10,10 +10,11 @@ return {
       },
     },
     keys = {
+      { "<leader>t", "", desc = "+terminal", { icon = "  ", color = "cyan" } },
       {
         "<leader>tf",
         "<CMD>ToggleTerm float_opts.width=20 direction=float<CR>",
-        desc = " Float",
+        desc = "float",
       },
     },
   },

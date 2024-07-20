@@ -11,7 +11,7 @@ return {
   },
   keys = function()
     local keys = {
-      { "<leader>h", group = "harpoon" },
+      { "<leader>h", desc = "+harpoon" },
       {
         "<leader>hf",
         function()

@@ -16,38 +16,38 @@ return {
         function()
           require("telescope.builtin").buffers()
         end,
-        desc = " Find buffers",
+        desc = "Find buffers",
       },
       {
         "<leader>,",
         "<cmd>Telescope buffers sort_mru=true sort_lastused=true<cr>",
-        desc = " Switch Buffer",
+        desc = "Switch Buffer",
       },
       {
         "<leader>fc",
         function()
           require("telescope.builtin").grep_string()
         end,
-        desc = "󰯉 Find text under cursor",
+        desc = "Find text under cursor",
       },
       {
         "<leader>fT",
         ":Telescope file_browser hidden=true<CR>",
-        desc = " Telescope Explorer (hidden)",
+        desc = "Telescope Explorer (hidden)",
       },
       {
         "<leader>ff",
         function()
           require("telescope.builtin").find_files({ cwd = ".", hidden = false })
         end,
-        desc = " Find files",
+        desc = "Find files",
       },
       {
         "<leader><space>",
         function()
           require("telescope.builtin").find_files()
         end,
-        desc = " Find files",
+        desc = "Find files",
       },
 
       {
@@ -55,54 +55,54 @@ return {
         function()
           require("telescope.builtin").find_files({ cwd = ".", hidden = true, no_ignore = true })
         end,
-        desc = " Find all files",
+        desc = "Find all files",
       },
       {
         "<leader>fh",
         function()
           require("telescope.builtin").help_tags()
         end,
-        desc = "󰘥 Help",
+        desc = "Help",
       },
       {
         "<leader>fk",
         function()
           require("telescope.builtin").keymaps()
         end,
-        desc = " Keymaps",
+        desc = "Keymaps",
       },
       {
         "<leader>fm",
         function()
           require("telescope.builtin").marks()
         end,
-        desc = " Marks",
+        desc = "Marks",
       },
       {
         "<leader>fn",
         "<CMD>enew<CR>",
-        desc = " New File",
+        desc = "New File",
       },
       {
         "<leader>fr",
         function()
           require("telescope.builtin").oldfiles()
         end,
-        desc = " Recent",
+        desc = "Recent",
       },
       {
         "<leader>fg",
         function()
           require("telescope.builtin").live_grep()
         end,
-        desc = "󱎸 Grep",
+        desc = "Grep",
       },
       {
         "<leader>/",
         function()
           require("telescope.builtin").live_grep()
         end,
-        desc = "󱎸 Grep",
+        desc = "Grep",
       },
 
       {
@@ -115,7 +115,7 @@ return {
       {
         "<leader>ft",
         ":TodoTelescope<CR>",
-        desc = " Todo",
+        desc = "Todo",
       },
       {
         "<leader>fG",
@@ -126,23 +126,23 @@ return {
             end,
           })
         end,
-        desc = "󱎸 Grep all files (hidden)",
+        desc = "Grep all files (hidden)",
       },
       -- git keymaps
       {
         "<leader>gc",
         ":Telescope git_commits<CR>",
-        desc = " Commits",
+        desc = "Commits",
       },
       {
         "<leader>gb",
         ":Telescope git_branches<CR>",
-        desc = " Branches",
+        desc = "Branches",
       },
       {
         "<leader>gs",
         ":Telescope git_status<CR>",
-        desc = "󱖫 Status",
+        desc = "Status",
       },
       {
         "<leader>fR",
@@ -150,12 +150,12 @@ return {
           local cwd = vim.fn.getcwd()
           require("telescope.builtin").oldfiles({ cwd })
         end,
-        desc = " Recent (cwd)",
+        desc = "Recent (cwd)",
       },
       {
         "<leader>:",
         "<cmd>Telescope command_history<cr>",
-        desc = " Command History",
+        desc = "Command History",
       },
     },
     -- change some options
