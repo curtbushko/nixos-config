@@ -24,7 +24,7 @@
         auto_sync = false;
             #sync_frequency = "5m";
             #sync_address = "https://api.atuin.sh";
-        enter_accept = true;
+        enter_accept = false;
         style = "compact";
         keymap_mode = "vim-normal";
         history_filter = [

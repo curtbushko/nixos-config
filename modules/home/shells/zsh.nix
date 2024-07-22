@@ -147,7 +147,7 @@
           source $HOME/.private.post.source
       fi
       # Needed to run mason downloads in neovim
-      export NIX_LD=$(nix eval --impure --raw --expr 'let pkgs = import <nixpkgs> {}; NIX_LD = pkgs.lib.fileContents "${pkgs.stdenv.cc}/nix-support/dynamic-linker"; in NIX_LD')
+      export NIX_LD="$HOME/.local/share/nvim/mason/bin"
     '';
   };
   programs.zsh.oh-my-zsh = {

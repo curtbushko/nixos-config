@@ -48,6 +48,7 @@ in {
       pkgs.python3
       pkgs.ranger
       pkgs.ripgrep
+      pkgs.stylua
       pkgs.tree
       pkgs.watch
       pkgs.watchexec

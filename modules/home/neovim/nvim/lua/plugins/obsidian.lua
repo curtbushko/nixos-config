@@ -31,7 +31,7 @@ return {
     -- :ObsidianLinkNew to create a new note and link it to an in-line visual selection of text. This command has one optional argument: the title of the new note. If not given, the selected text will be used as the title.
     -- :ObsidianFollowLink to follow a note reference under the cursor.
     --
-       keys = {
+    keys = {
       { "<leader>Ob", "<CMD>ObsidianBacklinks<CR>", desc = "backlinks" },
       { "<leader>Od", "<CMD>ObsidianToday<CR>", desc = "new daily note" },
       { "<leader>Of", "gf", desc = "follow link" },
