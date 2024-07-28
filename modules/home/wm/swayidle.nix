@@ -21,8 +21,11 @@
   suspend-script = pkgs.writeShellScriptBin "suspend-script" ''
     #!/bin/sh
     set -x
-    # only suspend if audio isn't
+    # only suspend if audio isn't running
     #music_running=$(${pkgs.pipewire}/bin/pw-cli i all 2>&1 | ${pkgs.ripgrep}/bin/rg running -q)
+
+    # Give people time to login before tryingn to shut down right away
+    ${pkgs.coreutils}/bin/sleep 60
     # only suspend if no ssh connections
     ssh_connection=$(${pkgs.iproute2}/bin/ss | ${pkgs.gnugrep}/bin/grep ssh | ${pkgs.gnugrep}/bin/grep ESTAB | ${pkgs.coreutils}/bin/wc -l | ${pkgs.findutils}/bin/xargs )
     # only suspend if not converting pdfs. Also, ignore grep to stop a false positive

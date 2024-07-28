@@ -36,7 +36,10 @@
     KERNEL=="i2c-[0-9]*", GROUP="i2c", MODE="0660"
   '';
 
-  # Setup auto suspend of gamingrid
+  # clear out journalctl logs
+  services.journald.extraConfig = "MaxRetentionSec=14day";
+
+  # Setup auto suspend of gamingrig
   systemd.sleep.extraConfig = ''
     AllowSuspend=yes
     AllowHibernation=no
@@ -136,6 +139,12 @@
 
   # Enable tailscale
   services.tailscale.enable = true;
+  # Try and slow down startup of tailscaled after waking up
+  systemd.services.tailscaled.after =
+    [ "network-online.target" "systemd-resolved.service" ];
+  systemd.services.tailscaled.wants =
+    [ "network-online.target" "systemd-resolved.service" ];
+
   # If I decide to turn on the firewall
   #networking.firewall.allowedUDPPorts = [ ${services.tailscale.port} ];
 
