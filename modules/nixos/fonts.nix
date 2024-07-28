@@ -9,11 +9,13 @@
     fira-code
     font-awesome_5
     jetbrains-mono
+    intel-one-mono
     nerdfonts
     noto-fonts
     noto-fonts-extra
     noto-fonts-emoji
     powerline-fonts
+
   ];
 
   fonts.fontconfig = {

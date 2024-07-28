@@ -64,6 +64,22 @@
   sound.enable = true;
   security.rtkit.enable = true;
 
+  # Enable bluetoolth
+  hardware.bluetooth.enable = true;
+  hardware.bluetooth.settings = {
+    General = {
+      Experimental = true;
+      FastConnectable = true;
+      JustWorksRepairing = "always";
+      Privacy = "device";
+      Enable = "Source,Sink,Media,Socket";
+    };
+    Policy = {
+      AutoEnable = true;
+    };
+  };
+  hardware.bluetooth.powerOnBoot = true;
+
   # Nixpkgs Setup
   #nixpkgs.config.allowUnfree = true;
   #nixpkgs.config.allowUnsupportedSystem = true;
@@ -231,6 +247,30 @@
     text = ''      ;
       auth include login
     '';
+  };
+
+  users = {
+    groups = {
+      nm-openconnect = {};
+      #netdev = {};
+    };
+    extraGroups = {
+      # Fix for D-Bus error on missing group: netdev
+      netdev = { name = "netdev"; };
+    };
+    extraUsers = {
+      # Fix for D-Bus error on missing user: nm-openconnect
+      nm-openconnect = {
+        name = "nm-openconnect";
+        description = "System user to control OpenConnect in NetworkManager";
+        isSystemUser = true;
+        group = "nm-openconnect";
+        extraGroups = [
+          "netdev"
+          "networkmanager"
+        ];
+      };
+    };
   };
 
   # Do not change - ever
