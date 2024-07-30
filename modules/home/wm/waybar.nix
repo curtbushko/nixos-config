@@ -56,7 +56,7 @@ in {
         };
 
         "custom/network-workspaces-separator" = {
-            format = "{}    ";
+          format = "{}    ";
         };
 
         "hyprland/workspaces" = {
@@ -69,7 +69,7 @@ in {
         };
 
         "custom/workspaces-audio-separator" = {
-            format = "{}    ";
+          format = "{}    ";
         };
 
         pulseaudio = {
@@ -90,7 +90,7 @@ in {
         };
 
         "custom/audio-separator" = {
-            format = "{}    ";
+          format = "{}    ";
         };
 
         modules-left = [
@@ -123,11 +123,9 @@ in {
         ┛┗┻┗┛┛┗ ┻   ┛ ┗┗┛┻┛┗┛┗┛┗┛┗┛
         */
 
-
         "custom/resources-separator" = {
-            format = "{}    ";
+          format = "{}    ";
         };
-
 
         "group/resources" = {
           orientation = "horizontal";
@@ -145,7 +143,7 @@ in {
         memory.format = "󰽘 {}%";
 
         "custom/resources-temperature-separator" = {
-            format = "{}    ";
+          format = "{}    ";
         };
 
         "group/temp" = {
@@ -169,7 +167,7 @@ in {
         };
 
         "custom/temperature-system-separator" = {
-            format = "{}    ";
+          format = "{}    ";
         };
 
         "group/system" = {

@@ -15,7 +15,6 @@
     noto-fonts-extra
     noto-fonts-emoji
     powerline-fonts
-
   ];
 
   fonts.fontconfig = {

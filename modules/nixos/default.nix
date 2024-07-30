@@ -11,5 +11,6 @@
     ./cachix.nix
     #./cuda.nix
     ./minecraft-server.nix
+    ./syncthing.nix
   ];
 }

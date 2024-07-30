@@ -13,17 +13,17 @@
   ];
 
   boot = {
-        # 2024-07-20 - removing as this might be causing a collision
-        #initrd.availableKernelModules = ["nvme" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" "nvidia"];
+    # 2024-07-20 - removing as this might be causing a collision
+    #initrd.availableKernelModules = ["nvme" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" "nvidia"];
     initrd.availableKernelModules = ["nvme" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod"];
     initrd.kernelModules = [];
-        # 2024-07-20 - removing as this might be causing a collision
-        #kernelModules = ["kvm-amd" "nvidia" "i2c-dev"]; # i2c-dev is used for monitor controls
+    # 2024-07-20 - removing as this might be causing a collision
+    #kernelModules = ["kvm-amd" "nvidia" "i2c-dev"]; # i2c-dev is used for monitor controls
     kernelModules = ["kvm-amd" "i2c-dev"]; # i2c-dev is used for monitor controls
-        # 2024-07-20 - removing as this might be causing a collision
-        #extraModulePackages = [config.boot.kernelPackages.nvidia_x11];
+    # 2024-07-20 - removing as this might be causing a collision
+    #extraModulePackages = [config.boot.kernelPackages.nvidia_x11];
     blacklistedKernelModules = ["amdgpu"];
-    kernelParams = [ "nvidia-drm.fbdev=1" ];
+    kernelParams = ["nvidia-drm.fbdev=1"];
     #kernelParams = [ "modules_blacklist=amdgpu" ]; # blacklist integerated GPU
     #kernelParams = [ "pci=realloc" ]; # blacklist integerated GPU
   };

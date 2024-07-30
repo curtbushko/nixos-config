@@ -20,30 +20,30 @@
   hyprctl = "${config.wayland.windowManager.hyprland.package}/bin/hyprctl";
   suspend-script = pkgs.writeShellScriptBin "suspend-script" ''
     #!/bin/sh
-    set -x
     # only suspend if audio isn't running
     #music_running=$(${pkgs.pipewire}/bin/pw-cli i all 2>&1 | ${pkgs.ripgrep}/bin/rg running -q)
 
+    steam=$(${pkgs.procps}/bin/ps -ef | ${pkgs.gnugrep}/bin/grep -i "steam.sh" | ${pkgs.gnugrep}/bin/grep -v grep | ${pkgs.coreutils}/bin/wc -l | ${pkgs.findutils}/bin/xargs )
     # Give people time to login before tryingn to shut down right away
-    ${pkgs.coreutils}/bin/sleep 60
+    ${pkgs.coreutils}/bin/sleep 30
     # only suspend if no ssh connections
     ssh_connection=$(${pkgs.iproute2}/bin/ss | ${pkgs.gnugrep}/bin/grep ssh | ${pkgs.gnugrep}/bin/grep ESTAB | ${pkgs.coreutils}/bin/wc -l | ${pkgs.findutils}/bin/xargs )
     # only suspend if not converting pdfs. Also, ignore grep to stop a false positive
     convert_pdfs=$(${pkgs.procps}/bin/ps -ef | ${pkgs.gnugrep}/bin/grep -i "convert-pdfs.sh" | ${pkgs.gnugrep}/bin/grep -v grep | ${pkgs.coreutils}/bin/wc -l | ${pkgs.findutils}/bin/xargs )
-    if [[ $ssh_connection -eq 0 && $convert_pdfs -eq 0 ]]; then
+    if [[ $ssh_connection -eq 0 && $convert_pdfs -eq 0 && $steam -eq 0 ]]; then
       ${pkgs.coreutils}/bin/sleep 10
       ${pkgs.systemd}/bin/systemctl suspend
        echo "Would have suspended"
-       echo "ssh connection: $ssh_connection, convert_pdfs: $convert_pdfs"
+       echo "ssh connection: $ssh_connection, convert_pdfs: $convert_pdfs, steam: $steam"
     else
        echo "Not suspending."
-       echo "ssh connection: $ssh_connection, convert_pdfs: $convert_pdfs"
+       echo "ssh connection: $ssh_connection, convert_pdfs: $convert_pdfs, steam $steam"
     fi
   '';
 in {
   services.swayidle = {
     enable = isLinux;
-    systemdTarget = "graphical-session.target";
+    systemdTarget = "hyprland-session.target";
     timeouts = [
       {
         timeout = 15 * 60;

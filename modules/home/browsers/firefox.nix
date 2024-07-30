@@ -72,7 +72,13 @@ in {
           updateInterval = 24 * 60 * 60 * 1000; # every day
           definedAliases = ["@nw"];
         };
-        "Google".metaData.alias = "@g";
+        "Github Search" = {
+          urls = [{template = "https://github.com/search?q={searchTerms}";}];
+          iconUpdateURL = "https://github.githubassets.com/favicons/favicon.svg";
+          updateInterval = 24 * 60 * 60 * 1000; # every day
+          definedAliases = ["@github"];
+        };
+        "Google".metaData.alias = "@google";
         Bing.metaData.hidden = true;
         "Amazon.com".metaData.hidden = true;
         "Wikipedia (en)".metaData.hidden = true;

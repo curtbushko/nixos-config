@@ -110,11 +110,11 @@
     wayland
     xwayland
     (
-        # 2024.07.06 - Use and older version of xwayland because it is 
-        # having flickering problems when gaming in hyprland.
-        xwayland.overrideAttrs (oldAttrs: {
-            version = "23.2.7";
-        })
+      # 2024.07.06 - Use and older version of xwayland because it is
+      # having flickering problems when gaming in hyprland.
+      xwayland.overrideAttrs (oldAttrs: {
+        version = "23.2.7";
+      })
     )
     libnotify # notifications too.
     swww # wallpapers
@@ -156,10 +156,8 @@
   # Enable tailscale
   services.tailscale.enable = true;
   # Try and slow down startup of tailscaled after waking up
-  systemd.services.tailscaled.after =
-    [ "network-online.target" "systemd-resolved.service" ];
-  systemd.services.tailscaled.wants =
-    [ "network-online.target" "systemd-resolved.service" ];
+  systemd.services.tailscaled.after = ["network-online.target" "systemd-resolved.service"];
+  systemd.services.tailscaled.wants = ["network-online.target" "systemd-resolved.service"];
 
   # If I decide to turn on the firewall
   #networking.firewall.allowedUDPPorts = [ ${services.tailscale.port} ];
@@ -219,14 +217,14 @@
     nvidiaSettings = true;
 
     # Optionally, you may need to select the approprate driver version for your specifc GPU.
-        #package = config.boot.kernelPackages.nvidiaPackages.beta;
+    #package = config.boot.kernelPackages.nvidiaPackages.beta;
     package = config.boot.kernelPackages.nvidiaPackages.mkDriver {
-        version = "555.58.02";
-        sha256_64bit = "sha256-xctt4TPRlOJ6r5S54h5W6PT6/3Zy2R4ASNFPu8TSHKM=";
-        sha256_aarch64 = "sha256-8hyRiGB+m2hL3c9MDA/Pon+Xl6E788MZ50WrrAGUVuY=";
-        openSha256 = "sha256-8hyRiGB+m2hL3c9MDA/Pon+Xl6E788MZ50WrrAGUVuY=";
-        settingsSha256 = "sha256-ZpuVZybW6CFN/gz9rx+UJvQ715FZnAOYfHn5jt5Z2C8=";
-        persistencedSha256 = "sha256-xctt4TPRlOJ6r5S54h5W6PT6/3Zy2R4ASNFPu8TSHKM=";
+      version = "555.58.02";
+      sha256_64bit = "sha256-xctt4TPRlOJ6r5S54h5W6PT6/3Zy2R4ASNFPu8TSHKM=";
+      sha256_aarch64 = "sha256-8hyRiGB+m2hL3c9MDA/Pon+Xl6E788MZ50WrrAGUVuY=";
+      openSha256 = "sha256-8hyRiGB+m2hL3c9MDA/Pon+Xl6E788MZ50WrrAGUVuY=";
+      settingsSha256 = "sha256-ZpuVZybW6CFN/gz9rx+UJvQ715FZnAOYfHn5jt5Z2C8=";
+      persistencedSha256 = "sha256-xctt4TPRlOJ6r5S54h5W6PT6/3Zy2R4ASNFPu8TSHKM=";
     };
   };
 
@@ -256,7 +254,7 @@
     };
     extraGroups = {
       # Fix for D-Bus error on missing group: netdev
-      netdev = { name = "netdev"; };
+      netdev = {name = "netdev";};
     };
     extraUsers = {
       # Fix for D-Bus error on missing user: nm-openconnect

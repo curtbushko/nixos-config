@@ -16,31 +16,26 @@
   config,
   ...
 }: {
-  programs.atuin = {
+  services.syncthing = {
     enable = true;
-    enableBashIntegration = true;
-    enableZshIntegration = true;
+    user = "curtbushko";
+    dataDir = "/home/curtbushko/sync";
+    configDir = "/home/curtbushko/.config/syncthing";
     settings = {
-      auto_sync = false;
-      #sync_frequency = "5m";
-      #sync_address = "https://api.atuin.sh";
-      enter_accept = false;
-      style = "compact";
-      keymap_mode = "vim-normal";
-      history_filter = [
-        "cd"
-        "ls"
-        "pwd"
-        "foo"
-        "bar"
-        "baz"
-        "src"
-        "dest"
-        "cddest"
-        "cdsrc"
-        "exit"
-        "gs"
-      ];
+      devices = {
+        "m1-pro" = {
+          id = "KXFUJ3O-7Z542J6-5FQZXIB-GA26N4Z-PHMM72K-AYBFFBX-5I3NFTK-4T4KTAS";
+          introducer = false;
+        };
+        "gamingrig" = {
+          id = "GCCQHKA-DUO4WOL-NZAVYCT-TWXPJLO-75KOTPB-EQ4WQRV-PKXHKPU-LLBTEQO";
+          introducer = false;
+        };
+        "m1-air" = {
+          id = "DWSSLZC-5E6J4IT-QPBSGE2-MAAT6LR-UCRSIQZ-D4YV25W-GHRI7CK-ZSRENAY";
+          introducer = false;
+        };
+      };
     };
   };
 }
