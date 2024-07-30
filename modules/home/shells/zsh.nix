@@ -15,7 +15,12 @@
   # All other arguments come from the module system.
   config,
   ...
-}: {
+}: let
+  ddcutil =
+    if pkgs.stdenv.isLinux
+    then "ddcutil"
+    else "$HOME/.dotfiles/bin/m1ddc";
+in {
   programs.zsh = {
     enable = true;
     autosuggestion.enable = true;
@@ -36,7 +41,6 @@
     sessionVariables = {
       BUSHKO = "$HOME/workspace/github.com/curtbushko";
       KLEIO = "$HOME/workspace/github.com/kleioverse";
-      DDCCTL = "$HOME/.dotfiles/bin/m1ddc";
       DOTFILES = "$HOME/.dotfiles";
       GHOSTTY = "$HOME/workspace/github.com/ghostty-org/ghostty";
       GITHUB = "$HOME/workspace/github.com";
@@ -46,7 +50,8 @@
       WORKSPACE = "$HOME/workspace";
       WALLPAPERS = "$HOME/Sync/wallpapers";
       ZIGBIN = "$HOME/bin/zig";
-      DIRENV_WARN_TIMEOUT = "10s";
+      DIRENV_WARN_TIMEOUT = "20s";
+      DDCCTL = "${ddcutil}";
     };
     shellAliases = {
       ".." = "cd ..";
