@@ -16,10 +16,8 @@
   config,
   ...
 }: let
-  ddcutil =
-    if pkgs.stdenv.isLinux
-    then "ddcutil"
-    else "$HOME/.dotfiles/bin/m1ddc";
+  isLinux = pkgs.stdenv.isLinux;
+  isDarwin = pkgs.stdenv.isDarwin;
 in {
   programs.zsh = {
     enable = true;
@@ -38,21 +36,24 @@ in {
       ghostty = "$HOME/workspace/github.com/mitchellh/ghostty";
     };
     # environment variables
-    sessionVariables = {
-      BUSHKO = "$HOME/workspace/github.com/curtbushko";
-      KLEIO = "$HOME/workspace/github.com/kleioverse";
-      DOTFILES = "$HOME/.dotfiles";
-      GHOSTTY = "$HOME/workspace/github.com/ghostty-org/ghostty";
-      GITHUB = "$HOME/workspace/github.com";
-      KB = "$HOME/Sync/KB";
-      NIXOS_CONFIG = "$HOME/workspace/github.com/curtbushko/nixos-config";
-      SYNCTHING = "$HOME/Sync";
-      WORKSPACE = "$HOME/workspace";
-      WALLPAPERS = "$HOME/Sync/wallpapers";
-      ZIGBIN = "$HOME/bin/zig";
-      DIRENV_WARN_TIMEOUT = "20s";
-      DDCCTL = "${ddcutil}";
-    };
+    sessionVariables =
+      {
+        BUSHKO = "$HOME/workspace/github.com/curtbushko";
+        KLEIO = "$HOME/workspace/github.com/kleioverse";
+        DOTFILES = "$HOME/.dotfiles";
+        GHOSTTY = "$HOME/workspace/github.com/ghostty-org/ghostty";
+        GITHUB = "$HOME/workspace/github.com";
+        KB = "$HOME/Sync/KB";
+        NIXOS_CONFIG = "$HOME/workspace/github.com/curtbushko/nixos-config";
+        SYNCTHING = "$HOME/Sync";
+        WORKSPACE = "$HOME/workspace";
+        WALLPAPERS = "$HOME/Sync/wallpapers";
+        ZIGBIN = "$HOME/bin/zig";
+        DIRENV_WARN_TIMEOUT = "20s";
+        ##DDCCTL = "${ddcutil}";
+      }
+      // lib.optionalAttrs isLinux {DDCCTL = "ddcutil";}
+      // lib.optionalAttrs isDarwin {DDCCTL = "$HOME/.dotfiles/bin/m1ddc";};
     shellAliases = {
       ".." = "cd ..";
       "..." = "cd ../..";
