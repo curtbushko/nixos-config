@@ -19,11 +19,11 @@
   isLinux = pkgs.stdenv.isLinux;
 in {
   imports = [
+    ./hypridle.nix
     ./hyprland.nix
     ./hyprpaper.nix
     ./waybar.nix
     ./rofi.nix
-    ./swayidle.nix
     ./swaylock.nix
   ];
 

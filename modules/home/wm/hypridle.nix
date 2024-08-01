@@ -41,25 +41,21 @@
     fi
   '';
 in {
-  services.swayidle = {
+  services.hypridle = {
     enable = isLinux;
-    systemdTarget = "hyprland-session.target";
-    timeouts = [
-      {
-        timeout = 15 * 60;
-        command = "${hyprctl} dispatch dpms off";
-        resumeCommand = "${pkgs.coreutils}/bin/sleep 3;WAYLAND_DISPLAY=wayland-1 ${hyprctl} dispatch dpms on || true";
-      }
-      {
-        timeout = 45 * 60;
-        command = "${hyprctl} dispatch dpms on || true; ${pkgs.coreutils}/bin/sleep 10; ${suspend-script}/bin/suspend-script";
-        resumeCommand = "${pkgs.coreutils}/bin/sleep 3; WAYLAND_DISPLAY=wayland-1 ${hyprctl} dispatch dpms on || true";
-      }
-      {
-        timeout = 120 * 60;
-        command = "${suspend-script}/bin/suspend-script";
-        resumeCommand = "${pkgs.coreutils}/bin/sleep 3; WAYLAND_DISPLAY=wayland-1 ${hyprctl} dispatch dpms on";
-      }
-    ];
+    settings = {
+      listener = [
+        {
+          timeout = 900; # 15 mins
+          on-timeout = "${hyprctl} dispatch dpms off";
+          on-resume = "${pkgs.coreutils}/bin/sleep 3;WAYLAND_DISPLAY=wayland-1 ${hyprctl} dispatch dpms on || true";
+        }
+        {
+          timeout = 2700; # 45 mins
+          on-timeout = "${hyprctl} dispatch dpms on || true; ${pkgs.coreutils}/bin/sleep 10; ${suspend-script}/bin/suspend-script";
+          on-resume = "${pkgs.coreutils}/bin/sleep 3; WAYLAND_DISPLAY=wayland-1 ${hyprctl} dispatch dpms on || true";
+        }
+      ];
+    };
   };
 }
