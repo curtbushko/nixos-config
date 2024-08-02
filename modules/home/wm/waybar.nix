@@ -32,7 +32,7 @@ in {
         exclusive = true;
         passthrough = false;
         gtk-layer-shell = true;
-        output = "DP-2";
+        output = ["DP-2" "HDMI-A-1"];
         /*
         ┓ ┏┓┏┓┏┳┓  ┳┳┓┏┓┳┓┳┳┓ ┏┓┏┓
         ┃ ┣ ┣  ┃   ┃┃┃┃┃┃┃┃┃┃ ┣ ┗┓
@@ -62,10 +62,13 @@ in {
         "hyprland/workspaces" = {
           on-scroll-up = "hyprctl dispatch workspace -1";
           on-scroll-down = "hyprctl dispatch workspace +1";
-          all-outputs = true;
+          all-outputs = false;
           active-only = false;
           on-click = "activate";
-          persistent-workspaces."*" = 8;
+          persistent-workspaces = {
+            "DP-2" = [1 2 3 4 5];
+            "HDMI-A-1" = [6 7 8 9 10];
+          };
         };
 
         "custom/workspaces-audio-separator" = {

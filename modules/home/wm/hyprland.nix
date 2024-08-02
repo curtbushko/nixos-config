@@ -71,9 +71,25 @@ in {
       xwayland = {force_zero_scaling = true;};
       general = {
         monitor = [
-          "desc:Dell Inc. DELL ULTRASHARP U3219W,3440x1440@60,0x0,1"
+          #"desc:Dell Inc. DELL ULTRASHARP U3219W,3440x1440@60,auto,1"
+          "DP-2,3440x1440@60,auto,1"
+          #"desc:Dell Inc. DELL S2721QS 93DPZY3,3840x2160@60,auto-right,1,transform,3"
+          "HDMI-A-1,3840x2160@60,auto-right,1.2,transform,3"
           # 2024.07.06 - work around a kernel bug with phantom monitors
           "dest:Unknown-1,disabled"
+        ];
+        workspace = [
+            "1, monitor:DP-2, default:true"
+            "2, monitor:DP-2"
+            "3, monitor:DP-2"
+            "4, monitor:DP-2"
+            "5, monitor:DP-2"
+            "6, monitor:HDMI-A-1, default=true"
+            "7, monitor:HDMI-A-1"
+            "8, monitor:HDMI-A-1"
+            "9, monitor:HDMI-A-1"
+            "10, monitor:HDMI-A-1"
+
         ];
         gaps_in = 10;
         gaps_out = 10;

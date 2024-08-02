@@ -50,6 +50,11 @@ in {
         WALLPAPERS = "$HOME/Sync/wallpapers";
         ZIGBIN = "$HOME/bin/zig";
         DIRENV_WARN_TIMEOUT = "20s";
+        DDCUTIL_DISPLAY_INPUT = "60";
+        DDCUTIL_S2721QS_HDMI1 = "0x11";
+        DDCUTIL_S2721QS_HDMI2 = "0x12";
+        DDCUTIL_U3419W_DP1 = "0x0f";
+        DDCUTIL_U3419W_USBC = "0x1b";
         ##DDCCTL = "${ddcutil}";
       }
       // lib.optionalAttrs isLinux {DDCCTL = "ddcutil";}
@@ -131,9 +136,13 @@ in {
       weather = "curl wttr.in/kitchener";
       weztitle = "wezterm cli set-tab-title";
       # monitor switching
-      work = "wakeonlan bc:d0:74:0d:03:71; ddcutil setvcp 60 0x1b";
+      work = "wakeonlan bc:d0:74:0d:03:71; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_USBC --bus 5";
+      work2 = "wakeonlan bc:d0:74:0d:03:71; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI1 --bus 6";
+      workall = "wakeonlan bc:d0:74:0d:03:71; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI1 --bus 6; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_USBC --bus 5";
       home = "$DDCCTL set input 17";
-      pc = "wakeonlan e8:9c:25:c3:da:13; $DDCCTL set input 15";
+      pc = "wakeonlan bc:d0:74:0d:03:71; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_DP1 --bus 5";
+      pc2 = "wakeonlan bc:d0:74:0d:03:71; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI2 --bus 6";
+      pcall = "wakeonlan bc:d0:74:0d:03:71; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI2 --bus 6; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_DP1 --bus 5";
       # ssh machines
       sshgamingrig = "wakeonlan e8:9c:25:c3:da:13; ssh curtbushko@gamingrig.basilisk-jazz.ts.net";
       sshm1 = "ssh curtbushko@m1-air.basilisk-jazz.ts.net";
@@ -153,7 +162,7 @@ in {
           source $HOME/.private.post.source
       fi
       # Needed to run mason downloads in neovim
-      export NIX_LD="$HOME/.local/share/nvim/mason/bin"
+      export NIX_LD=$(nix eval --extra-experimental-features nix-command --impure --raw --expr 'let pkgs = import <nixpkgs> {}; NIX_LD = pkgs.lib.fileContents "${pkgs.stdenv.cc}/nix-support/dynamic-linker"; in NIX_LD')
     '';
   };
   programs.zsh.oh-my-zsh = {

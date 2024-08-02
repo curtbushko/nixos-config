@@ -23,7 +23,7 @@
     # 2024-07-20 - removing as this might be causing a collision
     #extraModulePackages = [config.boot.kernelPackages.nvidia_x11];
     blacklistedKernelModules = ["amdgpu"];
-    kernelParams = ["nvidia-drm.fbdev=1"];
+    kernelParams = ["nvidia-drm.fbdev=1" "nvidia.NVreg_PreserveVideoMemoryAllocations=1"];
     #kernelParams = [ "modules_blacklist=amdgpu" ]; # blacklist integerated GPU
     #kernelParams = [ "pci=realloc" ]; # blacklist integerated GPU
   };
