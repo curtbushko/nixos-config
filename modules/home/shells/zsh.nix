@@ -49,7 +49,7 @@ in {
         WORKSPACE = "$HOME/workspace";
         WALLPAPERS = "$HOME/Sync/wallpapers";
         ZIGBIN = "$HOME/bin/zig";
-        DIRENV_WARN_TIMEOUT = "20s";
+        DIRENV_WARN_TIMEOUT = "90s";
         DDCUTIL_DISPLAY_INPUT = "60";
         DDCUTIL_S2721QS_HDMI1 = "0x11";
         DDCUTIL_S2721QS_HDMI2 = "0x12";
