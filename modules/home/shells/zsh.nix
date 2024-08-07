@@ -49,17 +49,10 @@ in {
         WORKSPACE = "$HOME/workspace";
         WALLPAPERS = "$HOME/Sync/wallpapers";
         ZIGBIN = "$HOME/bin/zig";
-        DIRENV_WARN_TIMEOUT = "90s";
-        DDCUTIL_DISPLAY_INPUT = "60";
-        DDCUTIL_S2721QS_HDMI1 = "0x11";
-        DDCUTIL_S2721QS_HDMI2 = "0x12";
-        DDCUTIL_U3419W_DP1 = "0x0f";
-        DDCUTIL_U3419W_USBC = "0x1b";
-        ##DDCCTL = "${ddcutil}";
       }
       // lib.optionalAttrs isLinux {DDCCTL = "ddcutil";}
       // lib.optionalAttrs isDarwin {DDCCTL = "$HOME/.dotfiles/bin/m1ddc";};
-    shellAliases = {
+     shellAliases = {
       ".." = "cd ..";
       "..." = "cd ../..";
       "...." = "cd ../../..";
@@ -99,7 +92,9 @@ in {
       cdworkflows = "cd $GITHUB/hashicorp/consul-k8s-workflows";
       cls = "tput reset";
       gitreset = "git reset --hard HEAD^";
-      ghostty-release = "zig build -Dstatic=true -Doptimize=ReleaseFast && direnv deny && cd macos && xcodebuild -target Ghostty -configuration Release";
+      ghostty-mac-release = "zig build -Dstatic=true -Doptimize=ReleaseFast && direnv deny && cd macos && xcodebuild -target Ghostty -configuration Release";
+      ghostty-linux-release = "zig build -Dstatic=true -Doptimize=ReleaseFast";
+      ghostty-linux-debug = "zig build -Dstatic=true";
       gs = "git status";
       pr = "gh pr view --web";
       hg = "history |grep $1";
@@ -136,13 +131,13 @@ in {
       weather = "curl wttr.in/kitchener";
       weztitle = "wezterm cli set-tab-title";
       # monitor switching
-      work = "wakeonlan bc:d0:74:0d:03:71; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_USBC --bus 5";
+      work = "wakeonlan mac-address; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_USBC --bus 5";
       work2 = "wakeonlan bc:d0:74:0d:03:71; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI1 --bus 6";
       workall = "wakeonlan bc:d0:74:0d:03:71; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI1 --bus 6; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_USBC --bus 5";
       home = "$DDCCTL set input 17";
       pc = "wakeonlan bc:d0:74:0d:03:71; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_DP1 --bus 5";
       pc2 = "wakeonlan bc:d0:74:0d:03:71; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI2 --bus 6";
-      pcall = "wakeonlan bc:d0:74:0d:03:71; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI2 --bus 6; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_DP1 --bus 5";
+      pcall = "wakeonlan bc:d0:74:0d:03:71; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI2 --bus ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_DP1 --bus 5";
       # ssh machines
       sshgamingrig = "wakeonlan e8:9c:25:c3:da:13; ssh curtbushko@gamingrig.basilisk-jazz.ts.net";
       sshm1 = "ssh curtbushko@m1-air.basilisk-jazz.ts.net";
@@ -163,6 +158,18 @@ in {
       fi
       # Needed to run mason downloads in neovim
       export NIX_LD=$(nix eval --extra-experimental-features nix-command --impure --raw --expr 'let pkgs = import <nixpkgs> {}; NIX_LD = pkgs.lib.fileContents "${pkgs.stdenv.cc}/nix-support/dynamic-linker"; in NIX_LD')
+
+      # Work around only supporting session environment variables
+      if [ -f $HOME/secrets.env ]; then
+        source $HOME/secrets.env
+      fi
+
+      export DIRENV_WARN_TIMEOUT="20s"
+      export DDCUTIL_DISPLAY_INPUT="60"
+      export DDCUTIL_S2721QS_HDMI1="0x11"
+      export DDCUTIL_S2721QS_HDMI2="0x12"
+      export DDCUTIL_U3419W_DP1="0x0f"
+      export DDCUTIL_U3419W_USBC="0x1b"
     '';
   };
   programs.zsh.oh-my-zsh = {

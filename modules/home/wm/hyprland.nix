@@ -38,7 +38,7 @@ in {
       "$up" = "k";
       "$right" = "l";
       # Applications
-      "$terminal" = "ghostty";
+      "$terminal" = "GDK_DEBUG=gl-disable-gles ghostty";
       "$browser" = "rofi-firefox-wrapper";
 
       # Tokyonight Night colors
@@ -79,17 +79,16 @@ in {
           "dest:Unknown-1,disabled"
         ];
         workspace = [
-            "1, monitor:DP-2, default:true"
-            "2, monitor:DP-2"
-            "3, monitor:DP-2"
-            "4, monitor:DP-2"
-            "5, monitor:DP-2"
-            "6, monitor:HDMI-A-1, default=true"
-            "7, monitor:HDMI-A-1"
-            "8, monitor:HDMI-A-1"
-            "9, monitor:HDMI-A-1"
-            "10, monitor:HDMI-A-1"
-
+          "1, monitor:DP-2, default:true"
+          "2, monitor:DP-2"
+          "3, monitor:DP-2"
+          "4, monitor:DP-2"
+          "5, monitor:DP-2"
+          "6, monitor:HDMI-A-1, default=true"
+          "7, monitor:HDMI-A-1"
+          "8, monitor:HDMI-A-1"
+          "9, monitor:HDMI-A-1"
+          "10, monitor:HDMI-A-1"
         ];
         gaps_in = 10;
         gaps_out = 10;

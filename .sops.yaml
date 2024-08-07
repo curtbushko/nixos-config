@@ -1,0 +1,7 @@
+keys:
+  - &gamingrig age144rvv7z6qtfq4nqtx2ehzy5dmksg79g5e4fmy0sfw0kq4cwrqydqgrtn9t
+creation_rules:
+  - path_regex: secrets/secrets.yaml$
+    key_groups:
+      - age:
+        - *gamingrig

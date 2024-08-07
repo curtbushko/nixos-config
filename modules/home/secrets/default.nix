@@ -16,25 +16,24 @@
   config,
   ...
 }: {
-  services.syncthing = {
-    enable = true;
-    user = "curtbushko";
-    dataDir = "/home/curtbushko/sync";
-    configDir = "/home/curtbushko/.config/syncthing";
-    overrideDevices = true;
-    overrideFolders = true;
-    settings = {
-      devices = {
-        "m1-pro" = {
-          id = config.sops.secrets."hosts/m1-pro/syncthing_id".path;
-        };
-        "gamingrig" = {
-          id = config.sops.secrets."hosts/gamingrig/syncthing_id".path;
-        };
-        "m1-air" = {
-          id = config.sops.secrets."hosts/m1/syncthing_id".path;
-        };
-      };
-    };
-  };
+    #imports = [
+    #inputs.sops-nix.homeManagerModules.sops
+    #];
+  sops.defaultSopsFile = ../../../secrets/secrets.yaml;
+  sops.defaultSopsFormat = "yaml";
+  sops.age.keyFile = "/home/curtbushko/.config/sops/age/keys.txt";
+
+  # this is a little more manual than I'd like but it works and is easy to grow
+  # gamingrig secrets
+  sops.secrets."hosts/gamingrig/mac_address" = {};
+  sops.secrets."hosts/gamingrig/syncthing_id" = {};
+  sops.secrets."hosts/gamingrig/tailnet_id" = {};
+  # m1 secrets
+  sops.secrets."hosts/m1/mac_address" = {};
+  sops.secrets."hosts/m1/syncthing_id" = {};
+  sops.secrets."hosts/m1/tailnet_id" = {};
+  # m1-pro secrets
+  sops.secrets."hosts/m1-pro/mac_address" = {};
+  sops.secrets."hosts/m1-pro/syncthing_id" = {};
+  sops.secrets."hosts/m1-pro/tailnet_id" = {};
 }

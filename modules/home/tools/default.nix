@@ -27,9 +27,11 @@ in {
 
   home.packages =
     [
+      pkgs.age
       pkgs.alejandra
       pkgs.asciinema
       pkgs.bottom
+      pkgs.btop
       pkgs.difftastic
       pkgs.curl
       pkgs.eza
@@ -48,6 +50,7 @@ in {
       pkgs.python3
       pkgs.ranger
       pkgs.ripgrep
+      pkgs.sops
       pkgs.stylua
       pkgs.tree
       pkgs.watch
