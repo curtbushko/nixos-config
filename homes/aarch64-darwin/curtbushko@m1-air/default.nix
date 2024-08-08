@@ -51,6 +51,7 @@
 
   imports = [
     inputs.nix-colors.homeManagerModules.default
+    inputs.sops-nix.homeManagerModules.sops
     ../../../modules/home/git
     ../../../modules/home/go
     ../../../modules/home/neovim

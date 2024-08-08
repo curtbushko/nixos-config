@@ -131,17 +131,17 @@ in {
       weather = "curl wttr.in/kitchener";
       weztitle = "wezterm cli set-tab-title";
       # monitor switching
-      work = "wakeonlan mac-address; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_USBC --bus 5";
-      work2 = "wakeonlan bc:d0:74:0d:03:71; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI1 --bus 6";
-      workall = "wakeonlan bc:d0:74:0d:03:71; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI1 --bus 6; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_USBC --bus 5";
+      work = "wakeonlan $M1_PRO_MAC_ADDRESS; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_USBC --bus 5";
+      work2 = "wakeonlan $M1_PRO_MAC_ADDRESS; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI1 --bus 6";
+      workall = "wakeonlan $M1_PRO_MAC_ADDRESS; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI1 --bus 6; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_USBC --bus 5";
       home = "$DDCCTL set input 17";
-      pc = "wakeonlan bc:d0:74:0d:03:71; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_DP1 --bus 5";
-      pc2 = "wakeonlan bc:d0:74:0d:03:71; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI2 --bus 6";
-      pcall = "wakeonlan bc:d0:74:0d:03:71; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI2 --bus ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_DP1 --bus 5";
+      pc = "wakeonlan $GAMINGRIG_MAC_ADDRESS; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_DP1 --bus 5";
+      pc2 = "wakeonlan $GAMINGRIG_MAC_ADDRESS; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI2 --bus 6";
+      pcall = "wakeonlan $GAMINGRIG_MAC_ADDRESS; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI2 --bus ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_DP1 --bus 5";
       # ssh machines
-      sshgamingrig = "wakeonlan e8:9c:25:c3:da:13; ssh curtbushko@gamingrig.basilisk-jazz.ts.net";
-      sshm1 = "ssh curtbushko@m1-air.basilisk-jazz.ts.net";
-      sshwork = "TERM=xterm-256color ssh curtbushko@curtbushko-X3FR7279D2";
+      sshgamingrig = "wakeonlan $GAMINGRIG_MAC_ADDRESS; ssh curtbushko@$GAMINGRIG_TAILNET_ID";
+      sshm1 = "ssh curtbushko@$M1_TAILNET_ID";
+      sshwork = "TERM=xterm-256color ssh curtbushko@$M1_PRO_TAILNET_ID";
       # zellij things
       zattach = "zellij attach coding";
       zux = "zellij -s coding";
@@ -160,8 +160,8 @@ in {
       export NIX_LD=$(nix eval --extra-experimental-features nix-command --impure --raw --expr 'let pkgs = import <nixpkgs> {}; NIX_LD = pkgs.lib.fileContents "${pkgs.stdenv.cc}/nix-support/dynamic-linker"; in NIX_LD')
 
       # Work around only supporting session environment variables
-      if [ -f $HOME/secrets.env ]; then
-        source $HOME/secrets.env
+      if [ -f $HOME/.config/env/secrets.env ]; then
+        source $HOME/.config/env/secrets.env
       fi
 
       export DIRENV_WARN_TIMEOUT="20s"
@@ -177,4 +177,5 @@ in {
     plugins = ["git" "vi-mode"];
     theme = "agnoster";
   };
-}
+
+ }

@@ -38,4 +38,10 @@
   sops.secrets."hosts/m1-pro/mac_address" = {};
   sops.secrets."hosts/m1-pro/syncthing_id" = {};
   sops.secrets."hosts/m1-pro/tailnet_id" = {};
+  sops.secrets."secrets.env" = {
+    path = "${config.xdg.configHome}/env/secrets.env";
+    sopsFile = ../../../secrets/secrets.env;
+    format = "dotenv";
+  };
+
 }
