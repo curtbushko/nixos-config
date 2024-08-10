@@ -56,14 +56,15 @@ in {
       pkgs.watch
       pkgs.watchexec
       pkgs.wakeonlan
+      pkgs.wget
       pkgs.yazi
       pkgs.yt-dlp
       pkgs.unzip
       pkgs.zoxide
+      pkgs.zstd
     ]
     ++ (lib.optionals isDarwin [
       pkgs.cachix
-      pkgs.tailscale
     ])
     ++ (lib.optionals isLinux [
       #pkgs.rofi-firefox-wrapper

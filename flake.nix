@@ -7,12 +7,12 @@
 
     home-manager = {
       url = "github:nix-community/home-manager/release-24.05";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
     darwin = {
       url = "github:LnL7/nix-darwin";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
     firefox-addons = {
@@ -39,7 +39,10 @@
     };
 
     sops-nix.url = "github:Mic92/sops-nix";
-
+    tailscale = {
+       url = "github:tailscale/tailscale";
+       inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
     nix-colors.url = "github:misterio77/nix-colors";
 
     # Other packages

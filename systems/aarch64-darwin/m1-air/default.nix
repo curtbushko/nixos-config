@@ -53,4 +53,6 @@
     libvterm-neovim
     cachix
   ];
+
+  services.tailscale.enable = true;
 }
