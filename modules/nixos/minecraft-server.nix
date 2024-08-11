@@ -37,7 +37,7 @@ in {
         MOD_PLATFORM = "AUTO_CURSEFORGE";
         CF_API_KEY = "$2a$10$hBHorcVy1x8ivmNTSfrOUeyCc/fNPmeq3UjgWerLEZ/0n6NmBpAw2"; # allocate from https://console.curseforge.com/
         CF_SLUG = "vault-hunters-1-18-2";
-        CF_FILENAME_MATCHER = "3.14.3";
+        CF_FILENAME_MATCHER = "3.15.2"; # can be found on the main curseforge VH page
         MOTD = "J&D Vault Hunters";
         MEMORY = "8G"; # 4G for base server + 2G per player
         CF_EXCLUDE_MODS = "reauth";
