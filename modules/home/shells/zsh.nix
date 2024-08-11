@@ -90,6 +90,7 @@ in {
       cdconsul = "cd $GITHUB/hashicorp/consul";
       cddataplane = "cd $GITHUB/hashicorp/consul-dataplane";
       cdworkflows = "cd $GITHUB/hashicorp/consul-k8s-workflows";
+      dockerlogin = "docker login -u cbushko -p $DOCKER_PAT";
       cls = "tput reset";
       gitreset = "git reset --hard HEAD^";
       ghostty-mac-release = "zig build -Dstatic=true -Doptimize=ReleaseFast && direnv deny && cd macos && xcodebuild -target Ghostty -configuration Release";
@@ -139,7 +140,6 @@ in {
       pc2 = "wakeonlan $GAMINGRIG_MAC_ADDRESS; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI2 --bus 6";
       pcall = "wakeonlan $GAMINGRIG_MAC_ADDRESS; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI2 --bus ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_DP1 --bus 5";
       # ssh machines
-      sshgamingrig = "wakeonlan $GAMINGRIG_MAC_ADDRESS; ssh curtbushko@$GAMINGRIG_TAILNET_ID";
       sshm1 = "ssh curtbushko@$M1_TAILNET_ID";
       sshwork = "TERM=xterm-256color ssh curtbushko@$M1_PRO_TAILNET_ID";
       # zellij things

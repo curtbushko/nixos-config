@@ -64,6 +64,7 @@
   pr-create = pkgs.writeScriptBin "pr-create" (builtins.readFile ./pr-create);
   pr-review = pkgs.writeScriptBin "pr-review" (builtins.readFile ./pr-review);
   pr-view = pkgs.writeScriptBin "pr-view" (builtins.readFile ./pr-view);
+  tailssh = pkgs.writeScriptBin "tailssh" (builtins.readFile ./tailssh);
   zigbuildwatcher = pkgs.writeScriptBin "zigbuildwatcher" (builtins.readFile ./zigbuildwatcher);
 in {
   home.packages =
@@ -108,6 +109,7 @@ in {
       pr-create
       pr-review
       pr-view
+      tailssh
       zigbuildwatcher
     ]
     ++ (lib.optionals isLinux [

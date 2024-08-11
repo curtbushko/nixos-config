@@ -1,0 +1,50 @@
+#!/bin/bash
+
+function logger() {
+    local TYPE=$1
+    shift
+    local MESSAGE="$*"
+    local TIMESTAMP=$(date +"%Y-%m-%dT%H:%M:%SZ")
+    echo "[$TIMESTAMP] [$TYPE] $MESSAGE"
+}
+
+function wake() {
+    logger INFO "Bouncing off of $OPENWRT_TAILNET_ID"
+    ssh -t root@$OPENWRT_TAILNET_ID "etherwake -D -i eth0.1 '$GAMINGRIG_MAC_ADDRESS'"
+}
+
+function pingWait() {
+    logger INFO "Pinging until host is up"
+    local HOST=$1
+    while true; do
+        ping -c 1 $HOST &>/dev/null && break
+        trap exit_ int
+    done
+    logger INFO "Host $HOST is up"
+}
+
+# Fetch the Tailscale status in JSON format
+HOST=$(
+    tailscale status --json | jq -r '
+  .Peer[] |
+  select(.Tags?[]? | contains("tag:dev")) |
+  "\(.DNSName)"' |
+        sed 's/\.$//' |
+        fzf --ansi --border-label="| Tailscale SSH Hosts |" --height=30% --border=rounded \
+            --margin=2,2,2,2 --prompt "Connect to: " --preview-window=top:40% \
+            --bind "j:down,k:up,ctrl-j:preview-down,ctrl-k:preview-up,ctrl-f:preview-page-down,ctrl-b:preview-page-up"
+)
+
+if [ "${HOST}" != "" ]; then
+    logger INFO "Connecting to $HOST..."
+    if ping -c1 $HOST &>/dev/null; then
+        logger INFO "Host $HOST is up"
+    else
+        logger INFO "Host $HOST is down"
+        wake $HOST
+        pingWait $HOST
+    fi
+
+    logger INFO "Ssh'ing into $HOST"
+    ssh curtbushko@$HOST
+fi
