@@ -153,23 +153,20 @@ in {
       if [ ! -L $HOME/.local/bin/ghostty ]; then
       	ln -s $GHOSTTY/zig-out/bin/ghostty $HOME/.local/bin/ghostty
       fi
-      if [ -f $HOME/.private.post.source ]; then
-          source $HOME/.private.post.source
-      fi
-      # Needed to run mason downloads in neovim
-      export NIX_LD=$(nix eval --extra-experimental-features nix-command --impure --raw --expr 'let pkgs = import <nixpkgs> {}; NIX_LD = pkgs.lib.fileContents "${pkgs.stdenv.cc}/nix-support/dynamic-linker"; in NIX_LD')
 
       # Work around only supporting session environment variables
       if [ -f $HOME/.config/env/secrets.env ]; then
         source $HOME/.config/env/secrets.env
       fi
-
       export DIRENV_WARN_TIMEOUT="20s"
       export DDCUTIL_DISPLAY_INPUT="60"
       export DDCUTIL_S2721QS_HDMI1="0x11"
       export DDCUTIL_S2721QS_HDMI2="0x12"
       export DDCUTIL_U3419W_DP1="0x0f"
       export DDCUTIL_U3419W_USBC="0x1b"
+
+      # Needed to run mason downloads in neovim
+      export NIX_LD=$(nix eval --extra-experimental-features nix-command --impure --raw --expr 'let pkgs = import <nixpkgs> {}; NIX_LD = pkgs.lib.fileContents "${pkgs.stdenv.cc}/nix-support/dynamic-linker"; in NIX_LD')
     '';
   };
   programs.zsh.oh-my-zsh = {
