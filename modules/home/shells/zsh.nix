@@ -32,8 +32,6 @@ in {
       docs = "$HOME/Documents";
       vids = "$HOME/Videos";
       dl = "$HOME/Downloads";
-      nixos-config = "$HOME/workspace/github.com/curtbushko/nixos-config";
-      ghostty = "$HOME/workspace/github.com/mitchellh/ghostty";
     };
     # environment variables
     sessionVariables =
@@ -52,14 +50,14 @@ in {
       }
       // lib.optionalAttrs isLinux {DDCCTL = "ddcutil";}
       // lib.optionalAttrs isDarwin {DDCCTL = "$HOME/.dotfiles/bin/m1ddc";};
-     shellAliases = {
+    shellAliases = {
       ".." = "cd ..";
       "..." = "cd ../..";
       "...." = "cd ../../..";
       mdkir = "mkdir";
       cat = "bat";
-      za = "zoxide add";
-      zr = "zoxide remove";
+      cda = "zoxide add";
+      cdr = "zoxide remove";
       foodirs = "echo FOO=$FOO, BAR=$BAR, BAZ=$BAZ";
       foo = "export FOO=$PWD; foodirs";
       bar = "export BAR=$PWD; foodirs";
@@ -72,24 +70,6 @@ in {
       cdfoo = "cd $FOO";
       cdbar = "cd $BAR";
       cdbaz = "cd $BAZ";
-      cdworkspace = "cd $WORKSPACE";
-      cdgithub = "cd $GITHUB";
-      cdghostty = "cd $GHOSTTY";
-      cdleetcode = "cd $BUSHKO/leetcode";
-      cddemo = "cd $BUSHKO/hashicorp-demos";
-      cdbushko = "cd $BUSHKO";
-      cdkleio = "cd $KLEIO";
-      cdkb = "cd $KB";
-      cdsync = "cd $SYNC";
-      cddot = "cd $DOTFILES";
-      cddotfiles = "cd $DOTFILES";
-      cdnvim = "cd $DOTFILES/nvim/.config/nvim";
-      cdnixosconfig = "cd $NIXOS_CONFIG";
-      cdhashi = "cd $GITHUB/hashicorp";
-      cdk8s = "cd $GITHUB/hashicorp/consul-k8s";
-      cdconsul = "cd $GITHUB/hashicorp/consul";
-      cddataplane = "cd $GITHUB/hashicorp/consul-dataplane";
-      cdworkflows = "cd $GITHUB/hashicorp/consul-k8s-workflows";
       dockerlogin = "docker login -u cbushko -p $DOCKER_PAT";
       cls = "tput reset";
       gitreset = "git reset --hard HEAD^";
@@ -167,6 +147,18 @@ in {
 
       # Needed to run mason downloads in neovim
       export NIX_LD=$(nix eval --extra-experimental-features nix-command --impure --raw --expr 'let pkgs = import <nixpkgs> {}; NIX_LD = pkgs.lib.fileContents "${pkgs.stdenv.cc}/nix-support/dynamic-linker"; in NIX_LD')
+
+      eval "$(zoxide init --cmd cd zsh)"
+      # Pre-load several directories that I always use
+      zoxide add $WORKSPACE
+      zoxide add $GITHUB
+      zoxide add $GHOSTTY
+      zoxide add $BUSHKO/leetcode
+      zoxide add $BUSHKO
+      zoxide add $KLEIO
+      zoxide add $KB
+      zoxide add $NIXOS_CONFIG
+      zoxide add $GITHUB/hashicorp
     '';
   };
   programs.zsh.oh-my-zsh = {
@@ -174,5 +166,4 @@ in {
     plugins = ["git" "vi-mode"];
     theme = "agnoster";
   };
-
- }
+}

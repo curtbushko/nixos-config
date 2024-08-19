@@ -29,8 +29,11 @@ in {
     systemd.variables = ["--all"];
     #nvidia = true;
     settings = {
-      # Variables
+      # CTRL = Desktop
+      "$ctrl" = "CTRL";
+      # Alt = App (like zellij tabs)
       "$alt" = "ALT";
+      # Super = window
       "$super" = "SUPER";
       # Vim navigation
       "$left" = "h";
@@ -124,7 +127,6 @@ in {
         # Paste using rofi
         "super, V, exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
 
-        "$alt $super, F, fullscreen"
         "$super, E, togglegroup"
 
         # Change app focus around
@@ -143,38 +145,38 @@ in {
         "$super SHIFT, tab, layoutmsg, cyclenext, prev"
 
         # Move the focused window
-        "$super $alt, $left, movewindow, l"
-        "$super $alt, $down, movewindow, d"
-        "$super $alt, $up, movewindow, u"
-        "$super $alt, $right, movewindow, r"
+        "$super $ctrl, $left, movewindow, l"
+        "$super $ctrl, $down, movewindow, d"
+        "$super $ctrl, $up, movewindow, u"
+        "$super $ctrl, $right, movewindow, r"
         # Or use arrow keys
-        "$super $alt, left, movewindow, l"
-        "$super $alt, down, movewindow, d"
-        "$super $alt, up, movewindow, u"
-        "$super $alt, right, movewindow, r"
+        "$super $ctrl, left, movewindow, l"
+        "$super $ctrl, down, movewindow, d"
+        "$super $ctrl, up, movewindow, u"
+        "$super $ctrl, right, movewindow, r"
 
-        "$super, 1, workspace, 1"
-        "$super, 2, workspace, 2"
-        "$super, 3, workspace, 3"
-        "$super, 4, workspace, 4"
-        "$super, 5, workspace, 5"
-        "$super, 6, workspace, 6"
-        "$super, 7, workspace, 7"
-        "$super, 8, workspace, 8"
-        "$super, 9, workspace, 9"
-        "$super, 0, workspace, 10"
+        "$ctrl, 1, workspace, 1"
+        "$ctrl, 2, workspace, 2"
+        "$ctrl, 3, workspace, 3"
+        "$ctrl, 4, workspace, 4"
+        "$ctrl, 5, workspace, 5"
+        "$ctrl, 6, workspace, 6"
+        "$ctrl, 7, workspace, 7"
+        "$ctrl, 8, workspace, 8"
+        "$ctrl, 9, workspace, 9"
+        "$ctrl, 0, workspace, 10"
 
         # Move window to workspace
-        "$super CTRL, 1, movetoworkspace, 1"
-        "$super CTRL, 2, movetoworkspace, 2"
-        "$super CTRL, 3, movetoworkspace, 3"
-        "$super CTRL, 4, movetoworkspace, 4"
-        "$super CTRL, 5, movetoworkspace, 5"
-        "$super CTRL, 6, movetoworkspace, 6"
-        "$super CTRL, 7, movetoworkspace, 7"
-        "$super CTRL, 8, movetoworkspace, 8"
-        "$super CTRL, 9, movetoworkspace, 9"
-        "$super CTRL, 0, movetoworkspace, 10"
+        "$super $ctrl, 1, movetoworkspace, 1"
+        "$super $ctrl, 2, movetoworkspace, 2"
+        "$super $ctrl, 3, movetoworkspace, 3"
+        "$super $ctrl, 4, movetoworkspace, 4"
+        "$super $ctrl, 5, movetoworkspace, 5"
+        "$super $ctrl, 6, movetoworkspace, 6"
+        "$super $ctrl, 7, movetoworkspace, 7"
+        "$super $ctrl, 8, movetoworkspace, 8"
+        "$super $ctrl, 9, movetoworkspace, 9"
+        "$super $ctrl, 0, movetoworkspace, 10"
 
         "$super, S, togglespecialworkspace, magic"
         "$super SHIFT, S, movetoworkspace, special:magic"
@@ -183,6 +185,7 @@ in {
         "$super, mouse_up, workspace, e-1"
 
         # Resize like Rectangle (you must double dispatch to move and resize at the same time)
+        "$alt $super, F, fullscreen"
         # First 3/4
         "$super $alt, 1, exec, hyprctl dispatcher splitratio exact 0.75"
         "$super $alt, 2, exec, hyprctl dispatcher splitratio exact 0.75"
@@ -192,10 +195,10 @@ in {
 
         "$super alt, p, pin"
 
-        "$alt CTRL, h, resizeactive, -40 0"
-        "$alt CTRL, l, resizeactive, 40 0"
-        "$alt CTRL, k, resizeactive, 0 -40"
-        "$alt CTRL, j, resizeactive, 0 40"
+        "$super $alt, h, resizeactive, -40 0"
+        "$super $alt, l, resizeactive, 40 0"
+        "$super $alt, k, resizeactive, 0 -40"
+        "$super $alt, j, resizeactive, 0 40"
       ];
       bindm = [
         "$super, mouse:272, movewindow"

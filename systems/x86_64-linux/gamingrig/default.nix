@@ -138,8 +138,42 @@
   programs.nix-ld.enable = true;
   programs.nix-ld.libraries = with pkgs; [
     stylua
-  ];
+    stdenv.cc.cc.lib
 
+    # from https://github.com/NixOS/nixpkgs/blob/nixos-23.05/pkgs/games/steam/fhsenv.nix#L72-L79
+    xorg.libXcomposite
+    xorg.libXtst
+    xorg.libXrandr
+    xorg.libXext
+    xorg.libX11
+    xorg.libXfixes
+    libGL
+    libva
+
+    # from https://github.com/NixOS/nixpkgs/blob/nixos-23.05/pkgs/games/steam/fhsenv.nix#L124-L136
+    fontconfig
+    freetype
+    xorg.libXt
+    xorg.libXmu
+    libogg
+    libvorbis
+    SDL
+    SDL2_image
+    glew110
+    libdrm
+    libidn
+    tbb
+    zlib
+  ];
+  # Saving this as it might be useful
+  #environment.variables = {
+  #  NIX_LD_LIBRARY_PATH = lib.makeLibraryPath [
+  #    pkgs.stdenv.cc.cc
+  #    pkgs.openssl
+  # add here the libraries you want...
+  #  ];
+  #  NIX_LD = lib.fileContents "${pkgs.stdenv.cc}/nix-support/dynamic-linker";
+  # };
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   programs.mtr.enable = true;
@@ -232,9 +266,14 @@
     enable = true;
     remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
     dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
+    localNetworkGameTransfers.openFirewall = true;
+    gamescopeSession.enable = true;
+  };
+  programs.gamescope = { 
+    enable = true;
+    capSysNice = true;
   };
   hardware.steam-hardware.enable = true;
-
   # Docker
   virtualisation = {
     libvirtd.enable = true;

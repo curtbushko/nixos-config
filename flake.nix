@@ -40,8 +40,8 @@
 
     sops-nix.url = "github:Mic92/sops-nix";
     tailscale = {
-       url = "github:tailscale/tailscale";
-       inputs.nixpkgs.follows = "nixpkgs-unstable";
+      url = "github:tailscale/tailscale";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
     nix-colors.url = "github:misterio77/nix-colors";
 
