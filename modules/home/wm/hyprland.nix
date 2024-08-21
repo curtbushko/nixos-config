@@ -166,6 +166,9 @@ in {
         "$ctrl, 9, workspace, 9"
         "$ctrl, 0, workspace, 10"
 
+        "$ctrl, H, workspace, -1"
+        "$ctrl, L, workspace, +1"
+
         # Move window to workspace
         "$super $ctrl, 1, movetoworkspace, 1"
         "$super $ctrl, 2, movetoworkspace, 2"
