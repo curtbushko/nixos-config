@@ -33,7 +33,7 @@
 
   # Allow core dumps
   systemd.coredump.enable = true;
-  
+
   # Setup settings so that I can access the video card devices to control the monitor
   services.udev.extraRules = ''
     KERNEL=="i2c-[0-9]*", GROUP="i2c", MODE="0660"
@@ -94,6 +94,7 @@
     cachix
     cmake
     dunst # notifications
+    dconf
     git
     gnumake
     gcc
@@ -273,7 +274,7 @@
     localNetworkGameTransfers.openFirewall = true;
     gamescopeSession.enable = true;
   };
-  programs.gamescope = { 
+  programs.gamescope = {
     enable = true;
     capSysNice = true;
   };

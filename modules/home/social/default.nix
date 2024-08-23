@@ -19,6 +19,4 @@
   imports = [
     ./discord.nix
   ];
-
-
 }

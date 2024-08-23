@@ -16,9 +16,7 @@
   config,
   ...
 }: {
-  home.packages =
-    [
-      pkgs.vesktop
-    ];
-
+  home.packages = [
+    pkgs.vesktop
+  ];
 }
