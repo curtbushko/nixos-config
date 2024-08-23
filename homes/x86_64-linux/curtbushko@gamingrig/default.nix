@@ -60,7 +60,6 @@
     ../../../modules/home/go
     ../../../modules/home/neovim
     ../../../modules/home/secrets
-    ../../../modules/home/social
     ../../../modules/home/shells
     ../../../modules/home/terminals
     ../../../modules/home/tools

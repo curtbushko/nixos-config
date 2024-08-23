@@ -71,6 +71,7 @@ in {
       pkgs.ddcutil
       pkgs.zathura
       pkgs.lsof
+      pkgs.mpv
       pkgs.remmina # remote desktop client
     ]);
 }
