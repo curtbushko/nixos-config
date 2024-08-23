@@ -17,6 +17,7 @@
   ...
 }: {
   home.stateVersion = "18.09";
+  home.enableNixpkgsReleaseCheck = false;
 
   # Let home manager manage itself
   programs.home-manager.enable = true;

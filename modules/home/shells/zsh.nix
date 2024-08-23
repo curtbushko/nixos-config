@@ -41,7 +41,7 @@ in {
         DOTFILES = "$HOME/.dotfiles";
         GHOSTTY = "$HOME/workspace/github.com/ghostty-org/ghostty";
         GITHUB = "$HOME/workspace/github.com";
-        KB = "$HOME/Sync/KB";
+        KB = "$BUSHKO/kb";
         NIXOS_CONFIG = "$HOME/workspace/github.com/curtbushko/nixos-config";
         SYNCTHING = "$HOME/Sync";
         WORKSPACE = "$HOME/workspace";
