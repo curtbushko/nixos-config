@@ -77,7 +77,7 @@ in {
           #"desc:Dell Inc. DELL ULTRASHARP U3219W,3440x1440@60,auto,1"
           "DP-2,3440x1440@60,auto,1"
           #"desc:Dell Inc. DELL S2721QS 93DPZY3,3840x2160@60,auto-right,1,transform,3"
-          "HDMI-A-1,3840x2160@60,auto-right,1.2"
+          "HDMI-A-1,3840x2160@60,auto-up,1.2"
           # 2024.07.06 - work around a kernel bug with phantom monitors
           "dest:Unknown-1,disabled"
         ];
