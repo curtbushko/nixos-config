@@ -41,7 +41,7 @@ in {
       "$up" = "k";
       "$right" = "l";
       # Applications
-      "$terminal" = "GDK_DEBUG=gl-disable-gles ghostty";
+      "$terminal" = "ghostty";
       "$browser" = "rofi-firefox-wrapper";
 
       # Tokyonight Night colors
