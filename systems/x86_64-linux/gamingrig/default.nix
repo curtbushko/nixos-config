@@ -125,6 +125,7 @@
     libnotify # notifications too.
     swww # wallpapers
     tailscale
+    neofetch
 
     rofi # app launcher
     rofi-wayland
