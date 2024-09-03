@@ -43,6 +43,8 @@
       url = "github:tailscale/tailscale";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
+
+    stylix.url = "github:danth/stylix";
     nix-colors.url = "github:misterio77/nix-colors";
 
     # Other packages
@@ -83,11 +85,11 @@
 
       systems.modules.darwin = with inputs; [
         home-manager.darwinModules.home-manager
-        nix-colors.homeManagerModules.default
       ];
 
       systems.modules.nixos = with inputs; [
         home-manager.nixosModules.home-manager
+        stylix.homeManagerModules.stylix
       ];
     };
 }

@@ -19,9 +19,10 @@
   programs.zellij = {
     enable = true;
   };
+  stylix.targets.zellij.enable = false;
   home.file.zellij = {
     target = ".config/zellij/config.kdl";
-    text = with config.colorScheme.palette; ''
+    text = ''
       // If you'd like to override the default keybindings completely, be sure to change "keybinds" to "keybinds clear-defaults=true"
       keybinds clear-defaults=true {
           //normal {
@@ -286,20 +287,19 @@
       // For more examples, see: https://github.com/zellij-org/zellij/tree/main/example/themes
       // Once these themes are defined, one of them should to be selected in the "theme" section of this file
       //
-      themes {
-          tokyo-night-custom {
-          fg "#dfe9ff"
-          bg "#${base01}"
-           black "#15161e"
-           red "#f7768e"
-           green "#9ece6a"
-           yellow "#ffec6e"
-           blue "#7aa2f7"
-           magenta "#bb9af7"
-           cyan "#65bcff"
-           white "#dfe9ff"
-           orange "#ff9e64"
-         }
+      //themes {
+      //    tokyo-night-custom {
+      //    fg "#dfe9ff"
+      //     black "#15161e"
+      //     red "#f7768e"
+      //     green "#9ece6a"
+      //     yellow "#ffec6e"
+      //     blue "#7aa2f7"
+      //     magenta "#bb9af7"
+      //     cyan "#65bcff"
+      //     white "#dfe9ff"
+      //     orange "#ff9e64"
+      //   }
       }
       // themes {
       //     dracula {
