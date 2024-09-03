@@ -55,6 +55,7 @@
   };
 
   imports = [
+    inputs.stylix.homeManagerModules.stylix
     ../../../modules/home/browsers
     ../../../modules/home/git
     ../../../modules/home/go

@@ -7,7 +7,7 @@
 
     home-manager = {
       url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     darwin = {
@@ -25,13 +25,16 @@
     #};
 
     hyprland = {
-      url = "github:hyprwm/hyprland";
+      url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
     hyprlock.url = "github:hyprwm/hyprlock";
 
-    hyprpaper.url = "github:hyprwm/hyprpaper";
+    hyprpaper = {
+      url = "github:hyprwm/hyprpaper";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     snowfall-lib = {
       url = "github:snowfallorg/lib";
@@ -44,7 +47,10 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-    stylix.url = "github:danth/stylix";
+    stylix = {
+      url = "github:danth/stylix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nix-colors.url = "github:misterio77/nix-colors";
 
     # Other packages
@@ -89,7 +95,6 @@
 
       systems.modules.nixos = with inputs; [
         home-manager.nixosModules.home-manager
-        stylix.homeManagerModules.stylix
       ];
     };
 }

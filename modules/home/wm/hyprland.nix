@@ -21,8 +21,10 @@
   #suspendCmd = ''swaymsg "output * dpms on"; sleep 2; suspend-script'';
   #hibernateCmd = ''swaymsg "output * dpms on"; sleep 2; hybernate-script'';
   #resumeCmd = ''swaymsg "output * dpms on"'';
-  wallpaperCmd = "${pkgs.hyprpaper}/bin/hyprpaper";
+    #wallpaperCmd = "${pkgs.hyprpaper}/bin/hyprpaper";
 in {
+
+  stylix.targets.hyprland.enable = false;
   wayland.windowManager.hyprland = {
     enable = isLinux;
     systemd.enable = true;
@@ -63,7 +65,7 @@ in {
         "QT_AUTO_SCREEN_SCALE_FACTOR,1"
       ];
       exec-once = [
-        wallpaperCmd
+                #wallpaperCmd
         "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
         "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
         "wl-paste --type text --watch cliphist store"

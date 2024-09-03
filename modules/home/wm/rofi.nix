@@ -32,13 +32,13 @@ in {
         spacing = 0;
         width = mkLiteral "800px";
 
-        bg = mkLiteral "#${bg}";
-        bg-alt = mkLiteral "#${bg_dark}";
-        fg = mkLiteral "#${fg}";
-        fg-alt = mkLiteral "#${fg_dark}";
-        border-color = mkLiteral "#${blue1}";
-        background-color = mkLiteral "@bg";
-        text-color = mkLiteral "@fg";
+                    #bg = mkLiteral "#${bg}";
+                    #bg-alt = mkLiteral "#${bg_dark}";
+                    #fg = mkLiteral "#${fg}";
+                    #fg-alt = mkLiteral "#${fg_dark}";
+                    #border-color = mkLiteral "#${blue1}";
+                    #background-color = mkLiteral "@bg";
+                    #text-color = mkLiteral "@fg";
       };
 
       window = {
@@ -51,7 +51,7 @@ in {
       };
 
       inputbar = {
-        background-color = mkLiteral "@bg-alt";
+                    #background-color = mkLiteral "@bg-alt";
         children = mkLiteral "[prompt, entry]";
       };
 
@@ -82,11 +82,11 @@ in {
 
       element-text = {
         padding = mkLiteral "10px 0";
-        text-color = mkLiteral "@fg-alt";
+                    #text-color = mkLiteral "@fg-alt";
       };
 
       "element-text selected" = {
-        text-color = mkLiteral "@fg";
+                    #text-color = mkLiteral "@fg";
       };
     };
   };

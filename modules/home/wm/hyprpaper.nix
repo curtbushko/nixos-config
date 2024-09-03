@@ -1,4 +1,5 @@
 {
+  inputs,
   pkgs,
   lib,
   ...
@@ -10,8 +11,8 @@ in {
     [
     ]
     ++ (lib.optionals isLinux [
-      #pkgs.rofi-firefox-wrapper
-      hyprpaper
+      # rofi-firefox-wrapper
+            #hyprpaper
     ]);
 
   xdg.configFile."hypr/hyprpaper.conf" = {

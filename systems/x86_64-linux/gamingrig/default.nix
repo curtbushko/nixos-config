@@ -64,8 +64,6 @@
     font = "Lat2-Terminus16";
   };
 
-  # Enable sound with pipewire.
-  sound.enable = true;
   security.rtkit.enable = true;
 
   # Enable bluetoolth
@@ -227,10 +225,9 @@
 
   # Enable OpenGL
   services.xserver.videoDrivers = ["nvidia"];
-  hardware.opengl = {
+  hardware.graphics = {
     enable = true;
-    driSupport = true;
-    driSupport32Bit = true;
+    enable32Bit = true;
     extraPackages = with pkgs; [nvidia-vaapi-driver];
   };
 
