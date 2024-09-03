@@ -16,7 +16,6 @@
       "rectangle"
       "syncthing"
       "slack"
-      "tailscale"
       "vlc"
       "notunes"
     ];

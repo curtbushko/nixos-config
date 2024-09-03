@@ -18,12 +18,16 @@
       keep-derivations = true
     '';
 
-    # public binary cache that I use for all my derivations. You can keep
-    # this, use your own, or toss it. Its typically safe to use a binary cache
-    # since the data inside is checksummed.
     settings = {
-      substituters = ["https://mitchellh-nixos-config.cachix.org"];
-      trusted-public-keys = ["mitchellh-nixos-config.cachix.org-1:bjEbXJyLrL1HZZHBbO4QALnI5faYZppzkU4D2s0G8RQ="];
+        trusted-public-keys = [
+            nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=
+            cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
+        ];
+        trusted-substituters = [
+            https://nix-community.cachix.org
+            https://cache.nixos.org
+        ];
+        trusted-users = [ "root" "@wheel" ];
     };
   };
 
@@ -52,6 +56,20 @@
     luajitPackages.tl
     libvterm-neovim
     cachix
+    tailscale
+  ];
+
+  # Fonts
+  fonts.packages = with pkgs; [
+    fira-code
+    font-awesome_5
+    jetbrains-mono
+    intel-one-mono
+    nerdfonts
+    noto-fonts
+    noto-fonts-extra
+    noto-fonts-emoji
+    powerline-fonts
   ];
 
   services.tailscale.enable = true;
