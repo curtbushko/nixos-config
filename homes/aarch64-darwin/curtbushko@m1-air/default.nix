@@ -49,7 +49,6 @@
 
   imports = [
     inputs.sops-nix.homeManagerModules.sops
-
     inputs.stylix.homeManagerModules.stylix
     ../../../modules/home/styles
     ../../../modules/home/git

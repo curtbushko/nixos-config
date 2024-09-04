@@ -65,9 +65,6 @@
     ../../../modules/home/terminals
     ../../../modules/home/tools
     ../../../modules/home/wm
-    inputs.nix-colors.homeManagerModules.default
     inputs.sops-nix.homeManagerModules.sops
-    # Colorscheme. Still use nix-colors as there are some useful libraries in it.
-    ../../../modules/home/themes/tokyo-night-neon.nix
   ];
 }

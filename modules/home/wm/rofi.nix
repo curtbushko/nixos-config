@@ -27,7 +27,7 @@ in {
       case-sensitive = false;
     };
     theme = with config.lib.formats.rasi;
-    with config.colorScheme.palette; {
+    {
       "*" = {
         spacing = 0;
         width = mkLiteral "800px";

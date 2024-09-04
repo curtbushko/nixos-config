@@ -51,8 +51,6 @@
       url = "github:danth/stylix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nix-colors.url = "github:misterio77/nix-colors";
-
     # Other packages
     zig.url = "github:mitchellh/zig-overlay";
   };

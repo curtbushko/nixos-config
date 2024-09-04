@@ -36,12 +36,33 @@
   # Blue: base0D
   # Purple: base0E
   # Brown: base0F
-  stylix = {
-    enable = true;
-    image = ./wallpapers/alena-aenami-wait.jpg;
-    polarity = "dark";
-    #base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyo-city-terminal-dark.yaml";
-    #base16Scheme = "${pkgs.base16-schemes}/share/themes/ashes.yaml";
-    base16Scheme = ./tokyo-night-neon.yaml;
-  };
+    stylix = {
+        enable = true;
+        image = ./wallpapers/alena-aenami-wait.jpg;
+        polarity = "dark";
+        #base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyo-city-terminal-dark.yaml";
+        #base16Scheme = "${pkgs.base16-schemes}/share/themes/ashes.yaml";
+        base16Scheme = ./tokyo-night-neon.yaml;
+        fonts = {
+            serif = {
+                package = pkgs.fira-code;
+                name = "Fira Code";
+            };
+
+            sansSerif = {
+                package = pkgs.fira-code;
+                name = "Fira Code";
+            };
+
+            monospace = {
+                package = pkgs.fira-code;
+                name = "Fira Code";
+            };
+
+            emoji = {
+                package = pkgs.noto-fonts-emoji;
+                name = "Noto Color Emoji";
+            };
+        };
+    };
 }

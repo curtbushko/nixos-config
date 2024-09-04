@@ -26,7 +26,7 @@ in {
         position = "top";
         spacing = "-4";
         mod = "dock";
-        height = 20;
+        height = 32;
         margin-top = 0;
         margin-bottom = 0;
         exclusive = true;
@@ -205,9 +205,7 @@ in {
     ];
 
     style = let
-      inherit (inputs.nix-colors.lib.conversions) hexToRGBString;
-      toRGBA = color: opacity: "rgba(${hexToRGBString "," (lib.removePrefix "#" color)},${opacity})";
-      colors = config.colorScheme.palette;
+      colors = config.lib.stylix.colors;
     in
       with colors; ''
         /*
@@ -215,35 +213,45 @@ in {
             ┃┃┃┃┃┃┃  ┃ ┃┃┃ ┃┃┣┫┗┓
             ┗┛┗┻┛┛┗  ┗┛┗┛┗┛┗┛┛┗┗┛
         */
-        @define-color foreground #${fg};
-        @define-color background #${bg};
+        @define-color foreground #${base05};
+        @define-color background #${base00};
         @define-color cursor #afbbe5;
 
         /* waybar area/group colors*/
-        @define-color network ${toRGBA bg "1.0"};
-        @define-color workspaces ${toRGBA dark3 "1.0"};
-        @define-color audio ${toRGBA blue "1.0"};
+        @define-color network #${base0D};
+        @define-color network_fg #${base05};
+
+        @define-color workspaces #${base01};
+
+        @define-color audio #${base0D};
+        @define-color audio_fg #${base05};
+
         @define-color clock @foreground;
-        @define-color resources ${toRGBA blue "1.0"};
-        @define-color temperature ${toRGBA dark3 "1.0"};
-        @define-color system ${toRGBA bg "1.0"};
+
+        @define-color resources #${base0D};
+        @define-color resources_fg #${base05};
+
+        @define-color temperature #${base01};
+
+        @define-color system #${base0D};
+        @define-color system_fg #${base05};
 
         /* workspace text colors */
-        @define-color workspace_fg @foreground;
-        @define-color act_wrk_fg  #${bg};
-        @define-color use_wrk_fg #${blue8};
+        @define-color workspace_fg #${base01};
+        @define-color act_wrk_fg  #${base01};
+        @define-color use_wrk_fg #${base0D};
         /* workspace button-background colors */
-        @define-color workspace_bg ${toRGBA bg "0.9"};
-        @define-color act_wrk_bg ${toRGBA green "0.8"};
+        @define-color workspace_bg #${base05};
+        @define-color act_wrk_bg #${base0D};
 
         /* updates-widget icon+text colors */
-        @define-color updates_green #${green};
-        @define-color updates_yellow #${yellow};
-        @define-color updates_red #${red};
+        @define-color updates_green #${base0B};
+        @define-color updates_yellow #${base0A};
+        @define-color updates_red #${base08};
         /* tokyo-night colors
-        updates_green = "#${green}";
-        updates_yellow = "#${yellow}";
-        updates_red = "${red}";
+        updates_green = "#${base0B}";
+        updates_yellow = "#${base0A}";
+        updates_red = "#${base08}";
         */
 
         /*
@@ -253,7 +261,7 @@ in {
         */
 
         * {
-            font-family: "Fira Sans SemiBold";
+            font-family: "Fira Code";
             font-weight: bold;
             font-size: 12px;
             min-height: 0px;
@@ -270,7 +278,7 @@ in {
             background: @background;
             color: @foreground;
             border-radius: 5px;
-            border-width: 0px;
+            border-width: 1px;
         }
 
         /*
@@ -371,12 +379,13 @@ in {
         */
         #network {
             background: @network;
+            color: @network_fg
         }
         #group-network {
             background: @network;
         }
         #custom-network-workspaces-separator {
-           background: linear-gradient(120deg, @network 50%, #${dark3} 50%);
+           background: linear-gradient(120deg, @network 50%, #${base01} 50%);
            color: @network;
         }
 
@@ -389,7 +398,7 @@ in {
             background: @workspaces;
         }
         #custom-workspaces-audio-separator {
-           background: linear-gradient(120deg, @workspaces 50%, #${blue} 50%);
+           background: linear-gradient(120deg, @workspaces 50%, #${base0D} 50%);
            color: @workspaces;
         }
 
@@ -400,6 +409,7 @@ in {
         */
         #pulseaudio {
             background: @audio;
+            color: @audio_fg
         }
         #custom-audio-separator {
            background: linear-gradient(120deg, @audio 50%, transparent 50%);
@@ -412,14 +422,15 @@ in {
           ┛┗┗┛┗┛┗┛┗┛┛┗┗┛┗┛┗┛
         */
         #custom-resources-separator {
-           background: linear-gradient(120deg, transparent 50%, #${blue} 50%);
+           background: linear-gradient(120deg, transparent 50%, #${base0D} 50%);
            color: @resources;
         }
         #resources {
             background: @resources;
+            color: @resources_fg
         }
         #custom-resources-temperature-separator {
-           background: linear-gradient(120deg, @resources 50%, #${dark3} 50%);
+           background: linear-gradient(120deg, @resources 50%, #${base01} 50%);
            color: @resources;
         }
 
@@ -435,7 +446,7 @@ in {
             background: @temperature;
         }
         #custom-temperature-system-separator {
-           background: linear-gradient(120deg, @temperature 50%, #${bg} 50%);
+           background: linear-gradient(120deg, @temperature 50%, #${base0D} 50%);
            color: @temperature;
         }
 
@@ -446,6 +457,7 @@ in {
         */
         #system {
             background: @system;
+            color: @system_fg
         }
       '';
   };
