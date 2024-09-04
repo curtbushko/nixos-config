@@ -12,7 +12,7 @@ in {
     ]
     ++ (lib.optionals isLinux [
       # rofi-firefox-wrapper
-            #hyprpaper
+      #hyprpaper
     ]);
 
   xdg.configFile."hypr/hyprpaper.conf" = {

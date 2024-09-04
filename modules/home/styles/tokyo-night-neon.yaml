@@ -3,7 +3,6 @@ name: "Tokyo Night Neon"
 author: "Curt Bushko"
 variant: "dark"
 palette:
-
   base00: "16161E"
   base01: "1A1B26"
   base02: "2F3549"
