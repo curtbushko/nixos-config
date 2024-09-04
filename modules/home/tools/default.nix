@@ -27,6 +27,7 @@ in {
 
   home.packages =
     [
+      pkgs.aider-chat
       pkgs.age
       pkgs.alejandra
       pkgs.asciinema
@@ -74,4 +75,5 @@ in {
       pkgs.mpv
       pkgs.remmina # remote desktop client
     ]);
+
 }
