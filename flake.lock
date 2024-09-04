@@ -176,11 +176,11 @@
       },
       "locked": {
         "dir": "pkgs/firefox-addons",
-        "lastModified": 1725380904,
-        "narHash": "sha256-RUPYxOT8SNquLj8HA61tTdzeNI7vVO0unnTt9fYy33g=",
+        "lastModified": 1725422601,
+        "narHash": "sha256-AmrnBdmaJqBh8rV3cRM0d1kuq6cdUgVlTwGFrFmAuL0=",
         "owner": "rycee",
         "repo": "nur-expressions",
-        "rev": "46ad3e1484c65bd37b5e2ca2fb7d5e6bd4075d59",
+        "rev": "39d2a2a6da0aeb123420b662a09887b04f88769c",
         "type": "gitlab"
       },
       "original": {
@@ -480,11 +480,11 @@
         "xdph": "xdph"
       },
       "locked": {
-        "lastModified": 1725367654,
-        "narHash": "sha256-1hiNRCEdSZLfyH2y06S+gqUbiSwbwdktStPSJuPesaM=",
+        "lastModified": 1725445409,
+        "narHash": "sha256-nz9F3o9vTS7LSEbLoa0De0Tbv0/fJjiv1qihlXnD3co=",
         "ref": "refs/heads/main",
-        "rev": "9b54342baa27d8de0460e1103ec4c3cc65592ed8",
-        "revCount": 5182,
+        "rev": "ea10592ad3c861ff2ce73ad7785bcb5a45a9e400",
+        "revCount": 5183,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/hyprwm/Hyprland"
@@ -1079,11 +1079,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1725388624,
-        "narHash": "sha256-Hr+hKliWjsHXXqMUeU/eIujU/R6IHLcD+oAccsVPQr4=",
+        "lastModified": 1725408986,
+        "narHash": "sha256-YmlttxFeatyiMjSt/GbgNQs8Xl+2EnzvLRbfuN9u1RQ=",
         "owner": "tailscale",
         "repo": "tailscale",
-        "rev": "e865a0e2b04b9d9a4480bc5e4f4a2683c5e5c2cc",
+        "rev": "c4d0237e5cae9cdd5933aae99e76b85a35f9c6f2",
         "type": "github"
       },
       "original": {
@@ -1129,11 +1129,11 @@
         "nixpkgs": "nixpkgs_4"
       },
       "locked": {
-        "lastModified": 1725365439,
-        "narHash": "sha256-PlGdaX3A9kndMxrwHW2QRd8SyE6mxheIgd81tqLV8HQ=",
+        "lastModified": 1725409652,
+        "narHash": "sha256-OeNhA5j8jNR7E7bzqPKa45XITHaiksOpcq8lmY73qpQ=",
         "owner": "mitchellh",
         "repo": "zig-overlay",
-        "rev": "fb3b6628ebf2e0c8e4e346d5ed1de5fce60ece07",
+        "rev": "93f966d919a7ad45ca3f403e03311670b1ba31d8",
         "type": "github"
       },
       "original": {
