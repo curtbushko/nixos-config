@@ -18,6 +18,7 @@
 }: let
   isLinux = pkgs.stdenv.isLinux;
 in {
+  stylix.targets.waybar.enable = false;
   programs.waybar = {
     enable = isLinux;
     settings = [
@@ -26,7 +27,7 @@ in {
         position = "top";
         spacing = "-4";
         mod = "dock";
-        height = 32;
+        height = 25;
         margin-top = 0;
         margin-bottom = 0;
         exclusive = true;
@@ -69,6 +70,20 @@ in {
             "DP-2" = [1 2 3 4 5];
             "HDMI-A-1" = [6 7 8 9 10];
           };
+          format = "{icon}";
+	      format-icons = {
+		    "1" = " 󰎦 ";
+		    "2" = " 󰎩 ";
+		    "3" = " 󰎬 ";
+		    "4" = " 󰎮 ";
+		    "5" = " 󰎰 ";
+		    "6" = " 󰎵 ";
+		    "7" = " 󰎸 ";
+		    "8" = " 󰎻 ";
+		    "9" = " 󰎾 ";
+		    "10" = " 󰎣 ";
+		    default = " 󱗝 ";
+	      };
         };
 
         "custom/workspaces-audio-separator" = {
@@ -237,12 +252,12 @@ in {
         @define-color system_fg #${base05};
 
         /* workspace text colors */
-        @define-color workspace_fg #${base01};
-        @define-color act_wrk_fg  #${base01};
-        @define-color use_wrk_fg #${base0D};
+        @define-color workspace_fg #${base05};
+        @define-color act_wrk_fg  #${base0B};
+        @define-color use_wrk_fg #${base08};
         /* workspace button-background colors */
         @define-color workspace_bg #${base05};
-        @define-color act_wrk_bg #${base0D};
+        @define-color act_wrk_bg #${base0C};
 
         /* updates-widget icon+text colors */
         @define-color updates_green #${base0B};
@@ -288,38 +303,36 @@ in {
         */
 
         #workspaces {
-            padding: 2px 10px;
+            padding: 1px 5px;
+            margin: 0px 0px;
         }
 
-        /* ALL workspace buttons (Focused + Unfocused) */
-        #workspaces button:hover {
+
+        #workspaces button label {
+            font-size: 20px;
         }
 
-        /* Only focused workspace*/
+        #workspaces button {
+            padding: 0;
+            background-color: @workspace;
+            color: @workspace_fg;
+            margin: 0;
+            border: none;
+        }
+
+        #workspaces button.empty {
+            color: @workspace_fg;
+            background-color: @workspace;
+        }
+
+        #workspaces button.visible {
+            color: @use_wrk_fg;
+            background-color: @workspace;
+        }
+
         #workspaces button.active {
             color:  @act_wrk_fg;
-            background: @act_wrk_bg;
-            border: none;
-            padding: 2px 5px;
-            margin: 2px 2px;
-            transition: all 0.2s ease-in-out;
-        }
-
-        /* Unfocused workspace WITH opened Apps
-        !!! Border style is valid for ALL buttons,
-        Set seperate border style for every button. */
-        #workspaces button {
-            color: @workspace_fg;
-            background: @workspace_bg;
-            padding: 2px 5px;
-            margin: 2px 2px;
-            transition: all 0.2s ease-in-out;
-        }
-
-        #workspaces button:not(.empty):not(.active) {
-            color: @use_wrk_fg;
-            padding: 2px 5px;
-            margin: 2px 5px;
+            background-color: @workspace;
         }
 
         /*

@@ -13,6 +13,7 @@
     extraGroups = ["input" "networkmanager" "docker" "wheel" "i2c" "jackaudio"];
     shell = pkgs.zsh;
   };
+  security.sudo.wheelNeedsPassword = false;
 
   # Keep in async with vm-shared.nix. (todo: pull this out into a file)
   nix = {
