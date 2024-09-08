@@ -27,6 +27,7 @@
   build-ghostty = pkgs.writeScriptBin "build-ghostty" (builtins.readFile ./build-ghostty);
   containerwatcher = pkgs.writeScriptBin "containerwatcher" (builtins.readFile ./containerwatcher);
   context = pkgs.writeScriptBin "context" (builtins.readFile ./context);
+  daily-note = pkgs.writeScriptBin "daily-note" (builtins.readFile ./daily-note);
   docker-clean = pkgs.writeScriptBin "docker-clean" (builtins.readFile ./docker-clean);
   docker-image-dates = pkgs.writeScriptBin "docker-image-dates" (builtins.readFile ./docker-image-dates);
   epub-to-mobi = pkgs.writeScriptBin "epub-to-mobi" (builtins.readFile ./epub-to-mobi);
@@ -53,6 +54,7 @@
   kubewatcher = pkgs.writeScriptBin "kubewatcher" (builtins.readFile ./kubewatcher);
   makelintwatcher = pkgs.writeScriptBin "makelintwatcher" (builtins.readFile ./makelintwatcher);
   makeunitwatcher = pkgs.writeScriptBin "makeunitwatcher" (builtins.readFile ./makeunitwatcher);
+  new-note = pkgs.writeScriptBin "new-note" (builtins.readFile ./new-note);
   nodewatcher = pkgs.writeScriptBin "nodewatcher" (builtins.readFile ./nodewatcher);
   open-file = pkgs.writeScriptBin "open-file" (builtins.readFile ./open-file);
   pdf-clean = pkgs.writeScriptBin "pdf-clean" (builtins.readFile ./pdf-clean);
@@ -73,6 +75,7 @@ in {
       build-ghostty
       containerwatcher
       context
+      daily-note
       docker-clean
       docker-image-dates
       epub-to-mobi
@@ -98,6 +101,7 @@ in {
       kubewatcher
       makelintwatcher
       makeunitwatcher
+      new-note
       nodewatcher
       open-file
       pdf-clean

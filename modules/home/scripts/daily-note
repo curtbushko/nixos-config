@@ -1,0 +1,48 @@
+#!/bin/sh
+
+KB=$HOME/workspace/github.com/curtbushko/kb
+DAILY_TEMPLATE=$KB/templates/daily.md
+DAILY_DIR=$KB/daily
+MONTHLY_TEMPLATE=$KB/templates/monthly.md
+YEARLY_TEMPLATE=$KB/templates/yearly.md
+
+DATE=$(date +'%Y%m%d')
+TIME=$(date +'%H:%M')
+YYYY=$(date +'%Y')
+MMMM=$(date +'%B')
+MM=$(date +'%m')
+DD=$(date +'%d')
+DAILY_FILENAME=$DAILY_DIR/$DATE.md
+MONTHLY_FILENAME=$DAILY_DIR/$YYYY$MM.md
+YEARLY_FILENAME=$DAILY_DIR/$YYYY.md
+
+echo "Creating daily file: $DAILY_FILENAME"
+cat $DAILY_TEMPLATE \
+| sed "s^{{date:MMMM}}^${MMMM}^g" \
+| sed "s^{{date:MM}}^${MM}^g" \
+| sed "s^{{date:DD}}^${DD}^g" \
+| sed "s^{{date:YYYY}}^${YYYY}^g" \
+| sed "s^{{date}}^${DATE}^g" \
+| sed "s^{{time}}^${TIME}^g" > $DAILY_FILENAME
+
+if test ! -f $MONTHLY_FILENAME; then
+    echo "Creating monthly file: $MONTHLY_FILENAME"
+    cat $MONTHLY_TEMPLATE \
+    | sed "s^{{date:MMMM}}^${MMMM}^g" \
+    | sed "s^{{date:MM}}^${MM}^g" \
+    | sed "s^{{date:DD}}^${DD}^g" \
+    | sed "s^{{date:YYYY}}^${YYYY}^g" \
+    | sed "s^{{date}}^${DATE}^g" \
+    | sed "s^{{time}}^${TIME}^g" > $MONTHLY_FILENAME
+fi
+
+if test ! -f $YEARLY_FILENAME; then
+    echo "Creating yearly file: $YEARLY_FILENAME"
+    cat $YEARLY_TEMPLATE \
+    | sed "s^{{date:MMMM}}^${MMMM}^g" \
+    | sed "s^{{date:MM}}^${MM}^g" \
+    | sed "s^{{date:DD}}^${DD}^g" \
+    | sed "s^{{date:YYYY}}^${YYYY}^g" \
+    | sed "s^{{date}}^${DATE}^g" \
+    | sed "s^{{time}}^${TIME}^g" > $YEARLY_FILENAME
+fi

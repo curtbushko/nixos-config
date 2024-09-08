@@ -3,7 +3,7 @@ return {
     "epwalsh/obsidian.nvim",
     config = function()
       require("obsidian").setup({
-        dir = "~/Sync/KB",
+        dir = "~/workspace/github.com/curtbushko/kb",
         id = {},
         daily_notes = {
           folder = "daily",
@@ -33,11 +33,11 @@ return {
     --
     keys = {
       { "<leader>Ob", "<CMD>ObsidianBacklinks<CR>", desc = "backlinks" },
-      { "<leader>Od", "<CMD>ObsidianToday<CR>", desc = "new daily note" },
+      { "<leader>Od", "<CMD>daily-note<CR>", desc = "new daily note" },
       { "<leader>Of", "gf", desc = "follow link" },
       { "<leader>Ol", "<CMD>ObsidianLink<CR>", desc = "link" },
       { "<leader>Om", "<CMD>ObsidianLinkNew<CR>", desc = "new note from link" },
-      { "<leader>On", "<CMD>ObsidianNew<CR>", desc = "new note" },
+      { "<leader>On", "<CMD>new-note<CR>", desc = "new note" },
       { "<leader>Oy", "<CMD>ObsidianYesterday<CR>", desc = "yesterdays daily note" },
     },
   },
