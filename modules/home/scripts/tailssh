@@ -9,8 +9,8 @@ function logger() {
 }
 
 function wake() {
-    logger INFO "Bouncing off of $OPENWRT_TAILNET_ID"
-    ssh -t root@$OPENWRT_TAILNET_ID "etherwake -D -i eth0.1 '$GAMINGRIG_MAC_ADDRESS'"
+    logger INFO "Bouncing off of $RELAY_TAILNET_ID"
+    ssh -t root@$RELAY_TAILNET_ID "etherwake -D -i eth0.1 '$GAMINGRIG_MAC_ADDRESS'"
 }
 
 function pingWait() {
