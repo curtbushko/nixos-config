@@ -27,7 +27,7 @@ in {
         position = "top";
         spacing = "-4";
         mod = "dock";
-        height = 25;
+        height = 23;
         margin-top = 0;
         margin-bottom = 0;
         exclusive = true;
@@ -70,7 +70,7 @@ in {
             "DP-2" = [1 2 3 4 5];
             "HDMI-A-1" = [6 7 8 9 10];
           };
-          format = "{icon}";
+          format = "<span font='16'>{icon}</span>";
 	      format-icons = {
 		    "1" = " 󰎦 ";
 		    "2" = " 󰎩 ";
@@ -228,36 +228,28 @@ in {
             ┃┃┃┃┃┃┃  ┃ ┃┃┃ ┃┃┣┫┗┓
             ┗┛┗┻┛┛┗  ┗┛┗┛┗┛┗┛┛┗┗┛
         */
-        @define-color foreground #${base05};
-        @define-color background #${base00};
+       /*
+         Number these by section and the bar is setup as:
+         [1][2][3]       [3][2][1]  which maps to:
+         [network][workspace][audio]   [resources][temperature][system]
+       */
+        @define-color section_1_fg #${base01};
+        @define-color section_1_bg #${base06};
+
+        @define-color section_2_fg #${base06};
+        @define-color section_2_bg #${base0D};
+
+        @define-color section_3_fg #${base0D};
+        @define-color section_3_bg #${base03};
+
         @define-color cursor #afbbe5;
 
-        /* waybar area/group colors*/
-        @define-color network #${base0D};
-        @define-color network_fg #${base05};
-
-        @define-color workspaces #${base01};
-
-        @define-color audio #${base0D};
-        @define-color audio_fg #${base05};
-
-        @define-color clock @foreground;
-
-        @define-color resources #${base0D};
-        @define-color resources_fg #${base05};
-
-        @define-color temperature #${base01};
-
-        @define-color system #${base0D};
-        @define-color system_fg #${base05};
+        @define-color foreground #${base05};
+        @define-color background #${base00};
 
         /* workspace text colors */
-        @define-color workspace_fg #${base05};
-        @define-color act_wrk_fg  #${base0B};
-        @define-color use_wrk_fg #${base08};
-        /* workspace button-background colors */
-        @define-color workspace_bg #${base05};
-        @define-color act_wrk_bg #${base0C};
+        @define-color active_fg  #${base08};
+        @define-color in_use_fg #${base0E};
 
         /* updates-widget icon+text colors */
         @define-color updates_green #${base0B};
@@ -278,7 +270,7 @@ in {
         * {
             font-family: "Fira Code";
             font-weight: bold;
-            font-size: 12px;
+            font-size: 14px;
             min-height: 0px;
         }
 
@@ -303,36 +295,33 @@ in {
         */
 
         #workspaces {
-            padding: 1px 5px;
+            padding: 0px 0px;
             margin: 0px 0px;
         }
 
 
         #workspaces button label {
-            font-size: 20px;
+            font-size: 14px;
         }
 
         #workspaces button {
             padding: 0;
-            background-color: @workspace;
-            color: @workspace_fg;
+            background-color: @section_2_bg;
+            color: @section_2_fg;
             margin: 0;
             border: none;
         }
 
         #workspaces button.empty {
-            color: @workspace_fg;
-            background-color: @workspace;
+            color: @section_2_fg;
         }
 
         #workspaces button.visible {
-            color: @use_wrk_fg;
-            background-color: @workspace;
+            color: @in_use_fg;
         }
 
         #workspaces button.active {
-            color:  @act_wrk_fg;
-            background-color: @workspace;
+            color:  @active_fg;
         }
 
         /*
@@ -391,15 +380,16 @@ in {
             ┛┗┗┛ ┻ ┗┻┛┗┛┛┗┛┗┛
         */
         #network {
-            background: @network;
-            color: @network_fg
+            background: @section_1_bg;
+            color: @section_1_fg
         }
         #group-network {
-            background: @network;
+            background: @section_1_bg;
+            color: @section_1_fg
         }
         #custom-network-workspaces-separator {
-           background: linear-gradient(120deg, @network 50%, #${base01} 50%);
-           color: @network;
+           background: linear-gradient(120deg, @section_1_bg 50%, @section_2_bg 50%);
+           color: @section_1_bg;
         }
 
         /*
@@ -408,11 +398,12 @@ in {
             ┗┻┛┗┛┛┗┛┗┛┗┛┣┛┛┗┗┛┗┛┗┛
         */
         #workspaces {
-            background: @workspaces;
+            background: @section_2_bg;
+            color: @section_2_fg;
         }
         #custom-workspaces-audio-separator {
-           background: linear-gradient(120deg, @workspaces 50%, #${base0D} 50%);
-           color: @workspaces;
+           background: linear-gradient(120deg, @section_2_bg 50%, @section_3_bg 50%);
+           color: @section_2_bg;
         }
 
         /*
@@ -421,12 +412,12 @@ in {
             ┛┗┗┛┻┛┻┗┛
         */
         #pulseaudio {
-            background: @audio;
-            color: @audio_fg
+            background: @section_3_bg;
+            color: @section_3_fg
         }
         #custom-audio-separator {
-           background: linear-gradient(120deg, @audio 50%, transparent 50%);
-           color: @audio;
+           background: linear-gradient(120deg, @section_3_bg 50%, transparent 50%);
+           color: @section_3_bg;
         }
 
         /*
@@ -435,16 +426,16 @@ in {
           ┛┗┗┛┗┛┗┛┗┛┛┗┗┛┗┛┗┛
         */
         #custom-resources-separator {
-           background: linear-gradient(120deg, transparent 50%, #${base0D} 50%);
-           color: @resources;
+           background: linear-gradient(120deg, transparent 50%, @section_3_bg 50%);
+           color: @section_3_bg;
         }
         #resources {
-            background: @resources;
-            color: @resources_fg
+            background: @section_3_bg;
+            color: @section_3_fg
         }
         #custom-resources-temperature-separator {
-           background: linear-gradient(120deg, @resources 50%, #${base01} 50%);
-           color: @resources;
+           background: linear-gradient(120deg, @section_3_bg 50%, @section_2_bg 50%);
+           color: @section_3_bg;
         }
 
         /*
@@ -453,14 +444,16 @@ in {
             ┻ ┗┛┛ ┗┣┛┗┛┛┗┛┗ ┻ ┗┛┛┗┗┛
         */
         #temperature {
-            background: @temperature;
+            background: @section_2_bg;
+            color: @section_2_fg;
         }
         #custom-gpu {
-            background: @temperature;
+            background: @section_2_bg;
+            color: @section_2_fg;
         }
         #custom-temperature-system-separator {
-           background: linear-gradient(120deg, @temperature 50%, #${base0D} 50%);
-           color: @temperature;
+           background: linear-gradient(120deg, @section_2_bg 50%, @section_1_bg 50%);
+           color: @section_2_bg;
         }
 
         /*
@@ -469,8 +462,8 @@ in {
             ┗┛┗┛┗┛ ┻ ┗┛┛ ┗
         */
         #system {
-            background: @system;
-            color: @system_fg
+            background: @section_1_bg;
+            color: @section_1_fg
         }
       '';
   };

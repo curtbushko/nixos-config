@@ -22,7 +22,8 @@
   stylix.targets.zellij.enable = false;
   home.file.zellij = {
     target = ".config/zellij/config.kdl";
-    text = ''
+    text = with config.lib.stylix.colors.withHashtag;
+      ''
       // If you'd like to override the default keybindings completely, be sure to change "keybinds" to "keybinds clear-defaults=true"
       keybinds clear-defaults=true {
           //normal {
@@ -282,7 +283,22 @@
       // also default to the scrollback size. This does nothing if `serialize_pane_viewport` is not true.
       //
       // scrollback_lines_to_serialize 10000
-
+      theme "stylix"
+      themes {
+        stylix {
+          bg "${base03}"
+          fg "${base05}"
+          red "${base08}"
+          green "${base0B}"
+          blue "${base0D}"
+          yellow "${base0A}"
+          magenta "${base0E}"
+          orange "${base09}"
+          cyan "${base0C}"
+          black "${base00}"
+          white "${base07}"
+        }
+      }
       // Define color themes for Zellij
       // For more examples, see: https://github.com/zellij-org/zellij/tree/main/example/themes
       // Once these themes are defined, one of them should to be selected in the "theme" section of this file
@@ -300,7 +316,7 @@
       //     white "#dfe9ff"
       //     orange "#ff9e64"
       //   }
-      }
+      //}
       // themes {
       //     dracula {
       //         fg 248 248 242
@@ -320,7 +336,7 @@
       // Choose the theme that is specified in the themes section.
       // Default: default
       //
-      theme "tokyo-night-custom"
+      //theme "tokyo-night-custom"
 
       // The name of the default layout to load on startup
       // Default: "default"
