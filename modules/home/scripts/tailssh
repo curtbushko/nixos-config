@@ -10,7 +10,7 @@ function logger() {
 
 function wake() {
     logger INFO "Bouncing off of $RELAY_TAILNET_ID"
-    ssh -t root@$RELAY_TAILNET_ID "etherwake -D -i eth0.1 '$GAMINGRIG_MAC_ADDRESS'"
+    ssh -t root@$RELAY_TAILNET_ID "etherwake -D -i eth0 '$GAMINGRIG_MAC_ADDRESS'"
 }
 
 function pingWait() {
@@ -19,6 +19,7 @@ function pingWait() {
     while true; do
         ping -c 1 $HOST &>/dev/null && break
         trap exit_ int
+        trap ctrl_c int
     done
     logger INFO "Host $HOST is up"
 }
@@ -27,7 +28,6 @@ function pingWait() {
 HOST=$(
     tailscale status --json | jq -r '
   .Peer[] |
-  select(.Tags?[]? | contains("tag:dev")) |
   "\(.DNSName)"' |
         sed 's/\.$//' |
         fzf --ansi --border-label="| Tailscale SSH Hosts |" --height=30% --border=rounded \
