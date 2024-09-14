@@ -20,6 +20,7 @@
     ./alacritty.nix
     ./ghostty.nix
     ./starship.nix
+    ./tmux.nix
     ./zellij.nix
   ];
 }

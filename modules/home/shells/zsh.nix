@@ -128,6 +128,8 @@ in {
       zdel = "zellij delete-session coding --force";
       ztitle = "zellij action rename-tab";
       zkill = "zellij kill-session coding";
+      mux = "tmuxinator start home";
+      muxkill = "tmux kill-server";
     };
     initExtra = ''
       if [ ! -L $HOME/.local/bin/ghostty ]; then

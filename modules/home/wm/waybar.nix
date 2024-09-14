@@ -71,19 +71,19 @@ in {
             "HDMI-A-1" = [6 7 8 9 10];
           };
           format = "<span font='16'>{icon}</span>";
-	      format-icons = {
-		    "1" = " 󰎦 ";
-		    "2" = " 󰎩 ";
-		    "3" = " 󰎬 ";
-		    "4" = " 󰎮 ";
-		    "5" = " 󰎰 ";
-		    "6" = " 󰎵 ";
-		    "7" = " 󰎸 ";
-		    "8" = " 󰎻 ";
-		    "9" = " 󰎾 ";
-		    "10" = " 󰎣 ";
-		    default = " 󱗝 ";
-	      };
+          format-icons = {
+            "1" = " 󰎦 ";
+            "2" = " 󰎩 ";
+            "3" = " 󰎬 ";
+            "4" = " 󰎮 ";
+            "5" = " 󰎰 ";
+            "6" = " 󰎵 ";
+            "7" = " 󰎸 ";
+            "8" = " 󰎻 ";
+            "9" = " 󰎾 ";
+            "10" = " 󰎣 ";
+            default = " 󱗝 ";
+          };
         };
 
         "custom/workspaces-audio-separator" = {
@@ -223,248 +223,258 @@ in {
       colors = config.lib.stylix.colors;
     in
       with colors; ''
+         /*
+             ┏┓┓ ┏┳┓  ┏┓┏┓┓ ┏┓┳┓┏┓
+             ┃┃┃┃┃┃┃  ┃ ┃┃┃ ┃┃┣┫┗┓
+             ┗┛┗┻┛┛┗  ┗┛┗┛┗┛┗┛┛┗┗┛
+         */
         /*
-            ┏┓┓ ┏┳┓  ┏┓┏┓┓ ┏┓┳┓┏┓
-            ┃┃┃┃┃┃┃  ┃ ┃┃┃ ┃┃┣┫┗┓
-            ┗┛┗┻┛┛┗  ┗┛┗┛┗┛┗┛┛┗┗┛
+          Number these by section and the bar is setup as:
+          [1][2][3]       [3][2][1]  which maps to:
+          [network][workspace][audio]   [resources][temperature][system]
         */
-       /*
-         Number these by section and the bar is setup as:
-         [1][2][3]       [3][2][1]  which maps to:
-         [network][workspace][audio]   [resources][temperature][system]
-       */
-        @define-color section_1_fg #${base01};
-        @define-color section_1_bg #${base06};
+         @define-color section_1_fg #${base01};
+         @define-color section_1_bg #${base06};
 
-        @define-color section_2_fg #${base06};
-        @define-color section_2_bg #${base0D};
+         @define-color section_2_fg #${base06};
+         @define-color section_2_bg #${base0D};
 
-        @define-color section_3_fg #${base0D};
-        @define-color section_3_bg #${base03};
+         @define-color section_3_fg #${base0D};
+         @define-color section_3_bg #${base03};
 
-        @define-color cursor #afbbe5;
+         @define-color cursor #afbbe5;
 
-        @define-color foreground #${base05};
-        @define-color background #${base00};
+         @define-color foreground #${base05};
+         @define-color background #${base00};
 
-        /* workspace text colors */
-        @define-color active_fg  #${base08};
-        @define-color in_use_fg #${base0E};
+         /* workspace text colors */
+         @define-color active_fg  #${base08};
+         @define-color in_use_fg #${base09};
 
-        /* updates-widget icon+text colors */
-        @define-color updates_green #${base0B};
-        @define-color updates_yellow #${base0A};
-        @define-color updates_red #${base08};
-        /* tokyo-night colors
-        updates_green = "#${base0B}";
-        updates_yellow = "#${base0A}";
-        updates_red = "#${base08}";
-        */
+         /* updates-widget icon+text colors */
+         @define-color updates_green #${base0B};
+         @define-color updates_yellow #${base0A};
+         @define-color updates_red #${base08};
+         /* tokyo-night colors
+         updates_green = "#${base0B}";
+         updates_yellow = "#${base0A}";
+         updates_red = "#${base08}";
+         */
 
-        /*
-            ┏┓┏┓┳┓┏┓┳┓┏┓┓
-            ┃┓┣ ┃┃┣ ┣┫┣┫┃
-            ┗┛┗┛┛┗┗┛┛┗┛┗┗┛
-        */
+         /*
+             ┏┓┏┓┳┓┏┓┳┓┏┓┓
+             ┃┓┣ ┃┃┣ ┣┫┣┫┃
+             ┗┛┗┛┛┗┗┛┛┗┛┗┗┛
+         */
 
-        * {
-            font-family: "Fira Code";
-            font-weight: bold;
-            font-size: 14px;
-            min-height: 0px;
-        }
+         * {
+             font-family: "Fira Code";
+             font-weight: bold;
+             font-size: 14px;
+             min-height: 0px;
+         }
 
-        window#waybar {
-            color: @foreground;
-            background: transparent;
-            padding: 0;
-            margin: 0;
-        }
+         window#waybar {
+             color: @foreground;
+             background: transparent;
+             padding: 0;
+             margin: 0;
+         }
 
-        tooltip {
-            background: @background;
-            color: @foreground;
-            border-radius: 5px;
-            border-width: 1px;
-        }
+         tooltip {
+             background: @background;
+             color: @foreground;
+             border-radius: 5px;
+             border-width: 1px;
+         }
 
-        /*
-            ┓ ┏┏┓┳┓┓┏┓┏┓┏┓┏┓┏┓┏┓┏┓
-            ┃┃┃┃┃┣┫┃┫ ┗┓┃┃┣┫┃ ┣ ┗┓
-            ┗┻┛┗┛┛┗┛┗┛┗┛┣┛┛┗┗┛┗┛┗┛
-        */
+         /*
+             ┓ ┏┏┓┳┓┓┏┓┏┓┏┓┏┓┏┓┏┓┏┓
+             ┃┃┃┃┃┣┫┃┫ ┗┓┃┃┣┫┃ ┣ ┗┓
+             ┗┻┛┗┛┛┗┛┗┛┗┛┣┛┛┗┗┛┗┛┗┛
+         */
 
-        #workspaces {
-            padding: 0px 0px;
-            margin: 0px 0px;
-        }
+         #workspaces {
+             padding: 0px 0px;
+             margin: 0px 0px;
+         }
 
 
-        #workspaces button label {
-            font-size: 14px;
-        }
+         #workspaces button label {
+             font-size: 14px;
+         }
 
-        #workspaces button {
-            padding: 0;
-            background-color: @section_2_bg;
-            color: @section_2_fg;
-            margin: 0;
-            border: none;
-        }
+         /* workspace not selected and not empty */
+         #workspaces button {
+             padding: 0;
+             background-color: @section_2_bg;
+             color: @in_use_fg;
+             margin: 0;
+             border: none;
+         }
 
-        #workspaces button.empty {
-            color: @section_2_fg;
-        }
+         /* workspace not selected and empty */
+         #workspaces button.persistent {
+             padding: 0;
+             background-color: @section_2_bg;
+             color: @in_use_fg;
+             margin: 0;
+             border: none;
+         }
 
-        #workspaces button.visible {
-            color: @in_use_fg;
-        }
 
-        #workspaces button.active {
-            color:  @active_fg;
-        }
+         #workspaces button.empty {
+             color: @section_2_fg;
+             background-color: @section_2_bg;
+         }
 
-        /*
-            ┏┓┏┳┓┓┏┏┓┳┓
-            ┃┃ ┃ ┣┫┣ ┣┫
-            ┗┛ ┻ ┛┗┗┛┛┗
-        */
 
-        #clock {
-            font-family: "Futura Bk BT";
-            font-weight: bold;
-            font-size: 14px;
-            color: @clock;
-            padding: 1px 5px 0px 5px;
-            opacity: 1;
-        }
+         #workspaces button.active {
+             color:  @active_fg;
+             background-color: @section_2_bg;
+         }
 
-        /*
-        #custom-updates.green {
-            color: @updates_green;
-        }
-        */
+         /*
+             ┏┓┏┳┓┓┏┏┓┳┓
+             ┃┃ ┃ ┣┫┣ ┣┫
+             ┗┛ ┻ ┛┗┗┛┛┗
+         */
 
-        #custom-updates.yellow {
-            color: @updates_yellow;
-        }
+         #clock {
+             font-family: "Futura Bk BT";
+             font-weight: bold;
+             font-size: 14px;
+             color: @clock;
+             padding: 1px 5px 0px 5px;
+             opacity: 1;
+         }
 
-        #custom-updates.red {
-            color: @updates_red;
-        }
+         /*
+         #custom-updates.green {
+             color: @updates_green;
+         }
+         */
 
-        /*
-            ┏┓┏┓┳┳┓┳┳┓┏┓┳┓  ┏┓┏┓┳┓┳┓┳┳┓┏┓       ┓  ┳┳┓┏┓┳┓┏┓┳┳┓
-            ┃ ┃┃┃┃┃┃┃┃┃┃┃┃  ┃┃┣┫┃┃┃┃┃┃┃┃┓  ┏┓┏┓┏┫  ┃┃┃┣┫┣┫┃┓┃┃┃
-            ┗┛┗┛┛ ┗┛ ┗┗┛┛┗  ┣┛┛┗┻┛┻┛┻┛┗┗┛  ┗┻┛┗┗┻  ┛ ┗┛┗┛┗┗┛┻┛┗
-        */
+         #custom-updates.yellow {
+             color: @updates_yellow;
+         }
 
-        /* inactiv widget modules */
-        #cpu, #memory, #mpris, #custom-spotify, #custom-mode, #custom-gpuinfo, #custom-ddcutil,
-        /* group "system" widgets */
-        #custom-updates, #custom-power, #custom-copyq, #custom-mako,
-        /* group "temperature" widgets */
-        #bluetooth, #pulseaudio, #wireplumber, #network, #custom-ddc_brightness, #custom-screenrecorder,
-        /* group "resources" widgets */
-        #custom-screenrecorder, #custom-resources, #idle_inhibitor,
-        /* group "network" widgets */
-        #custom-filemanager, #custom-browser, #custom-terminal, #custom-editor, #custom-obsidian,
-        /* groups + custom-appmenu */
-        #custom-appmenu, #network, #window, #resources, #temperature, #system {
-            padding: 0px 5px;
-        }
+         #custom-updates.red {
+             color: @updates_red;
+         }
 
-        /*
-            ┳┓┏┓┏┳┓┓ ┏┏┓┳┓┓┏┓
-            ┃┃┣  ┃ ┃┃┃┃┃┣┫┃┫
-            ┛┗┗┛ ┻ ┗┻┛┗┛┛┗┛┗┛
-        */
-        #network {
-            background: @section_1_bg;
-            color: @section_1_fg
-        }
-        #group-network {
-            background: @section_1_bg;
-            color: @section_1_fg
-        }
-        #custom-network-workspaces-separator {
-           background: linear-gradient(120deg, @section_1_bg 50%, @section_2_bg 50%);
-           color: @section_1_bg;
-        }
+         /*
+             ┏┓┏┓┳┳┓┳┳┓┏┓┳┓  ┏┓┏┓┳┓┳┓┳┳┓┏┓       ┓  ┳┳┓┏┓┳┓┏┓┳┳┓
+             ┃ ┃┃┃┃┃┃┃┃┃┃┃┃  ┃┃┣┫┃┃┃┃┃┃┃┃┓  ┏┓┏┓┏┫  ┃┃┃┣┫┣┫┃┓┃┃┃
+             ┗┛┗┛┛ ┗┛ ┗┗┛┛┗  ┣┛┛┗┻┛┻┛┻┛┗┗┛  ┗┻┛┗┗┻  ┛ ┗┛┗┛┗┗┛┻┛┗
+         */
 
-        /*
-            ┓ ┏┏┓┳┓┓┏┓┏┓┏┓┏┓┏┓┏┓┏┓
-            ┃┃┃┃┃┣┫┃┫ ┗┓┃┃┣┫┃ ┣ ┗┓
-            ┗┻┛┗┛┛┗┛┗┛┗┛┣┛┛┗┗┛┗┛┗┛
-        */
-        #workspaces {
-            background: @section_2_bg;
-            color: @section_2_fg;
-        }
-        #custom-workspaces-audio-separator {
-           background: linear-gradient(120deg, @section_2_bg 50%, @section_3_bg 50%);
-           color: @section_2_bg;
-        }
+         /* inactiv widget modules */
+         #cpu, #memory, #mpris, #custom-spotify, #custom-mode, #custom-gpuinfo, #custom-ddcutil,
+         /* group "system" widgets */
+         #custom-updates, #custom-power, #custom-copyq, #custom-mako,
+         /* group "temperature" widgets */
+         #bluetooth, #pulseaudio, #wireplumber, #network, #custom-ddc_brightness, #custom-screenrecorder,
+         /* group "resources" widgets */
+         #custom-screenrecorder, #custom-resources, #idle_inhibitor,
+         /* group "network" widgets */
+         #custom-filemanager, #custom-browser, #custom-terminal, #custom-editor, #custom-obsidian,
+         /* groups + custom-appmenu */
+         #custom-appmenu, #network, #window, #resources, #temperature, #system {
+             padding: 0px 5px;
+         }
 
-        /*
-            ┏┓┳┳┳┓┳┏┓
-            ┣┫┃┃┃┃┃┃┃
-            ┛┗┗┛┻┛┻┗┛
-        */
-        #pulseaudio {
-            background: @section_3_bg;
-            color: @section_3_fg
-        }
-        #custom-audio-separator {
-           background: linear-gradient(120deg, @section_3_bg 50%, transparent 50%);
-           color: @section_3_bg;
-        }
+         /*
+             ┳┓┏┓┏┳┓┓ ┏┏┓┳┓┓┏┓
+             ┃┃┣  ┃ ┃┃┃┃┃┣┫┃┫
+             ┛┗┗┛ ┻ ┗┻┛┗┛┛┗┛┗┛
+         */
+         #network {
+             background: @section_1_bg;
+             color: @section_1_fg
+         }
+         #group-network {
+             background: @section_1_bg;
+             color: @section_1_fg
+         }
+         #custom-network-workspaces-separator {
+            background: linear-gradient(120deg, @section_1_bg 50%, @section_2_bg 50%);
+            color: @section_1_bg;
+         }
 
-        /*
-          ┳┓┏┓┏┓┏┓┳┳┳┓┏┓┏┓┏┓
-          ┣┫┣ ┗┓┃┃┃┃┣┫┃ ┣ ┗┓
-          ┛┗┗┛┗┛┗┛┗┛┛┗┗┛┗┛┗┛
-        */
-        #custom-resources-separator {
-           background: linear-gradient(120deg, transparent 50%, @section_3_bg 50%);
-           color: @section_3_bg;
-        }
-        #resources {
-            background: @section_3_bg;
-            color: @section_3_fg
-        }
-        #custom-resources-temperature-separator {
-           background: linear-gradient(120deg, @section_3_bg 50%, @section_2_bg 50%);
-           color: @section_3_bg;
-        }
+         /*
+             ┓ ┏┏┓┳┓┓┏┓┏┓┏┓┏┓┏┓┏┓┏┓
+             ┃┃┃┃┃┣┫┃┫ ┗┓┃┃┣┫┃ ┣ ┗┓
+             ┗┻┛┗┛┛┗┛┗┛┗┛┣┛┛┗┗┛┗┛┗┛
+         */
+         #workspaces {
+             background: @section_2_bg;
+             color: @section_2_fg;
+         }
+         #custom-workspaces-audio-separator {
+            background: linear-gradient(120deg, @section_2_bg 50%, @section_3_bg 50%);
+            color: @section_2_bg;
+         }
 
-        /*
-           ┏┳┓┏┓┳┳┓┏┓┏┓┳┓┏┓┏┳┓┳┳┳┓┏┓
-            ┃ ┣ ┃┃┃┃┃┣ ┣┫┣┫ ┃ ┃┃┣┫┣
-            ┻ ┗┛┛ ┗┣┛┗┛┛┗┛┗ ┻ ┗┛┛┗┗┛
-        */
-        #temperature {
-            background: @section_2_bg;
-            color: @section_2_fg;
-        }
-        #custom-gpu {
-            background: @section_2_bg;
-            color: @section_2_fg;
-        }
-        #custom-temperature-system-separator {
-           background: linear-gradient(120deg, @section_2_bg 50%, @section_1_bg 50%);
-           color: @section_2_bg;
-        }
+         /*
+             ┏┓┳┳┳┓┳┏┓
+             ┣┫┃┃┃┃┃┃┃
+             ┛┗┗┛┻┛┻┗┛
+         */
+         #pulseaudio {
+             background: @section_3_bg;
+             color: @section_3_fg
+         }
+         #custom-audio-separator {
+            background: linear-gradient(120deg, @section_3_bg 50%, transparent 50%);
+            color: @section_3_bg;
+         }
 
-        /*
-            ┏┓┓┏┏┓┏┳┓┏┓┳┳┓
-            ┗┓┗┫┗┓ ┃ ┣ ┃┃┃
-            ┗┛┗┛┗┛ ┻ ┗┛┛ ┗
-        */
-        #system {
-            background: @section_1_bg;
-            color: @section_1_fg
-        }
+         /*
+           ┳┓┏┓┏┓┏┓┳┳┳┓┏┓┏┓┏┓
+           ┣┫┣ ┗┓┃┃┃┃┣┫┃ ┣ ┗┓
+           ┛┗┗┛┗┛┗┛┗┛┛┗┗┛┗┛┗┛
+         */
+         #custom-resources-separator {
+            background: linear-gradient(120deg, transparent 50%, @section_3_bg 50%);
+            color: @section_3_bg;
+         }
+         #resources {
+             background: @section_3_bg;
+             color: @section_3_fg
+         }
+         #custom-resources-temperature-separator {
+            background: linear-gradient(120deg, @section_3_bg 50%, @section_2_bg 50%);
+            color: @section_3_bg;
+         }
+
+         /*
+            ┏┳┓┏┓┳┳┓┏┓┏┓┳┓┏┓┏┳┓┳┳┳┓┏┓
+             ┃ ┣ ┃┃┃┃┃┣ ┣┫┣┫ ┃ ┃┃┣┫┣
+             ┻ ┗┛┛ ┗┣┛┗┛┛┗┛┗ ┻ ┗┛┛┗┗┛
+         */
+         #temperature {
+             background: @section_2_bg;
+             color: @section_2_fg;
+         }
+         #custom-gpu {
+             background: @section_2_bg;
+             color: @section_2_fg;
+         }
+         #custom-temperature-system-separator {
+            background: linear-gradient(120deg, @section_2_bg 50%, @section_1_bg 50%);
+            color: @section_2_bg;
+         }
+
+         /*
+             ┏┓┓┏┏┓┏┳┓┏┓┳┳┓
+             ┗┓┗┫┗┓ ┃ ┣ ┃┃┃
+             ┗┛┗┛┗┛ ┻ ┗┛┛ ┗
+         */
+         #system {
+             background: @section_1_bg;
+             color: @section_1_fg
+         }
       '';
   };
 }

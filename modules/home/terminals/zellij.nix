@@ -15,15 +15,16 @@
   # All other arguments come from the module system.
   config,
   ...
-}: {
+}: let
+  plugin_zjstatus = inputs.zjstatus.outputs.packages.${pkgs.stdenv.hostPlatform.system}.default;
+in {
   programs.zellij = {
     enable = true;
   };
   stylix.targets.zellij.enable = false;
   home.file.zellij = {
     target = ".config/zellij/config.kdl";
-    text = with config.lib.stylix.colors.withHashtag;
-      ''
+    text = with config.lib.stylix.colors.withHashtag; ''
       // If you'd like to override the default keybindings completely, be sure to change "keybinds" to "keybinds clear-defaults=true"
       keybinds clear-defaults=true {
           //normal {
@@ -420,52 +421,70 @@
     target = ".config/zellij/layouts/default.kdl";
     text = ''
       layout {
-          tab name="codeone" focus=true {
-              pane size=1 borderless=true {
-                  plugin location="zellij:compact-bar"
-              }
-              pane split_direction="vertical" {
-                  pane name="T1P1" focus=true cwd="/home/curtbushko/workspace/github.com"
-                  pane name="T1P2" cwd="/home/curtbushko/workspace/github.com"
-              }
-          }
-          tab name="codetwo" {
-              pane size=1 borderless=true {
-                  plugin location="zellij:compact-bar"
-              }
-              pane split_direction="vertical" {
-                  pane name="T2P1" cwd="/home/curtbushko/workspace/github.com"
-                  pane name="T2P2" cwd="/home/curtbushko/workspace/github.com"
-              }
-          }
-          tab name="codethree" {
-              pane size=1 borderless=true {
-                  plugin location="zellij:compact-bar"
-              }
-              pane split_direction="vertical" {
-                  pane name="T3P1" cwd="/home/curtbushko/workspace/github.com"
-                  pane name="T3P2" cwd="/home/curtbushko/workspace/github.com"
-              }
-          }
-          tab name="shell" {
-              pane size=1 borderless=true {
-                  plugin location="zellij:compact-bar"
-              }
-              pane split_direction="vertical" {
-                  pane name="T4P1" cwd="/home/curtbushko/workspace/github.com"
-                  pane name="T4P2" cwd="/home/curtbushko/workspace/github.com"
-                  pane name="T4P3" cwd="/home/curtbushko/workspace/github.com"
-              }
-              pane name="T4P4" cwd="/home/curtbushko/workspace/github.com"
-          }
-          tab name="kb" {
-              pane size=1 borderless=true {
-                  plugin location="zellij:compact-bar"
-              }
-              pane name="T5P1" split_direction="vertical" {
-                  pane name="T5P1" cwd="/home/curtbushko/sync/kb"
-              }
-          }
+        default_tab_template {
+            children
+            pane size=1 borderless=true {
+                plugin location="file:${plugin_zjstatus}/bin/zjstatus.wasm" {
+                    format_left   "{mode} #[fg=#89B4FA,bold]{session}"
+                    format_center "{tabs}"
+                    format_right  "{command_git_branch} {datetime}"
+                    format_space  ""
+
+                    border_enabled  "false"
+                    border_char     "─"
+                    border_format   "#[fg=#6C7086]{char}"
+                    border_position "top"
+
+                    hide_frame_for_single_pane "true"
+
+                    mode_normal  "#[bg=blue] "
+                    mode_tmux    "#[bg=#ffc387] "
+
+                    tab_normal   "#[fg=#6C7086] {name} "
+                    tab_active   "#[fg=#9399B2,bold,italic] {name} "
+
+                    command_git_branch_command     "git rev-parse --abbrev-ref HEAD"
+                    command_git_branch_format      "#[fg=blue] {stdout} "
+                    command_git_branch_interval    "10"
+                    command_git_branch_rendermode  "static"
+
+                    datetime        "#[fg=#6C7086,bold] {format} "
+                    datetime_format "%A, %d %b %Y %H:%M"
+                    datetime_timezone "Europe/Berlin"
+                }
+            }
+        }
+        tab name="codeone" focus=true {
+            pane split_direction="vertical" {
+                pane name="T1P1" focus=true cwd="/home/curtbushko/workspace/github.com"
+                pane name="T1P2" cwd="/home/curtbushko/workspace/github.com"
+            }
+        }
+        tab name="codetwo" {
+            pane split_direction="vertical" {
+                pane name="T2P1" cwd="/home/curtbushko/workspace/github.com"
+                pane name="T2P2" cwd="/home/curtbushko/workspace/github.com"
+            }
+        }
+        tab name="codethree" {
+            pane split_direction="vertical" {
+                pane name="T3P1" cwd="/home/curtbushko/workspace/github.com"
+                pane name="T3P2" cwd="/home/curtbushko/workspace/github.com"
+            }
+        }
+        tab name="shell" {
+            pane split_direction="vertical" {
+                pane name="T4P1" cwd="/home/curtbushko/workspace/github.com"
+                pane name="T4P2" cwd="/home/curtbushko/workspace/github.com"
+                pane name="T4P3" cwd="/home/curtbushko/workspace/github.com"
+            }
+            pane name="T4P4" cwd="/home/curtbushko/workspace/github.com"
+        }
+        tab name="kb" {
+            pane name="T5P1" split_direction="vertical" {
+                pane name="T5P1" cwd="/home/curtbushko/sync/kb"
+            }
+        }
       }
     '';
   };

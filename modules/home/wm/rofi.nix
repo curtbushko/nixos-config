@@ -26,8 +26,7 @@ in {
       show-icons = true;
       case-sensitive = false;
     };
-    theme = with config.lib.formats.rasi;
-    {
+    theme = with config.lib.formats.rasi; {
       "*" = {
         spacing = 0;
         width = mkLiteral "800px";

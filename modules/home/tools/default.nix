@@ -75,5 +75,4 @@ in {
       pkgs.mpv
       pkgs.remmina # remote desktop client
     ]);
-
 }
