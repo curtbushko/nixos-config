@@ -48,7 +48,6 @@ in {
       pkgs.nil # language server
       pkgs.nixd #language server for nix
       pkgs.nodejs_22
-      pkgs.python3
       pkgs.ranger
       pkgs.ripgrep
       pkgs.sops

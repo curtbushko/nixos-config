@@ -20,10 +20,6 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-    #ghostty = {
-    #  url = "github:clo4/ghostty-hm-module";
-    #};
-
     hyprland = {
       url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
@@ -52,12 +48,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     zig.url = "github:mitchellh/zig-overlay";
-
-    # zellij status bar
-    zjstatus = {
-      url = "github:dj95/zjstatus";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
   };
 
   outputs = inputs: let

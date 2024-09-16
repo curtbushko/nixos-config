@@ -50,7 +50,7 @@ channels:  ## Add the channels before building Nixos
 clean: gc
 gc: ##  Garbage collect nix files that are older than 5 days.
 	@echo "$(DATELOG) Garbage collecting nix files older than 5 days"
-	sudo nix-collect-garbage --delete-older-than 2d
+	sudo nix-collect-garbage --delete-older-than 5d
 
 .PHONY: fmt
 fmt: ## format nix files
