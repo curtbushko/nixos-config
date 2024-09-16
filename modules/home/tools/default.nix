@@ -27,7 +27,6 @@ in {
 
   home.packages =
     [
-      pkgs.aider-chat
       pkgs.age
       pkgs.alejandra
       pkgs.asciinema
@@ -68,6 +67,7 @@ in {
     ])
     ++ (lib.optionals isLinux [
       #pkgs.rofi-firefox-wrapper
+      pkgs.aider-chat
       pkgs.ddcutil
       pkgs.zathura
       pkgs.lsof
