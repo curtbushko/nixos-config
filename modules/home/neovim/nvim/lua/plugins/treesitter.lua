@@ -56,7 +56,6 @@ return {
         "bash",
         "diff",
         "hcl",
-        "help",
         "html",
         "json",
         "lua",

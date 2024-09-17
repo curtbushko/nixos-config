@@ -50,13 +50,6 @@ return {
         desc = " Find all files",
       },
       {
-        "<leader>fh",
-        function()
-          require("telescope.builtin").help_tags()
-        end,
-        desc = "󰘥 Help",
-      },
-      {
         "<leader>fk",
         function()
           require("telescope.builtin").keymaps()
