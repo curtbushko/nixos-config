@@ -6,7 +6,7 @@
   },
   "obsidian note header [all snippet]": {
     "prefix": "obsidian",
-    "body": "---\ntitle: $1\ndate: ${CURRENT_YEAR}-${CURRENT_MONTH}-${CURRENT_DATE} ${CURRENT_HOUR}:${CURRENT_MINUTE}\n---\n#untagged",
+    "body": "---\nTitle: $1\nDate: ${CURRENT_YEAR}-${CURRENT_MONTH}-${CURRENT_DATE} ${CURRENT_HOUR}:${CURRENT_MINUTE}\n---\n#untagged",
     "description": "obsidian note header"
   },
   "todo [all snippet]": {

@@ -131,8 +131,21 @@ in {
           tooltip-format = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
         };
 
+        "hyprland/window" = {
+            icon = true;
+            separate-outputs = true;
+            /*format = "<span font='10' rise='-4444'>{}</span>";*/
+            rewrite = {
+              "(.*) - Mozilla Firefox" = " ";
+              "(.*) Discord \\|(.*)" = " ";
+              "(.*) Ghostty" = "  ";
+              "(.*) Zellij (.*)" = "  ";
+              "(.*) Steam (.*)" = "󰓓 ";
+            };
+        };
+
         modules-center = [
-          "clock"
+            "hyprland/window"
         ];
 
         /*
@@ -192,6 +205,7 @@ in {
           orientation = "horizontal";
           modules = [
             "custom/suspend"
+            "clock"
           ];
         };
 
@@ -270,7 +284,7 @@ in {
          * {
              font-family: "Fira Code";
              font-weight: bold;
-             font-size: 14px;
+             font-size: 12px;
              min-height: 0px;
          }
 
@@ -301,7 +315,7 @@ in {
 
 
          #workspaces button label {
-             font-size: 14px;
+             font-size: 12px;
          }
 
          /* workspace not selected and not empty */
@@ -341,12 +355,18 @@ in {
          */
 
          #clock {
-             font-family: "Futura Bk BT";
+             padding: 1px 5px 0px 5px;
+             background: @section_1_bg;
+             color: @section_1_fg;
+         }
+
+         #hyprland-window {
              font-weight: bold;
-             font-size: 14px;
-             color: @clock;
+             font-size: 12px;
              padding: 1px 5px 0px 5px;
              opacity: 1;
+             background: transparent;
+             color: @section_2_fg;
          }
 
          /*
