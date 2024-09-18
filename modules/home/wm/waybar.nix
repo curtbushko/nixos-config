@@ -132,20 +132,22 @@ in {
         };
 
         "hyprland/window" = {
-            icon = true;
-            separate-outputs = true;
-            /*format = "<span font='10' rise='-4444'>{}</span>";*/
-            rewrite = {
-              "(.*) - Mozilla Firefox" = " ";
-              "(.*) Discord \\|(.*)" = " ";
-              "(.*) Ghostty" = "  ";
-              "(.*) Zellij (.*)" = "  ";
-              "(.*) Steam (.*)" = "󰓓 ";
-            };
+          icon = true;
+          separate-outputs = true;
+          /*
+          format = "<span font='10' rise='-4444'>{}</span>";
+          */
+          rewrite = {
+            "(.*) - Mozilla Firefox" = " ";
+            "(.*) Discord \\|(.*)" = " ";
+            "(.*) Ghostty" = "  ";
+            "(.*) Zellij (.*)" = "  ";
+            "(.*) Steam (.*)" = "󰓓 ";
+          };
         };
 
         modules-center = [
-            "hyprland/window"
+          "hyprland/window"
         ];
 
         /*
