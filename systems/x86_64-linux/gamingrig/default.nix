@@ -81,6 +81,7 @@
     };
   };
   hardware.bluetooth.powerOnBoot = true;
+  services.blueman.enable = true;
 
   # Nixpkgs Setup
   #nixpkgs.config.allowUnfree = true;
