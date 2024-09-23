@@ -23,11 +23,11 @@ in {
     ./atuin.nix
     ./bat.nix
     ./direnv.nix
+    ./llm.nix
   ];
 
   home.packages =
     [
-      pkgs.aider-chat
       pkgs.age
       pkgs.alejandra
       pkgs.asciinema

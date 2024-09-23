@@ -130,6 +130,7 @@ in {
       zkill = "zellij kill-session coding";
       mux = "tmuxinator start home";
       muxkill = "tmux kill-server";
+      aid = "aider --no-auto-commits --model ollama/llama3.1:8b";
     };
     initExtra = ''
       if [ ! -L $HOME/.local/bin/ghostty ]; then

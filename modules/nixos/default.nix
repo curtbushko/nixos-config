@@ -9,6 +9,7 @@
     ./fonts.nix
     ./pipewire.nix
     ./cachix.nix
+    ./llm.nix
     #./cuda.nix
     ./minecraft-server.nix
     ./sops.nix
