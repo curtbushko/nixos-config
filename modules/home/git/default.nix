@@ -20,7 +20,7 @@
     enable = true;
     userName = "Curt Bushko";
     userEmail = "cbushko@gmail.com";
-    ignores = ["*~" ".DS_Store" ".direnv" ".env" ".rgignore"];
+    ignores = ["*~" ".DS_Store" ".direnv" ".env" ".rgignore" ".aider*"];
     extraConfig = {
       init = {defaultBranch = "main";};
       push.autoSetupRemote = true;
