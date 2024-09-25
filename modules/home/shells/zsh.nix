@@ -119,6 +119,7 @@ in {
       pc = "wakeonlan $GAMINGRIG_MAC_ADDRESS; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_DP1 --bus 5";
       pc2 = "wakeonlan $GAMINGRIG_MAC_ADDRESS; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI2 --bus 6";
       pcall = "wakeonlan $GAMINGRIG_MAC_ADDRESS; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI2 --bus ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_DP1 --bus 5";
+      steamdeck = "ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_HDMI1 --bus 5";
       # ssh machines
       sshm1 = "ssh curtbushko@$M1_TAILNET_ID";
       sshwork = "TERM=xterm-256color ssh curtbushko@$M1_PRO_TAILNET_ID";
@@ -147,6 +148,8 @@ in {
       export DDCUTIL_S2721QS_HDMI2="0x12"
       export DDCUTIL_U3419W_DP1="0x0f"
       export DDCUTIL_U3419W_USBC="0x1b"
+      export DDCUTIL_U3419W_HDMI1="0x11"
+      export DDCUTIL_U3419W_HDMI2="0x12"
 
       # Needed to run mason downloads in neovim
       export NIX_LD=$(nix eval --extra-experimental-features nix-command --impure --raw --expr 'let pkgs = import <nixpkgs> {}; NIX_LD = pkgs.lib.fileContents "${pkgs.stdenv.cc}/nix-support/dynamic-linker"; in NIX_LD')
