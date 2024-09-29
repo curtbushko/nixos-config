@@ -39,6 +39,10 @@ endif
 update: ## Update all of your packages
 	nix --extra-experimental-features 'nix-command flakes' flake update
 
+.PHONY: update-neovim
+update-neovim: ## Update the nevom flake
+	nix flake lock --update-input neovim-flake
+
 .PHONY: repair
 repair: ## Use this when you start getting weird 'file not found' errors from nix-store.
 	sudo nix-store --repair --verify --check-contents

@@ -1,5 +1,0 @@
-return {
-  {
-    "ziglang/zig.vim",
-  },
-}

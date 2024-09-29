@@ -47,6 +47,11 @@
       url = "github:danth/stylix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    neovim = {
+      url = "github:curtbushko/neovim-flake";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
     zig.url = "github:mitchellh/zig-overlay";
   };
 
