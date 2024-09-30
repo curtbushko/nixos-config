@@ -84,6 +84,7 @@ in {
       gP = "echo 'Pushing...' && git push --set-upstream origin $(git branch --show-current)";
       gcm = "git commit --message";
       gcmsg = "git commit --message";
+      gmcsg = "git commit --message";
       gwta = ". git-worktree-add";
       gwts = ". git-worktree-switch";
       gwtc = ". git-worktree-clone-bare";

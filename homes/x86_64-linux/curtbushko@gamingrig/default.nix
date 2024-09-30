@@ -14,6 +14,7 @@
   host, # The host name for this home.
   # All other arguments come from the home home.
   config,
+  system,
   ...
 }: {
   home.stateVersion = "18.09";
@@ -40,6 +41,7 @@
     # Darwin only
     pkgs.cachix
     pkgs.tailscale
+    inputs.neovim.packages.${system}.default
   ];
 
   #---------------------------------------------------------------------
@@ -59,7 +61,6 @@
     ../../../modules/home/browsers
     ../../../modules/home/git
     ../../../modules/home/go
-    ../../../modules/home/neovim
     ../../../modules/home/secrets
     ../../../modules/home/shells
     ../../../modules/home/terminals
