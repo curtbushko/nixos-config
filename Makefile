@@ -41,7 +41,7 @@ update: ## Update all of your packages
 
 .PHONY: update-neovim
 update-neovim: ## Update the nevom flake
-	nix flake lock --update-input neovim-flake
+	nix flake lock --update-input neovim
 
 .PHONY: repair
 repair: ## Use this when you start getting weird 'file not found' errors from nix-store.
