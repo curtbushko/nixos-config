@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # 	OWNER=$(gh repo view --json owner --jq .owner.login)
 # 	echo "Owner: $OWNER"
 # 	REPO=$(gh repo view --json name --jq .name)

@@ -16,7 +16,7 @@
   config,
   system,
   ...
-}:  {
+}: {
   home.enableNixpkgsReleaseCheck = false;
   home.stateVersion = "18.09";
 
@@ -55,7 +55,7 @@
     ../../../modules/home/styles
     ../../../modules/home/git
     ../../../modules/home/go
-        #../../../modules/home/neovim
+    #../../../modules/home/neovim
     ../../../modules/home/shells
     ../../../modules/home/terminals
     ../../../modules/home/tools

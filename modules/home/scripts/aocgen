@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Check if a project name was provided
 if [ -z "$1" ]; then

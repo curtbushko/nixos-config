@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # Watches the nodes in your kubernetes cluster and refreshes once in a while
 

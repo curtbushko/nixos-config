@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # Watches a directory for changes in files and runs go test with a clear cache
 BPURPLE='\033[1;35m' # Purple

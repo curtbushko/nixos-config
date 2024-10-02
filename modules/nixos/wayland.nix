@@ -6,6 +6,7 @@
   environment.systemPackages = with pkgs; [
     wayland
     egl-wayland
+    libsForQt5.qt5.qtwayland
   ];
 
   # Xserver settings

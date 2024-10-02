@@ -51,6 +51,10 @@
       url = "github:curtbushko/neovim-flake";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
+    zen-browser = {
+      url = "github:ch4og/zen-browser-flake";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
 
     zig.url = "github:mitchellh/zig-overlay";
   };

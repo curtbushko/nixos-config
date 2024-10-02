@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 SEARCH_QUERY='jira issue list -a$(jira me) --plain --columns id,summary,status' 
 FZF_DEFAULT_COMMAND=$SEARCH_QUERY fzf \

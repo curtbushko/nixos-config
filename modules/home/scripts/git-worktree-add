@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 _git-worktree-add() {
 	BRANCH=$1
 	if [ "${BRANCH}" != "" ]; then

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # only hybernate if audio isn't
 music_running=$(pw-cli i all 2>&1 | rg running -q)

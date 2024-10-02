@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # Watches the kube-system namespace and refreshes every 10 seconds 
 

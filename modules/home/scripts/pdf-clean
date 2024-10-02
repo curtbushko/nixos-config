@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # Open current directory in finder
 EXTENTION=".pdf"

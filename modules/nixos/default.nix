@@ -12,6 +12,7 @@
     ./llm.nix
     #./cuda.nix
     ./minecraft-server.nix
+    ./qt.nix
     ./sops.nix
     ./syncthing.nix
   ];

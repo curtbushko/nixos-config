@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 KB=$HOME/workspace/github.com/curtbushko/kb
 NOTE_TEMPLATE=$KB/templates/new_note.md

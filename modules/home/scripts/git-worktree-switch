@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Run this with an alias or else the 'cd' will not work.
 # Eg: alias gwts=". git-worktree-switch"

@@ -102,6 +102,7 @@
     killall
     pciutils
     rxvt_unicode
+    ryujinx
     vim
     nix-index
     wget
@@ -279,6 +280,7 @@
     capSysNice = true;
   };
   hardware.steam-hardware.enable = true;
+
   # Docker
   virtualisation = {
     libvirtd.enable = true;

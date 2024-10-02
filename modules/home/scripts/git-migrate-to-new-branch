@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 function confirm() {
 	# call with a prompt string or use a default

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 logged_in_count=$(who | wc -l)
 # We expect 2 lines of output from `lsof -i:548` at idle: one for output headers, another for the

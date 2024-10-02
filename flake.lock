@@ -1183,6 +1183,7 @@
         "sops-nix": "sops-nix",
         "stylix": "stylix",
         "tailscale": "tailscale",
+        "zen-browser": "zen-browser",
         "zig": "zig"
       }
     },
@@ -1458,6 +1459,26 @@
       "original": {
         "owner": "hyprwm",
         "repo": "xdg-desktop-portal-hyprland",
+        "type": "github"
+      }
+    },
+    "zen-browser": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs-unstable"
+        ]
+      },
+      "locked": {
+        "lastModified": 1727680504,
+        "narHash": "sha256-QYlWZwUSwrM7BuO+dXclZIwoPvBIuJr6GpFKv9XKFPI=",
+        "owner": "ch4og",
+        "repo": "zen-browser-flake",
+        "rev": "a026029bd9c953559a6990a5c0c80e355ed8a9dc",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ch4og",
+        "repo": "zen-browser-flake",
         "type": "github"
       }
     },

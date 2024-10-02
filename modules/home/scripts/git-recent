@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 BPURPLE='\033[1;35m'      # Purple
 
