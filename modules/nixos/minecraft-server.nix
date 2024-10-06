@@ -20,9 +20,14 @@ in {
       environment = {
         EULA = "true";
         MOD_PLATFORM = "AUTO_CURSEFORGE";
-        CF_API_KEY = "$2a$10$hBHorcVy1x8ivmNTSfrOUeyCc/fNPmeq3UjgWerLEZ/0n6NmBpAw2"; # allocate from https://console.curseforge.com/
+        # from https://console.curseforge.com/
+        # shouldn't need to change
+        CF_API_KEY = "$2a$10$hBHorcVy1x8ivmNTSfrOUeyCc/fNPmeq3UjgWerLEZ/0n6NmBpAw2";
         CF_SLUG = "vault-hunters-1-18-2";
-        CF_FILENAME_MATCHER = "3.15.2"; # can be found on the main curseforge VH page
+        # can be found on the main curseforge VH page
+        # https://www.curseforge.com/minecraft/modpacks/vault-hunters-1-18-2
+        # https://www.curseforge.com/minecraft/modpacks/vault-hunters-1-18-2/files/5631390/additional-files
+        CF_FILENAME_MATCHER = "3.15.1.4";
         MOTD = "J&D Vault Hunters";
         MEMORY = "8G"; # 4G for base server + 2G per player
         CF_EXCLUDE_MODS = "reauth";

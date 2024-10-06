@@ -26,7 +26,7 @@
     acceleration = "cuda";
     environmentVariables = {
       OLLAMA_LLM_LIBRARY = "cuda";
-      OLLAMA_KEEP_ALIVE = "20m";
+      OLLAMA_KEEP_ALIVE = "120m";
     };
   };
   services.open-webui = {
