@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+HOST="$GAMINGRIG_TAILNET_ID"
+MODEL="qwen2.5-coder"
+set -x
+function logger() {
+    local TYPE=$1
+    local TIMESTAMP
+    local MESSAGE
+    shift
+    MESSAGE="$*"
+    TIMESTAMP=$(date +"%Y-%m-%dT%H:%M:%SZ")
+    echo "[$TIMESTAMP] [$TYPE] $MESSAGE"
+}
+
+function wake() {
+    logger INFO "Bouncing off of $RELAY_TAILNET_ID"
+    ssh -t root@"$RELAY_TAILNET_ID" "etherwake -D -i eth0 '$GAMINGRIG_MAC_ADDRESS'"
+}
+
+function pingWait() {
+    logger INFO "Pinging until host is up"
+    local HOST=$1
+    while true; do
+        ping -c 1 "$HOST" &>/dev/null && break
+        trap exit_ int
+        trap ctrl_c int
+    done
+    logger INFO "Host $HOST is up"
+}
+
+if [ "${HOST}" != "" ]; then
+    logger INFO "Connecting to $HOST..."
+    if ping -c1 "$HOST" &>/dev/null; then
+        logger INFO "Host $HOST is up"
+    else
+        logger INFO "Host $HOST is down"
+        wake "$HOST"
+        pingWait "$HOST"
+    fi
+
+    logger INFO "Starting ollma $MODEL on $HOST"
+    ssh -t curtbushko@$HOST "ollama run $MODEL > /dev/null 2>&1 &"
+fi

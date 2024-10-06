@@ -1,5 +1,8 @@
-{pkgs, ...}: {
-  home.packages = with pkgs; [
+{pkgs, ... }: let
+  isLinux = pkgs.stdenv.isLinux;
+in {
+  home.packages = with pkgs; []
+    ++ (lib.optionals isLinux [
     aseprite
     audacity
     blender
@@ -9,5 +12,5 @@
     krita
     olive-editor
     godot_4
-  ];
+  ]);
 }
