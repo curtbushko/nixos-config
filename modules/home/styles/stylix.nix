@@ -1,10 +1,7 @@
-{
-  inputs,
-  config,
-  lib,
-  pkgs,
-  ...
-}: {
+{pkgs, ...}: let
+  #colors = import ./tokyo-night-neon.nix {};
+  colors = import ./rebel-scum.nix {};
+in {
   # Base16 guide (https://github.com/chriskempson/base16/blob/main/styling.md)
   # base00 - Default Background
   # base01 - Lighter Background (Used for status bars, line number and folding marks)
@@ -40,9 +37,24 @@
     enable = true;
     image = ./wallpapers/alena-aenami-wait.jpg;
     polarity = "dark";
-    #base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyo-city-terminal-dark.yaml";
-    #base16Scheme = "${pkgs.base16-schemes}/share/themes/ashes.yaml";
-    base16Scheme = ./tokyo-night-neon.yaml;
+    base16Scheme = {
+      base00 = colors.bg_dark;
+      base01 = colors.bg;
+      base02 = colors.dark3;
+      base03 = colors.fg_gutter;
+      base04 = colors.dark5;
+      base05 = colors.fg;
+      base06 = colors.fg_dark;
+      base07 = colors.fg_sidebar;
+      base08 = colors.red;
+      base09 = colors.orange;
+      base0A = colors.yellow;
+      base0B = colors.green1;
+      base0C = colors.blue5;
+      base0D = colors.blue;
+      base0E = colors.magenta;
+      base0F = colors.green;
+    };
     fonts = {
       serif = {
         package = pkgs.fira-code;

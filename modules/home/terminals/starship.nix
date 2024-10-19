@@ -1,29 +1,22 @@
-{
-  # Snowfall Lib provides a customized `lib` instance with access to your flake's library
-  # as well as the libraries available from your flake's inputs.
-  lib,
-  # An instance of `pkgs` with your overlays and packages applied is also available.
-  pkgs,
-  # You also have access to your flake's inputs.
-  inputs,
-  # Additional metadata is provided by Snowfall Lib.
-  system, # The system architecture for this host (eg. `x86_64-linux`).
-  target, # The Snowfall Lib target for this system (eg. `x86_64-iso`).
-  format, # A normalized name for the system target (eg. `iso`).
-  virtual, # A boolean to determine whether this system is a virtual target using nixos-generators.
-  systems, # An attribute map of your defined hosts.
-  # All other arguments come from the module system.
-  config,
-  ...
-}: {
+{config, ...}: let
+  #colors = import ../../home/styles/tokyo-night-neon.nix {};
+  colors = import ../../home/styles/rebel-scum.nix {};
+  a_bg = colors.statusline_a_bg;
+  a_fg = colors.statusline_a_fg;
+  b_bg = colors.statusline_b_bg;
+  b_fg = colors.statusline_b_fg;
+  c_bg = colors.statusline_c_bg;
+  c_fg = colors.statusline_c_fg;
+in {
   programs.starship = {
     enable = true;
     enableZshIntegration = true;
     settings = with config.lib.stylix.colors.withHashtag; {
       add_newline = true;
       command_timeout = 2000;
-      # gradient from dark grey to light grey (black rebel), light blue (white text), dark grey (blue text)
-      format = "[░▒▓](${base06})[  ](bg:${base06} fg:${base01})$hostname[](bg:${base0D} fg:${base06})$directory[](fg:${base0D} bg:${base03})$git_branch$git_status[](fg:${base03} bg:${base02})$golang[](fg:${base02} bg:${base00})$character";
+      # The  is a mix of what section came first and after
+      format = "[░▒▓](${a_bg})[  ](bg:${a_bg} fg:${a_fg})$hostname[](bg:${b_bg} fg:${a_bg})$directory[](fg:${b_bg}
+      bg:${c_bg})$git_branch$git_status[](fg:${c_bg} bg:${base00})$character";
       hostname = {
         format = "[ @$hostname ]($style)";
         ssh_only = true;
@@ -33,32 +26,29 @@
         truncation_symbol = "…/";
         truncation_length = 3;
         format = "[ $path ]($style)";
-        style = "fg:${base06} bg:${base0D}";
+        style = "fg:${b_fg} bg:${b_bg}";
       };
       directory.substitutions = {
         "Documents" = "󰈙 ";
         "Downloads" = " ";
         "Music" = " ";
         "Pictures" = " ";
-        "ghostty" = "󰊠";
-        "consul-k8s" = "󱃾";
-        "nixos-config" = "󱄅";
-        "github.com/curtbushko" = "";
+        "ghostty" = "󰊠 ";
+        "consul-k8s" = "󱃾 ";
+        "nixos-config" = "󱄅 ";
+        "github.com/curtbushko" = " ";
+        "neovim-flake" = " ";
+        "terraform" = "󱁢 ";
       };
       git_branch = {
         symbol = "";
         only_attached = true;
-        format = "[[ $symbol $branch ](fg:${base0D} bg:${base03})]($style)";
-        style = "bg:${base03}";
+        format = "[[ $symbol $branch ](fg:${c_fg} bg:${c_bg})]($style)";
+        style = "bg:${c_bg}";
       };
       git_status = {
         style = "bg:${base03}";
-        format = "[[($all_status$ahead_behind )](fg:${base0D} bg:${base03})]($style)";
-      };
-      golang = {
-        symbol = "";
-        style = "bg:${base02}";
-        format = "[[ $symbol ($version) ](fg:${base0D} bg:${base02})]($style)";
+        format = "[[($all_status$ahead_behind )](fg:${c_fg} bg:${c_bg})]($style)";
       };
     };
   };

@@ -1,7 +1,4 @@
-{
-  pkgs,
-  ...
-}: let
+{pkgs, ...}: let
   isLinux = pkgs.stdenv.isLinux;
   #screenOffCmd = ''swaymsg "output * dpms off"'';
   #suspendCmd = ''swaymsg "output * dpms on"; sleep 2; suspend-script'';

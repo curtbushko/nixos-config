@@ -271,7 +271,7 @@
       theme "stylix"
       themes {
         stylix {
-          bg "${base03}"
+          bg "${base01}"
           fg "${base05}"
           red "${base08}"
           green "${base0B}"
@@ -280,8 +280,8 @@
           magenta "${base0E}"
           orange "${base09}"
           cyan "${base0C}"
-          black "${base00}"
-          white "${base07}"
+          black "${base01}"
+          white "${base06}"
         }
       }
       // Define color themes for Zellij
