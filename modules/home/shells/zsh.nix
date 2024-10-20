@@ -1,19 +1,6 @@
 {
-  # Snowfall Lib provides a customized `lib` instance with access to your flake's library
-  # as well as the libraries available from your flake's inputs.
   lib,
-  # An instance of `pkgs` with your overlays and packages applied is also available.
   pkgs,
-  # You also have access to your flake's inputs.
-  inputs,
-  # Additional metadata is provided by Snowfall Lib.
-  system, # The system architecture for this host (eg. `x86_64-linux`).
-  target, # The Snowfall Lib target for this system (eg. `x86_64-iso`).
-  format, # A normalized name for the system target (eg. `iso`).
-  virtual, # A boolean to determine whether this system is a virtual target using nixos-generators.
-  systems, # An attribute map of your defined hosts.
-  # All other arguments come from the module system.
-  config,
   ...
 }: let
   isLinux = pkgs.stdenv.isLinux;
@@ -152,6 +139,9 @@ in {
       export DDCUTIL_U3419W_HDMI1="0x11"
       export DDCUTIL_U3419W_HDMI2="0x12"
 
+      # nap configs
+      export NAP_CONFIG=$HOME/.config/nap/config.yaml
+
       # Needed to run mason downloads in neovim
       export NIX_LD=$(nix eval --extra-experimental-features nix-command --impure --raw --expr 'let pkgs = import <nixpkgs> {}; NIX_LD = pkgs.lib.fileContents "${pkgs.stdenv.cc}/nix-support/dynamic-linker"; in NIX_LD')
 
@@ -160,8 +150,8 @@ in {
       zoxide add $WORKSPACE
       zoxide add $GITHUB
       zoxide add $GHOSTTY
-      zoxide add $BUSHKO/leetcode
       zoxide add $BUSHKO
+      zoxide add $BUSHKO/leetcode
       zoxide add $KLEIO
       zoxide add $KB
       zoxide add $NIXOS_CONFIG
