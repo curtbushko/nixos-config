@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
-SNIPPET=$HOME/workspace/github.com/curtbushko/kb/snippet
-SNIPPET_TEMPLATE=$SNIPPET/templates/snippet.md
+KB=$HOME/workspace/github.com/curtbushko/kb
+SNIPPET=$KB/snippet
+SNIPPET_TEMPLATE=$KB/templates/snippet.md
 SNIPPET_FILENAME=$SNIPPET/$(date +'%Y%m%d-%H%M').md
 
 TITLE="${1:-no title}"
