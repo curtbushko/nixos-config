@@ -11,7 +11,6 @@ in {
     ./bat.nix
     ./direnv.nix
     ./llm.nix
-    ./nap.nix
   ];
 
   home.packages =

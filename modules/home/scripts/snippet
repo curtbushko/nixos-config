@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+SNIPPET=$HOME/workspace/github.com/curtbushko/kb/snippet
+SNIPPET_TEMPLATE=$SNIPPET/templates/snippet.md
+SNIPPET_FILENAME=$SNIPPET/$(date +'%Y%m%d-%H%M').md
+
+TITLE="${1:-no title}"
+DATE=$(date +'%Y-%m-%d')
+TIME=$(date +'%H:%M')
+
+echo "Creating new snippet: $SNIPPET_FILENAME with title: $TITLE"
+cat "$SNIPPET_TEMPLATE" \
+| sed "s^{{title}}^${TITLE}^g" \
+| sed "s^{{date}}^${DATE}^g" \
+| sed "s^{{time}}^${TIME}^g" > "$SNIPPET_FILENAME"
+
+

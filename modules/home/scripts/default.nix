@@ -49,6 +49,7 @@
   pr-create = pkgs.writeScriptBin "pr-create" (builtins.readFile ./pr-create);
   pr-review = pkgs.writeScriptBin "pr-review" (builtins.readFile ./pr-review);
   pr-view = pkgs.writeScriptBin "pr-view" (builtins.readFile ./pr-view);
+  snippet = pkgs.writeScriptBin "snippet" (builtins.readFile ./snippet);
   tailssh = pkgs.writeScriptBin "tailssh" (builtins.readFile ./tailssh);
   ollama-up = pkgs.writeScriptBin "ollama-up" (builtins.readFile ./ollama-up);
   zigbuildwatcher = pkgs.writeScriptBin "zigbuildwatcher" (builtins.readFile ./zigbuildwatcher);
@@ -98,6 +99,7 @@ in {
       pr-create
       pr-review
       pr-view
+      snippet
       tailssh
       zigbuildwatcher
     ]
