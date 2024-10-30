@@ -44,10 +44,11 @@ _: {
   magenta = "#ff6747";
   magenta2 = "#35b5ff";
   none = "NONE";
-  orange = "#ff5722";
+  orange = "#f74545";
+  #orange = "#ff5722";
   prompt = "#2d3149";
   purple = "#3babd6";
-  red = "#fd5e3a";
+  red = "#f74843";
   red1 = "#ff4934";
   teal = "#35b5ff";
   terminal_black = "#06101E";
@@ -59,11 +60,10 @@ _: {
   # way of describing the sections.
   #  / a / b / c
   # a = blue bg, black fg
-
   statusline_a_bg = "#35b5ff";
   statusline_a_fg = "#06101E";
   # b = orange bg, black fg
-  statusline_b_bg = "#fd5e3a";
+  statusline_b_bg = "#f74843";
   statusline_b_fg = "#031B26";
   # c = invisible/black bg, cyan fg
   statusline_c_bg = "#06101E";

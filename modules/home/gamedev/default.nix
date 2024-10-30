@@ -13,5 +13,6 @@ in {
       krita
       olive-editor
       godot_4
+      obs-studio
     ]);
 }

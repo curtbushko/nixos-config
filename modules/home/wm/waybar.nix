@@ -1,21 +1,4 @@
-{
-  # Snowfall Lib provides a customized `lib` instance with access to your flake's library
-  # as well as the libraries available from your flake's inputs.
-  lib,
-  # An instance of `pkgs` with your overlays and packages applied is also available.
-  pkgs,
-  # You also have access to your flake's inputs.
-  inputs,
-  # Additional metadata is provided by Snowfall Lib.
-  system, # The system architecture for this host (eg. `x86_64-linux`).
-  target, # The Snowfall Lib target for this system (eg. `x86_64-iso`).
-  format, # A normalized name for the system target (eg. `iso`).
-  virtual, # A boolean to determine whether this system is a virtual target using nixos-generators.
-  systems, # An attribute map of your defined hosts.
-  # All other arguments come from the module system.
-  config,
-  ...
-}: let
+{pkgs, ...}: let
   isLinux = pkgs.stdenv.isLinux;
 in {
   stylix.targets.waybar.enable = false;
@@ -27,7 +10,7 @@ in {
         position = "top";
         spacing = "-4";
         mod = "dock";
-        height = 23;
+        height = 20;
         margin-top = 0;
         margin-bottom = 0;
         exclusive = true;
@@ -70,7 +53,7 @@ in {
             "DP-2" = [1 2 3 4 5];
             "HDMI-A-1" = [6 7 8 9 10];
           };
-          format = "<span font='16'>{icon}</span>";
+          format = "<span font='13'>{icon}</span>";
           format-icons = {
             "1" = " 󰎦 ";
             "2" = " 󰎩 ";
@@ -132,7 +115,7 @@ in {
         };
 
         "hyprland/window" = {
-          icon = true;
+          icon = false;
           separate-outputs = true;
           /*
           format = "<span font='10' rise='-4444'>{}</span>";
@@ -236,7 +219,7 @@ in {
     ];
 
     style = let
-      colors = config.lib.stylix.colors;
+      colors = import ../../home/styles/rebel-scum.nix {};
     in
       with colors; ''
          /*
@@ -249,32 +232,33 @@ in {
           [1][2][3]       [3][2][1]  which maps to:
           [network][workspace][audio]   [resources][temperature][system]
         */
-         @define-color section_1_fg #${base01};
-         @define-color section_1_bg #${base06};
+         @define-color section_1_fg ${colors.statusline_a_fg};
+         @define-color section_1_bg ${colors.statusline_a_bg};
 
-         @define-color section_2_fg #${base06};
-         @define-color section_2_bg #${base0D};
+         @define-color section_2_fg ${colors.statusline_a_fg};
+         @define-color section_2_bg ${colors.statusline_b_bg};
 
-         @define-color section_3_fg #${base0D};
-         @define-color section_3_bg #${base03};
+         @define-color section_3_fg ${colors.statusline_c_fg};
+         @define-color section_3_bg ${colors.statusline_c_bg};
 
          @define-color cursor #afbbe5;
 
-         @define-color foreground #${base05};
-         @define-color background #${base00};
+         @define-color foreground ${colors.fg};
+
+         @define-color background ${colors.bg};
 
          /* workspace text colors */
-         @define-color active_fg  #${base08};
-         @define-color in_use_fg #${base09};
+         @define-color active_fg  ${colors.blue};
+         @define-color in_use_fg  ${colors.blue1};
 
          /* updates-widget icon+text colors */
-         @define-color updates_green #${base0B};
-         @define-color updates_yellow #${base0A};
-         @define-color updates_red #${base08};
+         @define-color updates_green ${colors.green1};
+         @define-color updates_yellow ${colors.yellow};
+         @define-color updates_red ${colors.red};
          /* tokyo-night colors
-         updates_green = "#${base0B}";
-         updates_yellow = "#${base0A}";
-         updates_red = "#${base08}";
+         updates_green = "${colors.green1}";
+         updates_yellow = "${colors.yellow}";
+         updates_red = "${colors.red}";
          */
 
          /*
@@ -286,7 +270,7 @@ in {
          * {
              font-family: "Fira Code";
              font-weight: bold;
-             font-size: 12px;
+             font-size: 11px;
              min-height: 0px;
          }
 
@@ -317,7 +301,7 @@ in {
 
 
          #workspaces button label {
-             font-size: 12px;
+             font-size: 11px;
          }
 
          /* workspace not selected and not empty */
@@ -364,7 +348,7 @@ in {
 
          #hyprland-window {
              font-weight: bold;
-             font-size: 12px;
+             font-size: 11px;
              padding: 1px 5px 0px 5px;
              opacity: 1;
              background: transparent;

@@ -5,6 +5,8 @@
   #hibernateCmd = ''swaymsg "output * dpms on"; sleep 2; hybernate-script'';
   #resumeCmd = ''swaymsg "output * dpms on"'';
   #wallpaperCmd = "${pkgs.hyprpaper}/bin/hyprpaper";
+
+  colors = import ../styles/rebel-scum.nix {};
 in {
   stylix.targets.hyprland.enable = false;
   wayland.windowManager.hyprland = {
@@ -29,16 +31,24 @@ in {
       "$browser" = "rofi-firefox-wrapper";
 
       # Tokyonight Night colors
-      #"$border-color" = "rgb(A9B1D6)";
-      "$border-color" = "rgb(1A1B26)";
-      "$active-border-color" = "rgb(00b0fc)";
-      "$bg-color" = "rgb(1A1B26)";
-      "$inac-bg-color" = "rgb(1A1B26)";
-      "$text-color" = "rgb(F7768E)";
-      "$inac-text-color" = "rgb(A9B1D6)";
-      "$urgent-bg-color" = "rgb(F7768E)";
-      "$indi-color" = "rgb(7AA2F7)";
-      "$urgent-text-color" = "rgb(A9B1D6)";
+      #"$border-color" = "rgb(1A1B26)";
+      "$border-color" = "rgba(${builtins.substring 1 6 (colors.statusline_a_bg)}ff)";
+      #"$active-border-color" = "rgb(00b0fc)";
+      "$active-border-color" = "rgba(${builtins.substring 1 6 (colors.statusline_a_fg)}ff)";
+      #"$bg-color" = "rgb(1A1B26)";
+      "$bg-color" =  "rgba(${builtins.substring 1 6 (colors.bg)}ff)";
+      #"$inac-bg-color" = "rgb(1A1B26)";
+      "$inac-bg-color" =  "rgba(${builtins.substring 1 6 (colors.bg)}ff)";
+      #"$text-color" = "rgb(F7768E)";
+      "$text-color" =  "rgba(${builtins.substring 1 6 (colors.fg)}ff)";
+      #"$inac-text-color" = "rgb(A9B1D6)";
+      "$inac-text-color" =  "rgba(${builtins.substring 1 6 (colors.fg_dark)}ff)";
+      #$"$urgent-bg-color" = "rgb(F7768E)";
+      "$urgent-bg-color" =  "rgba(${builtins.substring 1 6 (colors.red1)}ff)";
+      #"$indi-color" = "rgb(7AA2F7)";
+      "$indi-color" =  "rgba(${builtins.substring 1 6 (colors.blue)}ff)";
+      #"$urgent-text-color" = "rgb(A9B1D6)";
+      "$urgent-text-color" =  "rgba(${builtins.substring 1 6 (colors.fg_dark)}ff)";
 
       env = [
         "QT_QPA_PLATFORM,wayland"
@@ -198,6 +208,7 @@ in {
         disable_hyprland_logo = true;
         force_default_wallpaper = 0;
         allow_session_lock_restore = true;
+        background_color = "rgba(${builtins.substring 1 6 (colors.statusline_c_bg)}ff)";
       };
       decoration = {
         rounding = 1;

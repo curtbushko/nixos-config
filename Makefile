@@ -40,8 +40,12 @@ update: ## Update all of your packages
 	nix --extra-experimental-features 'nix-command flakes' flake update
 
 .PHONY: update-neovim
-update-neovim: ## Update the nevom flake
+update-neovim: ## Update the neovim flake
 	nix flake lock --update-input neovim
+
+.PHONY: update-zenbrowser
+update-zenbrowser: ## Update the zen browser 
+	nix flake lock --update-input zen-browser
 
 .PHONY: repair
 repair: ## Use this when you start getting weird 'file not found' errors from nix-store.
