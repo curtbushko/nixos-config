@@ -101,7 +101,7 @@
     gdb
     killall
     pciutils
-    rxvt_unicode
+    rxvt-unicode-unwrapped
     ryujinx
     vim
     nix-index
@@ -139,6 +139,7 @@
     lutris
     protonup-qt
     #sunshine
+    inputs.suyu.packages.x86_64-linux.suyu
   ];
 
   # Needed to run things like stylua in neovim on nixos

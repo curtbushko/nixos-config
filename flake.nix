@@ -45,8 +45,13 @@
 
     stylix = {
       url = "github:danth/stylix";
+    };
+
+    suyu = {
+      url = "github:Noodlez1232/suyu-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
     neovim = {
       url = "github:curtbushko/neovim-flake";
       inputs.nixpkgs.follows = "nixpkgs-unstable";

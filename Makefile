@@ -47,6 +47,10 @@ update-neovim: ## Update the neovim flake
 update-zenbrowser: ## Update the zen browser 
 	nix flake lock --update-input zen-browser
 
+.PHONY: update-suyu
+update-suyu: ## Update the zen browser 
+	nix flake lock --update-input suyu 
+
 .PHONY: repair
 repair: ## Use this when you start getting weird 'file not found' errors from nix-store.
 	sudo nix-store --repair --verify --check-contents

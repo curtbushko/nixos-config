@@ -32,9 +32,9 @@ in {
 
       # Tokyonight Night colors
       #"$border-color" = "rgb(1A1B26)";
-      "$border-color" = "rgba(${builtins.substring 1 6 (colors.statusline_a_bg)}ff)";
+      "$border-color" = "rgba(${builtins.substring 1 6 (colors.statusline_a_fg)}ff)";
       #"$active-border-color" = "rgb(00b0fc)";
-      "$active-border-color" = "rgba(${builtins.substring 1 6 (colors.statusline_a_fg)}ff)";
+      "$active-border-color" = "rgba(${builtins.substring 1 6 (colors.statusline_a_bg)}ff)";
       #"$bg-color" = "rgb(1A1B26)";
       "$bg-color" =  "rgba(${builtins.substring 1 6 (colors.bg)}ff)";
       #"$inac-bg-color" = "rgb(1A1B26)";
