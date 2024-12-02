@@ -66,6 +66,6 @@ _: {
   statusline_b_bg = "#fd5e3a";
   statusline_b_fg = "#031B26";
   # c = invisible/black bg, cyan fg
-  statusline_c_bg = "#06101E";
+  statusline_c_bg = "#031B26";
   statusline_c_fg = "#66def9";
 }
