@@ -35,7 +35,7 @@ in {
   # Brown: base0F
   stylix = {
     enable = true;
-    image = ./wallpapers/alena-aenami-wait.jpg;
+    image = ./wallpapers/neofusion-3440x1440.jpeg;
     polarity = "dark";
     base16Scheme = {
       base00 = colors.bg_dark;

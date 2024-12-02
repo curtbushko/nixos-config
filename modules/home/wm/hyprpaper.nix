@@ -1,24 +1,11 @@
-{
-  inputs,
-  pkgs,
-  lib,
-  ...
-}: let
-  isLinux = pkgs.stdenv.isLinux;
-  wallpaper = "/home/curtbushko/wallpapers/cyberpunk_2077_phantom_liberty_katana.jpg";
+{...}: let
+  wallpaper = "./../styles/wallpapers/neofusion.jpeg";
 in {
-  home.packages = with pkgs;
-    [
-    ]
-    ++ (lib.optionals isLinux [
-      # rofi-firefox-wrapper
-      #hyprpaper
-    ]);
-
   xdg.configFile."hypr/hyprpaper.conf" = {
     text = ''
       preload = ${wallpaper}
       wallpaper = ,${wallpaper}
     '';
   };
+  services.hyprpaper.enable = true;
 }

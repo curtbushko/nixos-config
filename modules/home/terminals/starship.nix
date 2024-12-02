@@ -11,16 +11,16 @@ in {
   programs.starship = {
     enable = true;
     enableZshIntegration = true;
-    settings = with config.lib.stylix.colors.withHashtag; {
+    settings = {
       add_newline = true;
       command_timeout = 2000;
       # The  is a mix of what section came first and after
       format = "[░▒▓](${a_bg})[  ](bg:${a_bg} fg:${a_fg})$hostname[](bg:${b_bg} fg:${a_bg})$directory[](fg:${b_bg}
-      bg:${c_bg})$git_branch$git_status[](fg:${c_bg} bg:${base00})$character";
+      bg:${c_bg})$git_branch$git_status[](fg:${c_bg})$character";
       hostname = {
         format = "[ @$hostname ]($style)";
         ssh_only = true;
-        style = "bg:${base06} fg:${base01}";
+        style = "bg:${a_bg} fg:${a_fg}";
       };
       directory = {
         truncation_symbol = "…/";
@@ -43,12 +43,12 @@ in {
       git_branch = {
         symbol = "";
         only_attached = true;
-        format = "[[ $symbol $branch ](fg:${c_fg} bg:${c_bg})]($style)";
-        style = "bg:${c_bg}";
+        format = "[ $symbol $branch ]($style)";
+        style = "fg:${c_fg} bg:${c_bg}";
       };
       git_status = {
-        style = "bg:${base03}";
-        format = "[[($all_status$ahead_behind )](fg:${c_fg} bg:${c_bg})]($style)";
+        style = "fg:${c_fg} bg:${c_bg}";
+        format = "[ ($all_status$ahead_behind)]($style)";
       };
     };
   };

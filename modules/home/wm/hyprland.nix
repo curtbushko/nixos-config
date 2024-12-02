@@ -211,7 +211,6 @@ in {
         background_color = "rgba(${builtins.substring 1 6 (colors.statusline_c_bg)}ff)";
       };
       decoration = {
-        rounding = 1;
         blur = {
           size = 6;
           passes = 3;
@@ -222,16 +221,19 @@ in {
           brightness = "1.2";
           xray = true;
         };
+        blurls = ["lockscreen" "popups"];
         dim_inactive = true;
         dim_strength = "0.1";
         fullscreen_opacity = 1;
-        drop_shadow = true;
-        shadow_ignore_window = true;
-        shadow_offset = "0 8";
-        shadow_range = 50;
-        shadow_render_power = 3;
-        "col.shadow" = "rgba(00000055)";
-        blurls = ["lockscreen" "popups"];
+        rounding = 1;
+        shadow = {
+          enabled = true;
+          ignore_window = true;
+          offset = "0 8";
+          range = 50;
+          render_power = 3;
+          color = "rgba(00000055)";
+        };
       };
       animation = {
         bezier = [
