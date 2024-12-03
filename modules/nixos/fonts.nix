@@ -10,7 +10,9 @@
     font-awesome_5
     jetbrains-mono
     intel-one-mono
-    nerdfonts
+    nerd-fonts.symbols-only # symbols icon only
+    nerd-fonts.fira-code
+    nerd-fonts.jetbrains-mono
     noto-fonts
     noto-fonts-extra
     noto-fonts-emoji
