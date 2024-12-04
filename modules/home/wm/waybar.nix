@@ -270,7 +270,7 @@ in {
          * {
              font-family: "Fira Code";
              font-weight: bold;
-             font-size: 11px;
+             font-size: 12px;
              min-height: 0px;
          }
 
@@ -301,7 +301,7 @@ in {
 
 
          #workspaces button label {
-             font-size: 11px;
+             font-size: 12px;
          }
 
          /* workspace not selected and not empty */
@@ -348,7 +348,7 @@ in {
 
          #hyprland-window {
              font-weight: bold;
-             font-size: 11px;
+             font-size: 12px;
              padding: 1px 5px 0px 5px;
              opacity: 1;
              background: transparent;

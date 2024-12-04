@@ -36,7 +36,6 @@ in {
       pkgs.nixd #language server for nix
       pkgs.nodejs_22
       pkgs.presenterm
-      pkgs.ranger
       pkgs.ripgrep
       pkgs.sops
       pkgs.stylua
