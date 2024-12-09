@@ -11,6 +11,7 @@ in {
     ./bat.nix
     ./direnv.nix
     ./llm.nix
+    ./yazi.nix
   ];
 
   home.packages =
@@ -44,7 +45,6 @@ in {
       pkgs.watchexec
       pkgs.wakeonlan
       pkgs.wget
-      pkgs.yazi
       pkgs.yt-dlp
       pkgs.unzip
       pkgs.zoxide

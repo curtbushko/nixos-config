@@ -35,7 +35,7 @@ in {
   # Brown: base0F
   stylix = {
     enable = true;
-    image =   ./wallpapers/3440x1440/cyberpunk-2077-phantom-liberty-t7.jpg;
+    image =   ./wallpapers/3440x1440/cyberpunk-tokyo.png;
     polarity = "dark";
     base16Scheme = {
       base00 = colors.bg_dark;
