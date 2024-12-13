@@ -41,11 +41,11 @@ update: ## Update all of your packages
 
 .PHONY: update-neovim
 update-neovim: ## Update the neovim flake
-	nix flake lock --update-input neovim
+	nix flake update neovim
 
 .PHONY: update-zenbrowser
 update-zenbrowser: ## Update the zen browser 
-	nix flake lock --update-input zen-browser
+	nix flake update zen-browser 
 
 .PHONY: update-suyu
 update-suyu: ## Update the zen browser 

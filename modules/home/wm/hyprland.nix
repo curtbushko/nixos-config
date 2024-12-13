@@ -106,8 +106,8 @@ in {
         "$super, M, exit,"
 
         # Most used applications
-        "$super, t, exec, $terminal"
-        "$super, w, exec, $browser"
+        #"$super, t, exec, $terminal"
+        #"$super, w, exec, $browser"
         #"$alt, f, exec, $filemanager"
         "$super, Return, exec, $terminal"
         "$super, Q, killactive,"
