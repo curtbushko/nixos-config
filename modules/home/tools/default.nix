@@ -10,7 +10,6 @@ in {
     ./atuin.nix
     ./bat.nix
     ./direnv.nix
-    ./llm.nix
     ./yazi.nix
   ];
 

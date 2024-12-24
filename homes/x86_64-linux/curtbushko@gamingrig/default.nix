@@ -51,6 +51,7 @@
     ../../../modules/home/gamedev
     ../../../modules/home/git
     ../../../modules/home/go
+    ../../../modules/home/llm
     ../../../modules/home/secrets
     ../../../modules/home/shells
     ../../../modules/home/terminals
