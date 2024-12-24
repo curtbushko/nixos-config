@@ -8,7 +8,7 @@
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
     ./hosts.nix
-    ../../../modules/nixos
+    ../../../modules/nixos/base
   ];
 
   # Use the systemd-boot EFI boot loader.
