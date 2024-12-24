@@ -6,7 +6,6 @@
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
     ./hosts.nix
-    ../../../modules/nixos
   ];
 
   nixpkgs.config.allowUnfree = true;
