@@ -98,10 +98,10 @@
   networking.firewall.enable = false;
 
   # Docker
-  virtualisation = {
-    libvirtd.enable = true;
-    docker.enable = true;
-  };
+  #virtualisation = {
+  #  libvirtd.enable = true;
+  #  docker.enable = true;
+  #};
 
   # Do not change - ever
   system.stateVersion = "24.11"; # Did you read the comment?

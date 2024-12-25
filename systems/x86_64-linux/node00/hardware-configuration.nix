@@ -43,9 +43,6 @@
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
   hardware.enableAllFirmware = true;
 
-  # Why do I need this when I am not using nvidia?
-  hardware.nvidia.open = false;
-
   powerManagement.cpuFreqGovernor = "powersave";
   powerManagement.powertop.enable = true;
 
