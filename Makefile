@@ -25,6 +25,18 @@ else
 	sudo NIXPKGS_ALLOW_UNSUPPORTED_ARCH=1 nixos-rebuild switch --flake ".#${HOST}"
 endif
 
+.PHONY: dry-build 
+dry-build: ## Build and switch your nix config.
+	@echo "$(DATELOG) Building dry build of nix config"
+ifeq ($(OS), darwin)
+	@echo "skip"
+else
+	sudo NIXPKGS_ALLOW_UNSUPPORTED_ARCH=1 nixos-rebuild dry-build --flake ".#${HOST}" -vvv 2>&1 | grep 'evaluating file' 
+endif
+
+
+
+
 .PHONY: test
 test: ## Test your nix config.
 	@echo "$(DATELOG) Testing nix config"
