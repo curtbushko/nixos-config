@@ -18,7 +18,7 @@
       base0E = "#${config.lib.stylix.colors.base0E}";
       base0F = "#${config.lib.stylix.colors.base0F}";
     in ''
-      auto-update = false
+      auto-update = off
       font-size = 12
       font-family = Intel One Mono
       font-style = medium
