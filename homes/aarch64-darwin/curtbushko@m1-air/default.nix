@@ -9,15 +9,18 @@
 
   # Let home manager manage itself
   programs.home-manager.enable = true;
-
   xdg.enable = true;
+
+  curtbushko = {
+    programming.enable = true;
+    shells.enable = true;
+    tools.enable = true;
+  };
 
   #---------------------------------------------------------------------
   # Packages
   #---------------------------------------------------------------------
   home.packages = [
-    pkgs.cargo
-    pkgs.zigpkgs.master
 
     # Darwin only
     pkgs.cachix
@@ -41,11 +44,7 @@
     inputs.stylix.homeManagerModules.stylix
     ../../../modules/home/styles
     ../../../modules/home/git
-    ../../../modules/home/go
-    #../../../modules/home/neovim
-    ../../../modules/home/shells
     ../../../modules/home/terminals
-    ../../../modules/home/tools
     ../../../modules/home/scripts
   ];
 }

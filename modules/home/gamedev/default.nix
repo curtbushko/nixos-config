@@ -1,7 +1,25 @@
-{pkgs, ...}: let
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
+  inherit (lib) types mkOption mkIf;
+  cfg = config.curtbushko.gamedev;
   isLinux = pkgs.stdenv.isLinux;
 in {
-  home.packages = with pkgs;
+  options.curtbushko.gamedev = {
+    enable = mkOption {
+      type = types.bool;
+      default = false;
+      description = ''
+        Whether to enable tools
+      '';
+    };
+  };
+
+  config = mkIf cfg.enable {
+    home.packages = with pkgs;
     []
     ++ (lib.optionals isLinux [
       aseprite
@@ -15,4 +33,5 @@ in {
       godot_4
       obs-studio
     ]);
+  };
 }

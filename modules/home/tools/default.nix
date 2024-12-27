@@ -1,8 +1,11 @@
 {
+  config,
   lib,
   pkgs,
   ...
 }: let
+  inherit (lib) types mkOption mkIf;
+  cfg = config.curtbushko.tools;
   isDarwin = pkgs.stdenv.isDarwin;
   isLinux = pkgs.stdenv.isLinux;
 in {
@@ -12,9 +15,18 @@ in {
     ./direnv.nix
     ./yazi.nix
   ];
+  options.curtbushko.tools = {
+    enable = mkOption {
+      type = types.bool;
+      default = false;
+      description = ''
+        Whether to enable tools
+      '';
+    };
+  };
 
-  home.packages =
-    [
+  config = mkIf cfg.enable {
+    home.packages = [
       pkgs.age
       pkgs.alejandra
       pkgs.asciinema
@@ -60,4 +72,5 @@ in {
       pkgs.mpv
       pkgs.remmina # remote desktop client
     ]);
+  };
 }

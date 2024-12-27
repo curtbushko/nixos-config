@@ -1,91 +1,83 @@
 {
-  # Snowfall Lib provides a customized `lib` instance with access to your flake's library
-  # as well as the libraries available from your flake's inputs.
-  lib,
-  # An instance of `pkgs` with your overlays and packages applied is also available.
-  pkgs,
-  # You also have access to your flake's inputs.
-  inputs,
-  # Additional metadata is provided by Snowfall Lib.
-  system, # The system architecture for this host (eg. `x86_64-linux`).
-  target, # The Snowfall Lib target for this system (eg. `x86_64-iso`).
-  format, # A normalized name for the system target (eg. `iso`).
-  virtual, # A boolean to determine whether this system is a virtual target using nixos-generators.
-  systems, # An attribute map of your defined hosts.
-  # All other arguments come from the module system.
   config,
+  lib,
+  pkgs,
   ...
 }: let
+  inherit (lib) mkIf;
+  cfg = config.curtbushko.wm;
   isLinux = pkgs.stdenv.isLinux;
 in {
-  programs.rofi = {
-    enable = isLinux;
-    package = pkgs.rofi-wayland;
-    extraConfig = {
-      modi = "drun,run";
-      show-icons = true;
-      case-sensitive = false;
-    };
-    theme = with config.lib.formats.rasi; {
-      "*" = {
-        spacing = 0;
-        width = mkLiteral "800px";
-
-        #bg = mkLiteral "#${bg}";
-        #bg-alt = mkLiteral "#${bg_dark}";
-        #fg = mkLiteral "#${fg}";
-        #fg-alt = mkLiteral "#${fg_dark}";
-        #border-color = mkLiteral "#${blue1}";
-        #background-color = mkLiteral "@bg";
-        #text-color = mkLiteral "@fg";
+  config = mkIf cfg.enable {
+    programs.rofi = {
+      enable = isLinux;
+      package = pkgs.rofi-wayland;
+      extraConfig = {
+        modi = "drun,run";
+        show-icons = true;
+        case-sensitive = false;
       };
+      theme = with config.lib.formats.rasi; {
+        "*" = {
+          spacing = 0;
+          width = mkLiteral "800px";
 
-      window = {
-        transparency = "real";
-      };
+          #bg = mkLiteral "#${bg}";
+          #bg-alt = mkLiteral "#${bg_dark}";
+          #fg = mkLiteral "#${fg}";
+          #fg-alt = mkLiteral "#${fg_dark}";
+          #border-color = mkLiteral "#${blue1}";
+          #background-color = mkLiteral "@bg";
+          #text-color = mkLiteral "@fg";
+        };
 
-      mainbox = {
-        children = mkLiteral "[inputbar, listview]";
-        border = mkLiteral "1px 1px 1px 1px";
-      };
+        window = {
+          transparency = "real";
+        };
 
-      inputbar = {
-        #background-color = mkLiteral "@bg-alt";
-        children = mkLiteral "[prompt, entry]";
-      };
+        mainbox = {
+          children = mkLiteral "[inputbar, listview]";
+          border = mkLiteral "1px 1px 1px 1px";
+        };
 
-      entry = {
-        background-color = mkLiteral "inherit";
-        padding = mkLiteral "12px 3px";
-      };
+        inputbar = {
+          #background-color = mkLiteral "@bg-alt";
+          children = mkLiteral "[prompt, entry]";
+        };
 
-      prompt = {
-        background-color = mkLiteral "inherit";
-        padding = mkLiteral "12px";
-      };
+        entry = {
+          background-color = mkLiteral "inherit";
+          padding = mkLiteral "12px 3px";
+        };
 
-      listview = {
-        cycle = true;
-        lines = mkLiteral "8";
-        margin = mkLiteral "0 0 -1px 0";
-        scrollbar = false;
-      };
+        prompt = {
+          background-color = mkLiteral "inherit";
+          padding = mkLiteral "12px";
+        };
 
-      element = {
-        children = mkLiteral "[element-icon, element-text]";
-      };
+        listview = {
+          cycle = true;
+          lines = mkLiteral "8";
+          margin = mkLiteral "0 0 -1px 0";
+          scrollbar = false;
+        };
 
-      element-icon = {
-        padding = mkLiteral "10px 10px";
-      };
+        element = {
+          children = mkLiteral "[element-icon, element-text]";
+        };
 
-      element-text = {
-        padding = mkLiteral "10px 0";
-        #text-color = mkLiteral "@fg-alt";
-      };
+        element-icon = {
+          padding = mkLiteral "10px 10px";
+        };
 
-      "element-text selected" = {
-        #text-color = mkLiteral "@fg";
+        element-text = {
+          padding = mkLiteral "10px 0";
+          #text-color = mkLiteral "@fg-alt";
+        };
+
+        "element-text selected" = {
+          #text-color = mkLiteral "@fg";
+        };
       };
     };
   };
