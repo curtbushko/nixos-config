@@ -49,7 +49,6 @@ in {
       pkgs.nodejs_22
       pkgs.presenterm
       pkgs.ripgrep
-      pkgs.sops
       pkgs.stylua
       pkgs.tree
       pkgs.watch

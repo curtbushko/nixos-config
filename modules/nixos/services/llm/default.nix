@@ -6,17 +6,18 @@ let
   inherit (lib) types mkOption;
 in
 {
-  options.curtbushko.gaming = {
+  options.curtbushko.services.llm = {
     enable = mkOption {
       type = types.bool;
       default = false;
       description = ''
-        Whether to enable gaming
+        Whether to enable NixOS llm services (ollama)
       '';
     };
   };
 
   imports = [
-    ./minecraft.nix
+    ./llm.nix
+    ./cuda.nix
   ];
 }

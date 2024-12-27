@@ -1,14 +1,17 @@
 {
-  # Snowfall Lib provides a customized `lib` instance with access to your flake's library
-  # as well as the libraries available from your flake's inputs.
+  config,
   lib,
-  # An instance of `pkgs` with your overlays and packages applied is also available.
   pkgs,
   ...
-}: let
+}:
+let
+  inherit (lib) mkIf;
+  cfg = config.curtbushko.gaming;
   isLinux = pkgs.stdenv.isLinux;
-in {
-  home.packages = with pkgs;
+in
+{
+  config = mkIf cfg.enable {
+    home.packages = with pkgs;
     [
     ]
     ++ (lib.optionals isLinux [
@@ -18,4 +21,5 @@ in {
       #prismlauncher
       (prismlauncher.override {additionalLibs = [vulkan-loader];})
     ]);
+  };
 }

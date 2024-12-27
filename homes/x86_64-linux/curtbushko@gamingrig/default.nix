@@ -13,21 +13,31 @@
   programs.home-manager.enable = true;
 
   xdg.enable = true;
-  #xdg.configFile = {
-  #  "ghostty/config".text = builtins.readFile ./ghostty.config;
-  #};
+
+  #---------------------------------------------------------------------
+  # Home Options
+  #---------------------------------------------------------------------
+  curtbushko = {
+    browsers.enable = true;
+    gamedev.enable = true;
+    gaming.enable = true;
+    git.enable = true;
+    llm.enable = true;
+    programming.enable = true;
+    secrets.enable = true;
+    shells.enable = true;
+    terminals.enable = true;
+    tools.enable = true;
+    wm.enable = true;
+  };
+
   #---------------------------------------------------------------------
   # Packages
   #---------------------------------------------------------------------
   home.packages = [
-    pkgs.cargo
     pkgs.crawl
     pkgs.crawlTiles
 
-    pkgs.zigpkgs.master
-    pkgs.zls
-
-    # Darwin only
     pkgs.cachix
     pkgs.tailscale
     inputs.neovim.packages.${system}.default
@@ -47,16 +57,5 @@
 
   imports = [
     inputs.stylix.homeManagerModules.stylix
-    ../../../modules/home/browsers
-    ../../../modules/home/gamedev
-    ../../../modules/home/git
-    ../../../modules/home/go
-    ../../../modules/home/llm
-    ../../../modules/home/secrets
-    ../../../modules/home/shells
-    ../../../modules/home/terminals
-    ../../../modules/home/tools
-    ../../../modules/home/wm
-    inputs.sops-nix.homeManagerModules.sops
   ];
 }

@@ -1,4 +1,14 @@
-{config, ...}: {
+{
+  config,
+  lib,
+  ...
+}:
+let
+  inherit (lib) mkIf;
+  cfg = config.curtbushko.terminals;
+in
+{
+  config = mkIf cfg.enable {
   xdg.configFile."ghostty/config" = {
     text = let
       base00 = "#${config.lib.stylix.colors.base00}";
@@ -97,5 +107,6 @@
       #palette = 7=${base05}
       #palette = 15=${base06}
     '';
+  };
   };
 }

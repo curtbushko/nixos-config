@@ -1,25 +1,37 @@
 {
-  # Snowfall Lib provides a customized `lib` instance with access to your flake's library
-  # as well as the libraries available from your flake's inputs.
-  lib,
-  # An instance of `pkgs` with your overlays and packages applied is also available.
-  pkgs,
-  # You also have access to your flake's inputs.
+  config,
   inputs,
-  # Additional metadata is provided by Snowfall Lib.
-  system, # The system architecture for this host (eg. `x86_64-linux`).
+  lib,
+  pkgs,
+  system,
   ...
-}: let
+}:
+let
+  inherit (lib) types mkOption mkIf;
+  cfg = config.curtbushko.browsers;
   isLinux = pkgs.stdenv.isLinux;
-in {
+in
+{
+  options.curtbushko.browsers = {
+    enable = mkOption {
+      type = types.bool;
+      default = false;
+      description = ''
+        Whether to enable browsers
+      '';
+    };
+  };
+
   imports = [
     ./firefox.nix
   ];
 
-  home.packages =
+  config = mkIf cfg.enable {
+    home.packages =
     [
     ]
     ++ (lib.optionals isLinux [
       inputs.zen-browser.packages.${system}.default
     ]);
+  };
 }

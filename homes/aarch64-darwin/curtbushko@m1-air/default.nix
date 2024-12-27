@@ -11,9 +11,15 @@
   programs.home-manager.enable = true;
   xdg.enable = true;
 
+  #---------------------------------------------------------------------
+  # Home Options
+  #---------------------------------------------------------------------
   curtbushko = {
+    git.enable = true;
     programming.enable = true;
+    secrets.enable = true;
     shells.enable = true;
+    terminals.enable = true;
     tools.enable = true;
   };
 
@@ -21,7 +27,6 @@
   # Packages
   #---------------------------------------------------------------------
   home.packages = [
-
     # Darwin only
     pkgs.cachix
     inputs.neovim.packages.${system}.default
@@ -40,11 +45,6 @@
   };
 
   imports = [
-    inputs.sops-nix.homeManagerModules.sops
     inputs.stylix.homeManagerModules.stylix
-    ../../../modules/home/styles
-    ../../../modules/home/git
-    ../../../modules/home/terminals
-    ../../../modules/home/scripts
   ];
 }

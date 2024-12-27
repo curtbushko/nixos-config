@@ -6,17 +6,18 @@ let
   inherit (lib) types mkOption;
 in
 {
-  options.curtbushko.gaming = {
+  options.curtbushko.hardware.audio = {
     enable = mkOption {
       type = types.bool;
       default = false;
       description = ''
-        Whether to enable gaming
+        Whether to enable NixOS windows manager services
       '';
     };
   };
 
   imports = [
-    ./minecraft.nix
+    ./dbus.nix
+    ./pipewire.nix
   ];
 }

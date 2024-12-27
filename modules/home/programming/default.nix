@@ -29,6 +29,7 @@ in
       pkgs.golangci-lint
       pkgs.gotestsum
       pkgs.zigpkgs.master
+      pkgs.zls
     ];
   };
 }
