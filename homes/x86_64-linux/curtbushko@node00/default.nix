@@ -54,11 +54,5 @@
 
   imports = [
     inputs.stylix.homeManagerModules.stylix
-    ../../../modules/home/git
-    #../../../modules/home/secrets
-    #../../../modules/home/shells
-    #../../../modules/home/terminals
-    #../../../modules/home/tools
-    inputs.sops-nix.homeManagerModules.sops
   ];
 }
