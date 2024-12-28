@@ -9,6 +9,12 @@
     ../../../modules/nixos/base
   ];
 
+  curtbushko = {
+    services.llm.enable = false;
+    services.minecraft.enable = false;
+    services.wm.enable = false;
+  };
+
   nixpkgs.config.allowUnfree = true;
 
   # Use the systemd-boot EFI boot loader.

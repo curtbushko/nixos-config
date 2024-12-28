@@ -13,9 +13,24 @@
   programs.home-manager.enable = true;
 
   xdg.enable = true;
-  #xdg.configFile = {
-  #  "ghostty/config".text = builtins.readFile ./ghostty.config;
-  #};
+
+  #---------------------------------------------------------------------
+  # Home Options
+  #---------------------------------------------------------------------
+  curtbushko = {
+    browsers.enable = false;
+    gamedev.enable = false;
+    gaming.enable = false;
+    git.enable = true;
+    llm.enable = false;
+    programming.enable = false;
+    secrets.enable = true;
+    shells.enable = true;
+    terminals.enable = true;
+    tools.enable = true;
+    wm.enable = false;
+  };
+
   #---------------------------------------------------------------------
   # Packages
   #---------------------------------------------------------------------
