@@ -17,23 +17,23 @@ in
       libsForQt5.qt5.qtwayland
     ];
 
+    programs.hyprland.enable = true;
+
     # Xserver settings
     services.xserver = {
       enable = true;
       dpi = 180;
       videoDrivers = ["nvidia"];
-      layout = "us";
       xkb = {
         layout = "us";
         variant = "";
         options = "caps:escape";
       };
 
-      displayManager.sddm = {
-        enable = true;
-        wayland.enable = true;
-        enableHidpi = true;
-        #theme = "chili";
+      displayManager = {
+        lightdm = {
+          enable = false;
+        };
       };
     };
     # Used to disable gdm suspend.

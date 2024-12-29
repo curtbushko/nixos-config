@@ -138,10 +138,10 @@ in
         aid = "aider --no-auto-commits --model ollama/llama3.1:8b";
       };
       initExtra = ''
-        if [ -f $GHOSTTY/zig-out/bin/ghostty ]; then
-          mkdir -p $HOME/.local/bin
-      	  ln -s $GHOSTTY/zig-out/bin/ghostty $HOME/.local/bin/ghostty
-        fi
+        #if [ -f $GHOSTTY/zig-out/bin/ghostty ]; then
+        #  mkdir -p $HOME/.local/bin
+      	#  ln -s $GHOSTTY/zig-out/bin/ghostty $HOME/.local/bin/ghostty
+        #fi
 
         # Work around only supporting session environment variables
         if [ -f $HOME/.config/env/secrets.env ]; then

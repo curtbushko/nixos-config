@@ -34,6 +34,9 @@
     };
   };
 
+  # turn this on so that tailscale works with local addresses also
+  services.resolved.enable = true;
+
   # Allow core dumps
   systemd.coredump.enable = true;
 
@@ -101,6 +104,7 @@
     gnumake
     gcc
     gdb
+    inputs.ghostty.packages.x86_64-linux.default
     killall
     pciutils
     rxvt-unicode-unwrapped
@@ -141,7 +145,6 @@
     lutris
     protonup-qt
     #sunshine
-    inputs.suyu.packages.x86_64-linux.suyu
   ];
 
   # Needed to run things like stylua in neovim on nixos

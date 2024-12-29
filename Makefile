@@ -48,17 +48,17 @@ endif
 update: ## Update all of your packages
 	nix --extra-experimental-features 'nix-command flakes' flake update
 
+.PHONY: update-ghostty
+update-ghostty: ## Update the ghostty flake
+	nix flake update ghostty 
+
 .PHONY: update-neovim
 update-neovim: ## Update the neovim flake
 	nix flake update neovim
 
 .PHONY: update-zenbrowser
 update-zenbrowser: ## Update the zen browser 
-	nix flake update zen-browser 
-
-.PHONY: update-suyu
-update-suyu: ## Update the zen browser 
-	nix flake lock --update-input suyu 
+	nix flake update zen-browser
 
 .PHONY: repair
 repair: ## Use this when you start getting weird 'file not found' errors from nix-store.
