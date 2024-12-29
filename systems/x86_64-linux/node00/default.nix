@@ -10,6 +10,7 @@
   ];
 
   curtbushko = {
+    hardware.audio.enable = false;
     services.llm.enable = false;
     services.minecraft.enable = false;
     services.wm.enable = false;
@@ -70,6 +71,7 @@
     lm_sensors
     cachix
     cmake
+    dconf
     git
     gnumake
     gcc

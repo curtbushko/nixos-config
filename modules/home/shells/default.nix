@@ -138,7 +138,8 @@ in
         aid = "aider --no-auto-commits --model ollama/llama3.1:8b";
       };
       initExtra = ''
-        if [ ! -L $HOME/.local/bin/ghostty ]; then
+        if [ -f $GHOSTTY/zig-out/bin/ghostty ]; then
+          mkdir -p $HOME/.local/bin
       	  ln -s $GHOSTTY/zig-out/bin/ghostty $HOME/.local/bin/ghostty
         fi
 
@@ -163,15 +164,42 @@ in
 
         eval "$(zoxide init --cmd cd zsh)"
         # Pre-load several directories that I always use
-        zoxide add $WORKSPACE
-        zoxide add $GITHUB
-        zoxide add $GHOSTTY
-        zoxide add $BUSHKO
-        zoxide add $BUSHKO/leetcode
-        zoxide add $KLEIO
-        zoxide add $KB
-        zoxide add $NIXOS_CONFIG
-        zoxide add $GITHUB/hashicorp
+
+        if [ -d $WORKSPACE ]; then
+          zoxide add $WORKSPACE
+        fi
+
+        if [ -d $GITHIB ]; then
+          zoxide add $GITHUB
+        fi
+
+        if [ -d $GHOSTTY ]; then
+          zoxide add $GHOSTTY
+        fi
+
+        if [ -d $WORKSPACE ]; then
+          zoxide add $WORKSPACE
+        fi
+
+        if [ -d $BUSHKO/leetcode ]; then
+          zoxide add $BUSHKO/leetcode
+        fi
+
+        if [ -d $KLEIO ]; then
+          zoxide add $KLEIO
+        fi
+
+        if [ -d $KB ]; then
+          zoxide add $KB
+        fi
+
+        if [ -d $NIXOS_CONFIG ]; then
+          zoxide add $NIXOS_CONFIG
+        fi
+
+        if [ -d $GITHUB/hasicorp ]; then
+          zoxide add $GITHUB/hashicorp
+        fi
       '';
     };
     programs.zsh.oh-my-zsh = {
