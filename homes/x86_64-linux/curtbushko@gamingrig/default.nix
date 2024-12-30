@@ -21,6 +21,7 @@
     browsers.enable = true;
     gamedev.enable = true;
     gaming.enable = true;
+    k8s.enable = true;
     git.enable = true;
     llm.enable = true;
     programming.enable = true;
