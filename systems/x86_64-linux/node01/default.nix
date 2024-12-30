@@ -29,6 +29,9 @@
   networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
   networking.interfaces.eno1.wakeOnLan.enable = true;
 
+  # turn this on so that tailscale works with local addresses also
+  services.resolved.enable = true;
+
   # Allow core dumps
   systemd.coredump.enable = true;
 

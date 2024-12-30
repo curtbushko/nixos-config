@@ -34,7 +34,6 @@ in
       role = "agent";
       serverAddr = "https://node00:6443";
       token = config.sops.secrets.token.path;
-      clusterInit = true;
     };
   };
 }
