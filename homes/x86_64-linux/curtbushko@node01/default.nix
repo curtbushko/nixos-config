@@ -22,6 +22,7 @@
     gamedev.enable = false;
     gaming.enable = false;
     git.enable = true;
+    k8s.enable = true;
     llm.enable = false;
     programming.enable = false;
     secrets.enable = true;
