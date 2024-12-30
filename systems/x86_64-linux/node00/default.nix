@@ -11,6 +11,7 @@
 
   curtbushko = {
     hardware.audio.enable = false;
+    services.k8s.server.enable = true;
     services.llm.enable = false;
     services.minecraft.enable = false;
     services.wm.enable = false;
@@ -113,6 +114,5 @@
 
   # Do not change - ever
   system.stateVersion = "24.11"; # Did you read the comment?
-
 }
 

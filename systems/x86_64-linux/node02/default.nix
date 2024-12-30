@@ -11,6 +11,7 @@
 
   curtbushko = {
     hardware.audio.enable = false;
+    services.k8s.agent.enable = true;
     services.llm.enable = false;
     services.minecraft.enable = false;
     services.wm.enable = false;

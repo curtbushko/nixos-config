@@ -41,8 +41,6 @@ in {
       pkgs.gum
       pkgs.htop
       pkgs.jq
-      pkgs.kubectl
-      pkgs.kind
       pkgs.lsd
       pkgs.nil # language server
       pkgs.nixd #language server for nix
