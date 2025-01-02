@@ -3,12 +3,10 @@
   inputs,
   lib,
   ...
-}:
-let
+}: let
   inherit (lib) types mkOption mkIf;
   cfg = config.curtbushko.services.k8s.server;
-in
-{
+in {
   options.curtbushko.services.k8s.server = {
     enable = mkOption {
       type = types.bool;

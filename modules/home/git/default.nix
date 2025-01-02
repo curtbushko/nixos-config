@@ -3,12 +3,10 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   inherit (lib) types mkOption mkIf;
   cfg = config.curtbushko.git;
-in
-{
+in {
   options.curtbushko.git = {
     enable = mkOption {
       type = types.bool;
@@ -20,8 +18,7 @@ in
   };
 
   config = mkIf cfg.enable {
-    home.packages = 
-    [
+    home.packages = [
       pkgs.gh
       pkgs.lazygit
       pkgs.git-lfs

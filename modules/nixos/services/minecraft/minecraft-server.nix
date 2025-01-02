@@ -2,12 +2,10 @@
   config,
   lib,
   ...
-}:
-let
+}: let
   inherit (lib) mkIf;
   cfg = config.curtbushko.services.minecraft;
-in
-{
+in {
   config = mkIf cfg.enable {
     virtualisation.oci-containers.backend = "docker";
     virtualisation.oci-containers.containers = {

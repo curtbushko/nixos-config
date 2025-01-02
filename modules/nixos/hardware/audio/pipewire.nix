@@ -2,12 +2,10 @@
   config,
   lib,
   ...
-}:
-let
+}: let
   inherit (lib) mkIf;
   cfg = config.curtbushko.hardware.audio;
-in
-{
+in {
   config = mkIf cfg.enable {
     # Pipewire
     security.rtkit.enable = true;

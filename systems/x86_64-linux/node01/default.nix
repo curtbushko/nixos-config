@@ -1,7 +1,4 @@
-{
-  pkgs,
-  ...
-}: {
+{pkgs, ...}: {
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
@@ -26,7 +23,7 @@
   networking.hostName = "node01"; # Define your hostname.
   # Pick only one of the below networking options.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-  networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
+  networking.networkmanager.enable = true; # Easiest to use and most distros use this by default.
   networking.interfaces.eno1.wakeOnLan.enable = true;
 
   # turn this on so that tailscale works with local addresses also
@@ -57,11 +54,11 @@
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.curtbushko = {
-     isNormalUser = true;
-     extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
-     packages = with pkgs; [
-       tree
-     ];
+    isNormalUser = true;
+    extraGroups = ["wheel"]; # Enable ‘sudo’ for the user.
+    packages = with pkgs; [
+      tree
+    ];
   };
 
   # programs.firefox.enable = true;
@@ -117,6 +114,4 @@
 
   # Do not change - ever
   system.stateVersion = "24.11"; # Did you read the comment?
-
 }
-

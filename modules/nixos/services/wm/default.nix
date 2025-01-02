@@ -1,11 +1,6 @@
-{
-  lib,
-  ...
-}:
-let
+{lib, ...}: let
   inherit (lib) types mkOption;
-in
-{
+in {
   options.curtbushko.services.wm = {
     enable = mkOption {
       type = types.bool;

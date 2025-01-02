@@ -3,18 +3,16 @@
   inputs,
   lib,
   ...
-}:
-let
+}: let
   inherit (lib) types mkOption mkIf;
   cfg = config.curtbushko.services.k8s.agent;
-in
-{
+in {
   options.curtbushko.services.k8s.agent = {
     enable = mkOption {
       type = types.bool;
       default = false;
       description = ''
-        Whether to enable NixOS k8s agent 
+        Whether to enable NixOS k8s agent
       '';
     };
   };

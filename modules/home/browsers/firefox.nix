@@ -9,7 +9,6 @@
   cfg = config.curtbushko.browsers;
   isLinux = pkgs.stdenv.isLinux;
 in {
-
   config = mkIf cfg.enable {
     programs.firefox = {
       enable = isLinux;

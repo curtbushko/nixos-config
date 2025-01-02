@@ -38,19 +38,19 @@ in {
         #"$active-border-color" = "rgb(00b0fc)";
         "$active-border-color" = "rgba(${builtins.substring 1 6 (colors.statusline_a_bg)}ff)";
         #"$bg-color" = "rgb(1A1B26)";
-        "$bg-color" =  "rgba(${builtins.substring 1 6 (colors.bg)}ff)";
+        "$bg-color" = "rgba(${builtins.substring 1 6 (colors.bg)}ff)";
         #"$inac-bg-color" = "rgb(1A1B26)";
-        "$inac-bg-color" =  "rgba(${builtins.substring 1 6 (colors.bg)}ff)";
+        "$inac-bg-color" = "rgba(${builtins.substring 1 6 (colors.bg)}ff)";
         #"$text-color" = "rgb(F7768E)";
-        "$text-color" =  "rgba(${builtins.substring 1 6 (colors.fg)}ff)";
+        "$text-color" = "rgba(${builtins.substring 1 6 (colors.fg)}ff)";
         #"$inac-text-color" = "rgb(A9B1D6)";
-        "$inac-text-color" =  "rgba(${builtins.substring 1 6 (colors.fg_dark)}ff)";
+        "$inac-text-color" = "rgba(${builtins.substring 1 6 (colors.fg_dark)}ff)";
         #$"$urgent-bg-color" = "rgb(F7768E)";
-        "$urgent-bg-color" =  "rgba(${builtins.substring 1 6 (colors.red1)}ff)";
+        "$urgent-bg-color" = "rgba(${builtins.substring 1 6 (colors.red1)}ff)";
         #"$indi-color" = "rgb(7AA2F7)";
-        "$indi-color" =  "rgba(${builtins.substring 1 6 (colors.blue)}ff)";
+        "$indi-color" = "rgba(${builtins.substring 1 6 (colors.blue)}ff)";
         #"$urgent-text-color" = "rgb(A9B1D6)";
-        "$urgent-text-color" =  "rgba(${builtins.substring 1 6 (colors.fg_dark)}ff)";
+        "$urgent-text-color" = "rgba(${builtins.substring 1 6 (colors.fg_dark)}ff)";
 
         env = [
           "QT_QPA_PLATFORM,wayland"

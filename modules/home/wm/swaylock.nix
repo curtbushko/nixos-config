@@ -10,10 +10,10 @@
 in {
   config = mkIf cfg.enable {
     home.packages = with pkgs;
-    [
-    ]
-    ++ (lib.optionals isLinux [
-      swaylock
-    ]);
+      [
+      ]
+      ++ (lib.optionals isLinux [
+        swaylock
+      ]);
   };
 }

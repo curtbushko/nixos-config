@@ -3,12 +3,10 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   inherit (lib) mkIf;
   cfg = config.curtbushko.services.llm;
-in
-{
+in {
   config = mkIf cfg.enable {
     # Taken from: https://nixos.wiki/wiki/CUDA
     # I figured it'd be better to install at the system level instead of in a shell

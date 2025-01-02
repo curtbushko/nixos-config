@@ -3,12 +3,10 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   inherit (lib) mkIf;
   cfg = config.curtbushko.services.llm;
-in
-{
+in {
   config = mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
       cudatoolkit
@@ -38,4 +36,3 @@ in
     };
   };
 }
-

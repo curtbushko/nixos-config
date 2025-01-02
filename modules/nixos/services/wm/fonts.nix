@@ -3,12 +3,10 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   inherit (lib) mkIf;
   cfg = config.curtbushko.services.wm;
-in
-{
+in {
   config = mkIf cfg.enable {
     fonts = {
       fontDir.enable = true;

@@ -5,13 +5,11 @@
   pkgs,
   system,
   ...
-}:
-let
+}: let
   inherit (lib) types mkOption mkIf;
   cfg = config.curtbushko.browsers;
   isLinux = pkgs.stdenv.isLinux;
-in
-{
+in {
   options.curtbushko.browsers = {
     enable = mkOption {
       type = types.bool;
@@ -28,10 +26,10 @@ in
 
   config = mkIf cfg.enable {
     home.packages =
-    [
-    ]
-    ++ (lib.optionals isLinux [
-      inputs.zen-browser.packages.${system}.default
-    ]);
+      [
+      ]
+      ++ (lib.optionals isLinux [
+        inputs.zen-browser.packages.${system}.default
+      ]);
   };
 }

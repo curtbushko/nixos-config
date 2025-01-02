@@ -2,8 +2,7 @@
   config,
   lib,
   ...
-}:
-let
+}: let
   inherit (lib) mkIf;
   cfg = config.curtbushko.terminals;
   #colors = import ../../home/styles/tokyo-night-neon.nix {};
@@ -14,8 +13,7 @@ let
   b_fg = colors.statusline_b_fg;
   c_bg = colors.statusline_c_bg;
   c_fg = colors.statusline_c_fg;
-in
-{
+in {
   config = mkIf cfg.enable {
     programs.starship = {
       enable = true;

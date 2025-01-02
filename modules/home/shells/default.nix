@@ -3,14 +3,12 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   inherit (lib) types mkOption mkIf;
   cfg = config.curtbushko.shells;
   isDarwin = pkgs.stdenv.isDarwin;
   isLinux = pkgs.stdenv.isLinux;
-in
-{
+in {
   options.curtbushko.shells = {
     enable = mkOption {
       type = types.bool;
@@ -22,23 +20,22 @@ in
   };
 
   config = mkIf cfg.enable {
-    programs.zsh =
-      {
-        enable = true;
-        autosuggestion.enable = true;
-        enableCompletion = true;
-        defaultKeymap = "viins";
-        enableVteIntegration = true;
-        history.expireDuplicatesFirst = true;
-        history.ignoreDups = true;
-        # these become shortcuts like cd ~docs
-        dirHashes = {
-          docs = "$HOME/Documents";
-          vids = "$HOME/Videos";
-          dl = "$HOME/Downloads";
-        };
-        # environment variables
-        sessionVariables =
+    programs.zsh = {
+      enable = true;
+      autosuggestion.enable = true;
+      enableCompletion = true;
+      defaultKeymap = "viins";
+      enableVteIntegration = true;
+      history.expireDuplicatesFirst = true;
+      history.ignoreDups = true;
+      # these become shortcuts like cd ~docs
+      dirHashes = {
+        docs = "$HOME/Documents";
+        vids = "$HOME/Videos";
+        dl = "$HOME/Downloads";
+      };
+      # environment variables
+      sessionVariables =
         {
           BUSHKO = "$HOME/workspace/github.com/curtbushko";
           KLEIO = "$HOME/workspace/github.com/kleioverse";
@@ -60,7 +57,7 @@ in
         {
           DDCUTIL = "$HOME/.dotfiles/bin/m1ddc";
         };
-        shellAliases =
+      shellAliases =
         {
           ".." = "cd ..";
           "..." = "cd ../..";
@@ -136,7 +133,7 @@ in
           muxkill = "tmux kill-server";
           aid = "aider --no-auto-commits --model ollama/llama3.1:8b";
         }
-          # monitor switching
+        # monitor switching
         // lib.optionalAttrs isLinux
         {
           work = "wakeonlan $M1_PRO_MAC_ADDRESS; $DDCUTIL setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_USBC --bus 5";
@@ -158,70 +155,69 @@ in
           pc2 = "wakeonlan $GAMINGRIG_MAC_ADDRESS; sleep 1; $DDCCTL display 2 set input 18";
           pcall = "wakeonlan $GAMINGRIG_MAC_ADDRESS; sleep 1; $DDCCTL display 2 set input 18; $DDCCTL display 2 set input 15";
         };
-      initExtra =
-      ''
-        #if [ -f $GHOSTTY/zig-out/bin/ghostty ]; then
-        #  mkdir -p $HOME/.local/bin
-      	#  ln -s $GHOSTTY/zig-out/bin/ghostty $HOME/.local/bin/ghostty
-        #fi
+      initExtra = ''
+         #if [ -f $GHOSTTY/zig-out/bin/ghostty ]; then
+         #  mkdir -p $HOME/.local/bin
+        #  ln -s $GHOSTTY/zig-out/bin/ghostty $HOME/.local/bin/ghostty
+         #fi
 
-        # Work around only supporting session environment variables
-        if [ -f $HOME/.config/env/secrets.env ]; then
-          source $HOME/.config/env/secrets.env
-        fi
-        export DIRENV_WARN_TIMEOUT="20s"
-        export DDCUTIL_DISPLAY_INPUT="60"
-        export DDCUTIL_S2721QS_HDMI1="0x11"
-        export DDCUTIL_S2721QS_HDMI2="0x12"
-        export DDCUTIL_U3419W_DP1="0x0f"
-        export DDCUTIL_U3419W_USBC="0x1b"
-        export DDCUTIL_U3419W_HDMI1="0x11"
-        export DDCUTIL_U3419W_HDMI2="0x12"
+         # Work around only supporting session environment variables
+         if [ -f $HOME/.config/env/secrets.env ]; then
+           source $HOME/.config/env/secrets.env
+         fi
+         export DIRENV_WARN_TIMEOUT="20s"
+         export DDCUTIL_DISPLAY_INPUT="60"
+         export DDCUTIL_S2721QS_HDMI1="0x11"
+         export DDCUTIL_S2721QS_HDMI2="0x12"
+         export DDCUTIL_U3419W_DP1="0x0f"
+         export DDCUTIL_U3419W_USBC="0x1b"
+         export DDCUTIL_U3419W_HDMI1="0x11"
+         export DDCUTIL_U3419W_HDMI2="0x12"
 
-        # nap configs
-        export NAP_CONFIG=$HOME/.config/nap/config.yaml
+         # nap configs
+         export NAP_CONFIG=$HOME/.config/nap/config.yaml
 
-        # Needed to run mason downloads in neovim
-        export NIX_LD=$(nix eval --extra-experimental-features nix-command --impure --raw --expr 'let pkgs = import <nixpkgs> {}; NIX_LD = pkgs.lib.fileContents "${pkgs.stdenv.cc}/nix-support/dynamic-linker"; in NIX_LD')
+         # Needed to run mason downloads in neovim
+         export NIX_LD=$(nix eval --extra-experimental-features nix-command --impure --raw --expr 'let pkgs = import <nixpkgs> {}; NIX_LD = pkgs.lib.fileContents "${pkgs.stdenv.cc}/nix-support/dynamic-linker"; in NIX_LD')
 
-        eval "$(zoxide init --cmd cd zsh)"
-        # Pre-load several directories that I always use
+         eval "$(zoxide init --cmd cd zsh)"
+         # Pre-load several directories that I always use
 
-        if [ -d $WORKSPACE ]; then
-          zoxide add $WORKSPACE
-        fi
+         if [ -d $WORKSPACE ]; then
+           zoxide add $WORKSPACE
+         fi
 
-        if [ -d $GITHIB ]; then
-          zoxide add $GITHUB
-        fi
+         if [ -d $GITHIB ]; then
+           zoxide add $GITHUB
+         fi
 
-        if [ -d $GHOSTTY ]; then
-          zoxide add $GHOSTTY
-        fi
+         if [ -d $GHOSTTY ]; then
+           zoxide add $GHOSTTY
+         fi
 
-        if [ -d $WORKSPACE ]; then
-          zoxide add $WORKSPACE
-        fi
+         if [ -d $WORKSPACE ]; then
+           zoxide add $WORKSPACE
+         fi
 
-        if [ -d $BUSHKO/leetcode ]; then
-          zoxide add $BUSHKO/leetcode
-        fi
+         if [ -d $BUSHKO/leetcode ]; then
+           zoxide add $BUSHKO/leetcode
+         fi
 
-        if [ -d $KLEIO ]; then
-          zoxide add $KLEIO
-        fi
+         if [ -d $KLEIO ]; then
+           zoxide add $KLEIO
+         fi
 
-        if [ -d $KB ]; then
-          zoxide add $KB
-        fi
+         if [ -d $KB ]; then
+           zoxide add $KB
+         fi
 
-        if [ -d $NIXOS_CONFIG ]; then
-          zoxide add $NIXOS_CONFIG
-        fi
+         if [ -d $NIXOS_CONFIG ]; then
+           zoxide add $NIXOS_CONFIG
+         fi
 
-        if [ -d $GITHUB/hasicorp ]; then
-          zoxide add $GITHUB/hashicorp
-        fi
+         if [ -d $GITHUB/hasicorp ]; then
+           zoxide add $GITHUB/hashicorp
+         fi
       '';
     };
     programs.zsh.oh-my-zsh = {
@@ -235,4 +231,4 @@ in
       historyControl = ["ignoredups" "ignorespace"];
     };
   };
- }
+}

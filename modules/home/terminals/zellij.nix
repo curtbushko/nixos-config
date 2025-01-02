@@ -2,12 +2,10 @@
   config,
   lib,
   ...
-}:
-let
+}: let
   inherit (lib) mkIf;
   cfg = config.curtbushko.terminals;
-in
-{
+in {
   config = mkIf cfg.enable {
     programs.zellij = {
       enable = true;

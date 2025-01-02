@@ -1,7 +1,4 @@
-{
-  pkgs,
-  ...
-}: {
+{pkgs, ...}: {
   environment.localBinInPath = true;
 
   programs.zsh.enable = true;

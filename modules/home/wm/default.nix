@@ -29,25 +29,25 @@ in {
 
   config = mkIf cfg.enable {
     home.packages = with pkgs;
-    [
-    ]
-    ++ (lib.optionals isLinux [
-      brightnessctl
-      cliphist
-      grim
-      slurp
-      wl-clipboard
+      [
+      ]
+      ++ (lib.optionals isLinux [
+        brightnessctl
+        cliphist
+        grim
+        slurp
+        wl-clipboard
 
-      eww
-      swww
-      swappy # snapshot tool
-      swaybg
-      swaylock
+        eww
+        swww
+        swappy # snapshot tool
+        swaybg
+        swaylock
 
-      networkmanagerapplet
-      dunst
-      libnotify
-      xdg-utils
-    ]);
+        networkmanagerapplet
+        dunst
+        libnotify
+        xdg-utils
+      ]);
   };
 }

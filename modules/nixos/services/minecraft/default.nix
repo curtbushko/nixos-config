@@ -1,17 +1,12 @@
-{
-  lib,
-  ...
-}:
-let
+{lib, ...}: let
   inherit (lib) types mkOption;
-in
-{
+in {
   options.curtbushko.services.minecraft = {
     enable = mkOption {
       type = types.bool;
       default = false;
       description = ''
-        Whether to enable NixOS minecraft server 
+        Whether to enable NixOS minecraft server
       '';
     };
   };

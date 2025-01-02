@@ -1,14 +1,12 @@
-{ 
+{
   config,
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   inherit (lib) types mkOption mkIf;
   cfg = config.curtbushko.programming;
-in
-{
+in {
   options.curtbushko.programming = {
     enable = mkOption {
       type = types.bool;

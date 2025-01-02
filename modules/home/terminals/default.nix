@@ -1,17 +1,12 @@
-{
-  lib,
-  ...
-}:
-let
+{lib, ...}: let
   inherit (lib) types mkOption;
-in
-{
+in {
   options.curtbushko.terminals = {
     enable = mkOption {
       type = types.bool;
       default = false;
       description = ''
-        Whether to enable ghostty, zellij, starship, etc 
+        Whether to enable ghostty, zellij, starship, etc
       '';
     };
   };

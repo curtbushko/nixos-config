@@ -2,12 +2,10 @@
   config,
   lib,
   ...
-}:
-let
+}: let
   inherit (lib) mkIf;
   cfg = config.curtbushko.services.wm;
-in
-{
+in {
   config = mkIf cfg.enable {
     qt = {
       enable = true;
