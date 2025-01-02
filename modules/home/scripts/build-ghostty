@@ -1,27 +1,27 @@
 #!/usr/bin/env bash
-GHOSTTY_DIR=${HOME}/workspace/github.com/mitchellh/ghostty
+GHOSTTY_DIR=${HOME}/workspace/github.com/ghostty-org/ghostty
 BIN_DIR=${HOME}/.local/bin
 CUR_DIR=$PWD
 GHOSTTY_RESOURCES_DIR=${HOME}/.local/share/ghostty
 
-mkdir -p ${BIN_DIR}
-mkdir -p ${GHOSTTY_RESOURCES_DIR}
+mkdir -p "${BIN_DIR}"
+mkdir -p "${GHOSTTY_RESOURCES_DIR}"
 
 OS=$(uname | tr '[:upper:]' '[:lower:]')
-cd ${GHOSTTY_DIR}
+cd "${GHOSTTY_DIR}"
 
-if test ${OS} == "darwin"; then
+if test "${OS}" == "darwin"; then
 	echo "Building ${OS} release build in ${GHOSTTY_DIR}"
 	direnv allow . && eval "$(direnv export bash)"
-	zig build -Dstatic=true -Doptimize=ReleaseFast && direnv deny && cd macos && xcodebuild -target Ghostty -configuration Release
+	zig build -Doptimize=ReleaseFast && direnv deny && cd macos && xcodebuild -target Ghostty -configuration Release
 else
 	echo "Building ${OS} release build in ${GHOSTTY_DIR}"
 	direnv allow . && eval "$(direnv export bash)"
-	zig build -Dstatic=true -Doptimize=ReleaseFast
-	cp ${GHOSTTY_DIR}/zig-out/bin/ghostty ${BIN_DIR}
-	cp -R ${GHOSTTY_DIR}/zig-out/share/* ${GHOSTTY_RESOURCES_DIR}
-	cp -R ${GHOSTTY_DIR}/zig-out/share/ghostty/* ${GHOSTTY_RESOURCES_DIR}
+	zig build -Doptimize=ReleaseFast
+	cp "${GHOSTTY_DIR}/zig-out/bin/ghostty" "${BIN_DIR}"
+	cp -R "${GHOSTTY_DIR}/zig-out/share/*" "${GHOSTTY_RESOURCES_DIR}"
+	cp -R "${GHOSTTY_DIR}/zig-out/share/ghostty/*" "${GHOSTTY_RESOURCES_DIR}"
 
 fi
 echo "Done building ghostty!"
-cd ${CUR_DIR}
+cd "${CUR_DIR}"

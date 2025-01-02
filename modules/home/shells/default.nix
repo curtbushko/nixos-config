@@ -48,14 +48,7 @@ in {
           WORKSPACE = "$HOME/workspace";
           WALLPAPERS = "$HOME/Sync/wallpapers";
           ZIGBIN = "$HOME/bin/zig";
-        }
-        // lib.optionalAttrs isLinux
-        {
-          DDCUTIL = "ddcutil";
-        }
-        // lib.optionalAttrs isDarwin
-        {
-          DDCUTIL = "$HOME/.dotfiles/bin/m1ddc";
+          M1DDC = "$HOME/.dotfiles/bin/m1ddc";
         };
       shellAliases =
         {
@@ -136,24 +129,23 @@ in {
         # monitor switching
         // lib.optionalAttrs isLinux
         {
-          work = "wakeonlan $M1_PRO_MAC_ADDRESS; $DDCUTIL setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_USBC --bus 5";
-          work2 = "wakeonlan $M1_PRO_MAC_ADDRESS; $DDCUTIL setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI1 --bus 6";
-          workall = "wakeonlan $M1_PRO_MAC_ADDRESS; $DDCUTIL setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI1 --bus 6; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_USBC --bus 5";
-          home = "$DDCCTL set input 17";
-          pc = "wakeonlan $GAMINGRIG_MAC_ADDRESS; $DDCUTIL setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_DP1 --bus 5";
-          pc2 = "wakeonlan $GAMINGRIG_MAC_ADDRESS; $DDCUTIL setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI2 --bus 6";
-          pcall = "wakeonlan $GAMINGRIG_MAC_ADDRESS; $DDCUTIL setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI2 --bus ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_DP1 --bus 5";
-          steamdeck = "$DDCUTIL setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_HDMI1 --bus 5";
+          work = "wakeonlan $M1_PRO_MAC_ADDRESS; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_USBC --bus 5";
+          work2 = "wakeonlan $M1_PRO_MAC_ADDRESS; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI1 --bus 6";
+          workall = "wakeonlan $M1_PRO_MAC_ADDRESS; ddctuil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI1 --bus 6; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_USBC --bus 5";
+          pc = "wakeonlan $GAMINGRIG_MAC_ADDRESS; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_DP1 --bus 5";
+          pc2 = "wakeonlan $GAMINGRIG_MAC_ADDRESS; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI2 --bus 6";
+          pcall = "wakeonlan $GAMINGRIG_MAC_ADDRESS; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI2 --bus ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_DP1 --bus 5";
+          steamdeck = "ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_HDMI1 --bus 5";
         }
         // lib.optionalAttrs isDarwin
         {
-          work = "$DDCCTL display 1 set input 27";
-          work2 = "$DDCCTL display 2 set input 17";
-          workall = "$DDCCTL display 1 set input 27; $DDCCTL display 2 set input 17";
-          home = "$DDCCTL set input 17";
-          pc = "wakeonlan $GAMINGRIG_MAC_ADDRESS; sleep 1; $DDCCTL display 1 set input 15";
-          pc2 = "wakeonlan $GAMINGRIG_MAC_ADDRESS; sleep 1; $DDCCTL display 2 set input 18";
-          pcall = "wakeonlan $GAMINGRIG_MAC_ADDRESS; sleep 1; $DDCCTL display 2 set input 18; $DDCCTL display 2 set input 15";
+          work = "$M1DDC display 1 set input 27";
+          work2 = "$M1DDC display 2 set input 17";
+          workall = "$M1DDC display 1 set input 27; $M1DDC display 2 set input 17";
+          home = "$M1DDC set input 17";
+          pc = "wakeonlan $GAMINGRIG_MAC_ADDRESS; sleep 1; $M1DDC display 1 set input 15";
+          pc2 = "wakeonlan $GAMINGRIG_MAC_ADDRESS; sleep 1; $M1DDC display 2 set input 18";
+          pcall = "wakeonlan $GAMINGRIG_MAC_ADDRESS; sleep 1; $M1DDC display 2 set input 18; $M1DDC display 2 set input 15";
         };
       initExtra = ''
          #if [ -f $GHOSTTY/zig-out/bin/ghostty ]; then
