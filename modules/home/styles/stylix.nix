@@ -1,6 +1,5 @@
-{pkgs, ...}: let
-  #colors = import ./tokyo-night-neon.nix {};
-  colors = import ./rebel-scum.nix {};
+{config, pkgs, ...}: let
+  colors = import ./${config.curtbushko.theme.name}.nix {};
 in {
   # Base16 guide (https://github.com/chriskempson/base16/blob/main/styling.md)
   # base00 - Default Background

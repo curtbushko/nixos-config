@@ -227,7 +227,7 @@ in {
       ];
 
       style = let
-        colors = import ../../home/styles/rebel-scum.nix {};
+        colors = import ../../home/styles/${config.curtbushko.theme.name}.nix {};
       in
         with colors; ''
           /*
