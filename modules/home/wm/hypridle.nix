@@ -47,7 +47,7 @@ in {
             on-resume = "${pkgs.coreutils}/bin/sleep 3;WAYLAND_DISPLAY=wayland-1 ${hyprctl} dispatch dpms on || true";
           }
           {
-            timeout = 14400; # 4 hours
+            timeout = 2700; # 45 minutes 
             on-timeout = "${hyprctl} dispatch dpms on || true; ${pkgs.coreutils}/bin/sleep 10; ${suspend-script}/bin/suspend-script";
             on-resume = "${pkgs.coreutils}/bin/sleep 3; WAYLAND_DISPLAY=wayland-1 ${hyprctl} dispatch dpms on || true";
           }
