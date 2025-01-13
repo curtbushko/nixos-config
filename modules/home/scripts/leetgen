@@ -1,0 +1,73 @@
+#!/bin/sh
+
+# Check if a project name was provided
+if [ -z "$1" ]; then
+    echo "Error: missing directory name"
+    exit 1
+fi
+
+# Check if a module name was provided
+if [ -z "$2" ]; then
+    echo "Error: missing module name"
+    exit 1
+fi
+
+DASHLESS=$(echo $2 | tr -d '-')
+
+# Create a new directory for the project
+mkdir "$1"
+
+# Create main.go and add a main function that prints "hello world"
+cat >"$1/${DASHLESS}.go" <<EOF
+package ${DASHLESS}
+
+import (
+	"fmt"
+)
+
+func run() {
+    fmt.Println("Hello world")
+  }
+EOF
+
+# Create main_test.go
+cat >"$1/${DASHLESS}_test.go" <<EOF
+package ${DASHLESS}
+
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
+
+func Test_Run(t *testing.T) {
+	cases := []struct {
+		name     string
+		actual   string
+		expected int
+	}{
+		{
+			name:     "example",
+			actual:   "example.input",
+			expected: 13,
+		},
+		{
+			name:     "large example",
+			actual:   "large.input",
+			expected: 6175,
+		},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			got := run(c.actual)
+			assert.Equal(t, c.expected, got)
+		})
+	}
+}
+EOF
+# Initialize go mod with the provided project name
+cd "$1"
+go mod init "${DASHLESS}"
+
+# Install the testify package for testing
+g

@@ -35,6 +35,7 @@
   hyprstart = pkgs.writeScriptBin "hyprstart" (builtins.readFile ./hyprstart);
   jira-ls = pkgs.writeScriptBin "jira-ls" (builtins.readFile ./jira-ls);
   kubewatcher = pkgs.writeScriptBin "kubewatcher" (builtins.readFile ./kubewatcher);
+  leetgen = pkgs.writeScriptBin "leetgen" (builtins.readFile ./leetgen);
   makelintwatcher = pkgs.writeScriptBin "makelintwatcher" (builtins.readFile ./makelintwatcher);
   makeunitwatcher = pkgs.writeScriptBin "makeunitwatcher" (builtins.readFile ./makeunitwatcher);
   new-note = pkgs.writeScriptBin "new-note" (builtins.readFile ./new-note);
@@ -84,6 +85,7 @@ in {
       helm-nuke
       jira-ls
       kubewatcher
+      leetgen
       makelintwatcher
       makeunitwatcher
       new-note
