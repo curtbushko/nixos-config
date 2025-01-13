@@ -70,4 +70,4 @@ cd "$1"
 go mod init "${DASHLESS}"
 
 # Install the testify package for testing
-g
+go get github.com/stretchr/testify/require
