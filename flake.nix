@@ -42,6 +42,7 @@
     };
 
     sops-nix.url = "github:Mic92/sops-nix";
+
     tailscale = {
       url = "github:tailscale/tailscale";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
@@ -55,6 +56,7 @@
       url = "github:curtbushko/neovim-flake";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
+
     zen-browser = {
       url = "github:ch4og/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
