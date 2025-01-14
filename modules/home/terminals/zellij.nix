@@ -420,7 +420,6 @@ in {
 
               pane split_direction="vertical" {
                   pane name="T1P1" focus=true cwd="/home/curtbushko/workspace/github.com"
-                  pane name="T1P2" cwd="/home/curtbushko/workspace/github.com"
               }
           }
           tab name="codetwo" {
@@ -430,7 +429,6 @@ in {
 
               pane split_direction="vertical" {
                   pane name="T2P1" cwd="/home/curtbushko/workspace/github.com"
-                  pane name="T2P2" cwd="/home/curtbushko/workspace/github.com"
               }
           }
           tab name="codethree" {
@@ -439,7 +437,6 @@ in {
               }
               pane split_direction="vertical" {
                   pane name="T3P1" cwd="/home/curtbushko/workspace/github.com"
-                  pane name="T3P2" cwd="/home/curtbushko/workspace/github.com"
               }
           }
           tab name="shell" {
@@ -448,8 +445,6 @@ in {
               }
               pane split_direction="vertical" {
                   pane name="T4P1" cwd="/home/curtbushko/workspace/github.com"
-                  pane name="T4P2" cwd="/home/curtbushko/workspace/github.com"
-                  pane name="T4P3" cwd="/home/curtbushko/workspace/github.com"
               }
               pane name="T4P4" cwd="/home/curtbushko/workspace/github.com"
           }
