@@ -11,6 +11,8 @@ in {
       enable = true;
       enableBashIntegration = true;
       enableZshIntegration = true;
+      # disable up arrow key
+      flags = [ "--disable-up-arrow" ];
       settings = {
         auto_sync = false;
         #sync_frequency = "5m";
@@ -19,7 +21,6 @@ in {
         style = "compact";
         keymap_mode = "vim-normal";
         history_filter = [
-          "cd"
           "ls"
           "pwd"
           "foo"
