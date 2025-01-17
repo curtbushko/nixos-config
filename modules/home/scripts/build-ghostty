@@ -19,6 +19,7 @@ else
 	direnv allow . && eval "$(direnv export bash)"
 	zig build -Doptimize=ReleaseFast
 	cp "${GHOSTTY_DIR}/zig-out/bin/ghostty" "${BIN_DIR}"
+	mkdir -p "${GHOSTTY_RESOURCES_DIR}"
 	cp -R "${GHOSTTY_DIR}/zig-out/share/*" "${GHOSTTY_RESOURCES_DIR}"
 	cp -R "${GHOSTTY_DIR}/zig-out/share/ghostty/*" "${GHOSTTY_RESOURCES_DIR}"
 

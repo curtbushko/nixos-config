@@ -37,7 +37,6 @@ in {
         macos-option-as-alt = left
         mouse-hide-while-typing = true
         shell-integration = zsh
-        theme = "tokyonight"
         window-padding-x = 0
         window-padding-y = 0
         window-decoration = false
