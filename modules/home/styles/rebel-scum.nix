@@ -7,7 +7,7 @@ _: {
   bg_search = "#08435E";
   bg_sidebar = "#06101E";
   bg_statusline = "#16161e";
-  bg_visual = "#08435E";
+  bg_visual = "#375e6e";
   black = "#06101E";
   blue = "#66def9";
   blue0 = "#71e8ff";
