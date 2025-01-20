@@ -27,7 +27,7 @@ import (
 
 func run() {
     fmt.Println("Hello world")
-  }
+}
 EOF
 
 # Create main_test.go
