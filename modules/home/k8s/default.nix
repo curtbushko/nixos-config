@@ -24,9 +24,10 @@ in {
 
   config = mkIf cfg.enable {
     home.packages = [
+      pkgs.kind
+      pkgs.kubebuilder
       pkgs.kubectl
       pkgs.kubectx
-      pkgs.kind
     ];
     # extract kubecontext
     sops = {

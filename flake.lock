@@ -575,11 +575,11 @@
         "zig": "zig"
       },
       "locked": {
-        "lastModified": 1737085478,
-        "narHash": "sha256-EzdUQf1ljtGIWMmscVzoW3rUxxN3UKyNXOXbzUvz3BQ=",
+        "lastModified": 1737779447,
+        "narHash": "sha256-+iVqQXAUJshUYgxOHfke54Ux4f/aggl1yub86KNx2tE=",
         "owner": "ghostty-org",
         "repo": "ghostty",
-        "rev": "72d085525b22d66468c5969a4d507a0fa68d4a04",
+        "rev": "71e62f96fa4d286eda835048428d5be96e9f87c1",
         "type": "github"
       },
       "original": {
@@ -1393,11 +1393,11 @@
         "nixvim": "nixvim"
       },
       "locked": {
-        "lastModified": 1737384210,
-        "narHash": "sha256-PDk7mOlXYYaVewGWjWOCttTwoOaAeeF4DmqBXifEsEU=",
+        "lastModified": 1737926146,
+        "narHash": "sha256-5c6QFL8eO6YdT2juUKVfT3FhwrGm15s3Kj5iJdh0cWc=",
         "owner": "curtbushko",
         "repo": "neovim-flake",
-        "rev": "c296da375757c8f44452158b60ed9c51bf5c1eef",
+        "rev": "4c9b0ccd8f0711a515b9bdeaf5dd95ca7b03dc3b",
         "type": "github"
       },
       "original": {
