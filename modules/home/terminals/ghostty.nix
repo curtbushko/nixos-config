@@ -11,12 +11,12 @@ in {
       text = let
         base00 = "#${config.lib.stylix.colors.base00}";
         base01 = "#${config.lib.stylix.colors.base01}";
-        #base02 = "#${config.lib.stylix.colors.base02}";
-        #base03 = "#${config.lib.stylix.colors.base03}";
-        #base04 = "#${config.lib.stylix.colors.base04}";
+        base02 = "#${config.lib.stylix.colors.base02}";
+        base03 = "#${config.lib.stylix.colors.base03}";
+        base04 = "#${config.lib.stylix.colors.base04}";
         base05 = "#${config.lib.stylix.colors.base05}";
         base06 = "#${config.lib.stylix.colors.base06}";
-        #base07 = "#${config.lib.stylix.colors.base07}";
+        base07 = "#${config.lib.stylix.colors.base07}";
         base08 = "#${config.lib.stylix.colors.base08}";
         base09 = "#${config.lib.stylix.colors.base09}";
         base0A = "#${config.lib.stylix.colors.base0A}";
@@ -27,12 +27,13 @@ in {
         base0F = "#${config.lib.stylix.colors.base0F}";
       in ''
         auto-update = off
-        font-size = 12
+        font-size = 11
         font-family = Intel One Mono
         font-style = medium
         font-feature = "ss01"
         #adjust-cell-width = 1%
         #adjust-cell-height = 1%
+        #background-opacity = .90
         macos-non-native-fullscreen = visible-menu
         macos-option-as-alt = left
         mouse-hide-while-typing = true
@@ -74,27 +75,27 @@ in {
         keybind = alt+seven=unbind
         keybind = alt+eight=unbind
         keybind = alt+nine=unbind
-        # foreground
+        # foreground (fg/bg)
         foreground = ${base05}
         background = ${base01}
-        # black
+        # black (bg_dark/red)
         palette = 0=${base00}
-        palette = 8=${base01}
-        # red
+        palette = 8=${base02}
+        # red (red/organge)
         palette = 1=${base08}
         palette = 9=${base09}
-        # green
+        # green (dark3/magenta)
         palette = 2=${base0B}
         palette = 10=${base0F}
-        # yellow
+        # yellow (
         palette = 3=${base0A}
-        palette = 11=${base0E}
+        palette = 11=${base04}
         # blue
         palette = 4=${base0C}
         palette = 12=${base0D}
         # purple
         palette = 5=${base0E}
-        palette = 13=${base0C}
+        palette = 13=${base03}
         # aqua
         palette = 6=${base0B}
         palette = 14=${base0F}

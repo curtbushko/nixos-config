@@ -73,7 +73,8 @@ in {
               "8" = " 󰎻 ";
               "9" = " 󰎾 ";
               "10" = " 󰎣 ";
-              default = " 󱗝 ";
+              default = " 󰅘 ";
+              active = " 󱗝 ";
             };
           };
 
@@ -243,7 +244,7 @@ in {
           @define-color section_1_fg ${colors.statusline_a_fg};
           @define-color section_1_bg ${colors.statusline_a_bg};
 
-          @define-color section_2_fg ${colors.statusline_a_fg};
+          @define-color section_2_fg ${colors.statusline_b_fg};
           @define-color section_2_bg ${colors.statusline_b_bg};
 
           @define-color section_3_fg ${colors.statusline_c_fg};
@@ -256,15 +257,15 @@ in {
           @define-color background ${colors.bg};
 
           /* workspace text colors */
-          @define-color active_fg  ${colors.blue};
-          @define-color in_use_fg  ${colors.blue1};
+          @define-color active_fg  ${colors.statusline_b_fg };
+          @define-color in_use_fg  ${colors.statusline_b_fg };
 
           /* updates-widget icon+text colors */
-          @define-color updates_green ${colors.green1};
+          @define-color updates_green ${colors.green};
           @define-color updates_yellow ${colors.yellow};
           @define-color updates_red ${colors.red};
           /* tokyo-night colors
-          updates_green = "${colors.green1}";
+          updates_green = "${colors.green}";
           updates_yellow = "${colors.yellow}";
           updates_red = "${colors.red}";
           */
@@ -307,7 +308,6 @@ in {
               margin: 0px 0px;
           }
 
-
           #workspaces button label {
               font-size: 12px;
           }
@@ -330,12 +330,10 @@ in {
               border: none;
           }
 
-
           #workspaces button.empty {
               color: @section_2_fg;
               background-color: @section_2_bg;
           }
-
 
           #workspaces button.active {
               color:  @active_fg;

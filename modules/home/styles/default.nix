@@ -7,6 +7,8 @@ in {
   options.curtbushko.theme = {
     name = mkOption {
       type = with types; enum [
+        "andromeda"
+        "everforest"
         "rebel-scum"
         "tokyo-night-neon"
       ];

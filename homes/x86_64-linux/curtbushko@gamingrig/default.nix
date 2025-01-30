@@ -30,7 +30,7 @@
     terminals.enable = true;
     tools.enable = true;
     wm.enable = true;
-    theme.name = "rebel-scum";
+    theme.name = "andromeda";
   };
 
   #---------------------------------------------------------------------
