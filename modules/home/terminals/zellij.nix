@@ -413,7 +413,7 @@ in {
       target = ".config/zellij/layouts/default.kdl";
       text = with config.lib.stylix.colors.withHashtag; ''
         layout {
-          tab name="codeone" focus=true {
+          tab name="1" focus=true {
               pane size=1 borderless=true {
                 plugin location="zellij:compact-bar"
               }
@@ -422,7 +422,7 @@ in {
                   pane name="T1P1" focus=true cwd="/home/curtbushko/workspace/github.com"
               }
           }
-          tab name="codetwo" {
+          tab name="2" {
               pane size=1 borderless=true {
                 plugin location="zellij:compact-bar"
               }
@@ -431,7 +431,7 @@ in {
                   pane name="T2P1" cwd="/home/curtbushko/workspace/github.com"
               }
           }
-          tab name="codethree" {
+          tab name="3" {
               pane size=1 borderless=true {
                 plugin location="zellij:compact-bar"
               }
@@ -439,7 +439,7 @@ in {
                   pane name="T3P1" cwd="/home/curtbushko/workspace/github.com"
               }
           }
-          tab name="shell" {
+          tab name="4" {
               pane size=1 borderless=true {
                 plugin location="zellij:compact-bar"
               }
@@ -448,7 +448,7 @@ in {
               }
               pane name="T4P4" cwd="/home/curtbushko/workspace/github.com"
           }
-          tab name="kb" {
+          tab name="5" {
               pane size=1 borderless=true {
                 plugin location="zellij:compact-bar"
               }

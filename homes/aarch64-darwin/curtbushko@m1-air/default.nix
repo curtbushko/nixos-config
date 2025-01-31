@@ -22,7 +22,7 @@
     shells.enable = true;
     terminals.enable = true;
     tools.enable = true;
-    theme.name = "rebel-scum";
+    theme.name = "tokyo-night-neon";
   };
 
   #---------------------------------------------------------------------

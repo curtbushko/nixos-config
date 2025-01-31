@@ -34,8 +34,8 @@ in {
   # Brown: base0F
   stylix = {
     enable = true;
-    #image = ./wallpapers/3440x1440/cyberpunk-tokyo.png;
-    image = ./wallpapers/3440x1440/green_pasture.jpg;
+    image = ./wallpapers/3440x1440/cyberpunk-tokyo.png;
+    #image = ./wallpapers/3440x1440/green_pasture.jpg;
     polarity = "dark";
     base16Scheme = {
       base00 = colors.bg_dark;

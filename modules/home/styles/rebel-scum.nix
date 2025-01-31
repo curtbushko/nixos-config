@@ -45,7 +45,6 @@ _: {
   magenta2 = "#35b5ff";
   none = "NONE";
   orange = "#fd5e3a";
-  #orange = "#ff5722";
   prompt = "#2d3149";
   purple = "#3babd6";
   red = "#f74843";
@@ -66,6 +65,6 @@ _: {
   statusline_b_bg = "#fd5e3a";
   statusline_b_fg = "#031B26";
   # c = invisible/black bg, cyan fg
-  statusline_c_bg = "#031B26";
+  statusline_c_bg = "#06101E";
   statusline_c_fg = "#66def9";
 }

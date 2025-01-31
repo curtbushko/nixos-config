@@ -12,8 +12,7 @@ _: {
   blue = "#7aa2f7";
   blue0 = "#3d59a1";
   blue1 = "#2ac3de";
-  blue2 = "#7aa2f7";
-  #blue2 = "#0db9d7";
+  blue2 = "#0db9d7";
   blue5 = "#89ddff";
   blue6 = "#b4f9f8";
   blue7 = "#394b70";
@@ -23,30 +22,23 @@ _: {
   cyan = "#7dcfff";
   dark3 = "#545c7e";
   dark5 = "#737aa2";
-  diff_add = "#7ea454";
-  #diff_add = "#449dab";
-  diff_change = "#6183bb";
+  diff_add = "#9ece6a";
+  diff_change = "#FFEC6E";
   diff_delete = "#db4b4b";
   diff_text = "#394b70";
   error = "#db4b4b";
   fg = "#dfe9ff";
-  #fg = "#c0caf5";
   fg_dark = "#a9b1d6";
-  #fg_dark = "#a9b1d6";
-  fg_gutter = "#3b4261";
-  #fg_gutter = "#3b4261";
   fg_float = "#c0caf5";
+  fg_gutter = "#3b4261";
   fg_sidebar = "#a9b1d6";
-  git_add = "#7ea454";
-  #git_add = "#449dab";
-  git_change = "#6183bb";
+  git_add = "#9ece6a";
+  git_change = "#FFEC6E";
   git_delete = "#db4b4b";
   git_ignore = "#545c7e";
   green = "#9ece6a";
-  green1 = "#00b0fc";
-  #green1 = "#73daca";
-  green2 = "#019ef3";
-  #green2 = "#41a6b5";
+  green1 = "#73daca";
+  green2 = "#41a6b5";
   hint = "#1abc9c";
   info = "#0db9d7";
   magenta = "#bb9af7";
@@ -58,22 +50,21 @@ _: {
   red = "#f7768e";
   red1 = "#db4b4b";
   teal = "#65bcff";
-  #teal = "#1abc9c";
   terminal_black = "#414868";
   todo = "#7aa2f7";
-  warning = "#e0af68";
+  warning = "#FFEC6E";
   yellow = "#FFEC6E";
-  #yellow = "#e0af68";
 
   # These custom variables will be used by lualine, starship and waybar. Use the lualine
   # way of describing the sections.
   #  / a / b / c
   # a = blue bg, black fg
+
   statusline_a_bg = "#7aa2f7";
   statusline_a_fg = "#1a1b26";
   # b = grey bg, blue fg
-  statusline_b_bg = "#283457";
-  statusline_b_fg = "#7aa2f7";
+  statusline_b_bg = "#73daca";
+  statusline_b_fg = "#1a1b26";
   # c = invisible/black bg, blue fg
   statusline_c_bg = "#1a1b26";
   statusline_c_fg = "#7aa2f7";
