@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  system,
   ...
 }: let
   inherit (lib) types mkOption mkIf;
@@ -26,8 +27,9 @@ in {
       pkgs.gopls
       pkgs.golangci-lint
       pkgs.gotestsum
-      pkgs.zigpkgs.master
-      pkgs.zls
+      #pkgs.zigpkgs.master
+      pkgs.zigpkgs."0.13.0"
+      pkgs.zls.default
     ];
   };
 }
