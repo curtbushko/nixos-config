@@ -9,7 +9,7 @@ _: {
   bg_statusline = "#16161e";
   bg_visual = "#283457";
   black = "#15161e";
-  blue = "#7aa2f7";
+  blue = "#7dcfff";
   blue0 = "#3d59a1";
   blue1 = "#2ac3de";
   blue2 = "#0db9d7";
@@ -19,7 +19,7 @@ _: {
   border = "#15161e";
   border_highlight = "#27a1b9";
   comment = "#565f89";
-  cyan = "#7dcfff";
+  cyan = "#7aa2f7";
   dark3 = "#545c7e";
   dark5 = "#737aa2";
   diff_add = "#9ece6a";
@@ -27,11 +27,11 @@ _: {
   diff_delete = "#db4b4b";
   diff_text = "#394b70";
   error = "#db4b4b";
-  fg = "#dfe9ff";
-  fg_dark = "#a9b1d6";
-  fg_float = "#c0caf5";
-  fg_gutter = "#3b4261";
-  fg_sidebar = "#a9b1d6";
+  fg = "#E2D9C5";
+  fg_dark = "#dbe0cd";
+  fg_gutter = "#dbe0cd";
+  fg_float = "#fff8d4";
+  fg_sidebar = "#fff8e3";
   git_add = "#9ece6a";
   git_change = "#FFEC6E";
   git_delete = "#db4b4b";
@@ -60,12 +60,12 @@ _: {
   #  / a / b / c
   # a = blue bg, black fg
 
-  statusline_a_bg = "#7aa2f7";
-  statusline_a_fg = "#1a1b26";
+  statusline_a_bg = "#7dcfff";
+  statusline_a_fg = "#292e42";
   # b = grey bg, blue fg
-  statusline_b_bg = "#73daca";
-  statusline_b_fg = "#1a1b26";
+  statusline_b_bg = "#292e42";
+  statusline_b_fg = "#7dcfff";
   # c = invisible/black bg, blue fg
   statusline_c_bg = "#1a1b26";
-  statusline_c_fg = "#7aa2f7";
+  statusline_c_fg = "#7dcfff";
 }

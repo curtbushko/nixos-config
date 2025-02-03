@@ -7,7 +7,7 @@
   inherit (lib) mkIf;
   cfg = config.curtbushko.wm;
   isLinux = pkgs.stdenv.isLinux;
-  colors = import ../styles/rebel-scum.nix {};
+  colors = import ../../home/styles/${config.curtbushko.theme.name}.nix {};
 in {
   config = mkIf cfg.enable {
     stylix.targets.hyprland.enable = false;

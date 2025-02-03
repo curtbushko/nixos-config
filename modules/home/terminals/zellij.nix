@@ -10,7 +10,7 @@ in {
     programs.zellij = {
       enable = true;
     };
-    stylix.targets.zellij.enable = false;
+    stylix.targets.zellij.enable = true;
     home.file.zellij = {
       target = ".config/zellij/config.kdl";
       text = with config.lib.stylix.colors.withHashtag; ''
