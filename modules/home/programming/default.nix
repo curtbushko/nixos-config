@@ -29,7 +29,7 @@ in {
       pkgs.gotestsum
       #pkgs.zigpkgs.master
       pkgs.zigpkgs."0.13.0"
-      pkgs.zls.default
+      pkgs.zls
     ];
   };
 }
