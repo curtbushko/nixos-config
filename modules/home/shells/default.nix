@@ -46,8 +46,6 @@ in {
           NIXOS_CONFIG = "$HOME/workspace/github.com/curtbushko/nixos-config";
           SYNCTHING = "$HOME/Sync";
           WORKSPACE = "$HOME/workspace";
-          WALLPAPERS = "$HOME/Sync/wallpapers";
-          ZIGBIN = "$HOME/bin/zig";
           M1DDC = "$HOME/.dotfiles/bin/m1ddc";
         };
       shellAliases =

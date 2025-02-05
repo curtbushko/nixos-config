@@ -27,11 +27,11 @@ _: {
   diff_delete = "#db4b4b";
   diff_text = "#394b70";
   error = "#db4b4b";
-  fg = "#E2D9C5";
-  fg_dark = "#dbe0cd";
-  fg_gutter = "#dbe0cd";
-  fg_float = "#fff8d4";
-  fg_sidebar = "#fff8e3";
+  fg = "#d8f0ff";
+  fg_dark = "#cbebff";
+  fg_float = "#bee7ff";
+  fg_gutter = "#b1e2ff";
+  fg_sidebar = "#a4ddff";
   git_add = "#9ece6a";
   git_change = "#FFEC6E";
   git_delete = "#db4b4b";
@@ -55,17 +55,17 @@ _: {
   warning = "#FFEC6E";
   yellow = "#FFEC6E";
 
-  # These custom variables will be used by lualine, starship and waybar. Use the lualine
+  # These custom variables will be used by lualine; starship and waybar. Use the lualine
   # way of describing the sections.
   #  / a / b / c
-  # a = blue bg, black fg
+  # a = blue bg; black fg
 
   statusline_a_bg = "#7dcfff";
   statusline_a_fg = "#292e42";
-  # b = grey bg, blue fg
+  # b = grey bg; blue fg
   statusline_b_bg = "#292e42";
   statusline_b_fg = "#7dcfff";
-  # c = invisible/black bg, blue fg
+  # c = invisible/black bg; blue fg
   statusline_c_bg = "#1a1b26";
   statusline_c_fg = "#7dcfff";
 }

@@ -14,9 +14,16 @@ in {
       ];
       default = "rebel-scum";
       description = ''
-        My custom theme to use, sets stylix also 
+        My custom theme to use, sets stylix also
       '';
     };
+    wallpaper = mkOption {
+      type = with types; nullOr str;
+      description = ''
+        Wallpaper to use
+      '';
+    };
+
   };
   imports = [
     ./stylix.nix

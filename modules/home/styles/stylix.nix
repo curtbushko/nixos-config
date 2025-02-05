@@ -1,5 +1,6 @@
 {config, pkgs, ...}: let
   colors = import ./${config.curtbushko.theme.name}.nix {};
+  wallpaper = ./wallpapers/3440x1440/${config.curtbushko.theme.wallpaper};
 in {
   # Base16 guide (https://github.com/chriskempson/base16/blob/main/styling.md)
   # base00 - Default Background
@@ -37,7 +38,7 @@ in {
     #image = ./wallpapers/3440x1440/cyberpunk-tokyo.png;
     #image = ./wallpapers/3440x1440/green_pasture.jpg;
     #image = ./wallpapers/3440x1440/cyberpunk-city-future-digital-art-rq.jpg;
-    image = ./wallpapers/3440x1440/cyberpunk_2077_phantom_liberty_katana.jpg;
+    image = wallpaper;
     polarity = "dark";
     base16Scheme = {
       base00 = colors.bg_dark;
