@@ -56,10 +56,6 @@ update-ghostty: ## Update the ghostty flake
 update-neovim: ## Update the neovim flake
 	nix flake update neovim
 
-.PHONY: update-zenbrowser
-update-zenbrowser: ## Update the zen browser 
-	nix flake update zen-browser
-
 .PHONY: repair
 repair: ## Use this when you start getting weird 'file not found' errors from nix-store.
 	sudo nix-store --repair --verify --check-contents

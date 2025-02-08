@@ -31,8 +31,8 @@
     tools.enable = true;
     wm.enable = true;
     theme = {
-      name = "tokyo-night-neon";
-      wallpaper = "cyberpunk_2077_phantom_liberty_katana.jpg";
+      name = "gruvbox-material";
+      wallpaper = "exploring_new_worlds.jpg";
     };
 
   };

@@ -9,6 +9,7 @@ in {
       type = with types; enum [
         "andromeda"
         "everforest"
+        "gruvbox-material"
         "rebel-scum"
         "tokyo-night-neon"
       ];

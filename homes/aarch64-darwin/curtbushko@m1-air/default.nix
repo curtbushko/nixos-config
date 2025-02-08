@@ -23,7 +23,7 @@
     terminals.enable = true;
     tools.enable = true;
     theme = {
-      name = "tokyo-night-neon";
+      name = "gruvbox-material";
       wallpaper = "cyberpunk_2077_phantom_liberty_katana.jpg";
     };
 

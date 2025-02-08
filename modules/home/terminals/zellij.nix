@@ -1,10 +1,13 @@
 {
+  inputs,
   config,
   lib,
+  pkgs,
   ...
 }: let
   inherit (lib) mkIf;
   cfg = config.curtbushko.terminals;
+  plugin_zjstatus = inputs.zjstatus.outputs.packages.${pkgs.stdenv.hostPlatform.system}.default;
 in {
   config = mkIf cfg.enable {
     programs.zellij = {
@@ -412,51 +415,137 @@ in {
     home.file.layout = {
       target = ".config/zellij/layouts/default.kdl";
       text = with config.lib.stylix.colors.withHashtag; ''
-        layout {
-          tab name="1" focus=true {
-              pane size=1 borderless=true {
-                plugin location="zellij:compact-bar"
-              }
+      layout {
+        default_tab_template {
+            pane size=1 borderless=true {
+                plugin location="file:${plugin_zjstatus}/bin/zjstatus.wasm" {
+                    format_left   "{mode}"
+                    format_center   "#[fg=#6C7086]{tabs}"
+                    format_right ""
+                    format_space  "#[fg=${base0A}] "
+                    // {session}
+                    hide_frame_for_single_pane "false"
+                    border_enabled  "false"
+                    // mode_normal  "#[fg=red]  "
+                    mode_normal  "#[fg=#6C7086]  "
+                    mode_locked  "#[fg=${base08}]   "
+                    mode_tmux    "#[bg=${base0C}]"
+                    // 
+                    // ●
+                    // 
+                    // 
+                    // 
+                    // 
+                    // 
+                    // 
+                    // 
+                    // 
+                    // 
+                    // 
+                    // 
+                    // 
+                    // 
+                    // 
+                    // 
+                    // 
+                    // 
+                    // 
+                    // 
+                    // 
+                    //  
+                    // 
+                    // 
+                    // 
+                    // 
+                    // 
+                    // 
+                    // 󰀱
+                    // 󰚄
+                    // 󰝆
+                    // 󰡄
+                    // 󰨈
+                    // 󰩖
+                    // 󰩗
+                    // 󱂡
+                    // 󱂛
+                    // 󱂑
+                    // 󱂐
+                    // 󱂏
+                    // 󱂎
+                    // 󱂍
+                    // 󱂌
+                    // 󱂋
+                    // 󱂊
+                    // 󱂉
+                    // 󱂅
+                    // 󱂈
+                    // 󰟹
+                    // 󰟯
+                    // 󰟲
+                    // 󰟰
+                    // 󰟽
+                    // 󰎢
+                    // 󰎣
+                    // 󰎥
+                    // 󰎦
+                    // 󰎨
+                    // 󰎩
+                    // 󰎫
+                    // 󰎬
+                    // 󰎲
+                    // 󰎮
+                    // 󰎯
+                    // 󰎰
+                    // 󰎴
+                    // 󰎵
+                    // 󰎷
+                    // 󰎸
+                    // 󰎺
+                    // 󰎻
+                    // 󰎽
+                    // 󰎾   
+                    // mode_normal        "#[bg=#89B4FA] {name} "
+                    // mode_locked        "#[bg=#89B4FA] {name} "
+                    // mode_resize        "#[bg=#89B4FA] {name} "
+                    // mode_pane          "#[bg=#89B4FA] {name} "
+                    // mode_tab           "#[bg=#89B4FA] {name} "
+                    // mode_scroll        "#[bg=#89B4FA] {name} "
+                    // mode_enter_search  "#[bg=#89B4FA] {name} "
+                    // mode_search        "#[bg=#89B4FA] {name} "
+                    // mode_rename_tab    "#[bg=#89B4FA] {name} "
+                    // mode_rename_pane   "#[bg=#89B4FA] {name} "
+                    // mode_session       "#[bg=#89B4FA] {name} "
+                    // mode_move          "#[bg=#89B4FA] {name} "
+                    // mode_prompt        "#[bg=#89B4FA] {name} "
+                    // mode_tmux          "#[bg=#ffc387] {name} "
 
-              pane split_direction="vertical" {
-                  pane name="T1P1" focus=true cwd="/home/curtbushko/workspace/github.com"
-              }
-          }
-          tab name="2" {
-              pane size=1 borderless=true {
-                plugin location="zellij:compact-bar"
-              }
+                    // formatting for inactive tabs
+                    tab_normal              "#[fg=#6C7086]{name}"
+                    tab_normal_fullscreen   "#[fg=#6C7086}]{name}"
+                    tab_normal_sync         "#[fg=#6C7086]{name}"
 
-              pane split_direction="vertical" {
-                  pane name="T2P1" cwd="/home/curtbushko/workspace/github.com"
-              }
-          }
-          tab name="3" {
-              pane size=1 borderless=true {
-                plugin location="zellij:compact-bar"
-              }
-              pane split_direction="vertical" {
-                  pane name="T3P1" cwd="/home/curtbushko/workspace/github.com"
-              }
-          }
-          tab name="4" {
-              pane size=1 borderless=true {
-                plugin location="zellij:compact-bar"
-              }
-              pane split_direction="vertical" {
-                  pane name="T4P1" cwd="/home/curtbushko/workspace/github.com"
-              }
-              pane name="T4P4" cwd="/home/curtbushko/workspace/github.com"
-          }
-          tab name="5" {
-              pane size=1 borderless=true {
-                plugin location="zellij:compact-bar"
-              }
-              pane name="T5P1" split_direction="vertical" {
-                  pane name="T5P1" cwd="/home/curtbushko/workspace/github.com/curtbushko/kb"
-              }
-          }
+                    // formatting for the current active tab
+                    tab_active              "#[fg=${base0D},bold]{name}#[fg=${base0A},bold]{floating_indicator}"
+                    tab_active_fullscreen   "#[fg=${base0A},bold]{name}#[fg=${base0A},bold]{fullscreen_indicator}"
+                    tab_active_sync         "#[fg=${base0B},bold]{name}#[fg=y${base0A},bold]{sync_indicator}"
+
+                    // separator between the tabs
+                    tab_separator           "   "
+
+                    // indicators
+                    tab_sync_indicator       " "
+                    tab_fullscreen_indicator " "
+                    tab_floating_indicator   ""
+                }
+            }
+            children
         }
+        tab name="󰎦" focus=true borderless=true
+        tab name="󰎩"
+        tab name="󰎬"
+        tab name="󰎮"
+        tab name="󰎰"
+      }
       '';
     };
   };
