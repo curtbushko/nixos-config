@@ -419,8 +419,8 @@ in {
         default_tab_template {
             pane size=1 borderless=true {
                 plugin location="file:${plugin_zjstatus}/bin/zjstatus.wasm" {
-                    format_left   "{mode}"
-                    format_center   "#[fg=#6C7086]{tabs}"
+                    format_left   "{mode}  #[fg=#6C7086]{tabs}"
+                    format_center   ""
                     format_right ""
                     format_space  "#[fg=${base0A}] "
                     // {session}
