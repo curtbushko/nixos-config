@@ -3,10 +3,10 @@ _: {
   bg_dark = "#282828";
   bg_float = "#3c3836";
   bg_highlight = "#504945";
-  bg_popup = "#282828";
-  bg_search = "#141617";
-  bg_sidebar = "#1d2021";
-  bg_statusline = "#";
+  bg_popup = "#504445";
+  bg_search = "#504545";
+  bg_sidebar= "#504645";
+  bg_statusline= "#504745";
   bg_visual = "#493B40";
   black = "#1d2021";
   blue = "#7daea3";
