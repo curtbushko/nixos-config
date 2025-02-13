@@ -40,7 +40,7 @@ in {
         shell-integration = zsh
         window-padding-x = 0
         window-padding-y = 0
-        window-decoration = false
+        window-decoration = true 
         window-save-state = always
         confirm-close-surface = false
 

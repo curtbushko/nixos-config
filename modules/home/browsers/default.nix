@@ -29,7 +29,6 @@ in {
       [
       ]
       ++ (lib.optionals isLinux [
-        inputs.zen-browser.packages.${system}.default
       ]);
   };
 }
