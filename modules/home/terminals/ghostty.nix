@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }: let
   inherit (lib) mkIf;
@@ -25,6 +26,8 @@ in {
         base0D = "#${config.lib.stylix.colors.base0D}";
         base0E = "#${config.lib.stylix.colors.base0E}";
         base0F = "#${config.lib.stylix.colors.base0F}";
+        isLinux = pkgs.stdenv.isLinux;
+        isDarwin = pkgs.stdenv.isDarwin;
       in ''
         auto-update = off
         font-size = 11
@@ -40,7 +43,6 @@ in {
         shell-integration = zsh
         window-padding-x = 0
         window-padding-y = 0
-        window-decoration = true 
         window-save-state = always
         confirm-close-surface = false
 
@@ -102,7 +104,15 @@ in {
         # white
         #palette = 7=${base05}
         #palette = 15=${base06}
-      '';
+      ''
+      + (lib.optionalString isLinux ''
+        window-decoration = true 
+      ''
+      )
+      + (lib.optionalString isDarwin ''
+        window-decoration = false 
+      ''
+      );
     };
   };
 }
