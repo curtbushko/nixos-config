@@ -9,12 +9,10 @@
     taps = [];
     casks = [
       #"discord"
-      "docker"
       "firefox"
       "obs"
       "obsidian"
       "rectangle"
-      "syncthing"
       "slack"
       "vlc"
       "notunes"

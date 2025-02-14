@@ -1,7 +1,7 @@
 NIXOS_CONFIG_DIR := $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
 OS := $(shell uname | tr '[:upper:]' '[:lower:]')
 ARCH := $(shell uname -m | tr '[:upper:]' '[:lower:]')
-HOST := $(shell hostname -s | tr '[:upper:]' '[:lower:]')
+HOST := $(shell hostname -s)
 NIXUSER ?= curtbushko
 DATELOG := "[$(shell date -u +'%Y-%m-%dT%H:%M:%SZ')]"
 

@@ -23,8 +23,8 @@
     terminals.enable = true;
     tools.enable = true;
     theme = {
-      name = "tokyo-night-neon";
-      wallpaper = "my-city-gx.jpg";
+      name = "gruvbox-material";
+      wallpaper = "green-pasture.jpg";
     };
 
   };
