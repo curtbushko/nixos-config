@@ -30,7 +30,7 @@ in {
         isDarwin = pkgs.stdenv.isDarwin;
       in ''
         auto-update = off
-        font-size = 11
+        font-size = 12
         font-family = Intel One Mono
         font-style = medium
         font-feature = "ss01"
