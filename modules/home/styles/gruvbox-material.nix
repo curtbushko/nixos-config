@@ -18,7 +18,7 @@ _: {
   blue7 = "#83C3A5";
   border = "#1d2021";
   border_highlight = "#1d2021";
-  comment = "#384b55";
+  comment = "#dbe0cd";
   cyan = "#89b482";
   dark3 = "#3c3836";
   dark5 = "#504945";
