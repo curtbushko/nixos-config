@@ -11,10 +11,10 @@ in {
   imports = [
     ./hypridle.nix
     ./hyprland.nix
-    ./hyprpaper.nix
     ./waybar.nix
     ./rofi.nix
     ./swaylock.nix
+    ./hyprpaper.nix
   ];
 
   options.curtbushko.wm = {
