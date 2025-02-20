@@ -12,6 +12,8 @@ in {
   config = mkIf cfg.enable {
     programs.zellij = {
       enable = true;
+      # Avoid nested zellij in ssh connections
+      enableZshIntegration = false;
     };
     stylix.targets.zellij.enable = true;
     home.file.zellij = {

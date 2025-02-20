@@ -14,6 +14,7 @@
   curtbushko = {
     services.llm.enable = true;
     services.minecraft.enable = true;
+    services.vr.enable = true;
     services.wm.enable = true;
   };
 
@@ -89,7 +90,7 @@
   services.blueman.enable = true;
 
   # Nixpkgs Setup
-  #nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.allowUnfree = true;
   #nixpkgs.config.allowUnsupportedSystem = true;
 
   # List packages installed in system profile. To search, run:
@@ -140,12 +141,14 @@
     swayidle
 
     # Gaming
+    steam-run-native
     cudaPackages.cuda_nvcc
     vulkan-tools
     lutris
     protonup-qt
     #sunshine
   ];
+
 
   # Needed to run things like stylua in neovim on nixos
   programs.nix-ld.enable = true;
@@ -236,7 +239,7 @@
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
-    extraPackages = with pkgs; [nvidia-vaapi-driver];
+    extraPackages = with pkgs; [nvidia-vaapi-driver mesa];
   };
 
   hardware.nvidia = {
@@ -273,19 +276,6 @@
       persistencedSha256 = "sha256-wnDjC099D8d9NJSp9D0CbsL+vfHXyJFYYgU3CwcqKww=";
     };
   };
-
-  programs.steam = {
-    enable = true;
-    remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
-    dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
-    localNetworkGameTransfers.openFirewall = true;
-    gamescopeSession.enable = true;
-  };
-  programs.gamescope = {
-    enable = true;
-    capSysNice = true;
-  };
-  hardware.steam-hardware.enable = true;
 
   # Docker
   virtualisation = {

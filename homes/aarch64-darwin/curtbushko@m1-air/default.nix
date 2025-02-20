@@ -48,6 +48,7 @@
     EDITOR = "nvim";
     PAGER = "less -FirSwX";
     TERM = "xterm-256color";
+    QT_QPA_PLATFORMTHEME = "kde";
   };
 
   imports = [

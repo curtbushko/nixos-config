@@ -27,7 +27,6 @@ in {
 
     sops.defaultSopsFile = ../../../secrets/secrets.yaml;
     sops.defaultSopsFormat = "yaml";
-    #sops.age.keyFile = "/home/curtbushko/.config/sops/age/keys.txt";
     sops.age.keyFile = "${config.xdg.configHome}/sops/age/keys.txt";
 
     # this is a little more manual than I'd like but it works and is easy to grow
