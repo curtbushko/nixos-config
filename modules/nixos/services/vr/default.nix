@@ -92,13 +92,16 @@ in {
       source = "/home/curtbushko/.local/share/Steam/steamapps/common/SteamVR/bin/vrstartup.sh";
     };
 
+    # Something is turning this on
+    programs.adb.enable = true;
+
     # create a wireless access point
     services.create_ap = {
       enable = true;
       settings = {
         INTERNET_IFACE = "eno1";
         WIFI_IFACE = "wlp9s0";
-        SSID = "buddhavr";
+        SSID = "hotspotvr";
         PASSPHRASE = "12345678";
       };
     };

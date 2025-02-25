@@ -36,7 +36,14 @@
   };
 
   # turn this on so that tailscale works with local addresses also
-  services.resolved.enable = true;
+  # use avahi for mDNS
+  services.resolved = {
+    enable = true;
+    extraConfig = ''
+      MulticastDNS=off
+    '';
+  };
+  services.avahi.enable = true;
 
   # Allow core dumps
   systemd.coredump.enable = true;
@@ -73,20 +80,24 @@
   security.rtkit.enable = true;
 
   # Enable bluetoolth
-  hardware.bluetooth.enable = true;
-  hardware.bluetooth.settings = {
-    General = {
-      Experimental = true;
-      FastConnectable = true;
-      JustWorksRepairing = "always";
-      Privacy = "device";
-      Enable = "Source,Sink,Media,Socket";
-    };
-    Policy = {
-      AutoEnable = true;
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true;
+    settings = {
+      General = {
+        Experimental = true;
+        FastConnectable = true;
+        JustWorksRepairing = "always";
+        Privacy = "device";
+        Enable = "Source,Sink,Media,Socket";
+        AutoEnable = true;
+        ControllerMode = "bredr";
+      };
+      Policy = {
+        AutoEnable = true;
+      };
     };
   };
-  hardware.bluetooth.powerOnBoot = true;
   services.blueman.enable = true;
 
   # Nixpkgs Setup
@@ -142,7 +153,6 @@
 
     # Gaming
     steam-run-native
-    cudaPackages.cuda_nvcc
     vulkan-tools
     lutris
     protonup-qt
@@ -206,8 +216,8 @@
   # Enable tailscale
   services.tailscale.enable = true;
   # Try and slow down startup of tailscaled after waking up
-  systemd.services.tailscaled.after = ["network-online.target" "systemd-resolved.service"];
-  systemd.services.tailscaled.wants = ["network-online.target" "systemd-resolved.service"];
+  systemd.services.tailscaled.after = ["network-online.target" "systemd-resolved.service" "systemd-avahi.service"];
+  systemd.services.tailscaled.wants = ["network-online.target" "systemd-resolved.service" "systemd-avahi.service"];
 
   # If I decide to turn on the firewall
   #networking.firewall.allowedUDPPorts = [ ${services.tailscale.port} ];

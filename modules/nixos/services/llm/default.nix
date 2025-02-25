@@ -13,6 +13,6 @@ in {
 
   imports = [
     ./llm.nix
-    ./cuda.nix
+    #./cuda.nix
   ];
 }

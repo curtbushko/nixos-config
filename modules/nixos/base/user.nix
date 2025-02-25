@@ -6,7 +6,7 @@
   users.users.curtbushko = {
     isNormalUser = true;
     home = "/home/curtbushko";
-    extraGroups = ["input" "networkmanager" "docker" "wheel" "i2c" "jackaudio" "audio"];
+    extraGroups = ["input" "networkmanager" "docker" "wheel" "i2c" "jackaudio" "audio" "adbusers"];
     shell = pkgs.zsh;
   };
   security.sudo.wheelNeedsPassword = false;
