@@ -97,7 +97,7 @@ in {
 
     # create a wireless access point
     services.create_ap = {
-      enable = true;
+      enable = false;
       settings = {
         INTERNET_IFACE = "eno1";
         WIFI_IFACE = "wlp9s0";
