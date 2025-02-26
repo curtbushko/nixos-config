@@ -80,7 +80,7 @@ in {
           hg = "history |grep $1";
           gaa = "git add -A";
           gp = "echo 'Pulling... ' && git pull";
-          gP = "echo 'Pushing...' && git push --set-upstream origin $(git branch --show-current)";
+          gP = "echo 'Pushing...' && git push --set-upstream origin \"$(git branch --show-current)\"";
           gcm = "git commit --message";
           gcmsg = "git commit --message";
           gmcsg = "git commit --message";
@@ -168,7 +168,8 @@ in {
          export NAP_CONFIG=$HOME/.config/nap/config.yaml
 
          # Needed to run mason downloads in neovim
-         export NIX_LD=$(nix eval --extra-experimental-features nix-command --impure --raw --expr 'let pkgs = import <nixpkgs> {}; NIX_LD = pkgs.lib.fileContents "${pkgs.stdenv.cc}/nix-support/dynamic-linker"; in NIX_LD')
+         # 02/25/2025 - I do not think this is needed anymore because I no longer use mason
+         #export NIX_LD=$(nix eval --extra-experimental-features nix-command --impure --raw --expr 'let pkgs = import <nixpkgs> {}; NIX_LD = pkgs.lib.fileContents "${pkgs.stdenv.cc}/nix-support/dynamic-linker"; in NIX_LD')
 
          eval "$(zoxide init --cmd cd zsh)"
          # Pre-load several directories that I always use
@@ -208,6 +209,9 @@ in {
          if [ -d $GITHUB/hasicorp ]; then
            zoxide add $GITHUB/hashicorp
          fi
+
+         # Add $HOME/bin to PATH
+         export PATH=$PATH:$HOME/bin
       '';
     };
     programs.zsh.oh-my-zsh = {
