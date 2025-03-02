@@ -164,6 +164,11 @@ in {
          export DDCUTIL_U3419W_HDMI1="0x11"
          export DDCUTIL_U3419W_HDMI2="0x12"
 
+         # Support local only aliases & secrets for work
+         if [ -f $HOME/.private.post.source ]; then
+           source $HOME/.private.post.source
+         fi
+
          # nap configs
          export NAP_CONFIG=$HOME/.config/nap/config.yaml
 
