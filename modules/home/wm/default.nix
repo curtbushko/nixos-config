@@ -37,6 +37,7 @@ in {
         grim
         slurp
         wl-clipboard
+        pavucontrol
 
         eww
         swww

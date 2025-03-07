@@ -83,6 +83,7 @@ in {
           };
 
           pulseaudio = {
+            on-click = "pavucontrol";
             format = "{format_source} {icon} {volume}%";
             format-muted = "{format_source} 󰸈";
 
