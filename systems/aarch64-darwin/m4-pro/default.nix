@@ -3,8 +3,12 @@
   ...
 }: {
   # We install Nix using a separate installer so we don't want nix-darwin
-  # to manage it for us. This tells nix-darwin to just use whatever is running.
+  # to manage it for us. lThis tells nix-darwin to just use whatever is running.
+  nix.enable = false;
   system.stateVersion = 5;
+
+  # Enable touch for sudo
+  security.pam.services.sudo_local.touchIdAuth = true;
 
   # Keep in async with vm-shared.nix. (todo: pull this out into a file)
   nix = {
@@ -53,7 +57,7 @@
     luajitPackages.tl
     libvterm-neovim
     cachix
-    tailscale
+    #tailscale
   ];
 
   # Fonts
@@ -71,5 +75,5 @@
     powerline-fonts
   ];
 
-  services.tailscale.enable = true;
+  #services.tailscale.enable = true;
 }

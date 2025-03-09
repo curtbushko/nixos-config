@@ -7,20 +7,53 @@
 }: let
   inherit (lib) mkIf;
   cfg = config.curtbushko.browsers;
-  isLinux = pkgs.stdenv.isLinux;
 in {
   config = mkIf cfg.enable {
     programs.firefox = {
-      enable = isLinux;
+      enable = true;
+      policies = {
+        OfferToSaveLogins = false;
+        PasswordManagerEnabled = false;
+        DisableTelemetry = true;
+        # to find the addon ID do:  about:debugging#/runtime/this-firefox
+        #Extensions = {
+        #  Locked = [
+        #    # enable both extensions
+        #    "uBlock0@raymondhill.net"
+        #    "{446900e4-71c2-419f-a6a7-df9c091e268b}" # Extension ID for bitwarden
+        #  ];
+        #};
+        ExtensionSettings = {
+          # uBlock Origin:
+          "uBlock0@raymondhill.net" = {
+            install_url = "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi";
+            installation_mode = "force_installed";
+            default_area = "navbar";
+          };
+        };
+      };
+
       profiles.default = {
         id = 0;
         name = "default";
-        bookmarks = {};
-        extensions = with inputs.firefox-addons.packages.${pkgs.system}; [
-          bitwarden
-          darkreader
-          ublock-origin
-        ];
+        extensions = {
+          force = true;
+          packages = with inputs.firefox-addons.packages.${pkgs.system}; [
+            bitwarden
+            ublock-origin
+            vimium
+            raindropio
+          ];
+          settings."uBlock0@raymondhill.net".settings = {
+            selectedFilterLists = [
+              "ublock-filters"
+              "ublock-badware"
+              "ublock-privacy"
+              "ublock-unbreak"
+              "ublock-quick-fixes"
+            ];
+          };
+        };
         search.force = true;
         search.engines = {
           "Home Manager NixOs" = {
@@ -77,7 +110,10 @@ in {
         settings = {
           # GENERAL
           "content.notify.interval" = 100000;
-          "browser.startup.homepage" = "https://google.com";
+          "browser.startup.homepage" = "";
+          "browser.toolbars.bookmarks.visibility" = "always";
+          # BOOKMARKS
+          "browser.bookmarks.addedImportButton" = false;
           # GFX
           "gfx.canvas.accelerated" = true;
           "gfx.canvas.accelerated.cache-items" = 4096;
@@ -216,6 +252,17 @@ in {
           "network.captive-portal-service.enabled" = false;
           "network.connectivity-service.enabled" = false;
           # PESKYFOX
+          #  VPN/MOBILE PROMOS
+          "browser.contentblocking.report.hide_vpn_banner" = true;
+          "browser.contentblocking.report.mobile-ios.url" = "";
+          "browser.contentblocking.report.mobile-android.url" = "";
+          "browser.contentblocking.report.show_mobile_app" = false;
+          "browser.contentblocking.report.vpn.enabled" = false;
+          "browser.contentblocking.report.vpn.url" = "";
+          "browser.contentblocking.report.vpn-promo.url" = "";
+          "browser.contentblocking.report.vpn-android.url" = "";
+          "browser.contentblocking.report.vpn-ios.url" = "";
+          "browser.privatebrowsing.promoEnabled" = false;
           # MOZILLA UI
           "browser.privatebrowsing.vpnpromourl" = "";
           "extensions.getAddons.showPane" = false;
@@ -230,6 +277,10 @@ in {
           "browser.tabs.loadInBackground" = true;
           "browser.aboutConfig.showWarning" = false;
           "browser.aboutwelcome.enabled" = false;
+          #DISABLE ONBOARDING 
+          "browser.onboarding.newtour" = "performance,private,addons,customize,default";
+          "browser.onboarding.updatetour" = "performance,library,singlesearch,customize";
+          "browser.onboarding.enabled" = false;
           # THEME ADJUSTMENTS
           "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
           "browser.compactmode.show" = true;
@@ -255,6 +306,7 @@ in {
           "browser.newtabpage.activity-stream.feeds.topsites" = false;
           "browser.newtabpage.activity-stream.feeds.section.topstories" = false;
           # POCKET
+          "browser.pocket.enabled" = false;
           "extensions.pocket.enabled" = false;
           # DOWNLOADS
           "browser.download.panel.shown" = true;

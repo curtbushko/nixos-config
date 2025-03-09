@@ -7,6 +7,7 @@
 }: let
   inherit (lib) mkIf;
   cfg = config.curtbushko.terminals;
+  # Note about permissions: if you do not see a popup when zjstatus starts, select the green line and hit 'y'
   plugin_zjstatus = inputs.zjstatus.outputs.packages.${pkgs.stdenv.hostPlatform.system}.default;
 in {
   config = mkIf cfg.enable {

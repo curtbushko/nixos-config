@@ -43,10 +43,10 @@
 
     sops-nix.url = "github:Mic92/sops-nix";
 
-    tailscale = {
-      url = "github:tailscale/tailscale";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
+    #tailscale = {
+    #  url = "github:tailscale/tailscale";
+    #  inputs.nixpkgs.follows = "nixpkgs-unstable";
+    #};
 
     stylix = {
       #url = "github:danth/stylix";
