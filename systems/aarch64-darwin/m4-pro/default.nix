@@ -57,6 +57,7 @@
     luajitPackages.tl
     libvterm-neovim
     cachix
+    unixtools.netstat
     #tailscale
   ];
 

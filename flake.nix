@@ -43,11 +43,6 @@
 
     sops-nix.url = "github:Mic92/sops-nix";
 
-    #tailscale = {
-    #  url = "github:tailscale/tailscale";
-    #  inputs.nixpkgs.follows = "nixpkgs-unstable";
-    #};
-
     stylix = {
       #url = "github:danth/stylix";
       #  02/17/25 - home manager broke something with qt6 and theming. It interacted poorly with stylix
