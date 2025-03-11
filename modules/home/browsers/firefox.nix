@@ -9,6 +9,7 @@
   cfg = config.curtbushko.browsers;
 in {
   config = mkIf cfg.enable {
+    stylix.targets.firefox.profileNames = ["default"];
     programs.firefox = {
       enable = true;
       policies = {

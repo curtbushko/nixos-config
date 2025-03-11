@@ -44,11 +44,11 @@
     sops-nix.url = "github:Mic92/sops-nix";
 
     stylix = {
-      #url = "github:danth/stylix";
+      url = "github:danth/stylix";
       #  02/17/25 - home manager broke something with qt6 and theming. It interacted poorly with stylix
       # pin to this version of stylix
       #https://github.com/danth/stylix/issues/835
-      url = "github:danth/stylix?ref=b00c9f46ae6c27074d24d2db390f0ac5ebcc329f";
+      #url = "github:danth/stylix?ref=b00c9f46ae6c27074d24d2db390f0ac5ebcc329f";
     };
 
     neovim = {

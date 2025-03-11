@@ -13,6 +13,7 @@ in {
     ./atuin.nix
     ./bat.nix
     ./direnv.nix
+    ./mpv.nix
     ./yazi.nix
   ];
   options.curtbushko.tools = {
@@ -68,7 +69,6 @@ in {
         pkgs.ddcutil
         pkgs.zathura
         pkgs.lsof
-        pkgs.mpv
         pkgs.remmina # remote desktop client
       ]);
   };
