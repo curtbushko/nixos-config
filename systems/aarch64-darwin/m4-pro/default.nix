@@ -58,7 +58,7 @@
     libvterm-neovim
     cachix
     unixtools.netstat
-    #tailscale
+    tailscale
   ];
 
   # Fonts
@@ -76,5 +76,5 @@
     powerline-fonts
   ];
 
-  #services.tailscale.enable = true;
+  services.tailscale.enable = true;
 }

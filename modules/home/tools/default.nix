@@ -44,6 +44,7 @@ in {
         pkgs.htop
         pkgs.jq
         pkgs.lsd
+        pkgs.mutagen
         pkgs.nil # language server
         pkgs.nixd #language server for nix
         pkgs.nodejs_22
