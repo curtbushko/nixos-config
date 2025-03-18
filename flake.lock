@@ -1450,11 +1450,11 @@
         "nixvim": "nixvim"
       },
       "locked": {
-        "lastModified": 1739653444,
-        "narHash": "sha256-3J2+NwtOcKXcIH/S1L8U/ENDkDdcIzq9oN+UJ2xJ8Ks=",
+        "lastModified": 1742310958,
+        "narHash": "sha256-8PmWACwT3YJFVE6thpMkKG2a3jnZ2O8R6ZKixp/0Sjw=",
         "owner": "curtbushko",
         "repo": "neovim-flake",
-        "rev": "3cdeba9f314c50ba7c6b4a24a9f5ee01e90da5bf",
+        "rev": "2423dcd68df4d9fcc18d1420bceed7538d774cea",
         "type": "github"
       },
       "original": {
