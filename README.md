@@ -1,11 +1,6 @@
-<p align="center">
-  <a href="https://github.com/curtbushko/nixos-config">
-    <picture>
-      <img src="https://raw.githubusercontent.com/curtbushko/nixos-config/main/nix-snowflake-colours.svg" width="500px" alt="Nix logo">
-    </picture>
-  </a>
-</p>
+## Curts Nix Config
 
+[![Nix](https://img.shields.io/badge/Nix-5277C3.svg?&logo=NixOS&logoColor=white)](#)
 * * *
 
 ### Nix Config
