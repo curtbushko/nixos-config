@@ -18,6 +18,7 @@
     browsers.enable = true;
     git.enable = true;
     k8s.enable = true;
+    llm.enable = true;
     programming.enable = true;
     secrets.enable = true;
     shells.enable = true;

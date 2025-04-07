@@ -20,8 +20,100 @@ in {
   config = mkIf cfg.enable {
     home.packages = with pkgs; [
       aider-chat
+      goose-cli
+      ollama
     ];
+    programs.vscode = {
+      enable = true;
+      package = pkgs.vscodium; # free version of vscode
+      profiles.default = {
+        extensions = with pkgs.vscode-extensions;
+        [
+          formulahendry.auto-close-tag
+          formulahendry.auto-rename-tag
+          golang.go
+          gruntfuggly.todo-tree
+          jnoortheen.nix-ide
+          mkhl.direnv
+          oderwat.indent-rainbow
+          redhat.vscode-yaml
+          rooveterinaryinc.roo-cline
+          shardulm94.trailing-spaces
+          vscodevim.vim
+          vscode-icons-team.vscode-icons
+          usernamehw.errorlens
+          yzhang.markdown-all-in-one
+          ziglang.vscode-zig
+          zhuangtongfa.material-theme
+        ];
+        userSettings = {
+          # UI Settings. Everything else is inherited from Stylix
+          "workbench.iconTheme" = "vscode-icons";
 
+          # Git settings
+          "git.allowForcePush" = true;
+          "git.autofetch" = true;
+          "git.confirmSync" = false;
+          "git.enableSmartCommit" = true;
+          "git.openRepositoryInParentFolders" = "always";
+
+          "editor.bracketPairColorization.enabled" = true;
+          "editor.fontLigatures" =
+            "'calt', 'ss01', 'ss02', 'ss03', 'ss04', 'ss05', 'ss06', 'ss07', 'ss08', 'ss09', 'ss10', 'dlig', 'liga'";
+          "editor.formatOnPaste" = true;
+          "editor.formatOnSave" = true;
+          "editor.formatOnType" = false;
+          "editor.guides.bracketPairs" = true;
+          "editor.guides.indentation" = true;
+          "editor.inlineSuggest.enabled" = true;
+          "editor.minimap.enabled" = false;
+          "editor.minimap.renderCharacters" = false;
+          "editor.overviewRulerBorder" = false;
+          "editor.renderLineHighlight" = "all";
+          "editor.smoothScrolling" = true;
+          "editor.suggestSelection" = "first";
+
+          # Terminal
+          "terminal.integrated.cursorBlinking" = true;
+          "terminal.integrated.defaultProfile.linux" = "zsh";
+          "terminal.integrated.enableVisualBell" = false;
+          "terminal.integrated.gpuAcceleration" = "on";
+
+          # Workbench
+          "workbench.fontAliasing" = "antialiased";
+          "workbench.list.smoothScrolling" = true;
+          "workbench.panel.defaultLocation" = "right";
+          "workbench.startupEditor" = "none";
+
+          # Miscellaneous
+          "breadcrumbs.enabled" = true;
+          "explorer.confirmDelete" = false;
+          "files.trimTrailingWhitespace" = true;
+          "javascript.updateImportsOnFileMove.enabled" = "always";
+          "security.workspace.trust.enabled" = false;
+          "todo-tree.filtering.includeHiddenFiles" = true;
+          "typescript.updateImportsOnFileMove.enabled" = "always";
+          "vsicons.dontShowNewVersionMessage" = true;
+          "window.nativeTabs" = true;
+          "window.restoreWindows" = "all";
+          "window.titleBarStyle" = "custom";
+
+          # Language
+          "zig.zls.enabled" = "on";
+          # Roo Settings
+          "roo-cline.allowedCommands" = [
+            "npm test"
+            "npm install"
+            "tsc"
+            "git log"
+            "git diff"
+            "git show"
+            "zig build"
+            "zig build run"
+          ];
+        };
+      };
+    };
     home.file.".aider.conf.yml" = {
       text = with config.lib.stylix.colors.withHashtag; ''
 
