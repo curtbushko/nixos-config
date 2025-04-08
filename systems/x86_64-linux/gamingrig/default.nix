@@ -15,7 +15,7 @@
     services.llm.enable = true;
     services.minecraft.enable = true;
     services.vr.enable = true;
-    services.wm.enable = true;
+    services.wm.enable = true; # qt and wayland
   };
 
   # Use the systemd-boot EFI boot loader.
@@ -145,9 +145,10 @@
     tailscale
     neofetch
 
+    hyprland
+    niri
     rofi # app launcher
     rofi-wayland
-    hyprland
     sway
     swayidle
 
@@ -239,9 +240,13 @@
   # For accessing resources outside of the sandbox
   xdg.portal = {
     enable = true;
+    xdgOpenUsePortal = true;
     wlr.enable = true;
-    extraPortals = [pkgs.xdg-desktop-portal-gtk];
-    config.common.default = "*";
+    extraPortals = [
+      pkgs.xdg-desktop-portal-gnome
+      pkgs.xdg-desktop-portal-gtk
+    ];
+    config.common.default = ["gnome" "gtk"];
   };
 
   # Enable OpenGL

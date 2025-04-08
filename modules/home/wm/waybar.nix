@@ -4,10 +4,20 @@
   pkgs,
   ...
 }: let
-  inherit (lib) mkIf;
-  cfg = config.curtbushko.wm;
+  inherit (lib) types mkOption mkIf;
+  cfg = config.curtbushko.wm.waybar;
   isLinux = pkgs.stdenv.isLinux;
 in {
+  options.curtbushko.wm.waybar = {
+    enable = mkOption {
+      type = types.bool;
+      default = false;
+      description = ''
+        Whether to enable waybar
+      '';
+    };
+  };
+
   config = mkIf cfg.enable {
     stylix.targets.waybar.enable = false;
     programs.waybar = {

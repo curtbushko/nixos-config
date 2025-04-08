@@ -5,24 +5,24 @@
   ...
 }: let
   inherit (lib) types mkOption mkIf;
-  cfg = config.curtbushko.wm;
+  cfg = config.curtbushko.wm.tools;
   isLinux = pkgs.stdenv.isLinux;
 in {
   imports = [
-    ./hypridle.nix
-    ./hyprland.nix
+    ./hyprland/hypridle.nix
+    ./hyprland/hyprland.nix
     ./waybar.nix
     ./rofi.nix
-    ./swaylock.nix
-    ./hyprpaper.nix
+    ./hyprland/hyprpaper.nix
+    ./niri/niri.nix
   ];
 
-  options.curtbushko.wm = {
+  options.curtbushko.wm.tools = {
     enable = mkOption {
       type = types.bool;
       default = false;
       description = ''
-        Whether to enable wm
+        Whether to enable wm tools
       '';
     };
   };
@@ -37,18 +37,19 @@ in {
         grim
         slurp
         wl-clipboard
+        wl-clip-persist
         pavucontrol
 
         eww
         swww
         swappy # snapshot tool
         swaybg
-        swaylock
 
         networkmanagerapplet
         dunst
         libnotify
         xdg-utils
+        xwayland-satellite
       ]);
   };
 }

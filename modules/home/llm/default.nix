@@ -25,7 +25,9 @@ in {
     ];
     programs.vscode = {
       enable = true;
-      package = pkgs.vscodium; # free version of vscode
+      package = (pkgs.vscodium.override {
+        commandLineArgs = "--enable-features=UseOzonePlatform --ozone-platform-hint=auto --ozone-platform=wayland --enable-wayland-ime";
+      });
       profiles.default = {
         extensions = with pkgs.vscode-extensions;
         [

@@ -5,7 +5,7 @@
   ...
 }: let
   inherit (lib) mkIf;
-  cfg = config.curtbushko.wm;
+  cfg = config.curtbushko.wm.hyprland;
   isLinux = pkgs.stdenv.isLinux;
   hyprctl = "${config.wayland.windowManager.hyprland.package}/bin/hyprctl";
   suspend-script = pkgs.writeShellScriptBin "suspend-script" ''

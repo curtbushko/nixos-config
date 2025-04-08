@@ -30,7 +30,7 @@ in {
         isDarwin = pkgs.stdenv.isDarwin;
       in ''
         auto-update = off
-        font-size = 12
+        font-size = 11
         font-family = Intel One Mono
         font-style = medium
         font-feature = "ss01"
@@ -49,8 +49,6 @@ in {
         # Keybinds to match macOS since this is a VM
         keybind = super+c=copy_to_clipboard
         keybind = super+v=paste_from_clipboard
-        keybind = super+shift+c=copy_to_clipboard
-        keybind = super+shift+v=paste_from_clipboard
         keybind = super+equal=increase_font_size:1
         keybind = super+minus=decrease_font_size:1
         keybind = super+zero=reset_font_size

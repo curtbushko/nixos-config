@@ -4,10 +4,20 @@
   pkgs,
   ...
 }: let
-  inherit (lib) mkIf;
-  cfg = config.curtbushko.wm;
+  inherit (lib) types mkOption mkIf;
+  cfg = config.curtbushko.wm.rofi;
   isLinux = pkgs.stdenv.isLinux;
 in {
+  options.curtbushko.wm.rofi = {
+    enable = mkOption {
+      type = types.bool;
+      default = false;
+      description = ''
+        Whether to enable rofi 
+      '';
+    };
+  };
+
   config = mkIf cfg.enable {
     programs.rofi = {
       enable = isLinux;

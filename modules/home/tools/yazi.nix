@@ -458,7 +458,7 @@ in {
           cd_title = "Change directory:";
           create_offset = [0 2 50 3];
           create_origin = "top-center";
-          create_title = "Create:";
+          create_title = ["Create:" "create dir"];
           trash_offset = [0 2 50 3];
           trash_origin = "top-center";
           trash_title = "move {n} selected file{s} to trash? (y/n)";

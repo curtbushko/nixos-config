@@ -30,7 +30,13 @@
     shells.enable = true;
     terminals.enable = true;
     tools.enable = true;
-    wm.enable = true;
+    wm = {
+      tools.enable = true;
+      waybar.enable = true;
+      hyprland.enable = true;
+      niri.enable = true;
+      rofi.enable = true;
+    };
     theme = {
       name = "gruvbox-material";
       wallpaper = "exploring_new_worlds.jpg";

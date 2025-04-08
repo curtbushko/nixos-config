@@ -14,7 +14,7 @@ in {
       libsForQt5.qt5.qtwayland
     ];
 
-    programs.hyprland.enable = true;
+    #programs.hyprland.enable = true;
 
     # Xserver settings
     services.xserver = {

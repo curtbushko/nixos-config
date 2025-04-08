@@ -4,11 +4,21 @@
   pkgs,
   ...
 }: let
-  inherit (lib) mkIf;
-  cfg = config.curtbushko.wm;
+  inherit (lib) types mkOption mkIf;
+  cfg = config.curtbushko.wm.hyprland;
   isLinux = pkgs.stdenv.isLinux;
-  colors = import ../../home/styles/${config.curtbushko.theme.name}.nix {};
+  colors = import ../../../home/styles/${config.curtbushko.theme.name}.nix {};
 in {
+  options.curtbushko.wm.hyprland = {
+    enable = mkOption {
+      type = types.bool;
+      default = false;
+      description = ''
+        Whether to enable hyprland 
+      '';
+    };
+  };
+
   config = mkIf cfg.enable {
     stylix.targets.hyprland.enable = false;
     wayland.windowManager.hyprland = {

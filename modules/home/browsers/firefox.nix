@@ -93,20 +93,20 @@ in {
           };
           "NixOS Wiki" = {
             urls = [{template = "https://nixos.wiki/index.php?search={searchTerms}";}];
-            iconUpdateURL = "https://nixos.wiki/favicon.png";
+            icon = "https://nixos.wiki/favicon.png";
             updateInterval = 24 * 60 * 60 * 1000; # every day
             definedAliases = ["@nw"];
           };
           "Github Search" = {
             urls = [{template = "https://github.com/search?q={searchTerms}";}];
-            iconUpdateURL = "https://github.githubassets.com/favicons/favicon.svg";
+            icon = "https://github.githubassets.com/favicons/favicon.svg";
             updateInterval = 24 * 60 * 60 * 1000; # every day
             definedAliases = ["@github"];
           };
-          "Google".metaData.alias = "@google";
-          Bing.metaData.hidden = true;
-          "Amazon.com".metaData.hidden = true;
-          "Wikipedia (en)".metaData.hidden = true;
+          google.metaData.alias = "@google";
+          bing.metaData.hidden = true;
+          amazondotcom-us.metaData.hidden = true;
+          wikipedia.metaData.hidden = true;
         };
         settings = {
           # GENERAL
