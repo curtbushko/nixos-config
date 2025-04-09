@@ -4,20 +4,10 @@
   pkgs,
   ...
 }: let
-  inherit (lib) types mkOption mkIf;
-  cfg = config.curtbushko.wm.waybar;
+  inherit (lib) mkIf;
+  cfg = config.curtbushko.wm.hyprland;
   isLinux = pkgs.stdenv.isLinux;
 in {
-  options.curtbushko.wm.waybar = {
-    enable = mkOption {
-      type = types.bool;
-      default = false;
-      description = ''
-        Whether to enable waybar
-      '';
-    };
-  };
-
   config = mkIf cfg.enable {
     stylix.targets.waybar.enable = false;
     programs.waybar = {
@@ -239,7 +229,7 @@ in {
       ];
 
       style = let
-        colors = import ../../home/styles/${config.curtbushko.theme.name}.nix {};
+        colors = import ../../../home/styles/${config.curtbushko.theme.name}.nix {};
       in
         with colors; ''
           /*

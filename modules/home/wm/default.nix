@@ -11,10 +11,13 @@ in {
   imports = [
     ./hyprland/hypridle.nix
     ./hyprland/hyprland.nix
-    ./waybar.nix
+    ./hyprland/hypr-waybar.nix
     ./rofi.nix
     ./hyprland/hyprpaper.nix
     ./niri/niri.nix
+    ./niri/niri-waybar.nix
+    ./niri/hyprpaper.nix
+    ./niri/hypridle.nix
   ];
 
   options.curtbushko.wm.tools = {

@@ -48,7 +48,6 @@ in {
           (makeCommand "cliphist")
           (makeCommand "waybar")
           (makeCommand "xwayland-satellite")
-          (makeCommand "niri msg action focus-workspace main")
         ];
         input = {
           keyboard.xkb.layout = "us";
@@ -68,7 +67,7 @@ in {
             scale = 1.0;
             position = {
               x = 0;
-              y = 2160;
+              y = 1800;
             };
           };
           "HDMI-A-1" = {
@@ -76,17 +75,13 @@ in {
               width = 3840;
               height = 2160;
             };
-            scale = 1.0;
+            scale = 1.2;
             position = {
               x = 0;
               y = 0;
             };
           };
         }; # outputs
-        workspaces = {
-          main.open-on-output = "DP-2";
-          top.open-on-output = "HDMI-A-1";
-        };
         cursor = {
           size = 20;
         };
@@ -94,7 +89,7 @@ in {
           focus-ring.enable = false;
           border = {
             enable = true;
-            width = 1;
+            width = 2;
             active.color = "${colors.blue}";
             inactive.color = "${colors.statusline_a_fg}";
           };
@@ -102,14 +97,19 @@ in {
             enable = true;
           };
           preset-column-widths = [
-            {proportion = 0.25;}
+            {proportion = 0.33333;}
             {proportion = 0.5;}
-            {proportion = 0.75;}
-            {proportion = 1.0;}
+            {proportion = 0.66667;}
           ];
           default-column-width = {proportion = 0.5;};
 
-          gaps = 6;
+          preset-window-heights = [
+            {proportion = 0.33333;}
+            {proportion = 0.5;}
+            {proportion = 0.66667;}
+          ];
+
+          gaps = 12;
           struts = {
             left = 0;
             right = 0;
@@ -184,17 +184,59 @@ in {
             clip-to-geometry = true;
           }
           {
-            matches = [ { app-id = "(mpv)"; } ];
-            open-on-workspace = "top";
+            matches = [
+              {
+                app-id = "(mpv)";
+              }
+            ];
+            open-on-output = "HDMI-A-1";
+            open-maximized = true;
+            open-fullscreen = false;
           }
           {
-
-            matches = [ { app-id = "(obsidian)"; } ];
+            matches = [
+              {
+                app-id = "(obsidian)";
+              }
+            ];
             default-column-width.proportion = 4.0 / 10.0;
           }
           {
-            matches = [ { app-id = "com.mitchellh.ghostty"; } ];
+            matches = [ 
+              {
+                app-id = "com.mitchellh.ghostty";
+              }
+            ];
             draw-border-with-background = false;
+            open-focused = true;
+          }
+          {
+            matches = [
+              {
+                  app-id = "^(zen|firefox|chromium-browser|edge|chrome-.*|zen-.*)$";
+              }
+            ];
+            default-column-width.proportion = 0.33;
+          }
+          {
+            matches = [
+              {
+                app-id = "firefox$";
+                title = "^Picture-in-Picture$";
+              }
+              {
+                app-id = "zen-.*$";
+                title = "^Picture-in-Picture$";
+              }
+              {  title = "^Picture in picture$";}
+              {  title = "^Discord Popout$";}
+            ];
+            open-floating = true;
+            default-floating-position = {
+              x = 32;
+              y = 32;
+              relative-to = "top-right";
+            };
           }
         ];
 
@@ -212,12 +254,12 @@ in {
           "Ctrl+Alt+Delete".action = actions.quit;
 
           "Mod+Left".action = actions.focus-column-left;
-          "Mod+Down".action = actions.focus-window-down;
-          "Mod+Up".action = actions.focus-window-up;
+          "Mod+Down".action = actions.focus-window-or-monitor-down;
+          "Mod+Up".action = actions.focus-window-or-monitor-up;
           "Mod+Right".action = actions.focus-column-right;
           "Mod+H".action = actions.focus-column-left;
-          "Mod+J".action = actions.focus-window-down;
-          "Mod+K".action = actions.focus-window-up;
+          "Mod+J".action = actions.focus-window-or-monitor-down;
+          "Mod+K".action = actions.focus-window-or-monitor-up;
           "Mod+L".action = actions.focus-column-right;
 
           "Mod+Ctrl+Left".action = actions.move-column-left;
@@ -225,12 +267,22 @@ in {
           "Mod+Ctrl+Up".action =actions.move-window-up;
           "Mod+Ctrl+Right".action = actions.move-column-right;
           "Mod+Ctrl+H".action = actions.move-column-left;
-          "Mod+Ctrl+J".action = actions.move-window-down;
-          "Mod+Ctrl+K".action = actions.move-window-up;
+          "Mod+Ctrl+J".action = actions.move-column-to-monitor-down;
+          "Mod+Ctrl+K".action = actions.move-column-to-monitor-up;
           "Mod+Ctrl+L".action = actions.move-column-right;
+  
+          "Ctrl+J".action = actions.focus-workspace-down;
+          "Ctrl+K".action = actions.focus-workspace-up;
 
           "Mod+Shift+Minus".action = actions.set-window-width "-10%";
           "Mod+Shift+Equal".action = actions.set-window-width "+10%";
+
+          # Sizing
+          "Mod+Alt+F".action = actions.fullscreen-window;
+          "Mod+Alt+Right".action = actions.switch-preset-column-width;
+          "Mod+Alt+Left".action = actions.switch-preset-column-width;
+          "Mod+Alt+Up".action = actions.switch-preset-window-height;
+          "Mod+Alt+Down".action = actions.switch-preset-window-height;
 
         }; # binds
       }; # settings
@@ -260,7 +312,7 @@ in {
           border = "${base0D-hex}ff";
         };
         border = {
-          width = 1;
+          width = 2;
         };
       };
     };

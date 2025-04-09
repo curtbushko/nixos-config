@@ -32,8 +32,7 @@
     tools.enable = true;
     wm = {
       tools.enable = true;
-      waybar.enable = true;
-      hyprland.enable = true;
+      hyprland.enable = false;
       niri.enable = true;
       rofi.enable = true;
     };
