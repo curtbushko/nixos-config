@@ -36,7 +36,8 @@ in {
         font-feature = "ss01"
         #adjust-cell-width = 1%
         #adjust-cell-height = 1%
-        #background-opacity = .90
+        background-opacity = .95
+        background-blur-radius = 20
         macos-non-native-fullscreen = visible-menu
         macos-option-as-alt = left
         mouse-hide-while-typing = true

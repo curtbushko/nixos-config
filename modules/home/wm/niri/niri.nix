@@ -28,6 +28,7 @@ in {
     home.packages = with pkgs;
     [
       niri
+      hyprpaper
     ];
     programs.niri = {
       enable = true;
@@ -35,7 +36,7 @@ in {
       settings = {
         environment = {
           CLUTTER_BACKEND = "wayland";
-          DISPLAY = null;
+          DISPLAY = ":0";
           GDK_BACKEND = "wayland,x11";
           MOZ_ENABLE_WAYLAND = "1";
           NIXOS_OZONE_WL = "1";
@@ -44,8 +45,11 @@ in {
           SDL_VIDEODRIVER = "wayland";
         };
         spawn-at-startup = [
-          (makeCommand "wl-clip-persist --clipboard regular")
-          (makeCommand "cliphist")
+         (makeCommand "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
+         (makeCommand "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
+         (makeCommand "wl-paste --type text --watch cliphist store")
+         (makeCommand "wl-paste --type image --watch cliphist store")
+         (makeCommand "xprop -root -f _XWAYLAND_GLOBAL_OUTPUT_SCALE 32c -set _XWAYLAND_GLOBAL_OUTPUT_SCALE 1")
           (makeCommand "waybar")
           (makeCommand "xwayland-satellite")
         ];
@@ -89,7 +93,7 @@ in {
           focus-ring.enable = false;
           border = {
             enable = true;
-            width = 2;
+            width = 1;
             active.color = "${colors.blue}";
             inactive.color = "${colors.statusline_a_fg}";
           };
@@ -109,12 +113,12 @@ in {
             {proportion = 0.66667;}
           ];
 
-          gaps = 12;
+          gaps = 15;
           struts = {
-            left = 0;
-            right = 0;
-            top = 0;
-            bottom = 0;
+            left = 8;
+            right = 8;
+            top = 8;
+            bottom = 8;
           };
 
           tab-indicator = {
@@ -289,6 +293,21 @@ in {
         }; # binds
       }; # settings
     }; # programs.niri
+
+    xdg.portal = {
+      enable = true;
+      extraPortals = with pkgs; [
+        xdg-desktop-portal-gtk
+        xdg-desktop-portal-wlr
+      ];
+      config.niri = {
+        default = [
+          "gtk"
+          "gnome"
+        ];
+        "org.freedesktop.impl.portal.Settings" = "gtk";
+      };
+    };
 
     stylix.targets.fuzzel.enable = false;
     programs.fuzzel = {

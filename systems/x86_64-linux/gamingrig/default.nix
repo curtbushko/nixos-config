@@ -120,12 +120,10 @@
     killall
     pciutils
     rxvt-unicode-unwrapped
-    ryujinx
     vim
     nix-index
     wget
     xclip
-    waybar
     (
       waybar.overrideAttrs (oldAttrs: {
         mesonFlags = oldAttrs.mesonFlags ++ ["-Dexperimental=true"];
@@ -133,6 +131,7 @@
     )
     wayland
     xwayland
+    xdg-desktop-portal
     (
       # 2024.07.06 - Use and older version of xwayland because it is
       # having flickering problems when gaming in hyprland.
@@ -243,10 +242,9 @@
     xdgOpenUsePortal = true;
     wlr.enable = true;
     extraPortals = [
-      pkgs.xdg-desktop-portal-gnome
-      pkgs.xdg-desktop-portal-gtk
+      pkgs.xdg-desktop-portal-hyprland
     ];
-    config.common.default = ["gnome" "gtk"];
+    config.common.default = "*";
   };
 
   # Enable OpenGL

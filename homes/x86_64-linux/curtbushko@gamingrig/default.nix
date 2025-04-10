@@ -32,13 +32,13 @@
     tools.enable = true;
     wm = {
       tools.enable = true;
-      hyprland.enable = false;
-      niri.enable = true;
+      hyprland.enable = true;
+      niri.enable = false;
       rofi.enable = true;
     };
     theme = {
       name = "gruvbox-material";
-      wallpaper = "exploring_new_worlds.jpg";
+      wallpaper = "cyberpunk-three.png";
     };
 
   };
