@@ -281,6 +281,8 @@ in {
           "Mod+Alt+F".action = actions.fullscreen-window;
           "Mod+Alt+Right".action = actions.switch-preset-column-width;
           "Mod+Alt+Left".action = actions.switch-preset-column-width;
+          "Mod+Alt+H".action = actions.switch-preset-column-width;
+          "Mod+Alt+L".action = actions.switch-preset-column-width;
           "Mod+Alt+Up".action = actions.switch-preset-window-height;
           "Mod+Alt+Down".action = actions.switch-preset-window-height;
 

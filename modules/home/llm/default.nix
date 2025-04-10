@@ -37,7 +37,6 @@ in {
           gruntfuggly.todo-tree
           jnoortheen.nix-ide
           mkhl.direnv
-          oderwat.indent-rainbow
           redhat.vscode-yaml
           rooveterinaryinc.roo-cline
           shardulm94.trailing-spaces
@@ -112,6 +111,7 @@ in {
             "git show"
             "zig build"
             "zig build run"
+            "*"
           ];
         };
       };

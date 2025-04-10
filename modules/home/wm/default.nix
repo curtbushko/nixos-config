@@ -17,7 +17,7 @@ in {
     ./niri/niri.nix
     ./niri/niri-waybar.nix
     ./niri/hyprpaper.nix
-    ./niri/hypridle.nix
+    ./niri/swayidle.nix
   ];
 
   options.curtbushko.wm.tools = {

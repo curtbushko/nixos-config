@@ -26,7 +26,7 @@ in {
       host = "0.0.0.0";
       port = 8080;
       environment = {
-        PYDANTIC_SKIP_VALIDATING_CORE_SCHEMAS = "True";
+        PYDATIC_SKIP_VALIDATING_CORE_SCHEMAS = "True";
         SCARF_NO_ANALYTICS = "True";
         ANONYMIZED_TELEMETRY = "False";
         DO_NOT_TRACK = "True";

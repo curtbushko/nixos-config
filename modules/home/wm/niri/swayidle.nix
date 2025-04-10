@@ -7,7 +7,7 @@
   inherit (lib) mkIf;
   cfg = config.curtbushko.wm.niri;
   isLinux = pkgs.stdenv.isLinux;
-  hyprctl = "${config.wayland.windowManager.hyprland.package}/bin/hyprctl";
+  niri = lib.getExe config.programs.niri.package;
   suspend-script = pkgs.writeShellScriptBin "suspend-script" ''
     #!/usr/bin/env bash
 
@@ -38,27 +38,24 @@
   '';
 in {
   config = mkIf cfg.enable {
-    services.hypridle = {
+    services.swayidle = {
       enable = isLinux;
-      settings = {
-        general = {
-          # 2024-09-30 - try and make hypridle stable
-          ignore_dbus_inhibit = true;
-          ignore_systemd_inhibit = true;
-        };
-        listener = [
-          {
-            timeout = 900; # 15 mins
-            on-timeout = "${hyprctl} dispatch dpms off";
-            on-resume = "${pkgs.coreutils}/bin/sleep 3;WAYLAND_DISPLAY=wayland-1 ${hyprctl} dispatch dpms on || true";
-          }
-          {
-            timeout = 2700; # 45 minutes 
-            on-timeout = "${hyprctl} dispatch dpms on || true; ${pkgs.coreutils}/bin/sleep 10; ${suspend-script}/bin/suspend-script";
-            on-resume = "${pkgs.coreutils}/bin/sleep 3; WAYLAND_DISPLAY=wayland-1 ${hyprctl} dispatch dpms on || true";
-          }
-        ];
-      };
+      events = [
+        {
+          event = "after-resume";
+          command = "${niri} msg action power-on-monitors";
+        }
+      ];
+      timeouts = [
+        {
+          timeout = 900;
+          command = "${niri} msg action power-off-monitors";
+        }
+        {
+          timeout = 2700;
+          command = ''${pkgs.coreutils}/bin/sleep 10; ${suspend-script}/bin/suspend-script'';
+        }
+      ];
     };
   };
 }
