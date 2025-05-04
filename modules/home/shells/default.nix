@@ -216,7 +216,7 @@ in {
          fi
 
          # Add $HOME/bin to PATH
-         export PATH=$PATH:$HOME/bin
+         export PATH=$PATH:$HOME/bin:$HOME/go/bin
       '';
     };
     programs.zsh.oh-my-zsh = {
