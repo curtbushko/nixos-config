@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+KB=$HOME/workspace/github.com/curtbushko/kb
+ANKI=$HOME/workspace/github.com/curtbushko/kb/Anki
+REVIEW_TEMPLATE=$KB/templates/review_note.md
+REVIEW_FILENAME=$ANKI/reviews/$(date +'%Y%m%d-%H%M').md
+
+TITLE="${1:-no title}"
+DATE=$(date +'%Y-%m-%d')
+TIME=$(date +'%H:%M')
+
+echo "Creating new note: $REVIEW_FILENAME with title: $TITLE"
+cat $REVIEW_TEMPLATE \
+| sed "s^{{title}}^${TITLE}^g" \
+| sed "s^{{date}}^${DATE}^g" \
+| sed "s^{{time}}^${TIME}^g" > $REVIEW_FILENAME

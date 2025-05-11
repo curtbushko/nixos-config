@@ -145,7 +145,7 @@ in {
           pc2 = "wakeonlan $GAMINGRIG_MAC_ADDRESS; sleep 1; $M1DDC display 2 set input 18";
           pcall = "wakeonlan $GAMINGRIG_MAC_ADDRESS; sleep 1; $M1DDC display 2 set input 18; $M1DDC display 2 set input 15";
         };
-      initExtra = ''
+      initContent = ''
          #if [ -f $GHOSTTY/zig-out/bin/ghostty ]; then
          #  mkdir -p $HOME/.local/bin
         #  ln -s $GHOSTTY/zig-out/bin/ghostty $HOME/.local/bin/ghostty

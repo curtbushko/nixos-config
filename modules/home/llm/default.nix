@@ -50,7 +50,7 @@ in {
         userSettings = {
           # UI Settings. Everything else is inherited from Stylix
           "workbench.iconTheme" = "vscode-icons";
-          "update.mode" = "none";
+          #"update.mode" = "none";
           # Git settings
           "git.allowForcePush" = true;
           "git.autofetch" = true;
@@ -58,7 +58,7 @@ in {
           "git.enableSmartCommit" = true;
           "git.openRepositoryInParentFolders" = "always";
 
-          "extensions.autoUpdate" = false;
+          #"extensions.autoUpdate" = false;
           "editor.bracketPairColorization.enabled" = true;
           "editor.fontLigatures" =
             "'calt', 'ss01', 'ss02', 'ss03', 'ss04', 'ss05', 'ss06', 'ss07', 'ss08', 'ss09', 'ss10', 'dlig', 'liga'";

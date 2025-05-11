@@ -39,6 +39,7 @@
   makelintwatcher = pkgs.writeScriptBin "makelintwatcher" (builtins.readFile ./makelintwatcher);
   makeunitwatcher = pkgs.writeScriptBin "makeunitwatcher" (builtins.readFile ./makeunitwatcher);
   new-note = pkgs.writeScriptBin "new-note" (builtins.readFile ./new-note);
+  new-review = pkgs.writeScriptBin "new-review" (builtins.readFile ./new-review);
   nodewatcher = pkgs.writeScriptBin "nodewatcher" (builtins.readFile ./nodewatcher);
   open-file = pkgs.writeScriptBin "open-file" (builtins.readFile ./open-file);
   pdf-clean = pkgs.writeScriptBin "pdf-clean" (builtins.readFile ./pdf-clean);
@@ -89,6 +90,7 @@ in {
       makelintwatcher
       makeunitwatcher
       new-note
+      new-review
       nodewatcher
       ollama-up
       open-file

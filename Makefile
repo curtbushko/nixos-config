@@ -44,8 +44,11 @@ else
 	sudo NIXPKGS_ALLOW_UNSUPPORTED_ARCH=1 nixos-rebuild test --flake ".#${HOST}"
 endif
 
+.PHONY: update-all
+update-all: update update-ghostty update-neovim ## Update all packages
+
 .PHONY: update
-update: ## Update all of your packages
+update: ## Update nix packages
 	nix --extra-experimental-features 'nix-command flakes' flake update
 
 .PHONY: update-ghostty
