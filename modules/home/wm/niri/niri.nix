@@ -7,11 +7,8 @@
 }: let
   inherit (lib) types mkOption mkIf;
   cfg = config.curtbushko.wm.niri;
-
-  makeCommand = command: {
-    command = [command];
-  };
   colors = import ../../styles/${config.curtbushko.theme.name}.nix {};
+  wallpaper = ../../styles/wallpapers/3440x1440/${config.curtbushko.theme.wallpaper};
 in {
   options.curtbushko.wm.niri = {
     enable = mkOption {
@@ -28,7 +25,8 @@ in {
     home.packages = with pkgs;
     [
       niri
-      hyprpaper
+      swaybg
+      swayidle
     ];
     programs.niri = {
       enable = true;
@@ -43,15 +41,19 @@ in {
           QT_QPA_PLATFORM = "wayland;xcb";
           QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
           SDL_VIDEODRIVER = "wayland";
+          WAYLAND_DISPLAY = "wayland-1";
+          XDG_CURRENT_DESKTOP = "niri";
+          XDG_SESSIONT_DESKTOP = "niri";
+          XDG_SESSION_TYPE = "wayland";
         };
         spawn-at-startup = [
-         (makeCommand "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
-         (makeCommand "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
-         (makeCommand "wl-paste --type text --watch cliphist store")
-         (makeCommand "wl-paste --type image --watch cliphist store")
-         (makeCommand "xprop -root -f _XWAYLAND_GLOBAL_OUTPUT_SCALE 32c -set _XWAYLAND_GLOBAL_OUTPUT_SCALE 1")
-          (makeCommand "waybar")
-          (makeCommand "xwayland-satellite")
+          { command = [ "dbus-update-activation-environment --all --systemd" ]; }
+          { command = [ "wl-paste --type text --watch cliphist store" ]; }
+          { command = [ "wl-paste --type image --watch cliphist store" ]; }
+          { command = [ "xprop -root -f _XWAYLAND_GLOBAL_OUTPUT_SCALE 32c -set _XWAYLAND_GLOBAL_OUTPUT_SCALE 1" ]; }
+          { command = [ "waybar" ];}
+          { command = [ (lib.getExe pkgs.xwayland-satellite) ];}
+          { command = [ (lib.getExe pkgs.swaybg) "-i" "${wallpaper}" ]; }
         ];
         input = {
           keyboard.xkb.layout = "us";
@@ -66,7 +68,6 @@ in {
             mode = {
               width = 3440;
               height = 1440;
-              refresh = 60.0;
             };
             scale = 1.0;
             position = {
@@ -94,8 +95,8 @@ in {
           border = {
             enable = true;
             width = 1;
-            active.color = "${colors.blue}";
-            inactive.color = "${colors.statusline_a_fg}";
+            active.color = "${colors.statusline_a_bg}";
+            inactive.color = "${colors.statusline_b_bg}";
           };
           shadow = {
             enable = true;
@@ -105,7 +106,7 @@ in {
             {proportion = 0.5;}
             {proportion = 0.66667;}
           ];
-          default-column-width = {proportion = 0.5;};
+          default-column-width = {proportion = 0.33333;};
 
           preset-window-heights = [
             {proportion = 0.33333;}

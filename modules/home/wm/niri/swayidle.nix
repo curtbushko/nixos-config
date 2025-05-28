@@ -6,8 +6,6 @@
 }: let
   inherit (lib) mkIf;
   cfg = config.curtbushko.wm.niri;
-  isLinux = pkgs.stdenv.isLinux;
-  niri = lib.getExe config.programs.niri.package;
   suspend-script = pkgs.writeShellScriptBin "suspend-script" ''
     #!/usr/bin/env bash
 
@@ -39,17 +37,17 @@
 in {
   config = mkIf cfg.enable {
     services.swayidle = {
-      enable = isLinux;
+      enable = true;
       events = [
         {
           event = "after-resume";
-          command = "${niri} msg action power-on-monitors";
+          command = "${pkgs.niri} msg action power-on-monitors";
         }
       ];
       timeouts = [
         {
           timeout = 900;
-          command = "${niri} msg action power-off-monitors";
+          command = "${pkgs.niri} msg action power-off-monitors";
         }
         {
           timeout = 2700;
@@ -57,5 +55,6 @@ in {
         }
       ];
     };
+    systemd.user.services.swayidle.Service.Environment = [ "WAYLAND_DISPLAY=wayland-1" ];
   };
 }

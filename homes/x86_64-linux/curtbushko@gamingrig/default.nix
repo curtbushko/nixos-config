@@ -32,9 +32,9 @@
     tools.enable = true;
     wm = {
       tools.enable = true;
-      hyprland.enable = true;
-      niri.enable = false;
-      rofi.enable = true;
+      hyprland.enable = false;
+      niri.enable = true;
+      rofi.enable = false;
     };
     theme = {
       name = "gruvbox-material";

@@ -21,6 +21,14 @@ in {
 
   config = mkIf cfg.enable {
     stylix.targets.hyprland.enable = false;
+    # For accessing resources outside of the sandbox
+    xdg.portal = {
+      enable = true;
+      extraPortals = with pkgs; [
+        xdg-desktop-portal-hyprland
+      ];
+    };
+
     wayland.windowManager.hyprland = {
       enable = isLinux;
       systemd.enable = true;

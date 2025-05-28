@@ -16,7 +16,6 @@ in {
     ./hyprland/hyprpaper.nix
     ./niri/niri.nix
     ./niri/niri-waybar.nix
-    ./niri/hyprpaper.nix
     ./niri/swayidle.nix
   ];
 
@@ -46,7 +45,6 @@ in {
         eww
         swww
         swappy # snapshot tool
-        swaybg
 
         networkmanagerapplet
         dunst

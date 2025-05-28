@@ -48,6 +48,17 @@
   # Allow core dumps
   systemd.coredump.enable = true;
 
+  systemd.oomd = {
+    enable = true;
+    enableUserSlices = true;
+    enableSystemSlice = true;
+    enableRootSlice = true;
+    extraConfig = {
+      DefaultMemoryPressureDurationSec = "20";
+      SwapUsedLimit = "90%";
+    };
+  };
+
   # Setup settings so that I can access the video card devices to control the monitor
   services.udev.extraRules = ''
     KERNEL=="i2c-[0-9]*", GROUP="i2c", MODE="0660"
@@ -131,16 +142,14 @@
     )
     wayland
     xwayland
-    xdg-desktop-portal
-    (
-      # 2024.07.06 - Use and older version of xwayland because it is
-      # having flickering problems when gaming in hyprland.
-      xwayland.overrideAttrs (oldAttrs: {
-        version = "23.2.7";
-      })
-    )
+    # (
+    #   # 2024.07.06 - Use and older version of xwayland because it is
+    #   # having flickering problems when gaming in hyprland.
+    #   xwayland.overrideAttrs (oldAttrs: {
+    #     version = "23.2.7";
+    #   })
+    # )
     libnotify # notifications too.
-    swww # wallpapers
     tailscale
     neofetch
 
@@ -149,6 +158,7 @@
     rofi # app launcher
     rofi-wayland
     sway
+    swaybg
     swayidle
 
     # Gaming
@@ -236,17 +246,6 @@
   # Might help with making fonts clearer
   environment.variables.FREETYPE_PROPERTIES = "truetype:interpreter-version=35";
 
-  # For accessing resources outside of the sandbox
-  xdg.portal = {
-    enable = true;
-    xdgOpenUsePortal = true;
-    wlr.enable = true;
-    extraPortals = [
-      pkgs.xdg-desktop-portal-hyprland
-    ];
-    config.common.default = "*";
-  };
-
   # Enable OpenGL
   services.xserver.videoDrivers = ["nvidia"];
   hardware.graphics = {
@@ -255,6 +254,10 @@
     extraPackages = with pkgs; [nvidia-vaapi-driver mesa];
   };
 
+  # youtube videos were hanging and this might fix it
+  environment.variables.WEBKIT_DISABLE_COMPOSITING_MODE= "1";
+  environment.variables.MOZ_DISABLE_RDD_SANDBOX = "1";
+  environment.variables.LIBVA_DRIVER_NAME = "nvidia";
   hardware.nvidia = {
     # Modesetting is required.
     modesetting.enable = true;
@@ -279,14 +282,13 @@
     nvidiaSettings = true;
 
     # Optionally, you may need to select the approprate driver version for your specifc GPU.
-    #package = config.boot.kernelPackages.nvidiaPackages.beta;
     package = config.boot.kernelPackages.nvidiaPackages.mkDriver {
-     version = "565.77";
-      sha256_64bit = "sha256-CnqnQsRrzzTXZpgkAtF7PbH9s7wbiTRNcM0SPByzFHw=";
-      sha256_aarch64 = "sha256-LSAYUnhfnK3rcuPe1dixOwAujSof19kNOfdRHE7bToE=";
-      openSha256 = "sha256-Fxo0t61KQDs71YA8u7arY+503wkAc1foaa51vi2Pl5I=";
-      settingsSha256 = "sha256-VUetj3LlOSz/LB+DDfMCN34uA4bNTTpjDrb6C6Iwukk=";
-      persistencedSha256 = "sha256-wnDjC099D8d9NJSp9D0CbsL+vfHXyJFYYgU3CwcqKww=";
+      version = "570.133.07";
+      sha256_64bit = "sha256-LUPmTFgb5e9VTemIixqpADfvbUX1QoTT2dztwI3E3CY=";
+      sha256_aarch64 = "sha256-yTovUno/1TkakemRlNpNB91U+V04ACTMwPEhDok7jI0=";
+      openSha256 = "sha256-9l8N83Spj0MccA8+8R1uqiXBS0Ag4JrLPjrU3TaXHnM=";
+      settingsSha256 = "sha256-XMk+FvTlGpMquM8aE8kgYK2PIEszUZD2+Zmj2OpYrzU=";
+      persistencedSha256 = "sha256-G1V7JtHQbfnSRfVjz/LE2fYTlh9okpCbE4dfX9oYSg8=";
     };
   };
 
