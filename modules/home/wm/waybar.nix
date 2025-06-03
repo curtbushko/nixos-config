@@ -5,11 +5,26 @@
   ...
 }: let
   inherit (lib) mkIf;
-  cfg = config.curtbushko.wm.hyprland;
+  cfg = config.curtbushko.wm.niri;
   isLinux = pkgs.stdenv.isLinux;
 in {
   config = mkIf cfg.enable {
     stylix.targets.waybar.enable = false;
+    systemd.user.services.waybar = {
+      Unit = {
+        PartOf = [ "graphical-session.target" ];
+        After = [ "graphical-session.target" ];
+        #After = [ "niri.service" ];
+        Requisite = [ "graphical-session.target" ];
+      };
+      Install = {
+        WantedBy = [ "graphical-session.target" ];
+      };
+      Service = {
+        Restart = "on-failure";
+        ExecStart = "${pkgs.waybar}/bin/waybar";
+      };
+    };
     programs.waybar = {
       enable = isLinux;
       settings = [
@@ -51,11 +66,8 @@ in {
             format = "{}    ";
           };
 
-          "hyprland/workspaces" = {
-            on-scroll-up = "hyprctl dispatch workspace -1";
-            on-scroll-down = "hyprctl dispatch workspace +1";
+          "niri/workspaces" = {
             all-outputs = false;
-            active-only = false;
             on-click = "activate";
             persistent-workspaces = {
               "DP-2" = [1 2 3 4 5];
@@ -76,6 +88,7 @@ in {
               default = " 󰅘 ";
               active = " 󱗝 ";
             };
+
           };
 
           "custom/workspaces-audio-separator" = {
@@ -107,7 +120,7 @@ in {
           modules-left = [
             "group/network"
             "custom/network-workspaces-separator"
-            "hyprland/workspaces"
+            "niri/workspaces"
             "custom/workspaces-audio-separator"
             "pulseaudio"
             "custom/audio-separator"
@@ -124,9 +137,11 @@ in {
             tooltip-format = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
           };
 
-          "hyprland/window" = {
+          "niri/window" = {
+            format = "{title}";
             icon = false;
             separate-outputs = true;
+            max-length = 90;
             /*
             format = "<span font='10' rise='-4444'>{}</span>";
             */
@@ -140,7 +155,7 @@ in {
           };
 
           modules-center = [
-            "hyprland/window"
+            "niri/window"
           ];
 
           /*
@@ -229,7 +244,7 @@ in {
       ];
 
       style = let
-        colors = import ../../../home/styles/${config.curtbushko.theme.name}.nix {};
+        colors = import ../../home/styles/${config.curtbushko.theme.name}.nix {};
       in
         with colors; ''
           /*
@@ -353,7 +368,7 @@ in {
               color: @section_1_fg;
           }
 
-          #hyprland-window {
+          #niri-window {
               font-weight: bold;
               font-size: 12px;
               padding: 1px 5px 0px 5px;

@@ -32,7 +32,6 @@
     tools.enable = true;
     wm = {
       tools.enable = true;
-      hyprland.enable = false;
       niri.enable = true;
       rofi.enable = false;
     };
@@ -68,6 +67,6 @@
   };
 
   imports = [
-    inputs.stylix.homeManagerModules.stylix
+    inputs.stylix.homeModules.stylix
   ];
 }

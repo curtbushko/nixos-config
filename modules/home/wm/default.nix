@@ -9,14 +9,12 @@
   isLinux = pkgs.stdenv.isLinux;
 in {
   imports = [
-    ./hyprland/hypridle.nix
-    ./hyprland/hyprland.nix
-    ./hyprland/hypr-waybar.nix
     ./rofi.nix
-    ./hyprland/hyprpaper.nix
-    ./niri/niri.nix
-    ./niri/niri-waybar.nix
-    ./niri/swayidle.nix
+    ./niri.nix
+    ./swaybg.nix
+    ./swayidle.nix
+    ./xwayland-satellite.nix
+    ./waybar.nix
   ];
 
   options.curtbushko.wm.tools = {

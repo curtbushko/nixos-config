@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+echo "Running niri."
+
+if systemctl --user -q is-active niri.service; then
+  echo "A niri session is already running."
+  exit 1
+fi
+
+systemctl --user reset-failed
+
+if hash dbus-update-activation-environment 2>/dev/null; then
+  dbus-update-activation-environment --all
+fi
+
+systemctl --user --wait start niri.service
+systemctl --user start --job-mode=replace-irreversibly niri-shutdown.target
+systemctl --user unset-environment WAYLAND_DISPLAY XDG_SESSION_TYPE XDG_CURRENT_DESKTOP NIRI_SOCKET

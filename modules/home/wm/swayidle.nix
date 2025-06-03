@@ -38,6 +38,7 @@ in {
   config = mkIf cfg.enable {
     services.swayidle = {
       enable = true;
+      systemdTarget = "graphical-session.target";
       events = [
         {
           event = "after-resume";
@@ -55,6 +56,10 @@ in {
         }
       ];
     };
-    systemd.user.services.swayidle.Service.Environment = [ "WAYLAND_DISPLAY=wayland-1" ];
+    #systemd.user.services.swayidle.Unit.ConditionEnvironment = lib.mkForce [];
+    # WAYLAND_DISPLAY not set without this
+    systemd.user.services.swayidle.Unit.After = lib.mkForce [ "graphical-session.target" ];
+    #systemd.user.services.swayidle.Service.Environment = [ "WAYLAND_DISPLAY=wayland-1" ];
+    #systemd.user.services.swayidle.Unit.After = lib.mkForce [ "niri.service" ];
   };
 }

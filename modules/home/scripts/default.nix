@@ -10,6 +10,7 @@
   build-ghostty = pkgs.writeScriptBin "build-ghostty" (builtins.readFile ./build-ghostty);
   containerwatcher = pkgs.writeScriptBin "containerwatcher" (builtins.readFile ./containerwatcher);
   context = pkgs.writeScriptBin "context" (builtins.readFile ./context);
+  custom-niri-session = pkgs.writeScriptBin "custom-niri-session" (builtins.readFile ./custom-niri-session);
   daily-note = pkgs.writeScriptBin "daily-note" (builtins.readFile ./daily-note);
   docker-clean = pkgs.writeScriptBin "docker-clean" (builtins.readFile ./docker-clean);
   docker-image-dates = pkgs.writeScriptBin "docker-image-dates" (builtins.readFile ./docker-image-dates);
@@ -62,6 +63,7 @@ in {
       build-ghostty
       containerwatcher
       context
+      custom-niri-session
       daily-note
       docker-clean
       docker-image-dates

@@ -7,8 +7,8 @@
 }: let
   inherit (lib) types mkOption mkIf;
   cfg = config.curtbushko.wm.niri;
-  colors = import ../../styles/${config.curtbushko.theme.name}.nix {};
-  wallpaper = ../../styles/wallpapers/3440x1440/${config.curtbushko.theme.wallpaper};
+  colors = import ../styles/${config.curtbushko.theme.name}.nix {};
+  wallpaper = ../styles/wallpapers/3440x1440/${config.curtbushko.theme.wallpaper};
 in {
   options.curtbushko.wm.niri = {
     enable = mkOption {
@@ -24,10 +24,31 @@ in {
   config = mkIf cfg.enable {
     home.packages = with pkgs;
     [
+      alacritty
       niri
       swaybg
       swayidle
+      xwayland-satellite
     ];
+    #wayland.systemd.target = "niri.service";
+
+    # Run niri as a service so that other services start (ie swayidle)
+    systemd.user.services.niri = {
+        Unit = {
+          Description = "A scrollable-tiling Wayland compositor";
+          BindsTo = "graphical-session.target";
+          Before = "graphical-session.target";
+          Wants = "graphical-session-pre.target";
+          After = "graphical-session-pre.target";
+        };
+        Service = {
+          Slice = "session.slice";
+          Type = "notify";
+          ExecStart = "${pkgs.niri}/bin/niri --session";
+          #ExecStart = "${pkgs.niri}/bin/niri";
+        };
+    };
+
     programs.niri = {
       enable = true;
       package = pkgs.niri;
@@ -43,17 +64,19 @@ in {
           SDL_VIDEODRIVER = "wayland";
           WAYLAND_DISPLAY = "wayland-1";
           XDG_CURRENT_DESKTOP = "niri";
-          XDG_SESSIONT_DESKTOP = "niri";
+          XDG_SESSION_DESKTOP = "niri";
           XDG_SESSION_TYPE = "wayland";
         };
         spawn-at-startup = [
-          { command = [ "dbus-update-activation-environment --all --systemd" ]; }
-          { command = [ "wl-paste --type text --watch cliphist store" ]; }
-          { command = [ "wl-paste --type image --watch cliphist store" ]; }
-          { command = [ "xprop -root -f _XWAYLAND_GLOBAL_OUTPUT_SCALE 32c -set _XWAYLAND_GLOBAL_OUTPUT_SCALE 1" ]; }
-          { command = [ "waybar" ];}
-          { command = [ (lib.getExe pkgs.xwayland-satellite) ];}
-          { command = [ (lib.getExe pkgs.swaybg) "-i" "${wallpaper}" ]; }
+          #{ command = [ "${pkgs.dbus}/bin/dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP" ]; }
+          #{ command = [ "${pkgs.systemd}/bin/systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP" ]; }
+          #{ command = [ "${pkgs.dbus}/bin/dbus-update-activation-environment --all" ]; }
+          #{ command = [ "wl-paste --type text --watch cliphist store" ]; }
+          #{ command = [ "wl-paste --type image --watch cliphist store" ]; }
+          #{ command = [ "xprop -root -f _XWAYLAND_GLOBAL_OUTPUT_SCALE 32c -set _XWAYLAND_GLOBAL_OUTPUT_SCALE 1" ]; }
+          #{ command = [ "waybar" ];}
+          #{ command = [ (lib.getExe pkgs.xwayland-satellite) ];}
+          #{ command = [ (lib.getExe pkgs.swaybg) "-i" "${wallpaper}" ]; }
         ];
         input = {
           keyboard.xkb.layout = "us";
