@@ -20,7 +20,7 @@ switch: ## Build and switch your nix config.
 	@echo "$(DATELOG) Building nix config for $(HOST)"
 ifeq ($(OS), darwin)
 	nix --extra-experimental-features 'nix-command flakes' build ".#darwinConfigurations.${HOST}.system" --show-trace
-	./result/sw/bin/darwin-rebuild switch --flake "$$(pwd)#${HOST}"
+	sudo ./result/sw/bin/darwin-rebuild switch --flake "$$(pwd)#${HOST}"
 else
 	sudo NIXPKGS_ALLOW_UNSUPPORTED_ARCH=1 nixos-rebuild switch --flake ".#${HOST}"
 endif
