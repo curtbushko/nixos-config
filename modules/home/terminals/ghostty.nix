@@ -40,6 +40,7 @@ in {
         background-blur-radius = 20
         macos-non-native-fullscreen = visible-menu
         macos-option-as-alt = left
+        macos-titlebar-style = hidden
         mouse-hide-while-typing = true
         shell-integration = zsh
         window-padding-x = 0
@@ -109,7 +110,7 @@ in {
       ''
       )
       + (lib.optionalString isDarwin ''
-        window-decoration = false 
+        window-decoration = true
       ''
       );
     };
