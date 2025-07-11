@@ -34,6 +34,7 @@ in {
         push.autoSetupRemote = true;
         pull = {ff = "only";};
         url."ssh://git@github.com".insteadOf = "https://github.com";
+        url."ssh://git@github.ibm.com".insteadOf = "https://github.ibm.com";
         oh-my-zsh = {hide-dirty = "1";}; # this stops slowdowns in some repos with zsh
         submodule.recurse = true;
       };
