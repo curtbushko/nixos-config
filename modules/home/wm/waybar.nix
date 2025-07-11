@@ -14,7 +14,6 @@ in {
       Unit = {
         PartOf = [ "graphical-session.target" ];
         After = [ "graphical-session.target" ];
-        #After = [ "niri.service" ];
         Requisite = [ "graphical-session.target" ];
       };
       Install = {

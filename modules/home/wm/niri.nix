@@ -30,7 +30,6 @@ in {
       swayidle
       xwayland-satellite
     ];
-    #wayland.systemd.target = "niri.service";
 
     # Run niri as a service so that other services start (ie swayidle)
     systemd.user.services.niri = {
@@ -45,7 +44,6 @@ in {
           Slice = "session.slice";
           Type = "notify";
           ExecStart = "${pkgs.niri}/bin/niri --session";
-          #ExecStart = "${pkgs.niri}/bin/niri";
         };
     };
 
@@ -68,15 +66,9 @@ in {
           XDG_SESSION_TYPE = "wayland";
         };
         spawn-at-startup = [
-          #{ command = [ "${pkgs.dbus}/bin/dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP" ]; }
-          #{ command = [ "${pkgs.systemd}/bin/systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP" ]; }
-          #{ command = [ "${pkgs.dbus}/bin/dbus-update-activation-environment --all" ]; }
           #{ command = [ "wl-paste --type text --watch cliphist store" ]; }
           #{ command = [ "wl-paste --type image --watch cliphist store" ]; }
-          #{ command = [ "xprop -root -f _XWAYLAND_GLOBAL_OUTPUT_SCALE 32c -set _XWAYLAND_GLOBAL_OUTPUT_SCALE 1" ]; }
-          #{ command = [ "waybar" ];}
-          #{ command = [ (lib.getExe pkgs.xwayland-satellite) ];}
-          #{ command = [ (lib.getExe pkgs.swaybg) "-i" "${wallpaper}" ]; }
+          { command = [ "xprop -root -f _XWAYLAND_GLOBAL_OUTPUT_SCALE 32c -set _XWAYLAND_GLOBAL_OUTPUT_SCALE 1" ]; }
         ];
         input = {
           keyboard.xkb.layout = "us";
@@ -275,6 +267,7 @@ in {
           "Mod+Return".action.spawn = "ghostty";
           "Mod+T".action.spawn = "ghostty";
           "Mod+Space".action.spawn = "fuzzel";
+          "Mod+Tab".action = actions.toggle-overview;
 
           "Mod+Shift+Slash".action = actions.show-hotkey-overlay;
           "Mod+Q".action = actions.close-window;

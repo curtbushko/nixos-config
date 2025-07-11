@@ -9,6 +9,7 @@
   isLinux = pkgs.stdenv.isLinux;
 in {
   imports = [
+    ./cliphist.nix
     ./rofi.nix
     ./niri.nix
     ./swaybg.nix
