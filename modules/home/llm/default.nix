@@ -19,8 +19,7 @@ in {
 
   config = mkIf cfg.enable {
     home.packages = with pkgs; [
-      aider-chat
-      goose-cli
+      claude-code
       ollama
     ];
     programs.vscode = {
