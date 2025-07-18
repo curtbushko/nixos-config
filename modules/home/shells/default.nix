@@ -120,9 +120,6 @@ in {
           zdel = "zellij delete-session coding --force";
           ztitle = "zellij action rename-tab";
           zkill = "zellij kill-session coding";
-          mux = "tmuxinator start home";
-          muxkill = "tmux kill-server";
-          aid = "aider --no-auto-commits --model ollama/llama3.1:8b";
         }
         # monitor switching
         // lib.optionalAttrs isLinux
