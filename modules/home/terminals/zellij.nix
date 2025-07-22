@@ -131,10 +131,10 @@ in {
             //    bind "Ctrl c" { SwitchToMode "Normal"; }
             //    bind "Esc" { UndoRenamePane; SwitchToMode "Pane"; }
             //}
-            // session {
+            session {
             //    bind "Ctrl o" { SwitchToMode "Normal"; }
             //    bind "Ctrl s" { SwitchToMode "Scroll"; }
-            //    bind "d" { Detach; }
+                bind "Ctrl d" { Detach; }
             //    bind "w" {
             //        LaunchOrFocusPlugin "zellij:session-manager" {
             //            floating true
@@ -142,7 +142,7 @@ in {
             //        };
             //        SwitchToMode "Normal"
             //    }
-            //}
+            }
             //tmux {
             //    bind "[" { SwitchToMode "Scroll"; }
             //    bind "Ctrl b" { Write 2; SwitchToMode "Normal"; }

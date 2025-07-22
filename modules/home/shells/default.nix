@@ -120,6 +120,7 @@ in {
           zdel = "zellij delete-session coding --force";
           ztitle = "zellij action rename-tab";
           zkill = "zellij kill-session coding";
+          tg = "timber-git";
         }
         # monitor switching
         // lib.optionalAttrs isLinux

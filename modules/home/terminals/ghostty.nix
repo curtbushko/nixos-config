@@ -41,6 +41,7 @@ in {
         macos-non-native-fullscreen = visible-menu
         macos-option-as-alt = left
         macos-titlebar-style = hidden
+        gtk-titlebar = false
         mouse-hide-while-typing = true
         shell-integration = zsh
         window-padding-x = 0
@@ -77,6 +78,8 @@ in {
         keybind = alt+seven=unbind
         keybind = alt+eight=unbind
         keybind = alt+nine=unbind
+        # fix for claude-code
+        keybind = shift+enter=text:\n
         # foreground (fg/bg)
         foreground = ${base05}
         background = ${base01}
