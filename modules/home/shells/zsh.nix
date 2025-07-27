@@ -4,7 +4,7 @@
   pkgs,
   ...
 }: let
-  inherit (lib) mkIf;
+  inherit (lib)  mkIf;
   cfg = config.curtbushko.shells;
   isDarwin = pkgs.stdenv.isDarwin;
   isLinux = pkgs.stdenv.isLinux;
@@ -111,6 +111,11 @@ in {
           ztitle = "zellij action rename-tab";
           zkill = "zellij kill-session coding";
           tg = "timber-git";
+          tattach = "tmux attach -t home";
+          tkill = "tmuxinator stop home && tmux kill-server";
+          tux = "tmuxinator start home";
+          mux = "tmuxinator start home";
+          tdetach = "tmux detach";
         }
         # monitor switching
         // lib.optionalAttrs isLinux
