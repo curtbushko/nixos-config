@@ -30,7 +30,7 @@ in {
         isDarwin = pkgs.stdenv.isDarwin;
       in ''
         auto-update = off
-        font-size = 11
+        font-size = 10
         font-family = Intel One Mono
         font-style = medium
         font-feature = "ss01"
@@ -48,6 +48,7 @@ in {
         window-padding-y = 0
         window-save-state = always
         confirm-close-surface = false
+        adw-toast = no-clipboard-copy
 
         # Keybinds to match macOS since this is a VM
         keybind = super+c=copy_to_clipboard
