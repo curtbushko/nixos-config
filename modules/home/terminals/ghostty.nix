@@ -48,7 +48,7 @@ in {
         window-padding-y = 0
         window-save-state = always
         confirm-close-surface = false
-        adw-toast = no-clipboard-copy
+        #adw-toast = no-clipboard-copy
 
         # Keybinds to match macOS since this is a VM
         keybind = super+c=copy_to_clipboard

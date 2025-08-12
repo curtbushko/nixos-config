@@ -169,44 +169,47 @@ in {
          # 02/25/2025 - I do not think this is needed anymore because I no longer use mason
          #export NIX_LD=$(nix eval --extra-experimental-features nix-command --impure --raw --expr 'let pkgs = import <nixpkgs> {}; NIX_LD = pkgs.lib.fileContents "${pkgs.stdenv.cc}/nix-support/dynamic-linker"; in NIX_LD')
 
-         eval "$(zoxide init --cmd cd zsh)"
-         # Pre-load several directories that I always use
 
-         if [ -d $WORKSPACE ]; then
-           zoxide add $WORKSPACE
-         fi
+        if [[ "$CLAUDECODE" != "1" ]]; then
+          eval "$(zoxide init --cmd cd zsh)"
 
-         if [ -d $GITHIB ]; then
-           zoxide add $GITHUB
-         fi
+          # Add paths that I always use so that they stay fresh
+          if [ -d $WORKSPACE ]; then
+            zoxide add $WORKSPACE
+          fi
 
-         if [ -d $GHOSTTY ]; then
-           zoxide add $GHOSTTY
-         fi
+          if [ -d $GITHIB ]; then
+            zoxide add $GITHUB
+          fi
 
-         if [ -d $WORKSPACE ]; then
-           zoxide add $WORKSPACE
-         fi
+          if [ -d $GHOSTTY ]; then
+            zoxide add $GHOSTTY
+          fi
 
-         if [ -d $BUSHKO/leetcode ]; then
-           zoxide add $BUSHKO/leetcode
-         fi
+          if [ -d $WORKSPACE ]; then
+            zoxide add $WORKSPACE
+          fi
 
-         if [ -d $KLEIO ]; then
-           zoxide add $KLEIO
-         fi
+          if [ -d $BUSHKO/leetcode ]; then
+            zoxide add $BUSHKO/leetcode
+          fi
 
-         if [ -d $KB ]; then
-           zoxide add $KB
-         fi
+          if [ -d $KLEIO ]; then
+            zoxide add $KLEIO
+          fi
 
-         if [ -d $NIXOS_CONFIG ]; then
-           zoxide add $NIXOS_CONFIG
-         fi
+          if [ -d $KB ]; then
+            zoxide add $KB
+          fi
 
-         if [ -d $GITHUB/hasicorp ]; then
-           zoxide add $GITHUB/hashicorp
-         fi
+          if [ -d $NIXOS_CONFIG ]; then
+            zoxide add $NIXOS_CONFIG
+          fi
+
+          if [ -d $GITHUB/hasicorp ]; then
+            zoxide add $GITHUB/hashicorp
+          fi
+        fi
 
          # Add $HOME/bin to PATH
          export PATH=$PATH:$HOME/bin:$HOME/go/bin
