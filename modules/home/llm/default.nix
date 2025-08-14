@@ -20,7 +20,6 @@ in {
   config = mkIf cfg.enable {
     home.packages = with pkgs; [
       claude-code
-      ollama
     ];
     programs.vscode = {
       enable = true;
