@@ -1218,11 +1218,11 @@
         "nixvim": "nixvim"
       },
       "locked": {
-        "lastModified": 1755479778,
-        "narHash": "sha256-35RwKwi38V8BKtYXnlemxN39XJRGEoHF0cfJblts0Lg=",
+        "lastModified": 1755480500,
+        "narHash": "sha256-EhglB6eX6/i7ugX0mKybcUF+JY9zRrtxZfZvA4Bzku8=",
         "owner": "curtbushko",
         "repo": "neovim-flake",
-        "rev": "966b2d3b0852c18ad7e163d7986a54ff0e7cc23e",
+        "rev": "5ecc15695c97d3f12876238ccea713d588775df6",
         "type": "github"
       },
       "original": {
