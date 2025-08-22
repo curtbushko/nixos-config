@@ -15,6 +15,7 @@ in {
         PartOf = [ "graphical-session.target" ];
         After = [ "graphical-session.target" ];
         Requisite = [ "graphical-session.target" ];
+        ConditionEnvironment = "WAYLAND_DISPLAY";
       };
       Install = {
         WantedBy = [ "graphical-session.target" ];

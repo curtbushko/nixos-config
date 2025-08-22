@@ -73,7 +73,7 @@ in {
         input = {
           keyboard.xkb.layout = "us";
           focus-follows-mouse.enable = true;
-          warp-mouse-to-focus = true;
+          warp-mouse-to-focus.enable = true;
           workspace-auto-back-and-forth = true;
         }; # input
         screenshot-path = "~/Pictures/Screenshots/Screenshot-from-%Y-%m-%d-%H-%M-%S.png";
@@ -149,7 +149,7 @@ in {
           };
         }; # layout
 
-        animations.shaders.window-resize = ''
+        animations.window-resize.custom-shader = ''
           vec4 resize_color(vec3 coords_curr_geo, vec3 size_curr_geo) {
             vec3 coords_next_geo = niri_curr_geo_to_next_geo * coords_curr_geo;
 

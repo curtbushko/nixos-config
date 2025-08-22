@@ -47,6 +47,7 @@ in {
       localNetworkGameTransfers.openFirewall = true;
       gamescopeSession.enable = true;
       extraPackages = with pkgs; [
+        libcef
         monado-vulkan-layers
       ];
     };
