@@ -18,9 +18,42 @@ in {
   };
 
   config = mkIf cfg.enable {
-    home.packages = with pkgs; [
-      claude-code
-    ];
+    programs.claude-code = {
+      enable = true;
+      package = pkgs.claude-code;
+      settings = {
+        includeCoAuthoredBy = false;
+        permissions = {
+          allow = [
+            "Bash(make:*)"
+            "Bash(go:*)"
+            "Bash(ls:*)"
+            "Bash(find:*)"
+            "Bash(rg:*)"
+            "Bash(grep:*)"
+            "Bash(cat:*)"
+            "Bash(mkdir:*)"
+            "WebFetch(domain:pkg.go.dev)"
+            "WebFetch(domain:*.github.com)"
+            "WebFetch(domain:*.github.io)"
+            "WebFetch(domain:*.stackoverflow.com)"
+            "WebFetch(domain:go.dev)"
+            "WebFetch(domain:golangci-lint.run)"
+            "WebFetch(domain:gist.github.com)"
+          ];
+          deny = [ ];
+          ask = [
+            "Bash(rm:*)"
+          ];
+        };
+        statusLine = {
+          command = "input=$(cat); echo \"[$(echo \"$input\" | jq -r '.model.display_name')] 📁 $(basename \"$(echo \"$input\" | jq -r '.workspace.current_dir')\")\"";
+          padding = 0;
+          type = "command";
+        };
+        theme = "dark";
+      };
+    };
     programs.vscode = {
       enable = true;
       package = (pkgs.vscodium.override {
