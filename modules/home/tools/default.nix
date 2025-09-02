@@ -51,6 +51,7 @@ in {
         pkgs.presenterm
         pkgs.ripgrep
         pkgs.stylua
+        pkgs.sshuttle
         pkgs.tree
         pkgs.watch
         pkgs.watchexec
