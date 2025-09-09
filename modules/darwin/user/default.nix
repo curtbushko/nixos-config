@@ -17,6 +17,7 @@
       "slack"
       "vlc"
       "notunes"
+      "podman-desktop"
     ];
   };
 
