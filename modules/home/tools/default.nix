@@ -36,6 +36,7 @@ in {
         pkgs.btop
         pkgs.difftastic
         pkgs.curl
+        pkgs.d2
         pkgs.eza
         pkgs.fd
         pkgs.fzf
@@ -45,6 +46,7 @@ in {
         pkgs.jq
         pkgs.lsd
         pkgs.mutagen
+        pkgs.mermaid-cli
         pkgs.nil # language server
         pkgs.nixd #language server for nix
         pkgs.nodejs_22
