@@ -1,5 +1,6 @@
 {
   config,
+  inputs,
   lib,
   pkgs,
   ...
@@ -39,7 +40,16 @@ in {
       usbutils
       xdg-utils
       xdg-user-dirs
+      # used by wabbajack installer (Skyrim VR)
+      protontricks
+      flatpak
+      winetricks
+      wineWowPackages.stable
+      wineWowPackages.waylandFull
+      freetype
+      steamtinkerlaunch
     ];
+
     programs.steam = {
       enable = true;
       remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
@@ -72,6 +82,13 @@ in {
       defaultRuntime = true;
       openFirewall = true;
       autoStart = true;
+    };
+
+    services.avahi.enable = true;
+
+    programs.alvr = {
+      enable = true;
+      openFirewall = true;
     };
 
     security.wrappers.steamvr = {

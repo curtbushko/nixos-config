@@ -90,6 +90,7 @@
         permittedInsecurePackages = [
           # "python-2.7.18.6"
           "electron-25.9.0"
+          "qtwebengine-5.15.19"
         ];
       };
 

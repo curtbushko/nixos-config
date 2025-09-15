@@ -31,5 +31,14 @@ in {
       pkgs.zigpkgs."0.13.0"
       pkgs.zls
     ];
+    # configure cargo so that it can download crates
+    home.file = {
+      ".cargo/config.toml" = {
+        text = ''
+          [net]
+          git-fetch-with-cli = true   # use the `git` executable for git operations
+        '';
+      };
+    };
   };
 }

@@ -167,7 +167,7 @@
     vulkan-tools
     lutris
     protonup-qt
-    #sunshine
+        #sunshine
   ];
 
 
@@ -291,6 +291,14 @@
       settingsSha256 = "sha256-ll7HD7dVPHKUyp5+zvLeNqAb6hCpxfwuSyi+SAXapoQ=";
       persistencedSha256 = lib.fakeHash;
     };
+  };
+
+  # CUDA
+  environment.sessionVariables = rec {
+    CUDA_PATH = "${pkgs.cudatoolkit}";
+    CUDA_TOOLKIT_ROOT_DIR = "${pkgs.cudatoolkit}";
+    EXTRA_LDFLAGS = "-L/lib -L${pkgs.linuxPackages.nvidia_x11}/lib";
+    EXTRA_CCFLAGS = "-I/usr/include";
   };
 
   # Docker

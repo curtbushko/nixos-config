@@ -24,6 +24,7 @@ in {
       noto-fonts-extra
       noto-fonts-emoji
       powerline-fonts
+      freetype # needed by Wine
     ];
 
     fonts.fontconfig = {

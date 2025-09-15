@@ -49,6 +49,7 @@
     pkgs.crawl
     pkgs.crawlTiles
 
+    pkgs.pcmanfm
     pkgs.cachix
     pkgs.tailscale
     inputs.neovim.packages.${system}.default
