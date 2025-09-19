@@ -21,7 +21,6 @@ in {
   config = mkIf cfg.enable {
     programs.rofi = {
       enable = isLinux;
-      package = pkgs.rofi-wayland;
       extraConfig = {
         modi = "drun,run";
         show-icons = true;

@@ -55,6 +55,7 @@ in {
           CLUTTER_BACKEND = "wayland";
           DISPLAY = ":0";
           GDK_BACKEND = "wayland,x11";
+          GSK_RENDERER = "ngl"; # 2025-09-16 - seems to be needed for nautilus to work
           MOZ_ENABLE_WAYLAND = "1";
           NIXOS_OZONE_WL = "1";
           QT_QPA_PLATFORM = "wayland;xcb";
@@ -64,6 +65,8 @@ in {
           XDG_CURRENT_DESKTOP = "niri";
           XDG_SESSION_DESKTOP = "niri";
           XDG_SESSION_TYPE = "wayland";
+          XCURSOR_THEME = "Adwaita";
+          XCURSOR_SIZE = "20";
         };
         spawn-at-startup = [
           #{ command = [ "wl-paste --type text --watch cliphist store" ]; }
@@ -80,6 +83,7 @@ in {
 
         outputs = {
           "DP-2" = {
+            focus-at-startup = true;
             mode = {
               width = 3440;
               height = 1440;
@@ -222,7 +226,7 @@ in {
             default-column-width.proportion = 4.0 / 10.0;
           }
           {
-            matches = [ 
+            matches = [
               {
                 app-id = "com.mitchellh.ghostty";
               }
@@ -250,6 +254,7 @@ in {
               }
               {  title = "^Picture in picture$";}
               {  title = "^Discord Popout$";}
+              {  title = "^floating$";}
             ];
             open-floating = true;
             default-floating-position = {
@@ -313,16 +318,23 @@ in {
 
     xdg.portal = {
       enable = true;
+      xdgOpenUsePortal = true;
       extraPortals = with pkgs; [
+        xdg-desktop-portal-gnome
         xdg-desktop-portal-gtk
         xdg-desktop-portal-wlr
       ];
-      config.niri = {
-        default = [
-          "gtk"
-          "gnome"
-        ];
-        "org.freedesktop.impl.portal.Settings" = "gtk";
+      config = {
+        common = {
+          default = "gnome";
+        };
+        niri = {
+          default = [
+            "gnome"
+            "gtk"
+          ];
+          "org.freedesktop.impl.portal.Settings" = "gnome";
+        };
       };
     };
 

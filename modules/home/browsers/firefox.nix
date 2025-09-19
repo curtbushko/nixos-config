@@ -70,7 +70,7 @@ in {
               }
             ];
             icon = "''${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
-            definedAliases = ["@hm"];
+            definedAliases = ["!hm"];
           };
           "Nix Packages" = {
             urls = [
@@ -89,19 +89,19 @@ in {
               }
             ];
             icon = "''${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
-            definedAliases = ["@nixpkgs"];
+            definedAliases = ["!nixpkgs"];
           };
           "NixOS Wiki" = {
             urls = [{template = "https://nixos.wiki/index.php?search={searchTerms}";}];
             icon = "https://nixos.wiki/favicon.png";
             updateInterval = 24 * 60 * 60 * 1000; # every day
-            definedAliases = ["@nw"];
+            definedAliases = ["!nw"];
           };
           "Github Search" = {
             urls = [{template = "https://github.com/search?q={searchTerms}";}];
             icon = "https://github.githubassets.com/favicons/favicon.svg";
             updateInterval = 24 * 60 * 60 * 1000; # every day
-            definedAliases = ["@github"];
+            definedAliases = ["!gh"];
           };
           google.metaData.alias = "@google";
           bing.metaData.hidden = true;

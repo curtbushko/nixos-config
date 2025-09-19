@@ -9,6 +9,7 @@ fi
 systemctl --user reset-failed
 
 if hash dbus-update-activation-environment 2>/dev/null; then
+  dbus-update-activation-environment --systemd PATH
   dbus-update-activation-environment --all
 fi
 

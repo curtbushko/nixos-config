@@ -14,7 +14,7 @@
 
   curtbushko = {
     services.llm.enable = true;
-    services.minecraft.enable = true;
+    services.minecraft.enable = false; # 2025.09.15 - minecraft package is broken
     services.vr.enable = true;
     services.wm.enable = true; # qt and wayland
   };
@@ -157,7 +157,6 @@
     hyprland
     niri
     rofi # app launcher
-    rofi-wayland
     sway
     swaybg
     swayidle
@@ -167,7 +166,7 @@
     vulkan-tools
     lutris
     protonup-qt
-        #sunshine
+    #sunshine
   ];
 
 
@@ -305,9 +304,9 @@
   virtualisation = {
     libvirtd.enable = true;
     docker.enable = true;
-  };
+  };  
 
-  security.pam.services.swaylock = {
+  security.pam.services.swaylock = {  
     text = ''      ;
       auth include login
     '';

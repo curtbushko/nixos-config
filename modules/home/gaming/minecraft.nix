@@ -13,7 +13,7 @@ in {
       [
       ]
       ++ (lib.optionals isLinux [
-        minecraft
+        # minecraft 2025-09-15 minecraft package is broken
         vulkan-loader
         glfw
         #prismlauncher

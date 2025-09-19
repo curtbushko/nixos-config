@@ -87,7 +87,7 @@ in {
     services.avahi.enable = true;
 
     programs.alvr = {
-      enable = true;
+      enable = false; # 2025-09-16 - turning off because nix build is failing
       openFirewall = true;
     };
 
