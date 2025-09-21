@@ -44,6 +44,7 @@ in {
         gtk-titlebar = false
         mouse-hide-while-typing = true
         shell-integration = zsh
+        shell-integration-features = no-cursor,ssh-env,ssh-terminfo
         window-padding-x = 0
         window-padding-y = 0
         window-save-state = always

@@ -36,8 +36,6 @@ in {
         set -g escape-time 10
         # enable auto renaming
         setw -g automatic-rename on
-        # Allows images to work in the terminal
-        set -g allow-passthrough on
 
         # enable wm window titles
         set -g set-titles on

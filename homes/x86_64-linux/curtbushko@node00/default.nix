@@ -51,7 +51,7 @@
     LC_ALL = "en_US.UTF-8";
     EDITOR = "nvim";
     PAGER = "less -FirSwX";
-    TERM = "xterm-256color";
+    TERM = "xterm-ghostty";
   };
 
   imports = [
