@@ -16,9 +16,9 @@ in {
         };
         whitelist = {
           prefix = [
-            "$HOME/code/go/src/github.com/hashicorp"
-            "$HOME/code/go/src/github.com/mitchellh"
-            "$HOME/code/go/src/github.com/curtbushko"
+            "$HOME/workspace/github.com/hashicorp"
+            "$HOME/workspace/github.com/mitchellh"
+            "$HOME/workspace/github.com/curtbushko"
           ];
           exact = ["$HOME/.envrc"];
         };
