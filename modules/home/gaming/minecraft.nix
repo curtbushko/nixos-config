@@ -14,6 +14,7 @@ in {
       ]
       ++ (lib.optionals isLinux [
         # minecraft 2025-09-15 minecraft package is broken
+        openjdk25
         vulkan-loader
         glfw
         #prismlauncher
