@@ -113,6 +113,8 @@ in {
           "content.notify.interval" = 100000;
           "browser.startup.homepage" = "";
           "browser.toolbars.bookmarks.visibility" = "always";
+          # KEYS (set Super instead of Ctrl)
+          "ui.key.accelKey" = 91;
           # BOOKMARKS
           "browser.bookmarks.addedImportButton" = false;
           # GFX
