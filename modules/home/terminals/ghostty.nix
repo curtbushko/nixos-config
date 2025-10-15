@@ -49,7 +49,6 @@ in {
         window-padding-y = 0
         window-save-state = always
         confirm-close-surface = false
-        app-notifications = true
 
         # Keybinds to match macOS since this is a VM
         keybind = super+c=copy_to_clipboard
@@ -111,11 +110,13 @@ in {
         #palette = 15=${base06}
       ''
       + (lib.optionalString isLinux ''
-        window-decoration = true 
+        window-decoration = true
+        app-notifications = false
       ''
       )
       + (lib.optionalString isDarwin ''
         window-decoration = true
+        app-notifications = true
       ''
       );
     };
