@@ -37,6 +37,7 @@
   jira-ls = pkgs.writeScriptBin "jira-ls" (builtins.readFile ./jira-ls);
   kubewatcher = pkgs.writeScriptBin "kubewatcher" (builtins.readFile ./kubewatcher);
   leetgen = pkgs.writeScriptBin "leetgen" (builtins.readFile ./leetgen);
+  levity = pkgs.writeScriptBin "levity" (builtins.readFile ./levity);
   makelintwatcher = pkgs.writeScriptBin "makelintwatcher" (builtins.readFile ./makelintwatcher);
   makeunitwatcher = pkgs.writeScriptBin "makeunitwatcher" (builtins.readFile ./makeunitwatcher);
   new-note = pkgs.writeScriptBin "new-note" (builtins.readFile ./new-note);
@@ -89,6 +90,7 @@ in {
       jira-ls
       kubewatcher
       leetgen
+      levity
       makelintwatcher
       makeunitwatcher
       new-note

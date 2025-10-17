@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+# Slack workspace user list script
+# Requires: SLACK_TOKEN environment variable with appropriate OAuth scopes (users:read)
+
+set -euo pipefail
+
+# Check if SLACK_TOKEN is set
+if [ -z "${SLACK_TOKEN:-}" ]; then
+    echo "Error: SLACK_TOKEN environment variable is not set"
+    echo "Please set it with: export SLACK_TOKEN='xoxb-your-token'"
+    exit 1
+fi
+
+# Generate filename with current date
+FILENAME="$(date +%Y-%m-%d).txt"
+
+# Fetch users from Slack API and process
+echo "Fetching users from Slack workspace..."
+
+# Using users.list API endpoint
+# Extract user real names, sort, and save to file
+curl -s -X GET "https://slack.com/api/users.list" \
+    -H "Authorization: Bearer ${SLACK_TOKEN}" \
+    | jq -r '.members[] | select(.deleted == false and .is_bot == false) | .real_name' \
+    | sort \
+    > "${FILENAME}"
+
+echo "User list saved to: ${FILENAME}"
+echo "Total users: $(wc -l < "${FILENAME}")"
