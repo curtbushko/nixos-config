@@ -18,13 +18,33 @@ FILENAME="$(date +%Y-%m-%d).txt"
 # Fetch users from Slack API and process
 echo "Fetching users from Slack workspace..."
 
-# Using users.list API endpoint
-# Extract user real names, sort, and save to file
-curl -s -X GET "https://slack.com/api/users.list" \
-    -H "Authorization: Bearer ${SLACK_TOKEN}" \
-    | jq -r '.members[] | select(.deleted == false and .is_bot == false) | .real_name' \
-    | sort \
-    > "${FILENAME}"
+# Using users.list API endpoint with pagination
+# Collect all users by following cursor pagination
+TEMP_FILE=$(mktemp)
+CURSOR=""
+
+while true; do
+    if [ -z "$CURSOR" ]; then
+        RESPONSE=$(curl -s -X GET "https://slack.com/api/users.list" \
+            -H "Authorization: Bearer ${SLACK_TOKEN}")
+    else
+        RESPONSE=$(curl -s -X GET "https://slack.com/api/users.list?cursor=${CURSOR}" \
+            -H "Authorization: Bearer ${SLACK_TOKEN}")
+    fi
+
+    # Extract users from this page
+    echo "$RESPONSE" | jq -r '.members[] | select(.deleted == false and .is_bot == false) | "\(.profile.email // "N/A")\t\(.real_name)"' >> "$TEMP_FILE"
+
+    # Get next cursor
+    CURSOR=$(echo "$RESPONSE" | jq -r '.response_metadata.next_cursor // empty')
+
+    # Break if no more pages
+    [ -z "$CURSOR" ] && break
+done
+
+# Sort and save to final file
+sort "$TEMP_FILE" > "${FILENAME}"
+rm "$TEMP_FILE"
 
 echo "User list saved to: ${FILENAME}"
 echo "Total users: $(wc -l < "${FILENAME}")"
