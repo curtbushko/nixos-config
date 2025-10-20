@@ -54,6 +54,7 @@ in {
         pkgs.ripgrep
         pkgs.stylua
         pkgs.sshuttle
+        pkgs.go-task
         pkgs.tree
         pkgs.watch
         pkgs.watchexec
