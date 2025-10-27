@@ -156,7 +156,6 @@
 
     hyprland
     niri
-    rofi # app launcher
     sway
     swaybg
     swayidle

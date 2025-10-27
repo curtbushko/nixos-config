@@ -44,7 +44,6 @@ in {
           "..." = "cd ../..";
           "...." = "cd ../../..";
           mdkir = "mkdir";
-          cat = "bat";
           cda = "zoxide add";
           cdr = "zoxide remove";
           foodirs = "echo FOO=$FOO, BAR=$BAR, BAZ=$BAZ";

@@ -61,6 +61,11 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
+    vicinae = {
+      url = "github:vicinaehq/vicinae";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
     zig.url = "github:mitchellh/zig-overlay";
 
     zjstatus = {

@@ -15,8 +15,9 @@ in {
     ./niri.nix
     ./swaybg.nix
     ./swayidle.nix
-    ./xwayland-satellite.nix
+    ./vicinae.nix
     ./waybar.nix
+    ./xwayland-satellite.nix
   ];
 
   options.curtbushko.wm.tools = {

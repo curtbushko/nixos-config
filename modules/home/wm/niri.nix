@@ -69,8 +69,8 @@ in {
           XCURSOR_SIZE = "20";
         };
         spawn-at-startup = [
-          #{ command = [ "wl-paste --type text --watch cliphist store" ]; }
-          #{ command = [ "wl-paste --type image --watch cliphist store" ]; }
+          { command = [ "wl-paste --type text --watch cliphist store" ]; }
+          { command = [ "wl-paste --type image --watch cliphist store" ]; }
           { command = [ "xprop -root -f _XWAYLAND_GLOBAL_OUTPUT_SCALE 32c -set _XWAYLAND_GLOBAL_OUTPUT_SCALE 1" ]; }
         ];
         input = {
@@ -271,7 +271,8 @@ in {
         {
           "Mod+Return".action.spawn = "ghostty";
           "Mod+T".action.spawn = "ghostty";
-          "Mod+Space".action.spawn = "fuzzel";
+          "Mod+Space".action.spawn = ["vicinae" "vicinae://toggle"]; # fuzzel
+          "Mod+V".action.spawn = ["vicinae" "vicinae://extensions/vicinae/clipboard/history"];
           "Mod+Tab".action = actions.toggle-overview;
 
           "Mod+Shift+Slash".action = actions.show-hotkey-overlay;
@@ -340,7 +341,7 @@ in {
 
     stylix.targets.fuzzel.enable = false;
     programs.fuzzel = {
-      enable = true;
+      enable = false;
       settings = {
         main = {
           terminal = "ghostty";
