@@ -1,5 +1,6 @@
 {
   config,
+  inputs,
   lib,
   pkgs,
   ...
@@ -20,7 +21,7 @@ in {
   config = mkIf cfg.enable {
     programs.claude-code = {
       enable = true;
-      package = pkgs.claude-code;
+      package = inputs.claude-code.packages.${pkgs.system}.default;
       settings = {
         includeCoAuthoredBy = false;
         permissions = {

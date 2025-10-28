@@ -25,7 +25,7 @@ else
 	sudo NIXPKGS_ALLOW_UNSUPPORTED_ARCH=1 nixos-rebuild switch --flake ".#${HOST}"
 endif
 
-.PHONY: dry-build 
+.PHONY: dry-build
 dry-build: ## Build and switch your nix config.
 	@echo "$(DATELOG) Building dry build of nix config"
 ifeq ($(OS), darwin)
@@ -51,9 +51,13 @@ update-all: update update-ghostty update-neovim ## Update all packages
 update: ## Update nix packages
 	nix --extra-experimental-features 'nix-command flakes' flake update
 
+.PHONY: update-claude-code
+update-claude-code: ## Update the claude-code flake
+	nix flake update clause-code 
+
 .PHONY: update-ghostty
 update-ghostty: ## Update the ghostty flake
-	nix flake update ghostty 
+	nix flake update ghostty
 
 .PHONY: update-neovim
 update-neovim: ## Update the neovim flake
