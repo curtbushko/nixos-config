@@ -67,6 +67,9 @@ in {
           XDG_SESSION_TYPE = "wayland";
           XCURSOR_THEME = "Adwaita";
           XCURSOR_SIZE = "20";
+          # Used for fixing nautilus not closing
+          GTK_IM_MODULE = "wayland";
+          QT_IM_MODULE = "wayland";
         };
         spawn-at-startup = [
           { command = [ "wl-paste --type text --watch cliphist store" ]; }
@@ -334,7 +337,8 @@ in {
             "gnome"
             "gtk"
           ];
-          "org.freedesktop.impl.portal.Settings" = "gnome";
+          "org.freedesktop.impl.portal.Settings" = "gtk";
+          "org.freedesktop.impl.portal.FileChooser" = "gtk";
         };
       };
     };

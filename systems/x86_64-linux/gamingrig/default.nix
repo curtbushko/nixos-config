@@ -122,7 +122,6 @@
     alsa-oss
     cachix
     cmake
-    dunst # notifications
     dconf
     git
     gnumake
@@ -199,16 +198,9 @@
     libidn
     tbb
     zlib
+
   ];
-  # Saving this as it might be useful
-  #environment.variables = {
-  #  NIX_LD_LIBRARY_PATH = lib.makeLibraryPath [
-  #    pkgs.stdenv.cc.cc
-  #    pkgs.openssl
-  # add here the libraries you want...
-  #  ];
-  #  NIX_LD = lib.fileContents "${pkgs.stdenv.cc}/nix-support/dynamic-linker";
-  # };
+ 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   programs.mtr.enable = true;

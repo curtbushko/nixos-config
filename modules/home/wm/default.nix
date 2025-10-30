@@ -48,7 +48,6 @@ in {
         swappy # snapshot tool
 
         networkmanagerapplet
-        dunst
         libnotify
         xdg-utils
         xwayland-satellite
