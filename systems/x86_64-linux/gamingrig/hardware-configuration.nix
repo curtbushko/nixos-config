@@ -18,7 +18,7 @@
     initrd.kernelModules = [];
     # 2024-07-20 - removing as this might be causing a collision
     #kernelModules = ["kvm-amd" "nvidia" "i2c-dev"]; # i2c-dev is used for monitor controls
-    kernelModules = ["kvm-amd" "i2c-dev"]; # i2c-dev is used for monitor controls
+    kernelModules = ["kvm-amd" "i2c-dev" "nct6775"]; # 
     # 2024-07-20 - removing as this might be causing a collision
     #extraModulePackages = [config.boot.kernelPackages.nvidia_x11];
     blacklistedKernelModules = ["amdgpu" "nouveau"];

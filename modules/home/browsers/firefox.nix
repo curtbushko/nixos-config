@@ -32,6 +32,22 @@ in {
             default_area = "navbar";
           };
         };
+        Preferences = {
+          "browser.in-content.dark-mode" = true; # Use dark mode
+          "ui.systemUsesDarkTheme" = true;
+
+          "extensions.autoDisableScopes" = 0; # Automatically enable extensions
+          "extensions.update.enabled" = false;
+        };
+        Permissions = {
+          Notifications = {
+          Allow = [
+            "https://web.whatsapp.com"
+            "https://app.slack.com"
+            "https://discord.com"
+          ];
+        };
+    };
       };
 
       profiles.default = {

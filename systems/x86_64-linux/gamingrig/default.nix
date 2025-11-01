@@ -13,6 +13,8 @@
   ];
 
   curtbushko = {
+    hardware.audio.enable = true;
+    hardware.cpu.enable = true;
     services.llm.enable = true;
     services.minecraft.enable = false; # 2025.09.15 - minecraft package is broken
     services.vr.enable = true;
@@ -130,6 +132,7 @@
     inputs.ghostty.packages.x86_64-linux.default
     killall
     pciutils
+    lm_sensors
     rxvt-unicode-unwrapped
     vim
     nix-index
@@ -239,6 +242,7 @@
 
   # Enable OpenGL
   services.xserver.videoDrivers = ["nvidia"];
+  services.lact.enable = true;
   hardware.graphics = {
     enable = true;
     enable32Bit = true;

@@ -96,7 +96,7 @@ in {
           };
 
           pulseaudio = {
-            on-click = "pavucontrol";
+            on-click = "pavucontrol-qt";
             format = "{format_source} {icon} {volume}%";
             format-muted = "{format_source} 󰸈";
 
@@ -137,6 +137,17 @@ in {
             tooltip-format = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
           };
 
+          "custom/mako" = {
+            tooltip = true;
+            interval = 1;
+            format = "<span font='12'>{} </span>";
+            exec = "mako-toggle-waybar status";
+            on-click-left = "mako-toggle-waybar toggle";
+            on-click-right = "mako-toggle-waybar toggle";
+            return-type = "json";
+            signal = 8;
+          };
+
           "niri/window" = {
             format = "{title}";
             icon = false;
@@ -156,6 +167,7 @@ in {
 
           modules-center = [
             "niri/window"
+            "custom/mako"
           ];
 
           /*
@@ -177,6 +189,7 @@ in {
           };
 
           cpu = {
+            on-click = "coolercontrol";
             interval = 10;
             format = "󰍛 {usage}%";
           };
@@ -202,6 +215,7 @@ in {
           };
 
           "custom/gpu" = {
+            on-click = "coolercontrol";
             exec = "nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits";
             format = " {}°C";
             interval = 10;
@@ -273,8 +287,8 @@ in {
           @define-color background ${colors.bg};
 
           /* workspace text colors */
-          @define-color active_fg  ${colors.statusline_b_fg };
-          @define-color in_use_fg  ${colors.statusline_b_fg };
+          @define-color active_fg  ${colors.statusline_b_fg};
+          @define-color in_use_fg  ${colors.statusline_b_fg};
 
           /* updates-widget icon+text colors */
           @define-color updates_green ${colors.green};
@@ -369,6 +383,14 @@ in {
           }
 
           #niri-window {
+              font-weight: bold;
+              font-size: 12px;
+              padding: 1px 5px 0px 5px;
+              opacity: 1;
+              background: transparent;
+              color: @section_2_fg;
+          }
+          #custom-mako {
               font-weight: bold;
               font-size: 12px;
               padding: 1px 5px 0px 5px;

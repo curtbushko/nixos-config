@@ -41,12 +41,13 @@ in {
         slurp
         wl-clipboard
         wl-clip-persist
-        pavucontrol
+        lxqt.pavucontrol-qt
 
         eww
         swww
         swappy # snapshot tool
 
+        mako
         networkmanagerapplet
         libnotify
         xdg-utils
