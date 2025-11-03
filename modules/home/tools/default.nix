@@ -32,6 +32,7 @@ in {
         pkgs.age
         pkgs.alejandra
         pkgs.asciinema
+        pkgs.bats
         pkgs.bottom
         pkgs.btop
         pkgs.difftastic
