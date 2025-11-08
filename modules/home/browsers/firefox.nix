@@ -143,7 +143,7 @@ in {
           # DISK
           "browser.cache.jsbc_compression_level" = 3;
           # MEDIA
-          "media.av1.enabled" = false;
+          "media.av1.enabled" = true;
           "media.cache_readahead_limit" = 7200;
           "media.cache_resume_treshold" = 3600;
           "media.ffmpeg.vaapi.enabled" = true;

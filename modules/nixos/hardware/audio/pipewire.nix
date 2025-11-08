@@ -7,17 +7,31 @@
   cfg = config.curtbushko.hardware.audio;
 in {
   config = mkIf cfg.enable {
+    # 2024.11.04
+    # Bypassing some rkit bugs that are causing audio problems
+    # See: https://github.com/heftig/rtkit/issues/32
+    security.pam.loginLimits = [
+      { domain = "@audio"; item = "rtprio"; type = "-"; value = 95; }
+      { domain = "@audio"; item = "nice"; type = "-"; value = -19; }
+      { domain = "@audio"; item = "memlock"; type = "-"; value = 4194304; }
+    ];
+
+    security.rtkit = {
+      enable = true;
+      args = [ "--no-canary" ]; # bypass from above
+    };
     # Pipewire
-    security.rtkit.enable = true;
+    # Explicitly disable PulseAudio when using PipeWire
+    hardware.pulseaudio.enable = false;
+
     services.pipewire = {
       enable = true;
       alsa.enable = true;
       alsa.support32Bit = true;
       pulse.enable = true;
       jack.enable = true;
-      wireplumber.enable = false;
+      wireplumber.enable = true;
     };
-    hardware.pulseaudio.support32Bit = true;
 
     # services.pipewire.wireplumber.extraConfig = {
     #   bluetooth = {

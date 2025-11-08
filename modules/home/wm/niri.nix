@@ -58,6 +58,7 @@ in {
           GSK_RENDERER = "ngl"; # 2025-09-16 - seems to be needed for nautilus to work
           MOZ_ENABLE_WAYLAND = "1";
           NIXOS_OZONE_WL = "1";
+          ELECTRON_OZONE_PLATFORM_HINT = "auto";
           QT_QPA_PLATFORM = "wayland;xcb";
           QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
           SDL_VIDEODRIVER = "wayland";
@@ -210,6 +211,32 @@ in {
               };
             clip-to-geometry = true;
           }
+          # Block sensitive windows from screencasts
+          {
+            matches = [
+              { app-id = "^org\\.keepassxc\\.KeePassXC$"; }
+              { app-id = "^org\\.gnome\\.World\\.Secrets$"; }
+            ];
+            block-out-from = "screencast";
+          }
+          # Highlight windows being screencasted
+          {
+            matches = [
+              { is-window-cast-target = true; }
+            ];
+            focus-ring = {
+              enable = true;
+              active.color = "#f38ba8";
+              inactive.color = "#7d0d2d";
+            };
+            border = {
+              enable = true;
+              inactive.color = "#7d0d2d";
+            };
+            shadow = {
+              color = "#7d0d2d70";
+            };
+          }
           {
             matches = [
               {
@@ -320,27 +347,30 @@ in {
       }; # settings
     }; # programs.niri
 
+    services.polkit-gnome.enable = true;
+
+    # e.g. for slack, etc
+    xdg.configFile."electron-flags.conf".text = ''
+      --enable-features=UseOzonePlatform
+      --ozone-platform=wayland
+    '';
+
     xdg.portal = {
       enable = true;
-      xdgOpenUsePortal = true;
-      extraPortals = with pkgs; [
-        xdg-desktop-portal-gnome
-        xdg-desktop-portal-gtk
-        xdg-desktop-portal-wlr
-      ];
       config = {
         common = {
-          default = "gnome";
+          default = [ "gnome" ];
+          "org.freedesktop.impl.portal.Settings" = [ "gnome" ];
         };
         niri = {
-          default = [
-            "gnome"
-            "gtk"
-          ];
-          "org.freedesktop.impl.portal.Settings" = "gtk";
-          "org.freedesktop.impl.portal.FileChooser" = "gtk";
+          default = [ "gnome" ];
+          "org.freedesktop.impl.portal.Settings" = [ "gnome" ];
         };
       };
+      extraPortals = with pkgs; [
+        xdg-desktop-portal-gnome
+      ];
+      xdgOpenUsePortal = true;
     };
 
     stylix.targets.fuzzel.enable = false;

@@ -33,7 +33,7 @@ in {
           position = "top";
           spacing = "-4";
           mod = "dock";
-          height = 20;
+          height = 24;
           margin-top = 0;
           margin-bottom = 0;
           exclusive = true;
@@ -111,6 +111,9 @@ in {
               "󰖀"
               "󰕾"
             ];
+
+            scroll-step = 1;
+            smooth-scrolling-threshold = 1;
           };
 
           "custom/audio-separator" = {
@@ -137,17 +140,6 @@ in {
             tooltip-format = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
           };
 
-          "custom/mako" = {
-            tooltip = true;
-            interval = 1;
-            format = "<span font='12'>{} </span>";
-            exec = "mako-toggle-waybar status";
-            on-click-left = "mako-toggle-waybar toggle";
-            on-click-right = "mako-toggle-waybar toggle";
-            return-type = "json";
-            signal = 8;
-          };
-
           "niri/window" = {
             format = "{title}";
             icon = false;
@@ -163,11 +155,11 @@ in {
               "(.*) Zellij (.*)" = "  ";
               "(.*) Steam (.*)" = "󰓓 ";
             };
+            swap-icon-label = true;
           };
 
           modules-center = [
             "niri/window"
-            "custom/mako"
           ];
 
           /*
@@ -390,14 +382,6 @@ in {
               background: transparent;
               color: @section_2_fg;
           }
-          #custom-mako {
-              font-weight: bold;
-              font-size: 12px;
-              padding: 1px 5px 0px 5px;
-              opacity: 1;
-              background: transparent;
-              color: @section_2_fg;
-          }
 
           /*
           #custom-updates.green {
@@ -422,7 +406,7 @@ in {
           /* inactiv widget modules */
           #cpu, #memory, #mpris, #custom-spotify, #custom-mode, #custom-gpuinfo, #custom-ddcutil,
           /* group "system" widgets */
-          #custom-updates, #custom-power, #custom-copyq, #custom-mako,
+          #custom-updates, #custom-power, #custom-copyq,
           /* group "temperature" widgets */
           #bluetooth, #pulseaudio, #wireplumber, #network, #custom-ddc_brightness, #custom-screenrecorder,
           /* group "resources" widgets */

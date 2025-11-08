@@ -53,5 +53,13 @@ in {
         xdg-utils
         xwayland-satellite
       ]);
+
+    home.pointerCursor = {
+      name = "BreezeX-RosePine-Linux";
+      package = pkgs.rose-pine-cursor;
+      size = 32;
+      x11.enable = true;
+      gtk.enable = true;
+    };
   };
 }

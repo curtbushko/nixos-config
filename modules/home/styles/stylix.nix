@@ -79,5 +79,21 @@ in {
         name = "Noto Color Emoji";
       };
     };
+    targets.gtk.enable = true;
   };
+
+  # GTK icon theme configuration to fix Vicinae warnings
+  gtk = {
+    enable = true;
+    iconTheme = {
+      name = "Papirus-Dark";
+      package = pkgs.papirus-icon-theme;
+    };
+  };
+
+  # Add required icon theme packages
+  home.packages = with pkgs; [
+    hicolor-icon-theme # Base icon theme
+    papirus-icon-theme # Main icon theme
+  ];
 }
