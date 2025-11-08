@@ -58,8 +58,8 @@ in {
       name = "BreezeX-RosePine-Linux";
       package = pkgs.rose-pine-cursor;
       size = 32;
-      x11.enable = true;
-      gtk.enable = true;
+      x11.enable = isLinux;
+      gtk.enable = isLinux;
     };
   };
 }

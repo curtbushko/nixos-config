@@ -1,6 +1,7 @@
-{config, pkgs, ...}: let
+{config, lib, pkgs, ...}: let
   colors = import ./${config.curtbushko.theme.name}.nix {};
   wallpaper = ./wallpapers/3440x1440/${config.curtbushko.theme.wallpaper};
+  isLinux = pkgs.stdenv.isLinux;
 in {
   # Base16 guide (https://github.com/chriskempson/base16/blob/main/styling.md)
   # base00 - Default Background
@@ -79,20 +80,20 @@ in {
         name = "Noto Color Emoji";
       };
     };
-    targets.gtk.enable = true;
+    targets.gtk.enable = isLinux;
   };
 
   # GTK icon theme configuration to fix Vicinae warnings
   gtk = {
-    enable = true;
+    enable = isLinux;
     iconTheme = {
       name = "Papirus-Dark";
       package = pkgs.papirus-icon-theme;
     };
   };
 
-  # Add required icon theme packages
-  home.packages = with pkgs; [
+  # Add required icon theme packages (Linux only)
+  home.packages = with pkgs; lib.optionals isLinux [
     hicolor-icon-theme # Base icon theme
     papirus-icon-theme # Main icon theme
   ];
