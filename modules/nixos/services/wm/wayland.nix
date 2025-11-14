@@ -38,12 +38,12 @@ in {
     xdg.portal = {
       enable = true;
       extraPortals = with pkgs; [
-        xdg-desktop-portal-gtk
+        xdg-desktop-portal-gnome
       ];
       config = {
         common = {
-          default = [ "gtk" ];
-          "org.freedesktop.impl.portal.Settings" = [ "gtk" ];
+          default = [ "gnome" ];
+          "org.freedesktop.impl.portal.Settings" = [ "gnome" ];
         };
       };
     };

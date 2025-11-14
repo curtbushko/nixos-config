@@ -13,7 +13,8 @@ in {
       [
       ]
       ++ (lib.optionals isLinux [
-        kdePackages.dolphin
+        gnome-text-editor
+        nautilus
       ]);
 
     home.file.".config/gtk-3.0/bookmarks".text = ''

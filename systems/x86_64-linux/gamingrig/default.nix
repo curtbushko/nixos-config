@@ -105,7 +105,7 @@
         Privacy = "device";
         Enable = "Source,Sink,Media,Socket";
         AutoEnable = true;
-        ControllerMode = "bredr";
+        ControllerMode = "dual";
       };
       Policy = {
         AutoEnable = true;
@@ -297,7 +297,13 @@
 
   # Docker
   virtualisation = {
-    libvirtd.enable = true;
+    libvirtd = {
+      enable = true;
+      qemu = {
+        package = pkgs.qemu_kvm;
+        ovmf.enable = true;
+      };
+    };
     docker.enable = true;
   };
 

@@ -80,21 +80,44 @@ in {
         name = "Noto Color Emoji";
       };
     };
-    targets.gtk.enable = isLinux;
+    targets.gtk = {
+      enable = isLinux;
+      extraCss = ''
+        /* Reduce spacing in Nautilus icon view */
+        .nautilus-canvas-item {
+          padding: 2px;
+        }
+
+        /* Reduce spacing in Nautilus list view */
+        .nautilus-list-view .view {
+          padding: 2px;
+        }
+
+        /* Reduce icon spacing */
+        .nautilus-window flowbox {
+          padding: 2px;
+        }
+
+        .nautilus-window flowboxchild {
+          padding: 2px;
+          margin: 2px;
+        }
+      '';
+    };
   };
 
   # GTK icon theme configuration to fix Vicinae warnings
   gtk = {
     enable = isLinux;
     iconTheme = {
-      name = "Papirus-Dark";
-      package = pkgs.papirus-icon-theme;
+      name = "Gruvbox-Plus-Dark";
+      package = pkgs.gruvbox-plus-icons;
     };
   };
 
   # Add required icon theme packages (Linux only)
   home.packages = with pkgs; lib.optionals isLinux [
     hicolor-icon-theme # Base icon theme
-    papirus-icon-theme # Main icon theme
+    gruvbox-plus-icons # Main icon theme
   ];
 }
