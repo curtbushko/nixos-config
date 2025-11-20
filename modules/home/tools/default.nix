@@ -62,6 +62,7 @@ in {
         pkgs.wakeonlan
         pkgs.wget
         pkgs.yt-dlp
+        pkgs.yq
         pkgs.unison
         pkgs.unzip
         pkgs.zoxide

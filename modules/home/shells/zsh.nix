@@ -207,7 +207,7 @@ in {
             zoxide add $NIXOS_CONFIG
           fi
 
-          if [ -d $GITHUB/hasicorp ]; then
+          if [ -d $GITHUB/hashicorp ]; then
             zoxide add $GITHUB/hashicorp
           fi
         fi

@@ -35,6 +35,7 @@ in {
         pull = {ff = "only";};
         url."ssh://git@github.com".insteadOf = "https://github.com";
         url."ssh://git@github.ibm.com".insteadOf = "https://github.ibm.com";
+        url."ssh://git@gitlab.com:".insteadOf = "https://gitlab.com/";
         oh-my-zsh = {hide-dirty = "1";}; # this stops slowdowns in some repos with zsh
         submodule.recurse = true;
       };
@@ -83,6 +84,7 @@ in {
         pullf = "pull --ff-only";
         shoe = "show";
         st = "status";
+        stat = "status";
       };
     };
   };
