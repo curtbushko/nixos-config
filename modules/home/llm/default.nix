@@ -55,5 +55,8 @@ in {
         theme = "dark";
       };
     };
+
+    # Deploy Claude Code skills
+    home.file.".claude/skills/golang.md".source = ./claude/skills/golang.md;
   };
 }
