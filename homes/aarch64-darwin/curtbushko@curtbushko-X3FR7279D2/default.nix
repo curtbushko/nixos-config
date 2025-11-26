@@ -37,7 +37,6 @@
     pkgs.cachix
     inputs.neovim.packages.${system}.default
     pkgs.podman
-    pkgs.oc
   ];
 
   #---------------------------------------------------------------------
