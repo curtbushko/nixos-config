@@ -126,6 +126,7 @@ in {
           pc2 = "wakeonlan $GAMINGRIG_MAC_ADDRESS; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI2 --bus 6";
           pcall = "wakeonlan $GAMINGRIG_MAC_ADDRESS; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI2 --bus ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_DP1 --bus 5";
           steamdeck = "ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_HDMI1 --bus 5";
+          sleepy = "wakeonlan $M1_PRO_MAC_ADDRESS; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_USBC --bus 5 && systemctl suspend";
           startx = "niri-session";
           kill-steam = "kill -KILL $(pidof steam)";
         }

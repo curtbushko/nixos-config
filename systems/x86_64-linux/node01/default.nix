@@ -2,9 +2,17 @@
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
-    ./hosts.nix
     ../../../modules/nixos/base
   ];
+
+  # StevenBlack/hosts blocklist configuration
+  networking.stevenBlackHosts = {
+    enable = true;
+    blockPorn = true;
+    blockGambling = true;
+    blockFakenews = true;
+    blockSocial = false;
+  };
 
   curtbushko = {
     hardware.audio.enable = false;

@@ -36,6 +36,11 @@
 
     sops-nix.url = "github:Mic92/sops-nix";
 
+    stevenblack-hosts = {
+      url = "github:StevenBlack/hosts";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     stylix = {
       url = "github:danth/stylix";
       #  02/17/25 - home manager broke something with qt6 and theming. It interacted poorly with stylix
@@ -102,6 +107,7 @@
 
       systems.modules.nixos = with inputs; [
         home-manager.nixosModules.home-manager
+        stevenblack-hosts.nixosModule
       ];
     };
 }

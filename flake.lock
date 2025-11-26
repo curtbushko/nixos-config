@@ -931,6 +931,7 @@
         "nixpkgs-unstable": "nixpkgs-unstable_2",
         "snowfall-lib": "snowfall-lib",
         "sops-nix": "sops-nix",
+        "stevenblack-hosts": "stevenblack-hosts",
         "stylix": "stylix",
         "vicinae": "vicinae",
         "zig": "zig_2",
@@ -995,6 +996,26 @@
       "original": {
         "owner": "Mic92",
         "repo": "sops-nix",
+        "type": "github"
+      }
+    },
+    "stevenblack-hosts": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1764026853,
+        "narHash": "sha256-NMFu5BLTJmo2h8/IcRQClgy0HVbggxVZa64gAkttAzA=",
+        "owner": "StevenBlack",
+        "repo": "hosts",
+        "rev": "5300bf25b363583ceb7d73073652523aa3aadbbe",
+        "type": "github"
+      },
+      "original": {
+        "owner": "StevenBlack",
+        "repo": "hosts",
         "type": "github"
       }
     },
