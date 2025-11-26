@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  namespace,
   pkgs,
   ...
 }: let
@@ -59,9 +58,7 @@ in {
         confirm-close-surface = false
         cursor-style = block
         cursor-style-blink = true
-        custom-shader = "shaders/blaze.glsl"
-        custom-shader = "shaders/glow.glsl"
-        custom-shader-animation = true
+        custom-shader-animation = false 
 
         # Keybinds to match macOS since this is a VM
         keybind = super+c=copy_to_clipboard
@@ -137,7 +134,6 @@ in {
       text = let
         base01 = "#${config.lib.stylix.colors.base01}";
         base0C = "#${config.lib.stylix.colors.base0C}";
-        base0D = "#${config.lib.stylix.colors.base0D}";
       in ''
         float getSdfRectangle(in vec2 p, in vec2 xy, in vec2 b)
         {
