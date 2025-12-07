@@ -2,7 +2,6 @@
   config,
   lib,
   pkgs,
-  system,
   ...
 }: let
   inherit (lib) types mkOption mkIf;

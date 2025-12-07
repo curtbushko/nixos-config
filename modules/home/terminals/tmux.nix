@@ -12,6 +12,15 @@ in {
     stylix.targets.tmux.enable = true;
     programs.tmux = {
       enable = true;
+      package = pkgs.tmux.overrideAttrs (oldAttrs: rec {
+        version = "3.5a";
+        src = pkgs.fetchFromGitHub {
+          owner = "tmux";
+          repo = "tmux";
+          rev = version;
+          hash = "sha256-Z9XHpyh4Y6iBI4+SfFBCGA8huFJpRFZy9nEB7+WQVJE=";
+        };
+      });
       tmuxinator.enable = true;
       plugins = with pkgs.tmuxPlugins; [
         better-mouse-mode

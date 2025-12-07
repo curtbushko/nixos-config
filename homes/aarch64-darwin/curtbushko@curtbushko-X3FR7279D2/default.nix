@@ -1,7 +1,6 @@
 {
   pkgs,
   inputs,
-  system,
   ...
 }: {
   home.enableNixpkgsReleaseCheck = false;
@@ -35,7 +34,7 @@
   home.packages = [
     # Darwin only
     pkgs.cachix
-    inputs.neovim.packages.${system}.default
+    inputs.neovim.packages.${pkgs.stdenv.hostPlatform.system}.default
     pkgs.podman
   ];
 

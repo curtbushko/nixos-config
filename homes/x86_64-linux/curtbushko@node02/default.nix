@@ -3,7 +3,6 @@
   pkgs,
   # You also have access to your flake's inputs.
   inputs,
-  system,
   ...
 }: {
   home.stateVersion = "18.09";
@@ -39,7 +38,7 @@
   home.packages = [
     pkgs.cargo
 
-    inputs.neovim.packages.${system}.default
+    inputs.neovim.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 
   #---------------------------------------------------------------------

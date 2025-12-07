@@ -1,11 +1,15 @@
 {
   inputs,
   pkgs,
-  system,
   ...
 }: {
   homebrew = {
     enable = true;
+    onActivation = {
+      autoUpdate = true;
+      cleanup = "zap";
+      upgrade = true;
+    };
     brews = [];
     taps = [];
     casks = [

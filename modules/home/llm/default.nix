@@ -21,7 +21,7 @@ in {
   config = mkIf cfg.enable {
     programs.claude-code = {
       enable = true;
-      package = inputs.claude-code.packages.${pkgs.system}.default;
+      package = inputs.claude-code.packages.${pkgs.stdenv.hostPlatform.system}.default;
       settings = {
         includeCoAuthoredBy = false;
         permissions = {
