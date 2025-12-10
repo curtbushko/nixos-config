@@ -22,6 +22,7 @@
       "vlc"
       "notunes"
       "podman-desktop"
+      "openvpn-connect"
     ];
   };
 
