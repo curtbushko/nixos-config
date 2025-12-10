@@ -38,7 +38,7 @@
     pkgs.podman
     pkgs.python312
     pkgs.terraform
-    pkgs.helm
+    pkgs.kubernetes-helm
   ];
 
   #---------------------------------------------------------------------
