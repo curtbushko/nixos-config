@@ -65,10 +65,6 @@
     };
 
     zig.url = "github:mitchellh/zig-overlay";
-
-    zjstatus = {
-      url = "github:dj95/zjstatus";
-    };
   };
 
   outputs = inputs: let

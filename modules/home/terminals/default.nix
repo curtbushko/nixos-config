@@ -16,6 +16,5 @@ in {
     ./ghostty.nix
     ./starship.nix
     ./tmux.nix
-    ./zellij.nix
   ];
 }

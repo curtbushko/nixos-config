@@ -133,7 +133,7 @@
     gnumake
     gcc
     gdb
-    inputs.ghostty.packages.x86_64-linux.default
+    inputs.ghostty.packages.${pkgs.stdenv.hostPlatform.system}.default
     killall
     pciutils
     lm_sensors
