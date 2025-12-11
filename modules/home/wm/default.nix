@@ -17,7 +17,6 @@ in {
     ./swayidle.nix
     ./vicinae.nix
     ./waybar.nix
-    ./xwayland-satellite.nix
   ];
 
   options.curtbushko.wm.tools = {

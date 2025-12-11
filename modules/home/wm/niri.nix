@@ -75,6 +75,7 @@ in {
         spawn-at-startup = [
           { command = [ "wl-paste --type text --watch cliphist store" ]; }
           { command = [ "wl-paste --type image --watch cliphist store" ]; }
+          { command = [ "xwayland-satellite" ":0" ]; }
           { command = [ "xprop -root -f _XWAYLAND_GLOBAL_OUTPUT_SCALE 32c -set _XWAYLAND_GLOBAL_OUTPUT_SCALE 1" ]; }
         ];
         input = {

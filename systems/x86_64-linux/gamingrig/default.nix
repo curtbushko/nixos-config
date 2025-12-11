@@ -64,10 +64,6 @@
     enableUserSlices = true;
     enableSystemSlice = true;
     enableRootSlice = true;
-    extraConfig = {
-      DefaultMemoryPressureDurationSec = "20";
-      SwapUsedLimit = "90%";
-    };
   };
 
   # Setup settings so that I can access the video card devices to control the monitor
@@ -167,7 +163,7 @@
     swayidle
 
     # Gaming
-    steam-run-native
+    steam-run
     vulkan-tools
     lutris
     protonup-qt
@@ -291,21 +287,12 @@
     };
   };
 
-  # CUDA
-  environment.sessionVariables = rec {
-    CUDA_PATH = "${pkgs.cudatoolkit}";
-    CUDA_TOOLKIT_ROOT_DIR = "${pkgs.cudatoolkit}";
-    EXTRA_LDFLAGS = "-L/lib -L${pkgs.linuxPackages.nvidia_x11}/lib";
-    EXTRA_CCFLAGS = "-I/usr/include";
-  };
-
   # Docker
   virtualisation = {
     libvirtd = {
       enable = true;
       qemu = {
         package = pkgs.qemu_kvm;
-        ovmf.enable = true;
       };
     };
     docker.enable = true;

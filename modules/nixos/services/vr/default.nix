@@ -25,9 +25,7 @@ in {
     environment.systemPackages = with pkgs; [
       dbus
       libcap
-      libcef
       libdrm
-      libsForQt5.full
       openvr
       openssl
       udev
@@ -57,7 +55,6 @@ in {
       localNetworkGameTransfers.openFirewall = true;
       gamescopeSession.enable = true;
       extraPackages = with pkgs; [
-        libcef
         monado-vulkan-layers
       ];
     };

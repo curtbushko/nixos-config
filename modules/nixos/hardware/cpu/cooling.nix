@@ -38,7 +38,6 @@ in {
   config = mkIf cfg.enable {
     programs.coolercontrol = {
       enable = true;
-      nvidiaSupport = false;
     };
 
     # Apply gruvbox theme to CoolerControl

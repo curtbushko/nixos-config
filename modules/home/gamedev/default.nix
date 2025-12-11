@@ -29,7 +29,6 @@ in {
         inkscape
         gimp
         krita
-        olive-editor
         godot_4
         obs-studio
       ]);

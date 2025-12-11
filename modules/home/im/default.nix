@@ -18,7 +18,7 @@ in {
   };
   config = mkIf cfg.enable {
     home.packages = [
-      pkgs.whatsapp-for-linux
+      pkgs.wasistlos
       pkgs.whatsapp-emoji-font
     ];
   };
