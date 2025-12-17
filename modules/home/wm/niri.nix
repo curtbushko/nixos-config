@@ -29,6 +29,7 @@ in {
       swaybg
       swayidle
       xwayland-satellite
+      playerctl
     ];
 
     # Run niri as a service so that other services start (ie swayidle)
@@ -343,6 +344,16 @@ in {
           "Mod+Alt+L".action = actions.switch-preset-column-width;
           "Mod+Alt+Up".action = actions.switch-preset-window-height;
           "Mod+Alt+Down".action = actions.switch-preset-window-height;
+
+          # Volume keys mappings for PipeWire & WirePlumber.
+          XF86AudioRaiseVolume.action = actions.spawn [ "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "+2dB" ];
+          XF86AudioLowerVolume.action = actions.spawn [ "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "-2dB" ];
+          XF86AudioMute.action = actions.spawn [ "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle" ];
+          XF86AudioMicMute.action = actions.spawn [ "wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle" ];
+          XF86AudioNext.action = actions.spawn [ "playerctl" "next" ];
+          XF86AudioPrev.action = actions.spawn [ "playerctl" "previous" ];
+          XF86AudioPlay.action = actions.spawn [ "playerctl" "play-pause" ];
+          XF86AudioStop.action = actions.spawn [ "playerctl" "play-pause" ];
 
         }; # binds
       }; # settings
