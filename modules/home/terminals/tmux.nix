@@ -6,7 +6,7 @@
 }: let
   inherit (lib) mkIf;
   cfg = config.curtbushko.terminals;
-  colors = import ../../home/styles/${config.curtbushko.theme.name}.nix {};
+  colors = lib.importJSON ../../home/styles/${config.curtbushko.theme.name}.json;
 in {
   config = mkIf cfg.enable {
     stylix.targets.tmux.enable = true;

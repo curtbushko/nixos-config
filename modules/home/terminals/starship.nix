@@ -5,7 +5,7 @@
 }: let
   inherit (lib) mkIf;
   cfg = config.curtbushko.terminals;
-  colors = import ../../home/styles/${config.curtbushko.theme.name}.nix {};
+  colors = lib.importJSON ../../home/styles/${config.curtbushko.theme.name}.json;
   a_bg = colors.statusline_a_bg;
   a_fg = colors.statusline_a_fg;
   b_bg = colors.statusline_b_bg;

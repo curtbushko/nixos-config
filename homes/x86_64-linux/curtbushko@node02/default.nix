@@ -28,8 +28,15 @@
     shells.enable = true;
     terminals.enable = true;
     tools.enable = true;
-    wm.enable = false;
-    theme.name = "rebel-scum";
+    wm = {
+      tools.enable = false;
+      niri.enable = false;
+      rofi.enable = false;
+    };
+    theme = {
+      name = "rebel-scum";
+      wallpaper = "cyberpunk-tokyo.png";
+    };
   };
 
   #---------------------------------------------------------------------

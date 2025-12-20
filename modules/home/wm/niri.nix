@@ -7,7 +7,7 @@
 }: let
   inherit (lib) types mkOption mkIf;
   cfg = config.curtbushko.wm.niri;
-  colors = import ../styles/${config.curtbushko.theme.name}.nix {};
+  colors = lib.importJSON ../styles/${config.curtbushko.theme.name}.json;
   wallpaper = ../styles/wallpapers/3440x1440/${config.curtbushko.theme.wallpaper};
 in {
   options.curtbushko.wm.niri = {

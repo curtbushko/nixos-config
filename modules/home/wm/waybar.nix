@@ -250,7 +250,7 @@ in {
       ];
 
       style = let
-        colors = import ../../home/styles/${config.curtbushko.theme.name}.nix {};
+        colors = lib.importJSON ../../home/styles/${config.curtbushko.theme.name}.json;
       in
         with colors; ''
           /*

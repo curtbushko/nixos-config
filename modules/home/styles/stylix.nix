@@ -1,5 +1,5 @@
 {config, lib, pkgs, ...}: let
-  colors = import ./${config.curtbushko.theme.name}.nix {};
+  colors = lib.importJSON ./${config.curtbushko.theme.name}.json;
   wallpaper = ./wallpapers/3440x1440/${config.curtbushko.theme.wallpaper};
   isLinux = pkgs.stdenv.isLinux;
 in {
@@ -120,4 +120,13 @@ in {
     hicolor-icon-theme # Base icon theme
     gruvbox-plus-icons # Main icon theme
   ];
+
+  # Export theme files to $XDG_CONFIG_HOME/themes for use by other programs
+  xdg.configFile = {
+    "themes/andromeda.json".source = ./andromeda.json;
+    "themes/everforest.json".source = ./everforest.json;
+    "themes/gruvbox-material.json".source = ./gruvbox-material.json;
+    "themes/rebel-scum.json".source = ./rebel-scum.json;
+    "themes/tokyo-night-neon.json".source = ./tokyo-night-neon.json;
+  };
 }
