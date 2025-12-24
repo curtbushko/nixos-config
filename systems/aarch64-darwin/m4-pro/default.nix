@@ -2,28 +2,65 @@
   pkgs,
   ...
 }: {
-  # We install Nix using a separate installer so we don't want nix-darwin
-  # to manage it for us. lThis tells nix-darwin to just use whatever is running.
-  nix.enable = false;
   system.stateVersion = 5;
 
+  # This makes it work with the Determinate Nix installer
+  ids.gids.nixbld = 30000;
   # Enable touch for sudo
   security.pam.services.sudo_local.touchIdAuth = true;
 
   # Keep in async with vm-shared.nix. (todo: pull this out into a file)
   nix = {
+    # We use the determinate-nix installer which manages Nix for us,
+    # so we don't want nix-darwin to do it.
+    enable = false;
     # We need to enable flakes
     extraOptions = ''
-      experimental-features = nix-command flakes
+      experimental-features = nix-command flakes external-builders
       keep-outputs = true
       keep-derivations = true
       eval-cache = true
     '';
+    # Enable the Linux builder so we can run Linux builds on our Mac.
+    # This can be debugged by running `sudo ssh linux-builder`
+    linux-builder = {
+      enable = false;
+      ephemeral = true;
+      maxJobs = 4;
+      config = ({ pkgs, ... }: {
+        # Make our builder beefier since we're on a beefy machine.
+        virtualisation = {
+          cores = 6;
+          darwin-builder = {
+            diskSize = 100 * 1024; # 100GB
+            memorySize = 32 * 1024; # 32GB
+          };
+        };
+
+        # Add some common debugging tools we can see whats up.
+        environment.systemPackages = [
+          pkgs.htop
+        ];
+      });
+    };
     settings = {
       # Build performance settings
       cores = 0;  # Use all available cores for each build
       max-jobs = "auto";  # Auto-detect optimal number of parallel jobs
 
+      experimental-features = [
+        "nix-command"
+        "flakes"
+        "extra-platforms = aarch64-darwin x86_64-darwin"
+        "external-builders"
+      ];
+      external-builders = [
+        {
+          systems = ["aarch64-linux" "x86_64-linux"];
+          program = "/usr/local/bin/determinate-nixd";
+          args = ["builder"];
+        }
+      ];
       # Parallel downloads for faster substitution
       http-connections = 128;
       max-substitution-jobs = 128;
