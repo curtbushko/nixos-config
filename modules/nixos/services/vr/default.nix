@@ -46,6 +46,7 @@ in {
       wineWowPackages.waylandFull
       freetype
       steamtinkerlaunch
+      nexusmods-app-unfree
     ];
 
     programs.steam = {
