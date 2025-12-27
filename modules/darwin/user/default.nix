@@ -23,6 +23,7 @@
       "notunes"
       "podman-desktop"
       "openvpn-connect"
+      "utm"
     ];
   };
 
