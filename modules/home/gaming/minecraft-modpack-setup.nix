@@ -7,145 +7,218 @@
   # Reference the server modpack
   modpackPath = ../../nixos/services/minecraft/modpack;
 
-  # Create a script to set up Prism Launcher with the modpack
-  setupScript = pkgs.writeShellScriptBin "minecraft-setup-modpack" ''
+  # Platform-specific PrismLauncher directory
+  prismDir = if pkgs.stdenv.isDarwin
+    then "$HOME/Library/Application Support/PrismLauncher"
+    else "$HOME/.local/share/PrismLauncher";
+
+  # Combined script to manage Minecraft modpack - handles both setup and sync
+  modpackScript = pkgs.writeShellScriptBin "minecraft-modpack" ''
     set -e
 
     INSTANCE_NAME="DnJ-Server-Modpack"
-    PRISM_DIR="$HOME/.local/share/PrismLauncher"
+    PRISM_DIR="${prismDir}"
     INSTANCE_DIR="$PRISM_DIR/instances/$INSTANCE_NAME"
 
-    echo "Setting up Minecraft modpack for Prism Launcher..."
+    # Parse command line arguments
+    FORCE_SETUP=false
+    SYNC_ONLY=false
 
-    # Create Prism Launcher directory if it doesn't exist
-    mkdir -p "$PRISM_DIR/instances"
+    show_help() {
+      cat <<HELP
+    Usage: minecraft-modpack [OPTIONS]
 
-    # Check if instance already exists
-    if [ -d "$INSTANCE_DIR" ]; then
-      echo "Instance '$INSTANCE_NAME' already exists."
-      read -p "Do you want to update it? (y/N): " -n 1 -r
-      echo
-      if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        echo "Aborted."
-        exit 0
-      fi
-    else
-      echo "Creating new instance '$INSTANCE_NAME'..."
-      mkdir -p "$INSTANCE_DIR"
-    fi
+    Manage the Minecraft modpack for Prism Launcher.
 
-    # Create instance.cfg
-    cat > "$INSTANCE_DIR/instance.cfg" <<EOF
-    InstanceType=OneSix
-    name=$INSTANCE_NAME
-    iconKey=default
-    notes=D&J Minecraft Server Modpack - Auto-generated from nixos-config
+    OPTIONS:
+      --setup, -s     Force full setup (recreate instance from scratch)
+      --sync          Sync mods only (fail if instance doesn't exist)
+      --help, -h      Show this help message
 
-    # Minecraft settings
-    IntendedVersion=1.21
-    JavaPath=${pkgs.openjdk25}/bin/java
-
-    # Fabric loader
-    ComponentDisplayName=Fabric Loader
-    ComponentName=net.fabricmc.fabric-loader
-    ComponentVersion=0.16.9
-    EOF
-
-    # Create mmc-pack.json
-    cat > "$INSTANCE_DIR/mmc-pack.json" <<EOF
-    {
-      "components": [
-        {
-          "uid": "net.minecraft",
-          "version": "1.21"
-        },
-        {
-          "uid": "net.fabricmc.fabric-loader",
-          "version": "0.16.9"
-        }
-      ],
-      "formatVersion": 1
+    With no options, the script will:
+      - Set up the instance if it doesn't exist
+      - Sync mods if it already exists
+HELP
+      exit 0
     }
-    EOF
 
-    # Create .minecraft directory structure
-    mkdir -p "$INSTANCE_DIR/.minecraft/mods"
-
-    # Copy packwiz manifest files
-    echo "Copying packwiz manifest..."
-    mkdir -p "$INSTANCE_DIR/.minecraft/packwiz"
-    cp -r ${modpackPath}/* "$INSTANCE_DIR/.minecraft/packwiz/"
-
-    # Create a packwiz bootstrap script
-    cat > "$INSTANCE_DIR/.minecraft/install-mods.sh" <<'MODSCRIPT'
-    #!/usr/bin/env bash
-    set -e
-
-    PACKWIZ_DIR="$HOME/.local/share/PrismLauncher/instances/$INSTANCE_NAME/.minecraft/packwiz"
-    MODS_DIR="$HOME/.local/share/PrismLauncher/instances/$INSTANCE_NAME/.minecraft/mods"
-
-    echo "Installing mods from packwiz manifest..."
-
-    # Parse the .pw.toml files and download mods
-    for modfile in "$PACKWIZ_DIR/mods"/*.pw.toml; do
-      if [ -f "$modfile" ]; then
-        # Extract URL and filename using basic parsing
-        url=$(grep '^url = ' "$modfile" | cut -d'"' -f2)
-        filename=$(grep '^filename = ' "$modfile" | cut -d'"' -f2)
-
-        if [ -n "$url" ] && [ -n "$filename" ]; then
-          echo "Downloading $filename..."
-          ${pkgs.curl}/bin/curl -L -o "$MODS_DIR/$filename" "$url"
-        fi
-      fi
+    while [[ $# -gt 0 ]]; do
+      case $1 in
+        --setup|-s)
+          FORCE_SETUP=true
+          shift
+          ;;
+        --sync)
+          SYNC_ONLY=true
+          shift
+          ;;
+        --help|-h)
+          show_help
+          ;;
+        *)
+          echo "Unknown option: $1"
+          show_help
+          ;;
+      esac
     done
 
-    echo "Mods installed successfully!"
-    MODSCRIPT
+    # Function to sync mods for an existing instance
+    sync_mods() {
+      if [ ! -d "$INSTANCE_DIR" ]; then
+        echo "Error: Instance '$INSTANCE_NAME' not found."
+        echo "Run 'minecraft-modpack --setup' to create it first."
+        exit 1
+      fi
 
-    chmod +x "$INSTANCE_DIR/.minecraft/install-mods.sh"
+      if [ ! -f "$INSTANCE_DIR/.minecraft/install-mods.sh" ]; then
+        echo "Error: install-mods.sh script not found."
+        echo "Run 'minecraft-modpack --setup' to recreate the instance."
+        exit 1
+      fi
 
-    # Automatically install mods
-    echo ""
-    echo "Installing mods..."
-    bash "$INSTANCE_DIR/.minecraft/install-mods.sh"
+      echo "Syncing mods from server modpack..."
+      bash "$INSTANCE_DIR/.minecraft/install-mods.sh"
+      echo "✓ Mods synced!"
+    }
 
-    echo ""
-    echo "✓ Setup complete!"
-    echo ""
-    echo "Instance '$INSTANCE_NAME' has been created/updated in Prism Launcher."
-    echo ""
-    echo "Next steps:"
-    echo "1. Open Prism Launcher"
-    echo "2. Look for the '$INSTANCE_NAME' instance"
-    echo "3. Launch it and enjoy!"
-    echo ""
-    echo "To update mods in the future, run:"
-    echo "  minecraft-setup-modpack"
-    echo ""
-  '';
+    # Function to set up the instance from scratch
+    setup_instance() {
+      TEMP_DIR=$(${pkgs.coreutils}/bin/mktemp -d)
+      PACK_DIR="$TEMP_DIR/$INSTANCE_NAME"
 
-  # Create a simpler sync-only script for updates
-  syncScript = pkgs.writeShellScriptBin "minecraft-sync-mods" ''
-    set -e
+      echo "Setting up Minecraft modpack for Prism Launcher..."
 
-    INSTANCE_NAME="DnJ-Server-Modpack"
-    INSTANCE_DIR="$HOME/.local/share/PrismLauncher/instances/$INSTANCE_NAME"
+      # Create temporary pack directory
+      mkdir -p "$PACK_DIR/.minecraft/mods"
 
-    if [ ! -d "$INSTANCE_DIR" ]; then
-      echo "Error: Instance '$INSTANCE_NAME' not found."
-      echo "Run 'minecraft-setup-modpack' first to create it."
-      exit 1
+      # Create instance.cfg
+      cat > "$PACK_DIR/instance.cfg" <<EOF
+      InstanceType=OneSix
+      name=$INSTANCE_NAME
+      iconKey=default
+      notes=D&J Minecraft Server Modpack - Auto-generated from nixos-config
+      IntendedVersion=1.21
+      JavaPath=${pkgs.openjdk25}/bin/java
+EOF
+
+      # Create mmc-pack.json with proper format
+      cat > "$PACK_DIR/mmc-pack.json" <<'EOF'
+      {
+        "components": [
+          {
+            "uid": "net.minecraft",
+            "version": "1.21"
+          },
+          {
+            "uid": "net.fabricmc.fabric-loader",
+            "version": "0.16.9"
+          }
+        ],
+        "formatVersion": 1
+      }
+EOF
+
+      # Copy packwiz manifest files
+      echo "Copying packwiz manifest..."
+      mkdir -p "$PACK_DIR/.minecraft/packwiz"
+      cp -r ${modpackPath}/* "$PACK_DIR/.minecraft/packwiz/"
+
+      # Create a packwiz bootstrap script
+      cat > "$PACK_DIR/.minecraft/install-mods.sh" <<MODSCRIPT
+      #!/usr/bin/env bash
+      set -e
+
+      INSTANCE_NAME="DnJ-Server-Modpack"
+      PRISM_DIR="${prismDir}"
+      PACKWIZ_DIR="\$PRISM_DIR/instances/\$INSTANCE_NAME/.minecraft/packwiz"
+      MODS_DIR="\$PRISM_DIR/instances/\$INSTANCE_NAME/.minecraft/mods"
+
+      echo "Installing mods from packwiz manifest..."
+
+      # Parse the .pw.toml files and download mods
+      if [ -d "$PACKWIZ_DIR/mods" ]; then
+        for modfile in "$PACKWIZ_DIR/mods"/*.pw.toml; do
+          # Skip if no .pw.toml files found (glob didn't match)
+          [ -f "$modfile" ] || continue
+
+          # Extract URL and filename using basic parsing
+          url=$(grep '^url = ' "$modfile" 2>/dev/null | cut -d'"' -f2)
+          filename=$(grep '^filename = ' "$modfile" 2>/dev/null | cut -d'"' -f2)
+
+          if [ -n "$url" ] && [ -n "$filename" ]; then
+            echo "Downloading $filename..."
+            curl -L -o "$MODS_DIR/$filename" "$url"
+          fi
+        done
+      fi
+
+      echo "Mods installed successfully!"
+MODSCRIPT
+
+      chmod +x "$PACK_DIR/.minecraft/install-mods.sh"
+
+      # Create zip file
+      echo "Creating instance package..."
+      cd "$TEMP_DIR"
+      ${pkgs.zip}/bin/zip -r "$TEMP_DIR/instance.zip" "$INSTANCE_NAME" > /dev/null
+
+      # Check if instance already exists and remove it
+      if [ -d "$INSTANCE_DIR" ]; then
+        echo "Removing existing instance '$INSTANCE_NAME'..."
+        chmod -R u+w "$INSTANCE_DIR" 2>/dev/null || true
+        rm -rf "$INSTANCE_DIR"
+      fi
+
+      # Import the instance by directly unzipping to instances directory
+      echo "Importing instance to PrismLauncher..."
+      mkdir -p "$PRISM_DIR/instances"
+      cd "$PRISM_DIR/instances"
+      ${pkgs.unzip}/bin/unzip -q "$TEMP_DIR/instance.zip"
+
+      # Install mods
+      echo ""
+      echo "Installing mods..."
+      bash "$INSTANCE_DIR/.minecraft/install-mods.sh"
+
+      echo ""
+      echo "✓ Setup complete!"
+      echo ""
+      echo "Instance '$INSTANCE_NAME' has been imported to Prism Launcher."
+
+      # Cleanup (make files writable first since they come from Nix store)
+      chmod -R u+w "$TEMP_DIR"
+      rm -rf "$TEMP_DIR"
+
+      echo ""
+      echo "Next steps:"
+      echo "1. Open Prism Launcher (if not already open)"
+      echo "2. Look for the '$INSTANCE_NAME' instance"
+      echo "3. Launch it and enjoy!"
+      echo ""
+      echo "To update mods in the future, run:"
+      echo "  minecraft-modpack"
+      echo ""
+    }
+
+    # Main logic
+    if [ "$SYNC_ONLY" = true ]; then
+      # Sync only mode - fail if instance doesn't exist
+      sync_mods
+    elif [ "$FORCE_SETUP" = true ]; then
+      # Force setup mode - always recreate
+      setup_instance
+    else
+      # Auto mode - setup if missing, sync if exists
+      if [ -d "$INSTANCE_DIR" ]; then
+        sync_mods
+      else
+        setup_instance
+      fi
     fi
-
-    echo "Syncing mods from server modpack..."
-    bash "$INSTANCE_DIR/.minecraft/install-mods.sh"
-    echo "✓ Mods synced!"
   '';
 
 in {
   home.packages = [
-    setupScript
-    syncScript
+    modpackScript
   ];
 }

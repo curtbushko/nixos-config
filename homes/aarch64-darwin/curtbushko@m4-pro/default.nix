@@ -4,7 +4,7 @@
   ...
 }: {
   home.enableNixpkgsReleaseCheck = false;
-  home.stateVersion = "18.09";
+  home.stateVersion = "24.11";
 
   # Let home manager manage itself
   programs.home-manager.enable = true;
@@ -29,12 +29,6 @@
       wallpaper = "cyberpunk_2077_phantom_liberty_katana.jpg";
     };
 
-  };
-
-  # Copy apps instead of linking them so they show up in Spotlight/Launchpad
-  targets.darwin = {
-    linkApps.enable = false;
-    copyApps.enable = true;
   };
 
   #---------------------------------------------------------------------
