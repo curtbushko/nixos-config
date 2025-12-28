@@ -1,0 +1,13 @@
+name = "Ribbits"
+filename = "Ribbits-1.21.1-Fabric-4.1.6.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/8YcE8y4T/versions/O3uPSYcc/Ribbits-1.21.1-Fabric-4.1.6.jar"
+hash-format = "sha512"
+hash = "00829624b226afbf75587d4cfdb8cbefaefec55acaa7aad4aae70f65fdf1cbe3edfc61bb2cf28c41d96a6b20ba0dad52dadb35dd21378ff28b39cf42f238662e"
+
+[update]
+[update.modrinth]
+mod-id = "8YcE8y4T"
+version = "O3uPSYcc"

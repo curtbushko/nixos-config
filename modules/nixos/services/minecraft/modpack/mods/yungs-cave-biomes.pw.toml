@@ -1,0 +1,13 @@
+name = "YUNG's Cave Biomes"
+filename = "YungsCaveBiomes-1.21.1-Fabric-3.1.1.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/cs7iGVq1/versions/geZa9lJS/YungsCaveBiomes-1.21.1-Fabric-3.1.1.jar"
+hash-format = "sha512"
+hash = "b7fd6386b6652366a950375d352f011310fb40c14aef668d9cf1a4f63080ae3d6b46db302117a32359fbff3327b23b7275f0e39b487e9261f2e5b66a3dbe0409"
+
+[update]
+[update.modrinth]
+mod-id = "cs7iGVq1"
+version = "geZa9lJS"
