@@ -31,6 +31,12 @@
 
   };
 
+  # Copy apps instead of linking them so they show up in Spotlight/Launchpad
+  targets.darwin = {
+    linkApps.enable = false;
+    copyApps.enable = true;
+  };
+
   #---------------------------------------------------------------------
   # Packages
   #---------------------------------------------------------------------
