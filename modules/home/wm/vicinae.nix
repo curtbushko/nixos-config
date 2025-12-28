@@ -17,7 +17,7 @@ in {
 
     services.vicinae = {
       enable = true;
-      autoStart = true;
+      #autoStart = true;
       # settings = {
       #   faviconService = "twenty";
       #   keybinding = "vim";

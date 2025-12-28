@@ -47,13 +47,13 @@ endif
 .PHONY: update-all
 update-all: update update-ghostty update-neovim ## Update all packages
 
-.PHONY: update
-update: ## Update nix packages
+.PHONY: update-flake
+update-flake: ## Update nix packages
 	nix --extra-experimental-features 'nix-command flakes' flake update
 
 .PHONY: update-claude-code
 update-claude-code: ## Update the claude-code flake
-	nix flake update clause-code 
+	nix flake update claude-code 
 
 .PHONY: update-ghostty
 update-ghostty: ## Update the ghostty flake

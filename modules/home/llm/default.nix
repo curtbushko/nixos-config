@@ -25,14 +25,21 @@ in {
       settings = {
         includeCoAuthoredBy = false;
         hooks = {
-          user-prompt-submit = {
-            command = ''
-              # Remind about checking skills before coding
-              if echo "$PROMPT" | grep -qiE "implement|create|build|write.*code|add.*feature"; then
-                echo "REMINDER: Check ~/.claude/skills/ before coding!"
-              fi
-            '';
-          };
+          UserPromptSubmit = [
+            {
+              hooks = [
+                {
+                  type = "command";
+                  command = ''
+                    # Remind about checking skills before coding
+                    if echo "$PROMPT" | grep -qiE "implement|create|build|write.*code|add.*feature"; then
+                      echo "REMINDER: Check ~/.claude/skills/ before coding!"
+                    fi
+                  '';
+                }
+              ];
+            }
+          ];
         };
         permissions = {
           allow = [
