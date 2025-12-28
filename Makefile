@@ -63,6 +63,10 @@ update-ghostty: ## Update the ghostty flake
 update-neovim: ## Update the neovim flake
 	nix flake update neovim
 
+.PHONY: update-minecraft
+update-minecraft: ## Update nix-minecraft flake
+	nix flake update nix-minecraft
+
 .PHONY: repair
 repair: ## Use this when you start getting weird 'file not found' errors from nix-store.
 	sudo nix-store --repair --verify --check-contents

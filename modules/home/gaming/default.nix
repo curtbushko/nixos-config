@@ -13,5 +13,6 @@ in {
 
   imports = [
     ./minecraft.nix
+    ./minecraft-modpack-setup.nix
   ];
 }

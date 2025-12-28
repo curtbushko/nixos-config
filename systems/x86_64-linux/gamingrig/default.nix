@@ -9,6 +9,7 @@
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
     ../../../modules/nixos/base
+    inputs.nix-minecraft.nixosModules.minecraft-servers
   ];
 
   # StevenBlack/hosts blocklist configuration
@@ -24,7 +25,7 @@
     hardware.audio.enable = true;
     hardware.cpu.enable = true;
     services.llm.enable = true;
-    services.minecraft.enable = false; # 2025.09.15 - minecraft package is broken
+    services.minecraft.enable = true;
     services.vr.enable = true;
     services.wm.enable = true; # qt and wayland
   };

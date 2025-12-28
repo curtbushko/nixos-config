@@ -1,0 +1,13 @@
+name = "D&J Minecraft Server Modpack"
+author = "curtbushko"
+version = "1.0.0"
+pack-format = "packwiz:1.1.0"
+
+[index]
+file = "index.toml"
+hash-format = "sha256"
+hash = "3b5d6b878a2afc0d4d58eecfd1a2d83d78538166aea758e0494390f3d499a114"
+
+[versions]
+minecraft = "1.21"
+fabric = "0.16.9"

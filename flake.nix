@@ -59,6 +59,11 @@
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
+    nix-minecraft = {
+      url = "github:Infinidoge/nix-minecraft";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
     vicinae = {
       url = "github:vicinaehq/vicinae";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
@@ -94,6 +99,7 @@
       };
 
       overlays = with inputs; [
+        nix-minecraft.overlay
         zig.overlays.default
       ];
 
