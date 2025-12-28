@@ -24,6 +24,16 @@ in {
       package = inputs.claude-code.packages.${pkgs.stdenv.hostPlatform.system}.default;
       settings = {
         includeCoAuthoredBy = false;
+        hooks = {
+          user-prompt-submit = {
+            command = ''
+              # Remind about checking skills before coding
+              if echo "$PROMPT" | grep -qiE "implement|create|build|write.*code|add.*feature"; then
+                echo "REMINDER: Check ~/.claude/skills/ before coding!"
+              fi
+            '';
+          };
+        };
         permissions = {
           allow = [
             "Bash(make:*)"
@@ -58,5 +68,6 @@ in {
 
     # Deploy Claude Code skills
     home.file.".claude/skills/golang.md".source = ./claude/skills/golang.md;
+    home.file.".claude/skills/start-project.md".source = ./claude/skills/start-project.md;
   };
 }
