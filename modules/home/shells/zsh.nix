@@ -94,7 +94,7 @@ in {
           kubedebug = "kubectl run -i --tty curt-kubedebug --image=alpine -- bash";
           lg = "lazygit";
           ls = "eza -lao --ignore-glob=.DS_Store --icons=always";
-          reload = "source ~/.zshrc";
+          reload = "source ~/.config/zsh/.zshrc";
           tf = "terraform";
           tree = "eza -aT --git-ignore --ignore-glob=.git --icons=always";
           vi = "nvim";
