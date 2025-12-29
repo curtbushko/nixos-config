@@ -87,6 +87,9 @@
     };
   in
     lib.mkFlake {
+      # Add armv7l-linux to the default supported systems
+      supportedSystems = ["x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" "armv7l-linux"];
+
       channels-config = {
         allowUnfree = true;
         allowUnsupportedSystem = true;

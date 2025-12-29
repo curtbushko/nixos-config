@@ -217,8 +217,12 @@ MODSCRIPT
     fi
   '';
 
+  cfg = config.curtbushko.gaming;
+  inherit (lib) mkIf;
 in {
-  home.packages = [
-    modpackScript
-  ];
+  config = mkIf cfg.enable {
+    home.packages = [
+      modpackScript
+    ];
+  };
 }
