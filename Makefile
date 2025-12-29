@@ -28,7 +28,7 @@ endif
 .PHONY: relay
 relay: ## Build and switch relay's home-manager config using gamingrig as remote builder
 	@echo "$(DATELOG) Building home-manager config for relay using gamingrig as remote builder"
-	home-manager switch --flake ".#curtbushko@relay" \
+	nix run nixpkgs#home-manager -- switch --flake ".#curtbushko@relay" \
 		--option builders 'ssh://curtbushko@gamingrig x86_64-linux - 4 - big-parallel,benchmark'
 
 .PHONY: dry-build
