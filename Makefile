@@ -25,6 +25,12 @@ else
 	sudo NIXPKGS_ALLOW_UNSUPPORTED_ARCH=1 nixos-rebuild switch --flake ".#${HOST}"
 endif
 
+.PHONY: relay
+relay: ## Build and switch relay's home-manager config using gamingrig as remote builder
+	@echo "$(DATELOG) Building home-manager config for relay using gamingrig as remote builder"
+	home-manager switch --flake ".#curtbushko@relay" \
+		--option builders 'ssh://curtbushko@gamingrig x86_64-linux - 4 - big-parallel,benchmark'
+
 .PHONY: dry-build
 dry-build: ## Build and switch your nix config.
 	@echo "$(DATELOG) Building dry build of nix config"
