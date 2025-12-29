@@ -1,0 +1,13 @@
+name = "Smaller Nether Portals"
+filename = "smallernetherportals-1.20.1-3.9.jar"
+side = "server"
+
+[download]
+url = "https://cdn.modrinth.com/data/fYAofsi6/versions/AKAgpUev/smallernetherportals-1.20.1-3.9.jar"
+hash-format = "sha512"
+hash = "9ecae52cc42fe3edc1a45b157d495cddf867975d1f63a6c3aa65e732eeac40ac5bae3e3d1269cd342fe077e548e67cd7b9f05a1a3e760447162f192c4cfca91b"
+
+[update]
+[update.modrinth]
+mod-id = "fYAofsi6"
+version = "AKAgpUev"

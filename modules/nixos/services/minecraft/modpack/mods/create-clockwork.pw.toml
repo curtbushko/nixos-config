@@ -1,0 +1,13 @@
+name = "Clockwork"
+filename = "clockwork-fabric-0.5.3-[MELTING_POINT].jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/84USeAvk/versions/Jsckttl2/clockwork-fabric-0.5.3-%5BMELTING_POINT%5D.jar"
+hash-format = "sha512"
+hash = "67e7eed11f4c8a9f7a92fee73b4a0a548f065e4eac2dd28926238c6b8d19f6c0f113da720ee6b198be557aea75347a3a011977f56b71c2a16486bbc49a9e1504"
+
+[update]
+[update.modrinth]
+mod-id = "84USeAvk"
+version = "Jsckttl2"

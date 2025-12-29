@@ -1,0 +1,13 @@
+name = "Replanting Crops"
+filename = "replantingcrops-1.20.1-5.5.jar"
+side = "server"
+
+[download]
+url = "https://cdn.modrinth.com/data/EXzIPtJo/versions/JrbAOCLs/replantingcrops-1.20.1-5.5.jar"
+hash-format = "sha512"
+hash = "bcaad1c18addac1470d9fb16197add1a419f886aa0372359639f1c7037b068bbf4ddb95ca4a3e07c149cb01877da0322d118e92f3154263fd907e51cd4aba88c"
+
+[update]
+[update.modrinth]
+mod-id = "EXzIPtJo"
+version = "JrbAOCLs"

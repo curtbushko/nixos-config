@@ -1,0 +1,13 @@
+name = "Name Tag Tweaks"
+filename = "nametagtweaks-1.20.1-4.0.jar"
+side = "server"
+
+[download]
+url = "https://cdn.modrinth.com/data/LrLZEnPl/versions/xFDnAS8R/nametagtweaks-1.20.1-4.0.jar"
+hash-format = "sha512"
+hash = "1ff3ecc2ca7968b9a6f559d7979503ba571f79c9f34bebe17333b83671b4855a87775f36f7aaa151d271a5a1647cbe8131d0d4fad425211a6ad326b4f62c34f8"
+
+[update]
+[update.modrinth]
+mod-id = "LrLZEnPl"
+version = "xFDnAS8R"

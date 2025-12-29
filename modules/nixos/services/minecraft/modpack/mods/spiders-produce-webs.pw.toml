@@ -1,0 +1,13 @@
+name = "Spiders Produce Webs"
+filename = "spidersproducewebs-1.20.1-3.6.jar"
+side = "server"
+
+[download]
+url = "https://cdn.modrinth.com/data/NoznOJXq/versions/lnhVp9FD/spidersproducewebs-1.20.1-3.6.jar"
+hash-format = "sha512"
+hash = "76f33d3cbb3f9581d33ce16fafd36c63372e13b2c5fcd969b485bb008b2ab6b69488fbe74f98090fdb01e5208a66b9e87f9648ac0c6d3a3d914d24fd98ec69d1"
+
+[update]
+[update.modrinth]
+mod-id = "NoznOJXq"
+version = "lnhVp9FD"
