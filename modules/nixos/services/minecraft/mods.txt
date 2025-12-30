@@ -5,7 +5,6 @@
 - [x] https://modrinth.com/mod/moreculling
 - [x] https://modrinth.com/mod/carpet-fixes
 - [x] https://modrinth.com/mod/blanket
-- [ ] https://modrinth.com/mod/rail-optimization
 - [x] https://modrinth.com/mod/cull-leaves
 - [x] https://modrinth.com/mod/lithium
 - [x] https://modrinth.com/mod/immediatelyfast
@@ -13,7 +12,6 @@
 - [x] https://modrinth.com/mod/almanac
 - [x] https://modrinth.com/mod/ebe
 - [x] https://modrinth.com/mod/krypton
-- [ ] https://modrinth.com/mod/c2me-fabric
 - [x] https://modrinth.com/mod/animatica
 - [x] https://modrinth.com/mod/lambdabettergrass
 - [x] https://modrinth.com/plugin/lmd
@@ -64,7 +62,6 @@
 - [x] https://modrinth.com/mod/lambdynamiclights
 - [x] https://modrinth.com/mod/midnightcontrols
 - [x] https://modrinth.com/mod/lovely_snails
-- [ ] https://modrinth.com/mod/aurorasdecorations
 - [x] https://modrinth.com/mod/illuminated
 - [x] https://modrinth.com/mod/clumps
 - [x] https://modrinth.com/mod/inventory-profiles-next
@@ -74,8 +71,6 @@
 - [x] https://modrinth.com/mod/ambientsounds
 - [x] https://modrinth.com/mod/coroutil
 - [x] https://modrinth.com/mod/zombie-awareness
-- [ ] https://modrinth.com/mod/weather-storms-tornadoes
-- [ ] https://modrinth.com/mod/out-of-sight
 - [x] https://modrinth.com/mod/mobtimizations
 - [x] https://modrinth.com/mod/create-fabric
 - [x] https://modrinth.com/mod/valkyrien-skies
@@ -95,5 +90,45 @@
 - [x] https://modrinth.com/mod/eating-animation
 - [x] https://modrinth.com/mod/better-combat
 - [x] https://modrinth.com/mod/combat-roll
-- [ ] https://modrinth.com/shader/complementary-reimagined
-
+- [ ] https://modrinth.com/datapack/tectonic
+- [ ] https://modrinth.com/mod/spell-engine
+- [ ] https://modrinth.com/mod/spell-power
+- [ ] https://modrinth.com/mod/runes
+- [ ] https://modrinth.com/mod/wizards
+- [ ] https://modrinth.com/mod/structure-pool-api
+- [ ] https://modrinth.com/mod/jewelry
+- [ ] https://modrinth.com/mod/ranged-weapon-api
+- [ ] https://modrinth.com/mod/paladins-and-priests
+- [ ] https://modrinth.com/mod/projectile-damage-attribute
+- [ ] https://modrinth.com/mod/archers
+- [ ] https://modrinth.com/mod/gazebos
+- [ ] https://modrinth.com/mod/rogues-and-warriors
+- [ ] https://modrinth.com/mod/dungeon-difficulty
+- [ ] https://modrinth.com/mod/relics-rpg
+- [ ] https://modrinth.com/mod/arsenal-rpg-series
+- [ ] https://modrinth.com/mod/village-taverns
+- [ ] https://modrinth.com/mod/armory-rpg-series
+- [ ] https://modrinth.com/mod/skill-tree
+- [ ] https://modrinth.com/mod/durability-tweaks
+- [ ] https://modrinth.com/resourcepack/attribute-icons-rpg-series
+- [ ] https://modrinth.com/mod/wavey-capes
+- [ ] https://modrinth.com/mod/betterend
+- [ ] https://modrinth.com/mod/elytra-slot
+- [ ] https://modrinth.com/mod/smarter-farmers-farmers-replant
+- [ ] https://modrinth.com/mod/naturalist
+- [ ] https://modrinth.com/mod/interactive
+- [ ] https://modrinth.com/mod/create-steam-n-rails
+- [ ] https://modrinth.com/mod/consistencyplus
+- [ ] https://modrinth.com/mod/gravestone-mod
+- [ ] https://modrinth.com/mod/fabric-seasons
+- [ ] https://modrinth.com/mod/critters-and-companions
+- [ ] https://modrinth.com/mod/nightlights
+- [ ] https://modrinth.com/mod/creatures-and-beasts
+- [ ] https://modrinth.com/mod/enderman-overhaul
+- [ ] https://modrinth.com/mod/ghost
+- [ ] https://modrinth.com/mod/ribbits
+- [ ] https://modrinth.com/mod/entity-model-features
+- [ ] https://modrinth.com/mod/entitytexturefeatures
+- [ ] https://modrinth.com/resourcepack/fresh-animations
+- [ ] https://modrinth.com/mod/more-mob-variants
+- [ ] https://modrinth.com/resourcepack/more-mob-variants-fresh-animations-addon

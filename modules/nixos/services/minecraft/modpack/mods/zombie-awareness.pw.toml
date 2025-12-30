@@ -1,0 +1,13 @@
+name = "Zombie Awareness 1.20.1-1.13.1"
+filename = "zombieawareness-fabric-1.20.1-1.13.1.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/mMTOWOaA/versions/nkFcvMt7/zombieawareness-fabric-1.20.1-1.13.1.jar"
+hash-format = "sha512"
+hash = "3f1a04fe18d8de6bae187b4af9f424dc94e0cf7877822035de52b234ed15ad8c815c0171aa9a718e86f8a4c0364818bf8cbb6016afe016445d5c3d98f60900e9"
+
+[update]
+[update.modrinth]
+mod-id = "mMTOWOaA"
+version = "nkFcvMt7"

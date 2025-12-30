@@ -1,0 +1,13 @@
+name = "[Fabric/Forge/Neo] 1.20.1-1.0"
+filename = "undergroundbeacons-1.20.1-1.0.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/SMC0xf5E/versions/HLQ2SIMB/undergroundbeacons-1.20.1-1.0.jar"
+hash-format = "sha512"
+hash = "237a3165466d96c5d81b2f3680a11fcf64611e3ca7fe890d77de15a6b0eea56f4a57f5b4fb31b888db36cd3da8a68d3cc07587ce92fe73e58d95b1b5095448a0"
+
+[update]
+[update.modrinth]
+mod-id = "SMC0xf5E"
+version = "HLQ2SIMB"
