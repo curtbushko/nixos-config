@@ -51,7 +51,7 @@ else
 endif
 
 .PHONY: update-all
-update-all: update update-ghostty update-neovim ## Update all packages
+update-all: update update-ghostty update-neovim update-minecraft update-vicinae ## Update all packages
 
 .PHONY: update-flake
 update-flake: ## Update nix packages
@@ -72,6 +72,10 @@ update-neovim: ## Update the neovim flake
 .PHONY: update-minecraft
 update-minecraft: ## Update nix-minecraft flake
 	nix flake update nix-minecraft
+
+.PHONY: update-vicinae
+update-vicinae: ## Update vicinae flake
+	nix flake update vicinae
 
 .PHONY: repair
 repair: ## Use this when you start getting weird 'file not found' errors from nix-store.
