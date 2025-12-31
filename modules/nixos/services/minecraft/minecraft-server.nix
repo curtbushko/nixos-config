@@ -1014,9 +1014,11 @@ in {
         symlinks = {
           "mods" = modpack;
           "resourcepacks" = resourcepacks;
-          # Temporarily disabled datapacks due to Minecraft 1.21.1 symlink validation
-          # TODO: Find alternative method to include datapacks
-          # "world/datapacks" = datapacks;
+        };
+
+        # Datapacks copied as files to satisfy Minecraft 1.21.1 validation
+        files = {
+          "world/datapacks" = datapacks;
         };
       };
     };
