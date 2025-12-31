@@ -13,9 +13,7 @@ Wants=network-pre.target
 After=network-pre.target NetworkManager.service systemd-resolved.service
 
 [Service]
-EnvironmentFile=-/etc/default/tailscaled
-ExecStart=${pkgs.tailscale}/bin/tailscaled --state=/var/lib/tailscale/tailscaled.state --socket=/run/tailscale/tailscaled.sock
-ExecStopPost=${pkgs.tailscale}/bin/tailscaled --cleanup
+ExecStart=${pkgs.tailscale}/bin/tailscaled --state=/var/lib/tailscale/tailscaled.state --socket=/run/tailscale/tailscaled.sock --port=41641 --tun tailscale0
 Restart=on-failure
 RuntimeDirectory=tailscale
 RuntimeDirectoryMode=0755

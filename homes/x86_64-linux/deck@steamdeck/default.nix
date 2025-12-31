@@ -61,7 +61,7 @@
 
   # Set zsh as default shell
   home.activation.setDefaultShell = inputs.home-manager.lib.hm.dag.entryAfter ["writeBoundary"] ''
-    $DRY_RUN_CMD chsh -s ${pkgs.zsh}/bin/zsh || true
+    $DRY_RUN_CMD /usr/bin/chsh -s ${pkgs.zsh}/bin/zsh || true
   '';
 
 

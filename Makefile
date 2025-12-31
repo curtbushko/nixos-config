@@ -44,7 +44,7 @@ else ifneq (,$(findstring $(HOST),$(NIXOS_HOSTS)))
 	sudo NIXPKGS_ALLOW_UNSUPPORTED_ARCH=1 nixos-rebuild switch --flake ".#${HOST}"
 else ifneq (,$(findstring $(HOST),$(HOME_MANAGER_HOSTS)))
 	@echo "$(DATELOG) Using home-manager for ${NIXUSER}@${HOST}"
-	rm ~/.*.backup ~/.config/**/*.backup
+	@rm -f ~/.*.backup ~/.config/**/*.backup || true
 	nix --extra-experimental-features 'nix-command flakes' run nixpkgs#home-manager -- switch --flake ".#${NIXUSER}@${HOST}" -b backup
 else
 	@echo "$(DATELOG) ERROR: Unknown host '$(HOST)'. Please add it to DARWIN_HOSTS, NIXOS_HOSTS, or HOME_MANAGER_HOSTS in the Makefile."
