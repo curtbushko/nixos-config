@@ -3,6 +3,12 @@
   # Tailscale systemd service - Protected from SteamOS updates
   #---------------------------------------------------------------------
   home.activation.setupTailscale = inputs.home-manager.lib.hm.dag.entryAfter ["writeBoundary"] ''
+    # Remove old override files that conflict with nix-managed service
+    if [ -d /etc/systemd/system/tailscaled.service.d ]; then
+      echo "Removing conflicting tailscaled service overrides..."
+      $DRY_RUN_CMD /usr/bin/sudo rm -rf /etc/systemd/system/tailscaled.service.d
+    fi
+
     # Create systemd service file
     SERVICE_FILE=$(mktemp)
     cat > $SERVICE_FILE << 'EOF'
@@ -37,10 +43,10 @@ EOF
       $DRY_RUN_CMD /usr/bin/sudo mkdir -p /etc/atomic-update.conf.d
       echo "/etc/systemd/system/tailscaled.service" | $DRY_RUN_CMD /usr/bin/sudo tee /etc/atomic-update.conf.d/tailscale.conf > /dev/null
 
-      # Enable and start the service
+      # Enable and restart the service
       $DRY_RUN_CMD /usr/bin/sudo systemctl daemon-reload
       $DRY_RUN_CMD /usr/bin/sudo systemctl enable tailscaled.service
-      $DRY_RUN_CMD /usr/bin/sudo systemctl start tailscaled.service || true
+      $DRY_RUN_CMD /usr/bin/sudo systemctl restart tailscaled.service || true
     fi
 
     rm -f $SERVICE_FILE
