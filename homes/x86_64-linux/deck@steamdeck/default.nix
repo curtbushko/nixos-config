@@ -64,52 +64,9 @@
     $DRY_RUN_CMD chsh -s ${pkgs.zsh}/bin/zsh || true
   '';
 
-  #---------------------------------------------------------------------
-  # Systemd services - Protected from SteamOS updates
-  #---------------------------------------------------------------------
-  home.activation.setupTailscale = inputs.home-manager.lib.hm.dag.entryAfter ["writeBoundary"] ''
-    # Create systemd service file
-    SERVICE_FILE=$(mktemp)
-    cat > $SERVICE_FILE << 'EOF'
-[Unit]
-Description=Tailscale daemon
-Documentation=https://tailscale.com/kb/
-After=network-pre.target
-Wants=network-pre.target
-
-[Service]
-ExecStart=${pkgs.tailscale}/bin/tailscaled --state=/var/lib/tailscale/tailscaled.state
-Restart=on-failure
-RuntimeDirectory=tailscale
-RuntimeDirectoryMode=0755
-StateDirectory=tailscale
-StateDirectoryMode=0750
-Type=notify
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-    # Install service file and protect from updates
-    if [ ! -f /etc/systemd/system/tailscaled.service ] || ! diff -q $SERVICE_FILE /etc/systemd/system/tailscaled.service > /dev/null 2>&1; then
-      echo "Installing tailscaled system service..."
-      $DRY_RUN_CMD sudo cp $SERVICE_FILE /etc/systemd/system/tailscaled.service
-      $DRY_RUN_CMD sudo chmod 644 /etc/systemd/system/tailscaled.service
-
-      # Protect service from SteamOS updates
-      $DRY_RUN_CMD sudo mkdir -p /etc/atomic-update.conf.d
-      echo "/etc/systemd/system/tailscaled.service" | $DRY_RUN_CMD sudo tee /etc/atomic-update.conf.d/tailscale.conf > /dev/null
-
-      # Enable and start the service
-      $DRY_RUN_CMD sudo systemctl daemon-reload
-      $DRY_RUN_CMD sudo systemctl enable tailscaled.service
-      $DRY_RUN_CMD sudo systemctl start tailscaled.service || true
-    fi
-
-    rm -f $SERVICE_FILE
-  '';
 
   imports = [
     inputs.stylix.homeModules.stylix
+    ./tailscale.nix
   ];
 }
