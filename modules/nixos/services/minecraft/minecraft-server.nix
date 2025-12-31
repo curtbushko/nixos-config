@@ -10,677 +10,919 @@
   # Modpack configuration using linkFarmFromDrvs
   # All mods are fetched individually and linked together
   modpack = pkgs.linkFarmFromDrvs "modpack-mods" [
-    # almanac-1.20.x-fabric-1.0.2.jar
+    # Xaeros_Minimap_25.2.10_Fabric_1.21.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/Gi02250Z/versions/QM6nx1Sa/almanac-1.20.x-fabric-1.0.2.jar";
-      sha512 = "4e3d83ac58971e3073fce1ee48094ee4c8c2ef97bf5abf4e3af5f3a25c32190bcefd970e85b360c665f192b563e736e5bcde820787fa7f13088999163a0d083a";
-      name = "almanac-1.20.x-fabric-1.0.2.jar";
+      url = "https://cdn.modrinth.com/data/1bokaNcj/versions/IaH8q5hM/Xaeros_Minimap_25.2.10_Fabric_1.21.jar";
+      sha512 = "7702b6a4cd94b7e80e8d381f2d620acc69467ab4df45cd9a4d37d2484dd8b0c3b0048a6be3bec16926b562891c38c0543316cda295a57cb27caad9e9de8a6362";
+      name = "Xaeros_Minimap_25.2.10_Fabric_1.21.jar";
     })
-    # AmbientSounds_FABRIC_v6.3.1_mc1.20.1.jar
+    # YungsBetterEndIsland-1.21.1-Fabric-3.1.2.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/fM515JnW/versions/izo1gsEI/AmbientSounds_FABRIC_v6.3.1_mc1.20.1.jar";
-      sha512 = "e428b51dc0a5b2fc4d0700c004e88c3be77fba56be382f179b857078f939c37523bb9d72de7e719e4615aed63999ae002bca4acd8b592b9e1d8bf44b04d26319";
-      name = "AmbientSounds_FABRIC_v6.3.1_mc1.20.1.jar";
+      url = "https://cdn.modrinth.com/data/2BwBOmBQ/versions/zpUYcjIg/YungsBetterEndIsland-1.21.1-Fabric-3.1.2.jar";
+      sha512 = "b26e84469e6d66bbc2deefec0b6ed7d93db2b374d7c4bb495e7178e668efb320a5793b42c1b0dd08f71513a4c25faee881e8d81b64eadacb1c34af1619a0f6cf";
+      name = "YungsBetterEndIsland-1.21.1-Fabric-3.1.2.jar";
     })
-    # animatica-0.6.1+1.20.4.jar
+    # shulkerboxtooltip-fabric-5.1.8+1.21.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/PRN43VSY/versions/M2xzBL7h/animatica-0.6.1%2B1.20.4.jar";
-      sha512 = "50b5d89d2a52a62496c6d459d528341e26d6d3836df3098b58da06a0907d28badfa4ae2ce1635ae48c729d8824f3f0ef9a32de10c77461b33cc04fe3a5da1662";
-      name = "animatica-0.6.1+1.20.4.jar";
+      url = "https://cdn.modrinth.com/data/2M01OLQq/versions/nGPvABlf/shulkerboxtooltip-fabric-5.1.8%2B1.21.1.jar";
+      sha512 = "b0b79aae60a2f88ac88ceb7bf114f7e1ce7701586da6b1acbd9d6f4e1d11d71dcc68e20e5f5cf5840832eabcb614f710a621bbe806eee9effeb9d778e122f1a4";
+      name = "shulkerboxtooltip-fabric-5.1.8+1.21.1.jar";
     })
-    # appleskin-fabric-mc1.20.1-2.5.1.jar
+    # lambdabettergrass-2.0.4+1.21.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/EsAfCjCV/versions/xcauwnEB/appleskin-fabric-mc1.20.1-2.5.1.jar";
-      sha512 = "1544c3705133694a886233bdf75b0d03c9ab489421c1f9f30e51d8dd9f4dcab5826edbef4b7d477b81ac995253c6258844579a54243422b73446f6fb8653b979";
-      name = "appleskin-fabric-mc1.20.1-2.5.1.jar";
+      url = "https://cdn.modrinth.com/data/2Uev7LdA/versions/WdPLwaZg/lambdabettergrass-2.0.4%2B1.21.1.jar";
+      sha512 = "f4c001f463a9a04bc2b197638f53628c446c9f7061d7b23b2dd11931dc32b0368bdf1ab9263c5f24fbd03cf50f74614b3901cd45202162073c26cf2d000498d3";
+      name = "lambdabettergrass-2.0.4+1.21.1.jar";
     })
-    # areas-1.20.1-6.1.jar
+    # YungsBetterOceanMonuments-1.21.1-Fabric-4.1.2.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/NWvsqJ2Z/versions/z8wdbzwT/areas-1.20.1-6.1.jar";
-      sha512 = "51d385f5bf8a7e37fb42f18d58c4b826084babecdce1b3dff21a39fc772983657ce36663a02f241d2746d203fc76c45772c699c9f5afef5b1dd3ee04e3161065";
-      name = "areas-1.20.1-6.1.jar";
+      url = "https://cdn.modrinth.com/data/3dT9sgt4/versions/TGK6gpeO/YungsBetterOceanMonuments-1.21.1-Fabric-4.1.2.jar";
+      sha512 = "2ad568affe005aa49be225ca1ce43272d773140dee7053ee4a5981288b5ef7ee92536a1d041ae3f00b6399de2f499abd1bf905cfbb764d569a99dd9b2cf8841f";
+      name = "YungsBetterOceanMonuments-1.21.1-Fabric-4.1.2.jar";
     })
-    # athena-fabric-1.20.1-3.1.2.jar
+    # easyelytratakeoff-1.21.1-4.5.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/b1ZV3DIJ/versions/mXJWSwbJ/athena-fabric-1.20.1-3.1.2.jar";
-      sha512 = "e55d49348a9d944bbd19390c64a4f42a1375eaaf0cbd4d69b4f523e441d9d23ce9498c912db724260cde32a43b776832cb867161e0989995d974de7e19e12389";
-      name = "athena-fabric-1.20.1-3.1.2.jar";
+      url = "https://cdn.modrinth.com/data/3hqwGCUB/versions/7JjYvNu3/easyelytratakeoff-1.21.1-4.5.jar";
+      sha512 = "af9f857201d552e2bad771e8fad60140a5b6fb54c9f8e7b209fe92579a03287442f07e9f920707090780e6c0e17cfefb837eab82e77317a8d60646e4b330fd64";
+      name = "easyelytratakeoff-1.21.1-4.5.jar";
     })
-    # balm-fabric-1.20.1-7.3.37.jar
+    # rogues-fabric-2.6.4+1.21.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/MBAkmtvl/versions/qCk04klC/balm-fabric-1.20.1-7.3.37.jar";
-      sha512 = "2fddc3053091ec9e9939f873f01a06752698adf56b0405df17c13e1f6359daa009dc8e194bb9591b172cc013900b9891b52993b779efb338b5d977b4099ae2da";
-      name = "balm-fabric-1.20.1-7.3.37.jar";
+      url = "https://cdn.modrinth.com/data/3MKqoGuP/versions/DWWYl1qC/rogues-fabric-2.6.4%2B1.21.1.jar";
+      sha512 = "59409e24a87196525d543a51e2b4448010957a0a5643b3c47f430cff733c4d947030d7f9c61b8a32efe3136284824303bcb209ebd6e4541f451f6cdb3a39cae5";
+      name = "rogues-fabric-2.6.4+1.21.1.jar";
     })
-    # bettercombat-fabric-1.9.0+1.20.1.jar
+    # entity_model_features_1.21-fabric-3.0.9.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/5sy6g3kz/versions/OtwNg4r4/bettercombat-fabric-1.9.0%2B1.20.1.jar";
-      sha512 = "477b53b13620c003dbf3da4c8facf9e5df81b101c72137aaee01a16e53b7be0bedc354d1d6e2039c40fe82a53cc92a324995d418cd6b8d6301ad02f6ad110717";
-      name = "bettercombat-fabric-1.9.0+1.20.1.jar";
+      url = "https://cdn.modrinth.com/data/4I1XuqiY/versions/tCUoahyn/entity_model_features_1.21-fabric-3.0.9.jar";
+      sha512 = "65d02831ea0b8251173b2e863ca29472e74b7f07a7086d4ed296c1a22fe39099a1e431d0afc16199e1441beaf4dda5e8e2eb6b92e24115b9a964554ec2f4df8f";
+      name = "entity_model_features_1.21-fabric-3.0.9.jar";
     })
-    # BiomesOPlenty-fabric-1.20.1-19.0.0.96.jar
+    # moreculling-fabric-1.21.1-1.0.6.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/HXF82T3G/versions/eZaag2ca/BiomesOPlenty-fabric-1.20.1-19.0.0.96.jar";
-      sha512 = "0d8af03235f92465c158a38f4a3497658895d3f6cbb761b7c1eaf549d86622a2b3214d32d92de30b1ed86fa55085fd78c6f03cae289e51f09cd8701fda8b4619";
-      name = "BiomesOPlenty-fabric-1.20.1-19.0.0.96.jar";
+      url = "https://cdn.modrinth.com/data/51shyZVL/versions/1V6UtDhN/moreculling-fabric-1.21.1-1.0.6.jar";
+      sha512 = "c6a6db1e2b63084457358171175ddf6061b32d31843f982001720c34433ae96cb13d72b910dc486ad1556e9db55352df3619f131c733bf843d3273d248989b05";
+      name = "moreculling-fabric-1.21.1-1.0.6.jar";
     })
-    # blanket-client-tweaks-1.1.4.jar
+    # piglinnames-1.21.1-1.3.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/gxpkKtVH/versions/Bugxmes1/blanket-client-tweaks-1.1.4.jar";
-      sha512 = "2643e683610d4a81c7c8ca19ed6ce995cb8395fdf900dcd4a850b427634e15e4c7d189676e2d98fe4e678fa725c23210a7f528a986ea7c7eba3f7d534b791a86";
-      name = "blanket-client-tweaks-1.1.4.jar";
+      url = "https://cdn.modrinth.com/data/54plduvG/versions/7KMoV9Oz/piglinnames-1.21.1-1.3.jar";
+      sha512 = "c67b11a6996a848c4b165a89c637d20a35bc9c80e8e65c1537ad2042d5d6f1ede0becfd4a5acdbe86f178e356495b6340acf7cc764a87fb7fdcbab218ff29126";
+      name = "piglinnames-1.21.1-1.3.jar";
     })
-    # c2me-fabric-mc1.20.1-0.2.0+alpha.11.16.jar
+    # trinkets-3.10.0.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/VSNURh3q/versions/s4WOiNtz/c2me-fabric-mc1.20.1-0.2.0%2Balpha.11.16.jar";
-      sha512 = "359c715fd6a0464192d36b4d9dbb7927776eaae498f0cab939b49740fc724bda83aaf4f069f395dc5975d1e82762ee3b602111d9375eb27ab6f5360c4b17f2ff";
-      name = "c2me-fabric-mc1.20.1-0.2.0+alpha.11.16.jar";
+      url = "https://cdn.modrinth.com/data/5aaWibi9/versions/JagCscwi/trinkets-3.10.0.jar";
+      sha512 = "3ea846c945a0559696501ff65b373c8ee8fd9b394604e9910b4ed710c3e07cadc674a615a2c3b385951a42253a418201975df951b3100053ed39afadc70221c9";
+      name = "trinkets-3.10.0.jar";
     })
-    # carpet-fixes-1.20-1.16.1.jar
+    # bettercombat-fabric-2.3.1+1.21.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/7Jaxgqip/versions/NBCnBGZj/carpet-fixes-1.20-1.16.1.jar";
-      sha512 = "6f3bb939ae660d7b85b3d258f7fe1431792d10f20d14d67b37130cd44fcb70cb6fbf6a51953cd6ab3f29699dd6073b8174baa08c044ac8b9a26d0f2fe88033a6";
-      name = "carpet-fixes-1.20-1.16.1.jar";
+      url = "https://cdn.modrinth.com/data/5sy6g3kz/versions/zZCcohvX/bettercombat-fabric-2.3.1%2B1.21.1.jar";
+      sha512 = "e006007643dd2736a22a80d17e36fb2dd1cbe6c2799976d945165f04e828603979ec769358541e51168b7d50491e303f29ed9415eefa8497561e29df1dc9e4ad";
+      name = "bettercombat-fabric-2.3.1+1.21.1.jar";
     })
-    # fabric-carpet-1.20-1.4.112+v230608.jar
+    # ImmediatelyFast-Fabric-1.6.9+1.21.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/TQTTVgYE/versions/K0Wj117C/fabric-carpet-1.20-1.4.112%2Bv230608.jar";
-      sha512 = "bf9060e6b1d30d676d9efd30369ccb5baef164fc2d87aad7c7a19d2d9265b5d1d328428a308bdd15960a26bfe46dcd823a236c39f4e26474847354337b043c51";
-      name = "fabric-carpet-1.20-1.4.112+v230608.jar";
+      url = "https://cdn.modrinth.com/data/5ZwdcRci/versions/sy5ig8EF/ImmediatelyFast-Fabric-1.6.9%2B1.21.1.jar";
+      sha512 = "b343af838639d63856ca1cb22e9643188a12160ba040624a7052ab61f3f53155aea046a3c824bf06d5b1b87af25193552111676fe659bb1acc04909d6051ff96";
+      name = "ImmediatelyFast-Fabric-1.6.9+1.21.1.jar";
     })
-    # cloth-config-11.1.136-fabric.jar
+    # geckolib-fabric-1.21.1-4.8.2.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/9s6osm5g/versions/2xQdCMyG/cloth-config-11.1.136-fabric.jar";
-      sha512 = "2da85c071c854223cc30c8e46794391b77e53f28ecdbbde59dc83b3dbbdfc74be9e68da9ed464e7f98b4361033899ba4f681ebff1f35edc2c60e599a59796f1c";
-      name = "cloth-config-11.1.136-fabric.jar";
+      url = "https://cdn.modrinth.com/data/8BmcQJ2H/versions/fHBvu50G/geckolib-fabric-1.21.1-4.8.2.jar";
+      sha512 = "6a82ec0ab222838daecbbc2e2ad8347057a5078b038f071a9791e75a2510e0f84be2f247102b0b3c1d9e96d89fedb81b77741786f6250a2c7b96655a49ad4f96";
+      name = "geckolib-fabric-1.21.1-4.8.2.jar";
     })
-    # Clumps-fabric-1.20.1-12.0.0.4.jar
+    # spell_power-fabric-1.4.6+1.21.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/Wnxd13zP/versions/hefSwtn6/Clumps-fabric-1.20.1-12.0.0.4.jar";
-      sha512 = "2235d29b1239d5526035bffd547d35fe33b9e737d3e75cd341f6689d9cd834d0a7dc03ed80748772162cd9595ba08e7a0ab51221bc145a8fd979d596c3967544";
-      name = "Clumps-fabric-1.20.1-12.0.0.4.jar";
+      url = "https://cdn.modrinth.com/data/8ooWzSQP/versions/QNQTJZnp/spell_power-fabric-1.4.6%2B1.21.1.jar";
+      sha512 = "1867049bd921df122d8455cda34d545bd908e3f69d0ded2fb5ab471835531b049fd59917b61d1402fd4c6e5b74e5d699220917dd5201641995fb7c48c68b7b71";
+      name = "spell_power-fabric-1.4.6+1.21.1.jar";
     })
-    # Cobblemon-fabric-1.5.2+1.20.1.jar
+    # Ribbits-1.21.1-Fabric-4.1.6.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/MdwFAVRL/versions/EVozVxCq/Cobblemon-fabric-1.5.2%2B1.20.1.jar";
-      sha512 = "38f6e1ae17673f9c62915ebc68558b1c50cf4c2bdeb299ac06aed84ecf0bf9c56732cbc123252f43ea3abee10d3348c50b74fa46cac6d9d8dd0c11833bacaabe";
-      name = "Cobblemon-fabric-1.5.2+1.20.1.jar";
+      url = "https://cdn.modrinth.com/data/8YcE8y4T/versions/O3uPSYcc/Ribbits-1.21.1-Fabric-4.1.6.jar";
+      sha512 = "00829624b226afbf75587d4cfdb8cbefaefec55acaa7aad4aae70f65fdf1cbe3edfc61bb2cf28c41d96a6b20ba0dad52dadb35dd21378ff28b39cf42f238662e";
+      name = "Ribbits-1.21.1-Fabric-4.1.6.jar";
     })
-    # collective-1.20.1-8.13.jar
+    # voicechat-fabric-1.21.1-2.6.10.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/e0M1UDsY/versions/9fUQXa48/collective-1.20.1-8.13.jar";
-      sha512 = "bc6136fbec7447ef3d7ecd150dc3f531f7980e8dea95c638cbb06ddef1f28aeadd72a214baff0232fd2fd28f931061b7571f4f1fb7acf6fc1c08965ea481cfda";
-      name = "collective-1.20.1-8.13.jar";
+      url = "https://cdn.modrinth.com/data/9eGKb6K1/versions/eLYuxqom/voicechat-fabric-1.21.1-2.6.10.jar";
+      sha512 = "208cbe5993486c43688b3a329c146ff8fbf0395f061f8afbae82fed969ba16b6b685e440602adcde23bfb09f8f67e638ebfd097ac78203f8e34ca6234137adb6";
+      name = "voicechat-fabric-1.21.1-2.6.10.jar";
     })
-    # combatroll-fabric-1.3.3+1.20.1.jar
+    # cloth-config-15.0.140-fabric.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/wGKYL7st/versions/FyOp03FS/combatroll-fabric-1.3.3%2B1.20.1.jar";
-      sha512 = "6703c3b2b6e6b063102b50e65aa4be29bc4b46f7830cf3a396bfb5fac78c3a29d1bcfe2b796fbe2c79f948bdb098931d076bee58f5ce5ff37a40ad699544ff04";
-      name = "combatroll-fabric-1.3.3+1.20.1.jar";
+      url = "https://cdn.modrinth.com/data/9s6osm5g/versions/HpMb5wGb/cloth-config-15.0.140-fabric.jar";
+      sha512 = "1b3f5db4fc1d481704053db9837d530919374bf7518d7cede607360f0348c04fc6347a3a72ccfef355559e1f4aef0b650cd58e5ee79c73b12ff0fc2746797a00";
+      name = "cloth-config-15.0.140-fabric.jar";
     })
-    # conduitspreventdrowned-1.20.1-3.9.jar
+    # sodium-fabric-0.6.13+mc1.21.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/kpKchl4x/versions/bDA25Xcg/conduitspreventdrowned-1.20.1-3.9.jar";
-      sha512 = "264eeb1d848ee611049e441b69247e77ceaf8a35c30f55dd5fbbad1be41da22803d9cd14f1fb90d74e07bb88d82fa922d60c4a5743356a285534defb3fc69612";
-      name = "conduitspreventdrowned-1.20.1-3.9.jar";
+      url = "https://cdn.modrinth.com/data/AANobbMI/versions/u1OEbNKx/sodium-fabric-0.6.13%2Bmc1.21.1.jar";
+      sha512 = "13032e064c554fc8671573dadb07bc70e6ea2f68706c65c086c4feb1d2f664346a3414cbf9d1367b42b8d063a35e40f2f967ef9af31642e1f0093b852161fe91";
+      name = "sodium-fabric-0.6.13+mc1.21.1.jar";
     })
-    # coroutil-fabric-1.20.1-1.3.7.jar
+    # treeharvester-1.21.1-9.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/rLLJ1OZM/versions/7tRnsYkP/coroutil-fabric-1.20.1-1.3.7.jar";
-      sha512 = "4a03363dd9cfd517eb04bea77779c88e74f12c1dacadc726869cb9b595348d615e50041893ad72155f7ac2c359219604710d6157dec95a46fe0e598ef5642035";
-      name = "coroutil-fabric-1.20.1-1.3.7.jar";
+      url = "https://cdn.modrinth.com/data/abooMhox/versions/OtzwmSlR/treeharvester-1.21.1-9.1.jar";
+      sha512 = "ef05666db209bcc339a89c83106c329a51d32310188f913375d8ebb3ff98251f99ae21baa6def18e1125d64e5d454f6cd5c5dbe7f8ddc00312dfa1b89a866c4d";
+      name = "treeharvester-1.21.1-9.1.jar";
     })
-    # clockwork-fabric-0.5.3-[MELTING_POINT].jar
+    # MouseTweaks-fabric-mc1.21-2.26.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/84USeAvk/versions/Jsckttl2/clockwork-fabric-0.5.3-%5BMELTING_POINT%5D.jar";
-      sha512 = "67e7eed11f4c8a9f7a92fee73b4a0a548f065e4eac2dd28926238c6b8d19f6c0f113da720ee6b198be557aea75347a3a011977f56b71c2a16486bbc49a9e1504";
-      name = "clockwork-fabric-0.5.3-[MELTING_POINT].jar";
+      url = "https://cdn.modrinth.com/data/aC3cM3Vq/versions/ylmBQ38A/MouseTweaks-fabric-mc1.21-2.26.jar";
+      sha512 = "1744a48a47aedcbf19a0a93f78473cf0221fc4782852dca7fc02685719174664b4f9d95d353fcfc16902ac3815594511ba6d9ab14391f9b7e25ec9b2e777927a";
+      name = "MouseTweaks-fabric-mc1.21-2.26.jar";
     })
-    # create-fabric-6.0.8.1+build.1744-mc1.20.1.jar
+    # ranged_weapon_api-fabric-2.3.3+1.21.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/Xbc0uyRg/versions/HAqwA6X1/create-fabric-6.0.8.1%2Bbuild.1744-mc1.20.1.jar";
-      sha512 = "6edaddb93bc87bf8204376d3ceddd3e3dfec1d716556a5925802f2ade59ce5a660ded50088fa94188842ff83fc29445363dfa5d423e425b1574092833b6fa896";
-      name = "create-fabric-6.0.8.1+build.1744-mc1.20.1.jar";
+      url = "https://cdn.modrinth.com/data/AqaIIO6D/versions/j6w0ptJx/ranged_weapon_api-fabric-2.3.3%2B1.21.1.jar";
+      sha512 = "95cd21612acd5506ae023856dfe7f712e5ca444c605083212c278f74b518930e5c53ce18a657f95ba817ba1ddeaf530da9a3d41ef3bcb454a778d789f421f80b";
+      name = "ranged_weapon_api-fabric-2.3.3+1.21.1.jar";
     })
-    # cullleaves-fabric-4.1.1+1.20.1.jar
+    # athena-fabric-1.21-4.0.2.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/GNxdLCoP/versions/jpXb8qLT/cullleaves-fabric-4.1.1%2B1.20.1.jar";
-      sha512 = "df0375099ab14fbfa2805f0f791728532ae31c21e7cc2d0037e94edddedf6abd8733060a7649eeda5875e7c947d22fd3acfacb63f6398d0ca7f75e57c98bd20a";
-      name = "cullleaves-fabric-4.1.1+1.20.1.jar";
+      url = "https://cdn.modrinth.com/data/b1ZV3DIJ/versions/7PcGW9Vp/athena-fabric-1.21-4.0.2.jar";
+      sha512 = "4e2c7d1c8601be50229c94ded45b700adeef2f89ac5e713792603f678228c9fd4595301a857b09a2a8737298701b553555d9ef80ee139a2a774f0516c572afdc";
+      name = "athena-fabric-1.21-4.0.2.jar";
     })
-    # dismountentity-1.20.1-3.6.jar
+    # smarterfarmers-1.21-2.2.4-fabric.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/H7N61Wcl/versions/8dvHq4gs/dismountentity-1.20.1-3.6.jar";
-      sha512 = "071f0596af218aebabaeae1cdd52c9c2e712c96969df80c4635c1b810afa6605cb5459ffb92b23d89d4b46be9330a185edaea8c5ed39b71477066d49daefc934";
-      name = "dismountentity-1.20.1-3.6.jar";
+      url = "https://cdn.modrinth.com/data/Bh6ZOMvp/versions/bsYbob1i/smarterfarmers-1.21-2.2.4-fabric.jar";
+      sha512 = "b9b8bb07f010b00e58bdf431c0ef259598e9af54cab8dc9a45387816d457a7591244e6f6582e8f3e8137187f252f6238334010e04fc621e1a146a159b2ac8bd2";
+      name = "smarterfarmers-1.21-2.2.4-fabric.jar";
     })
-    # doubledoors-1.20.1-7.2.jar
+    # mineralchance-1.21.1-3.8.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/JrvR9OHr/versions/JxWWE54a/doubledoors-1.20.1-7.2.jar";
-      sha512 = "335774b5052d6b557c1e6b93197e1f4c19b9f1edeca7482d1e87d03a95a6e34588554481b299238938dbdaf6159594da544874e51dc96f27ca7d4cef62d76897";
-      name = "doubledoors-1.20.1-7.2.jar";
+      url = "https://cdn.modrinth.com/data/bu1hACOl/versions/Ek2V4pfu/mineralchance-1.21.1-3.8.jar";
+      sha512 = "65e043d15bf8ff00f095e2109f87b99bb23a7ce092dc3fe9c418b7d8afce5d0e08db16c5d7a51985fe5c92934816bc35ad9fd769394c5914f6123700a0cd9cc4";
+      name = "mineralchance-1.21.1-3.8.jar";
     })
-    # dragondropselytra-1.20.1-3.5.jar
+    # entity_texture_features_1.21-fabric-7.0.8.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/DPkbo3dg/versions/VjJgkK28/dragondropselytra-1.20.1-3.5.jar";
-      sha512 = "8be91fa55e676f592abd59e76cf507a368c783d0dc272145a21838be8e0b50ab350be71b63fb7a379dcd80048970b69a44a1ff8404ce1b7413abadda05c88636";
-      name = "dragondropselytra-1.20.1-3.5.jar";
+      url = "https://cdn.modrinth.com/data/BVzZfTc1/versions/P3oS1dIC/entity_texture_features_1.21-fabric-7.0.8.jar";
+      sha512 = "180f3d27ec18026fa27b1f49eb6bcec46c62b29c744ab81182e1c0834363472d2978c4a96074e678635a442019e0645ef6930feb0e03edc9fc289305f855f14c";
+      name = "entity_texture_features_1.21-fabric-7.0.8.jar";
     })
-    # dynamic-fps-3.9.5+minecraft-1.20.0-fabric.jar
+    # midnightcontrols-fabric-1.10.0.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/LQ3K71Q1/versions/D9mrJwm0/dynamic-fps-3.9.5%2Bminecraft-1.20.0-fabric.jar";
-      sha512 = "8f6769b6ae3736e2481f0b4caea385ad6656b60b2493a1a746a3f0678e976494f7a0488ac4baa80531a38e8d64b1a61654ee97c238dc9b0e12347bdc6623520e";
-      name = "dynamic-fps-3.9.5+minecraft-1.20.0-fabric.jar";
+      url = "https://cdn.modrinth.com/data/bXX9h73M/versions/mZMBB8jx/midnightcontrols-fabric-1.10.0.1.jar";
+      sha512 = "777dca100c9f55c9352eb3e1ab962518ab991632d0a0126844ccef07afa3d6a3a7c91748a0f71468574739dce349893e951730b0e658572c89a3830cb275621a";
+      name = "midnightcontrols-fabric-1.10.0.1.jar";
     })
-    # easyelytratakeoff-1.20.1-4.5.jar
+    # midnightlib-fabric-1.9.2+1.21.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/3hqwGCUB/versions/JBhBlmby/easyelytratakeoff-1.20.1-4.5.jar";
-      sha512 = "21490ad2524bfd094fa21ebc14c12e943a77bb90fa384ded24a83ecd40c0c579d85635b1e45a27bb38ab450279268cdb09f77d6325203f38e580775e5e5bbe28";
-      name = "easyelytratakeoff-1.20.1-4.5.jar";
+      url = "https://cdn.modrinth.com/data/codAaoxh/versions/3tCMjbnf/midnightlib-fabric-1.9.2%2B1.21.1.jar";
+      sha512 = "6ec997857e395c2b6081e4e117995e3b58ff3aff8353f51867d241db1b8f45c2d9985647301cb1946ddd85bf783362030b83ec1f61ec5c74e18ea5b48f1fd683";
+      name = "midnightlib-fabric-1.9.2+1.21.1.jar";
     })
-    # eating-animation-1.20+1.9.61.jar
+    # YungsCaveBiomes-1.21.1-Fabric-3.1.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/rUgZvGzi/versions/AqXSvu6M/eating-animation-1.20%2B1.9.61.jar";
-      sha512 = "7470cd63b49cd797a21b30fefe11bd53e419ca8ed0eb01f498b801e83222685bbe853e7323f2e310874a3619628fece48ec69ea53cd391dd97a139c64225d077";
-      name = "eating-animation-1.20+1.9.61.jar";
+      url = "https://cdn.modrinth.com/data/cs7iGVq1/versions/geZa9lJS/YungsCaveBiomes-1.21.1-Fabric-3.1.1.jar";
+      sha512 = "b7fd6386b6652366a950375d352f011310fb40c14aef668d9cf1a4f63080ae3d6b46db302117a32359fbff3327b23b7275f0e39b487e9261f2e5b66a3dbe0409";
+      name = "YungsCaveBiomes-1.21.1-Fabric-3.1.1.jar";
     })
-    # enhancedblockentities-0.9+1.20.jar
+    # Highlighter-1.21-fabric-1.1.11.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/OVuFYfre/versions/i3v1Skck/enhancedblockentities-0.9%2B1.20.jar";
-      sha512 = "7e8b402fd25efd396bc7f0f25a663808ae9890accc227850c454dfcdc975657f22afceb15878e781485622434a6f6d60aff2a60264aa4425edd52ebe052a0de5";
-      name = "enhancedblockentities-0.9+1.20.jar";
+      url = "https://cdn.modrinth.com/data/cVNW5lr6/versions/Pg76zkO0/Highlighter-1.21-fabric-1.1.11.jar";
+      sha512 = "4cc5dbb941957b2045199839b43688b6018143a5c105b883d02952addda379039a0aaa203cd29364d8e89b4db6dc68f876ef759d303e3186860b1785497cd4fc";
+      name = "Highlighter-1.21-fabric-1.1.11.jar";
     })
-    # edibles-1.20.1-4.5.jar
+    # YungsBetterCaves-1.21.1-Fabric-3.1.4.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/Rjl8pCZ9/versions/CvCMY635/edibles-1.20.1-4.5.jar";
-      sha512 = "cf86aa75b1f79b64ee392c2af23ce7b4da7c50046acc6b10e8c63836f642940feef784f65924084ecaaf7abe95c84cb6084dd6e2e906a37ce0c850973f7ee85f";
-      name = "edibles-1.20.1-4.5.jar";
+      url = "https://cdn.modrinth.com/data/Dfu00ggU/versions/72UkhXm7/YungsBetterCaves-1.21.1-Fabric-3.1.4.jar";
+      sha512 = "347306c83e1d4f8381e2db410b4ee03e4d2b0f13846fefe33bead3fc85ff78a372e477a930c7251bb44f8d6d7841ce7719239562b6e8f6fcd3298741363f6cae";
+      name = "YungsBetterCaves-1.21.1-Fabric-3.1.4.jar";
     })
-    # entityculling-fabric-1.9.4-mc1.20.1.jar
+    # dragondropselytra-1.21.1-3.5.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/NNAgCjsB/versions/Pzx7Sq6t/entityculling-fabric-1.9.4-mc1.20.1.jar";
-      sha512 = "ad52e9fba14217af2b2ae73ad739dfe0351ecf60597510bdda58922e5e6455fd03c16441b37a7ffe5b379e9e509bf47a8200d1600346e96324875e5526e5acfb";
-      name = "entityculling-fabric-1.9.4-mc1.20.1.jar";
+      url = "https://cdn.modrinth.com/data/DPkbo3dg/versions/PULGUIYZ/dragondropselytra-1.21.1-3.5.jar";
+      sha512 = "db0c09f36a818d6c1b259332c4f66ff5956c16c85ba3ca6dea6d84e4ba88da5abe10803aba60489a2e08a7a7df38e7bf9b413b8358db2fec6cb0bdf7e23602c2";
+      name = "dragondropselytra-1.21.1-3.5.jar";
     })
-    # fabric-api-0.92.6+1.20.1.jar
+    # silkiertouch-1.21.1-1.0.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/P7dR8mSH/versions/UapVHwiP/fabric-api-0.92.6%2B1.20.1.jar";
-      sha512 = "2bd2ed0cee22305b7ff49597c103a57c8fbe5f64be54a906796d48b589862626c951ff4cbf5cb1ed764a4d6479d69c3077594e693b7a291240eeea2bb3132b0c";
-      name = "fabric-api-0.92.6+1.20.1.jar";
+      url = "https://cdn.modrinth.com/data/dUaXeoyM/versions/TngkMccX/silkiertouch-1.21.1-1.0.jar";
+      sha512 = "7aacad10ee0ea27d6c38c3c2feeb09393ae1317804da6d24ecaa0b3a6fdec019a44762c922c0c2adf54fc2cfe8a5b71825955662592195969752bbabf650153b";
+      name = "silkiertouch-1.21.1-1.0.jar";
     })
-    # fastercrouching-1.20.1-2.6.jar
+    # SereneSeasons-fabric-1.21.1-10.1.0.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/lgEczyrc/versions/W5h7AXga/fastercrouching-1.20.1-2.6.jar";
-      sha512 = "ba21ef9dd423b0e1e088928a56ea1b0a0095b21383a45a997b8a494c464d8dbfcb8dc1e58d2e98f7ce5d47426429d72dbfe1de88d83d0e82cb60fe254aec68f7";
-      name = "fastercrouching-1.20.1-2.6.jar";
+      url = "https://cdn.modrinth.com/data/e0bNACJD/versions/UqA7miTT/SereneSeasons-fabric-1.21.1-10.1.0.1.jar";
+      sha512 = "b60eaacd452ea1a99198a8562f5bc4a10c42ae18853cdccb79fd4d33da784cbad7fa354a431fe33e157b82523ed4bcdd14e1c4b03f9f49ccac2e794b4223e73c";
+      name = "SereneSeasons-fabric-1.21.1-10.1.0.1.jar";
     })
-    # ferritecore-6.0.1-fabric.jar
+    # collective-1.21.1-8.13.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/uXXizFIs/versions/unerR5MN/ferritecore-6.0.1-fabric.jar";
-      sha512 = "9b7dc686bfa7937815d88c7bbc6908857cd6646b05e7a96ddbdcada328a385bd4ba056532cd1d7df9d2d7f4265fd48bd49ff683f217f6d4e817177b87f6bc457";
-      name = "ferritecore-6.0.1-fabric.jar";
+      url = "https://cdn.modrinth.com/data/e0M1UDsY/versions/VTg6femX/collective-1.21.1-8.13.jar";
+      sha512 = "20ade6d666440659d38ec43202624993f47681a844c7f9e3e66a462e9f88f5d98bdd9a0a26278b1ed94bd4836b3c9cdbcfef73ad8515555f239e84bfea45d938";
+      name = "collective-1.21.1-8.13.jar";
     })
-    # geckolib-fabric-1.20.1-4.8.2.jar
+    # nohostilesaroundcampfire-1.21.1-7.2.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/8BmcQJ2H/versions/AXhbVyuq/geckolib-fabric-1.20.1-4.8.2.jar";
-      sha512 = "cf0f40b02ce712610984c486ed6c7fa0c46f5926da0f8a4d329622dfaadf96a90bd1c2f9afdfc08082a66fb6e9dbf4d6853a9405f16c856bf0b55c62efcbb0a6";
-      name = "geckolib-fabric-1.20.1-4.8.2.jar";
+      url = "https://cdn.modrinth.com/data/EJqeyaVz/versions/FH8UmhVY/nohostilesaroundcampfire-1.21.1-7.2.jar";
+      sha512 = "9bb3f1290dd13537f8cacab679626645302ac3ee68d8d9701d6fda99dc33e95dd0ba2dd5cc482ddb76f4a4ee6fe859a5ce2b805ce8b17b4c58229732c71e30ca";
+      name = "nohostilesaroundcampfire-1.21.1-7.2.jar";
     })
-    # GlitchCore-fabric-1.20.1-0.0.1.1.jar
+    # dungeon_difficulty-fabric-3.6.10+1.21.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/s3dmwKy5/versions/25HLOiOl/GlitchCore-fabric-1.20.1-0.0.1.1.jar";
-      sha512 = "6aaf011fd04da2f2839da8e037add942588676385906d8ddad2927ca88414a37463f1b2e2ee2209a87cda8d2af9448a29e55e86ba2d94e857e46d28545ea7bbd";
-      name = "GlitchCore-fabric-1.20.1-0.0.1.1.jar";
+      url = "https://cdn.modrinth.com/data/ENZmbSFZ/versions/txjyPgdx/dungeon_difficulty-fabric-3.6.10%2B1.21.1.jar";
+      sha512 = "ce2d213ee7289e1733c3c3616d6f8b7789ea653bc2092d3cb4a026c7d9974040f89e20a9790b60ae711910e237df452d709fc97250df8573c4836e67924a2f09";
+      name = "dungeon_difficulty-fabric-3.6.10+1.21.1.jar";
     })
-    # handcrafted-fabric-1.20.1-3.0.6.jar
+    # appleskin-fabric-mc1.21-3.0.6.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/pJmCFF0p/versions/NRw0CDAc/handcrafted-fabric-1.20.1-3.0.6.jar";
-      sha512 = "92c3b47c635196d0991831ce64e2c47bd9d666ee6213bbba87b8f0214cccbba626a564ad130ec0336e94936568dce462d1ff6ca726a81134518795709632602e";
-      name = "handcrafted-fabric-1.20.1-3.0.6.jar";
+      url = "https://cdn.modrinth.com/data/EsAfCjCV/versions/b5ZiCjAr/appleskin-fabric-mc1.21-3.0.6.jar";
+      sha512 = "accbb36b863bdeaaeb001f7552534f3bdf0f27556795cf8e813f9b32e7732450ec5133da5e0ec9b92dc22588c48ffb61577c375f596dc351f15c15ce6a6f4228";
+      name = "appleskin-fabric-mc1.21-3.0.6.jar";
     })
-    # healingcampfire-1.20.1-6.2.jar
+    # tntbreaksbedrock-1.21.1-3.5.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/kOuPUitF/versions/olxRjKsI/healingcampfire-1.20.1-6.2.jar";
-      sha512 = "141603dc3ab64744dbd1eef380b386dfcf606230186185f8d5cb98ca44034aa9d774820ab81ff273ec30e417afcf6d733768e98d6cfe120fe840a0c375e1f0e3";
-      name = "healingcampfire-1.20.1-6.2.jar";
+      url = "https://cdn.modrinth.com/data/eU2O6Xp1/versions/g3JXlbSH/tntbreaksbedrock-1.21.1-3.5.jar";
+      sha512 = "c39b8ed9ce38ad7b2a48a0e522ef752683483ac28c1f8093346b4343462b2886e21948dea46a0c311d9748f78ab4a002f617ac59db60510dd7bbeee0aaa412ae";
+      name = "tntbreaksbedrock-1.21.1-3.5.jar";
     })
-    # ImmediatelyFast-Fabric-1.5.3+1.20.4.jar
+    # replantingcrops-1.21.1-5.5.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/5ZwdcRci/versions/AIFWhP2u/ImmediatelyFast-Fabric-1.5.3%2B1.20.4.jar";
-      sha512 = "abc9ab8ce9c688479d8006025c6268c509be10c0e1b3a86bd54c0665d8aecbf6222105055067cb815059dc62aa58dd956e27b89772124a4d82c96fcbac236d1c";
-      name = "ImmediatelyFast-Fabric-1.5.3+1.20.4.jar";
+      url = "https://cdn.modrinth.com/data/EXzIPtJo/versions/dJ9RP7Em/replantingcrops-1.21.1-5.5.jar";
+      sha512 = "6fb07e8dca7eb51982c7abd0a0f6d60af81d267064b7a16197a0f484bee801837126dd080932ffb7cd421b9968d54fb71c36481ec513e8b127005820f653ed5b";
+      name = "replantingcrops-1.21.1-5.5.jar";
     })
-    # infinitetrading-1.20.1-4.6.jar
+    # AmbientSounds_FABRIC_v6.3.1_mc1.21.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/U3eoZT3o/versions/DkRq9YKI/infinitetrading-1.20.1-4.6.jar";
-      sha512 = "db19f120498b3cbe955e7eea4c76cbd6c3c243f359dc03ab151cd57d6bf49e529e4f7b8882530dc1a79ee2dca956465175ccddef2ac3d24d5ad810e309bdae7d";
-      name = "infinitetrading-1.20.1-4.6.jar";
+      url = "https://cdn.modrinth.com/data/fM515JnW/versions/ybXRUW4r/AmbientSounds_FABRIC_v6.3.1_mc1.21.1.jar";
+      sha512 = "11cc959f768506329c8938e95f4a0086c4a00cff82852e09c72f60d0938a91beba53499ec4c1cf11abc07f8b853bcb4ff8f87268b67b274fc6972f9abf9a0b92";
+      name = "AmbientSounds_FABRIC_v6.3.1_mc1.21.1.jar";
     })
-    # inventorymending-1.20.1-1.2.jar
+    # NaturesCompass-1.21.1-2.2.7-fabric.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/y6Ryy40D/versions/ryxQwkdr/inventorymending-1.20.1-1.2.jar";
-      sha512 = "e9762be33f9dc1ae04251dbefcb41e6a487c8fbce59f35cdf19804a9591260b07aead634dbd6be8e989fc4e8123448bb4980a8b651ec57130cf4a1d7b6a38079";
-      name = "inventorymending-1.20.1-1.2.jar";
+      url = "https://cdn.modrinth.com/data/fPetb5Kh/versions/9W2MUsnU/NaturesCompass-1.21.1-2.2.7-fabric.jar";
+      sha512 = "95e686f2b4d13c8d2e00ce24ef32075900aaacf38b2b6af676e92ef8936ea39b95146fea05321029a73a3322ba685361afbe7bbe6667143bf27fead0c5d54f8c";
+      name = "NaturesCompass-1.21.1-2.2.7-fabric.jar";
     })
-    # InventoryProfilesNext-fabric-1.20-1.10.19.jar
+    # krypton-0.2.8.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/O7RBXm3n/versions/KV3ANetv/InventoryProfilesNext-fabric-1.20-1.10.19.jar";
-      sha512 = "a1af43eca75aebe0be27772742ce0d02b283b3904b9c4a650fd616165e63532ba4f67cab72e9227e8399fc8ee9302fdbf17587c32e0bef73970aa20a8d4d0b21";
-      name = "InventoryProfilesNext-fabric-1.20-1.10.19.jar";
+      url = "https://cdn.modrinth.com/data/fQEb0iXm/versions/Acz3ttTp/krypton-0.2.8.jar";
+      sha512 = "5f8cf96c79bfd4d893f1d70da582e62026bed36af49a7fa7b1e00fb6efb28d9ad6a1eec147020496b4fe38693d33fe6bfcd1eebbd93475612ee44290c2483784";
+      name = "krypton-0.2.8.jar";
     })
-    # inventorytotem-1.20.1-3.4.jar
+    # paladins-fabric-2.6.4+1.21.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/yQj7xqEM/versions/FdstVlDW/inventorytotem-1.20.1-3.4.jar";
-      sha512 = "1ade16e67b8bf42d8479312763ebf44ffdbc2fb257eecc157679fc2aa7226b8d79f068c01d7af262dde66d489c261ede99613915b45e59ce2699548cbd377cd7";
-      name = "inventorytotem-1.20.1-3.4.jar";
+      url = "https://cdn.modrinth.com/data/FxXkHaLe/versions/uzAvtQmY/paladins-fabric-2.6.4%2B1.21.1.jar";
+      sha512 = "66ade7a1e03272168a918479a529e13f562dd1f1ea1a13f5fd796df4028e7c5b83508953ae66e4804d3cab7bd9a5a6ae0ed77c5f3b7ca90aca8b4ad149db4253";
+      name = "paladins-fabric-2.6.4+1.21.1.jar";
     })
-    # iris-1.7.6+mc1.20.1.jar
+    # smallernetherportals-1.21.1-3.9.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/YL57xq9U/versions/s5eFLITc/iris-1.7.6%2Bmc1.20.1.jar";
-      sha512 = "f1337b0441c31269bd3bfcb28647d521326a83e73128c1ac8d065615f8a5a4ca1e8c96a468b356584236ece5b164ec8d8a52b1878064f4e391ecf4f32885e301";
-      name = "iris-1.7.6+mc1.20.1.jar";
+      url = "https://cdn.modrinth.com/data/fYAofsi6/versions/ZAbiGvCu/smallernetherportals-1.21.1-3.9.jar";
+      sha512 = "94f75829c7ef07b28280240052be4fe3411eaee6c6fd70f98958b478fb3f04d3bf8646f63f57470a3ea21c42ff1871053d8d8107219fa51965d798688b3335a4";
+      name = "smallernetherportals-1.21.1-3.9.jar";
     })
-    # Highlighter-1.20.1-fabric-1.1.9.jar
+    # better-end-21.0.11.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/cVNW5lr6/versions/vyEyvJgV/Highlighter-1.20.1-fabric-1.1.9.jar";
-      sha512 = "3f55e9c3a8a35e2aa0234e8cf6a34dc1303bf3fa2b9c2fc2b7f6cd86153017bc901d164d8cf7f413959422647e627ee36e2cc34a85be56d085b0807afefe1a62";
-      name = "Highlighter-1.20.1-fabric-1.1.9.jar";
+      url = "https://cdn.modrinth.com/data/gc8OEnCC/versions/4qhBEg6J/better-end-21.0.11.jar";
+      sha512 = "d3094b88202fca1ccc055e8429eac42eac1bd696a82ed650a9f1426cd5b28bd08e0af4d41664ed3fad10d8477c6da7c6be9d626a5664cfbc664844355c97c5b1";
+      name = "better-end-21.0.11.jar";
     })
-    # jei-1.20.1-fabric-15.20.0.129.jar
+    # respawningshulkers-1.21.1-4.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/u6dRKJwZ/versions/wbPLxn0B/jei-1.20.1-fabric-15.20.0.129.jar";
-      sha512 = "c236643fec7dab72a68d772c0739bc95e2b8b59dbe082b68cafac5457bfd0e87f611fef9b7e973dbe377d6dd76b538327da2a595183b2a3808cc5fe0006cef0f";
-      name = "jei-1.20.1-fabric-15.20.0.129.jar";
+      url = "https://cdn.modrinth.com/data/gHCmhGUV/versions/zkxWsh1p/respawningshulkers-1.21.1-4.1.jar";
+      sha512 = "494bf284e776ac2130ba5e5756714fb99549751b38bc290b95eba2c0770da9e28c1a8a1bfd608b348764a1efacbbe8f9d129ef3e0e4e727fc0542ed0c5d18842";
+      name = "respawningshulkers-1.21.1-4.1.jar";
     })
-    # justplayerheads-1.20.1-4.2.jar
+    # Almanac-1.21.1-2-fabric-1.5.0.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/YdVBZMNR/versions/8vQWn1zu/justplayerheads-1.20.1-4.2.jar";
-      sha512 = "99c61f91e78881068cdcdfb9a9e0fb51b292940fcbb6f2e807d05404b757b4ac7e2f3ecb0eed4a3de2552101f41bf5fd857b7c344f3a5981a984444d215edb78";
-      name = "justplayerheads-1.20.1-4.2.jar";
+      url = "https://cdn.modrinth.com/data/Gi02250Z/versions/PntWxGkY/Almanac-1.21.1-2-fabric-1.5.0.jar";
+      sha512 = "b2c8f89c615cd1279977b479dcc1aedc273f941c9d1eec91b6af97d57629e03d9213fade87755922bb19456ed72d2a033e08323a388a2e607cb0cb6612ee68ef";
+      name = "Almanac-1.21.1-2-fabric-1.5.0.jar";
     })
-    # keepmysoiltilled-1.20.1-2.5.jar
+    # ghosts-fabric-1.21.1-1.2.0.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/OC5Zubbe/versions/WLWL44CC/keepmysoiltilled-1.20.1-2.5.jar";
-      sha512 = "2c2daacd0c8ed3cd089c3f7810f762a4064a74eb7a353194bf826508c812c5d152326856f798f2d5c136bfc81f2c388c566f3a4ac69cb0099058d25ab0357f0a";
-      name = "keepmysoiltilled-1.20.1-2.5.jar";
+      url = "https://cdn.modrinth.com/data/gJKLGvbS/versions/NpL5z5fE/ghosts-fabric-1.21.1-1.2.0.jar";
+      sha512 = "312b9315ee1d32d4bbe0bc74df0c516ea304d4d9181f9fa9b2045ff5868e7f9ea5f2bc55bb55f98a73a1c4bbc80e3577efe2ba80732f8c3bc9964f3a8bde0d77";
+      name = "ghosts-fabric-1.21.1-1.2.0.jar";
     })
-    # krypton-0.2.3.jar
+    # cullleaves-fabric-4.1.1+1.21.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/fQEb0iXm/versions/jiDwS0W1/krypton-0.2.3.jar";
-      sha512 = "92b73a70737cfc1daebca211bd1525de7684b554be392714ee29cbd558f2a27a8bdda22accbe9176d6e531d74f9bf77798c28c3e8559c970f607422b6038bc9e";
-      name = "krypton-0.2.3.jar";
+      url = "https://cdn.modrinth.com/data/GNxdLCoP/versions/b3VxU7eO/cullleaves-fabric-4.1.1%2B1.21.1.jar";
+      sha512 = "43389205cfdc35da3fb07ab22284a0a158e8b80dda888be5b3b742280670a55ee0df79cc45f23081d8b378a287c08109b51d220ef01dd6e4f239e7939e542ce8";
+      name = "cullleaves-fabric-4.1.1+1.21.1.jar";
     })
-    # lambdabettergrass-2.0.3+1.20.1.jar
+    # villagernames-1.21.1-8.2.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/2Uev7LdA/versions/eTxu3nyw/lambdabettergrass-2.0.3%2B1.20.1.jar";
-      sha512 = "4a00e4a8f8ce95a16f1366a79d58a6514bb0611e7dc55d69b637c4729a8e77e2121f28d0349f05374b17f5ffcfa7d289d306f4181838490e9550cc686ce2ee28";
-      name = "lambdabettergrass-2.0.3+1.20.1.jar";
+      url = "https://cdn.modrinth.com/data/gqRXDo8B/versions/MTjxRIUz/villagernames-1.21.1-8.2.jar";
+      sha512 = "8344c93a58fd5ffcecaf26516af7c91e357c7842bf43e4f66096bbe4b31129ca0fd1795562349a8cc91bf5eb15ca3bd76151cf12c9ad57cdde257807a4cd9921";
+      name = "villagernames-1.21.1-8.2.jar";
     })
-    # lambdynamiclights-4.4.0+1.20.1.jar
+    # lithium-fabric-0.15.1+mc1.21.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/yBW8D80W/versions/AQfTnYyJ/lambdynamiclights-4.4.0%2B1.20.1.jar";
-      sha512 = "65f297e32ba3a72537b22730dfbe8dac9ce1ba33e62c2ddf85302b8a5131dd1fe92cca151673599c0b6adeb4ec5bd254f2cfdde66c3ca909f08e9319ebfacb56";
-      name = "lambdynamiclights-4.4.0+1.20.1.jar";
+      url = "https://cdn.modrinth.com/data/gvQqBUqZ/versions/E5eJVp4O/lithium-fabric-0.15.1%2Bmc1.21.1.jar";
+      sha512 = "bb0d13b429c3f790b3f8d42312a104eb7f33dadc0b1eb3b037255af2d1b17a3c51db7d9a4cf8552f9410922f03ab030e124cb5c0661d2442e63bef8a1d133136";
+      name = "lithium-fabric-0.15.1+mc1.21.1.jar";
     })
-    # lithium-fabric-mc1.20.1-0.11.4.jar
+    # dismountentity-1.21.1-3.6.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/gvQqBUqZ/versions/iEcXOkz4/lithium-fabric-mc1.20.1-0.11.4.jar";
-      sha512 = "31938b7e849609892ffa1710e41f2e163d11876f824452540658c4b53cd13c666dbdad8d200989461932bd9952814c5943e64252530c72bdd5d8641775151500";
-      name = "lithium-fabric-mc1.20.1-0.11.4.jar";
+      url = "https://cdn.modrinth.com/data/H7N61Wcl/versions/PVx8sPK6/dismountentity-1.21.1-3.6.jar";
+      sha512 = "390c03a2ce2644abfa95645b9395cd472ae32ead35f206ce763b32ab21691f9fb090ab8c3edc4a522ebbdbb450b27b8987e658ac8b76d464f8a687529467cc98";
+      name = "dismountentity-1.21.1-3.6.jar";
     })
-    # letmedespawn-1.20.x-fabric-1.5.0.jar
+    # lovely_snails-1.2.0+1.21.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/vE2FN5qn/versions/rOkgwJ12/letmedespawn-1.20.x-fabric-1.5.0.jar";
-      sha512 = "9cd165f407e16445d70d3ba916df732e41b769384a133b08291d400fed20c3f1a00a225e81b693542e914917e10ab5b7dc1c9ca62c5c596f76453fdcf010ff41";
-      name = "letmedespawn-1.20.x-fabric-1.5.0.jar";
+      url = "https://cdn.modrinth.com/data/hBVVhStr/versions/5MD6c3zD/lovely_snails-1.2.0%2B1.21.1.jar";
+      sha512 = "50a71bc00f58b5329a7e3cf719a89da7421bba1201bba39e330d7f20340f2346d17522019a50892799e04b37a387b8431ec8890b46ffcaf926c923c1323baeb3";
+      name = "lovely_snails-1.2.0+1.21.1.jar";
     })
-    # lovely_snails-1.1.5+1.20.1.jar
+    # YungsMenuTweaks-1.21.1-Fabric-2.1.2.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/hBVVhStr/versions/n1JQ3yYD/lovely_snails-1.1.5%2B1.20.1.jar";
-      sha512 = "6475565b349b555accc426a6b0ccf62b990d38f35bb8e67745567643efc9530f3dea1bd11c5eb7d13b6c80f660f3d74ecac07c2b992ebbadae97f7237bff1f26";
-      name = "lovely_snails-1.1.5+1.20.1.jar";
+      url = "https://cdn.modrinth.com/data/Hcy2DFKF/versions/ROfVrQnL/YungsMenuTweaks-1.21.1-Fabric-2.1.2.jar";
+      sha512 = "c05bfbd328d4f152b87be212fc7f0c9c6aba92de93eb6c410424875d31764e15bc803d6b6b7ff13b45235a3162574d6f6aa95c451aab1038d706964fc70e18e2";
+      name = "YungsMenuTweaks-1.21.1-Fabric-2.1.2.jar";
     })
-    # midnightcontrols-1.9.4+1.20.jar
+    # gravestones-1.2.7+1.21+A.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/bXX9h73M/versions/xHOdr9un/midnightcontrols-1.9.4%2B1.20.jar";
-      sha512 = "722f127d91eeaa42494ffae581536d563a99fa0075b5a92ccf27b31a4e25ce86a2a89e28f9b4084281a0e67b1816f1d7656010ca863cd8a08c195b1ac69d0fd6";
-      name = "midnightcontrols-1.9.4+1.20.jar";
+      url = "https://cdn.modrinth.com/data/Heh3BbSv/versions/HO3Zv8HU/gravestones-1.2.7%2B1.21%2BA.jar";
+      sha512 = "537e4acbc9cb35936c78703982ab74aac7a30e7c13214ce9b69c5cefd37813a5dcdaf635b496ab4ca740f7bd709157cc83db0ce2c9d0412588fa494b23d529cc";
+      name = "gravestones-1.2.7+1.21+A.jar";
     })
-    # midnightlib-fabric-1.9.2+1.20.1.jar
+    # YungsBetterMineshafts-1.21.1-Fabric-5.1.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/codAaoxh/versions/jyowrZ5N/midnightlib-fabric-1.9.2%2B1.20.1.jar";
-      sha512 = "9c22d8478151d9a81d69b2da04274db1e1d9b50056319fd8545bb09340794ae364d8525340878dcd39035d49e54eb66530394bba28d3424f7a0a4ff530f7d1c9";
-      name = "midnightlib-fabric-1.9.2+1.20.1.jar";
+      url = "https://cdn.modrinth.com/data/HjmxVlSr/versions/4ybDuGhA/YungsBetterMineshafts-1.21.1-Fabric-5.1.1.jar";
+      sha512 = "f19c53ecac52866f65e1791f7b46ecc68fff6b1912ac47b42bf64097012262691c7184ea4a95db5e7bfcfda6c9532138dfe29e29af4ab108a407807a8db28074";
+      name = "YungsBetterMineshafts-1.21.1-Fabric-5.1.1.jar";
     })
-    # mineralchance-1.20.1-3.8.jar
+    # YungsBridges-1.21.1-Fabric-5.1.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/bu1hACOl/versions/ivqjJxmM/mineralchance-1.20.1-3.8.jar";
-      sha512 = "6550936fb0947dfbddb75ddb5a8ba6c3a4f66b4e8cb0fd264af0affae57779cc4ab28fe04fa669dfdaf3d5621f6f43aeac5a7edf139e98612be3974e2469c8ac";
-      name = "mineralchance-1.20.1-3.8.jar";
+      url = "https://cdn.modrinth.com/data/Ht4BfYp6/versions/8h9N9fvs/YungsBridges-1.21.1-Fabric-5.1.1.jar";
+      sha512 = "435c18442ca94c3b44a6972dddca7ca0f2437427627340b1c5aab7ac41001c9d9e5225de34b493acb0fec57f0fc1fe93818e0dc05d76bb059c6608e0155efb2f";
+      name = "YungsBridges-1.21.1-Fabric-5.1.1.jar";
     })
-    # mobtimizations-fabric-1.20.1-1.0.0.jar
+    # BiomesOPlenty-fabric-1.21.1-21.1.0.13.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/Kbz7UydC/versions/Q8aBGBRu/mobtimizations-fabric-1.20.1-1.0.0.jar";
-      sha512 = "972ab7947d920035c03cc5c05357a405f276b5d9e291b74280f67906185f8e8475dd41dc3df6f99f83fc22c9a831627ddf720de074c78b9c024094f594979e18";
-      name = "mobtimizations-fabric-1.20.1-1.0.0.jar";
+      url = "https://cdn.modrinth.com/data/HXF82T3G/versions/YPm4arUa/BiomesOPlenty-fabric-1.21.1-21.1.0.13.jar";
+      sha512 = "34bf011c38be11d593b1e71a2a398431468c42d5a1744f0572158cd025670f8e9171bbf93baaf442708f2d0171f0e158592d4f48184998e0bff4c9836460e240";
+      name = "BiomesOPlenty-fabric-1.21.1-21.1.0.13.jar";
     })
-    # modernfix-fabric-5.25.2+mc1.20.1.jar
+    # passiveshield-1.21.1-3.7.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/nmDcB62a/versions/rPmgLeZC/modernfix-fabric-5.25.2%2Bmc1.20.1.jar";
-      sha512 = "878e39d182767ffd08ad6a3539fae780739129db133abe02b9b73dc3df6e1ac9ddbe509620356b0aae5e7bfbed535d0e18741703334317a16fefef820269da2d";
-      name = "modernfix-fabric-5.25.2+mc1.20.1.jar";
+      url = "https://cdn.modrinth.com/data/iQBrasyH/versions/qCIUvQPR/passiveshield-1.21.1-3.7.jar";
+      sha512 = "91e142851d14fe35b80fb6ba16e06076241cbef87a1fb74e2c02f6a4bd7d1eb0f5a905da5852f79f52768f72aebee6aafe6453d024c4601d2ef7b8cfab28d1d8";
+      name = "passiveshield-1.21.1-3.7.jar";
     })
-    # modmenu-7.2.2.jar
+    # doubledoors-1.21.1-7.2.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/mOgUt4GM/versions/lEkperf6/modmenu-7.2.2.jar";
-      sha512 = "9a7837e04bb34376611b207a3b20e5fe1c82a4822b42929d5b410809ec4b88ff3cac8821c4568f880775bafa3c079dfc7800f8471356a4046248b12607e855eb";
-      name = "modmenu-7.2.2.jar";
+      url = "https://cdn.modrinth.com/data/JrvR9OHr/versions/KgGapm4H/doubledoors-1.21.1-7.2.jar";
+      sha512 = "c88215ccbd8fd491ab334d60dbcc00f22664f01f95b638b679307c1b3857340ddb8041b7887be18a2cce128baae7685b8d097f840796894bd3ae8eac979ced66";
+      name = "doubledoors-1.21.1-7.2.jar";
     })
-    # moreculling-1.20.1-0.24.2.jar
+    # TravelersTitles-1.21.1-Fabric-5.1.3.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/51shyZVL/versions/4sFiGeSt/moreculling-1.20.1-0.24.2.jar";
-      sha512 = "5787537c367342e7b82549f86823ecc389e01a80f8c3e31853dea68150f0796c2c8df831d055c4efd8d4e62f40a803d24ba2acec3447cd0e8137f0a53d7118e1";
-      name = "moreculling-1.20.1-0.24.2.jar";
+      url = "https://cdn.modrinth.com/data/JtifUr64/versions/S27dNesu/TravelersTitles-1.21.1-Fabric-5.1.3.jar";
+      sha512 = "120cf52c6f6dfbbcd29fa9bb8bf3c133d239c8e8da2332764a0c10081767b270df53c233c672b6092f8305998fe8b1a5b7b0f5b7c0621fc43321b54ee95e8316";
+      name = "TravelersTitles-1.21.1-Fabric-5.1.3.jar";
     })
-    # MouseTweaks-fabric-mc1.20-2.26.jar
+    # YungsBetterStrongholds-1.21.1-Fabric-5.1.3.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/aC3cM3Vq/versions/mjuG4AYd/MouseTweaks-fabric-mc1.20-2.26.jar";
-      sha512 = "d0faf200dda358efddad2d2809f646023f4dd06254572369e07f3bf33cb6941f0fcdb02db4675b30b4f3bd542cbf6196e135680ba91a2b74c2b071f34978e2d5";
-      name = "MouseTweaks-fabric-mc1.20-2.26.jar";
+      url = "https://cdn.modrinth.com/data/kidLKymU/versions/uYZShp1p/YungsBetterStrongholds-1.21.1-Fabric-5.1.3.jar";
+      sha512 = "01e467a5237a338d8347b79d2e99659a362b777c4ac10bf6e75382be072b645277b58c655b9b4ad69956f9836601c3a52c733ad437d1f6bd53ea13976545edaa";
+      name = "YungsBetterStrongholds-1.21.1-Fabric-5.1.3.jar";
     })
-    # nametagtweaks-1.20.1-4.0.jar
+    # fabric-seasons-2.4.2-BETA+1.21.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/LrLZEnPl/versions/xFDnAS8R/nametagtweaks-1.20.1-4.0.jar";
-      sha512 = "1ff3ecc2ca7968b9a6f559d7979503ba571f79c9f34bebe17333b83671b4855a87775f36f7aaa151d271a5a1647cbe8131d0d4fad425211a6ad326b4f62c34f8";
-      name = "nametagtweaks-1.20.1-4.0.jar";
+      url = "https://cdn.modrinth.com/data/KJe6y9Eu/versions/2mIvRTNp/fabric-seasons-2.4.2-BETA%2B1.21.jar";
+      sha512 = "1fa611aecdeb7d3a7dbf46b29b3fcb747f02d8c3ebd58ffa47ecb6b07c049990b54843c207db4814ae1ab6b3ccfa2854864d245bdc3074fe52faa9097c3619d3";
+      name = "fabric-seasons-2.4.2-BETA+1.21.jar";
     })
-    # NaturesCompass-1.20.1-2.2.3-fabric.jar
+    # TerraBlender-fabric-1.21.1-4.1.0.8.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/fPetb5Kh/versions/NovIXDxY/NaturesCompass-1.20.1-2.2.3-fabric.jar";
-      sha512 = "b57dabd55010b598a66fe13644380c452ea75d4717b6acb7cd4f7718d6d535920cf7e216491bde427066d7e68dfaee5ef7226b7c8322b4f8771cf0dc9416e56e";
-      name = "NaturesCompass-1.20.1-2.2.3-fabric.jar";
+      url = "https://cdn.modrinth.com/data/kkmrDlKT/versions/XNtIBXyQ/TerraBlender-fabric-1.21.1-4.1.0.8.jar";
+      sha512 = "f933f0c70babe3cf1efe3b8121486f26db9d48799b6d50557ec4f7bc47e553fe00c837f4940d70aa2eab7f13f91065a9e56c0cc53f8aa2393edaf423f80997b8";
+      name = "TerraBlender-fabric-1.21.1-4.1.0.8.jar";
     })
-    # nohostilesaroundcampfire-1.20.1-7.2.jar
+    # healingcampfire-1.21.1-6.2.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/EJqeyaVz/versions/iNnx7a2g/nohostilesaroundcampfire-1.20.1-7.2.jar";
-      sha512 = "1eae3222ec664b0d86567bff76e84736564bd294ceb444cf7e8027a13a7f2136d81704c3c1876b3e321daff82d978bfa75ac04066925e0a21db9d9d4ae9b41f7";
-      name = "nohostilesaroundcampfire-1.20.1-7.2.jar";
+      url = "https://cdn.modrinth.com/data/kOuPUitF/versions/Dq3x3ElV/healingcampfire-1.21.1-6.2.jar";
+      sha512 = "157d0a34b13f594297ec7d587e6ed9097e24c6c21d143990a899cda0989902580518ba98181beb55f539a7a0c8feaf94e2b6230a9aee2619d3e5ec4798ec2d3d";
+      name = "healingcampfire-1.21.1-6.2.jar";
     })
-    # notenoughanimations-fabric-1.11.1-mc1.20.1.jar
+    # conduitspreventdrowned-1.21.1-3.9.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/MPCX6s5C/versions/AEVtLh4I/notenoughanimations-fabric-1.11.1-mc1.20.1.jar";
-      sha512 = "cf6ee6f1cd1c4d2ae213bffd86bafeb6e9de28400673dfff5d33a6f6c3e47ef4897802da8de8063193f01fb51c7aa2a21f1629a91be1c990d1c9c26fccc4d47a";
-      name = "notenoughanimations-fabric-1.11.1-mc1.20.1.jar";
+      url = "https://cdn.modrinth.com/data/kpKchl4x/versions/oHxzVjRs/conduitspreventdrowned-1.21.1-3.9.jar";
+      sha512 = "f12321f1df32fd7dcb771c46c263d9fe1415588652a460d20e583e1e26d0775875849eb298541c4e7bb4d4ad775aea5590bdab750b5933b6f5e7c5e93536985b";
+      name = "conduitspreventdrowned-1.21.1-3.9.jar";
     })
-    # oreharvester-1.20.1-1.5.jar
+    # waveycapes-fabric-1.8.2-mc1.21.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/Xiv4r347/versions/nDJbf1ba/oreharvester-1.20.1-1.5.jar";
-      sha512 = "11371f850b1b6531df94043599b83a89308123113a3ca5349581eb6ae1787e151e83d368cbfb5ff9d1f1b056be930f32367608d43ae43cf7f1638e13ef332584";
-      name = "oreharvester-1.20.1-1.5.jar";
+      url = "https://cdn.modrinth.com/data/kYuIpRLv/versions/ZtvlEp9r/waveycapes-fabric-1.8.2-mc1.21.1.jar";
+      sha512 = "916cc3191b7338e89901871bfcff8c7e58d9e8deacf67ec807a3de26a8d0cbad4fbaa6c88b4c89853b8b85f37059374c038946e7d4b822976b235ba378b444fa";
+      name = "waveycapes-fabric-1.8.2-mc1.21.1.jar";
     })
-    # passiveshield-1.20.1-3.7.jar
+    # fastercrouching-1.21.1-2.6.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/iQBrasyH/versions/A1S3DRBc/passiveshield-1.20.1-3.7.jar";
-      sha512 = "4282e9eb21ccb5aaa638b9c5329a0f7c914e58ef33e9b2a477aab9f81d6730956d2aefa1e3eed0e45d6bb4fcf4c33d4dd2b1c8743706ab919a5facba1addc997";
-      name = "passiveshield-1.20.1-3.7.jar";
+      url = "https://cdn.modrinth.com/data/lgEczyrc/versions/cFLoIUAY/fastercrouching-1.21.1-2.6.jar";
+      sha512 = "0fed5c38b898900cdda4f1dc18c1d5ebff0313bd4130c2c25fa6adecd779b835e43d7a5bce29f73dfe6ab02a340d4f71ea2a465c53757b05ccd275e3e3eba42d";
+      name = "fastercrouching-1.21.1-2.6.jar";
     })
-    # piglinnames-1.20.1-1.3.jar
+    # waystones-fabric-1.21.1-21.1.25.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/54plduvG/versions/H6wd5Jo8/piglinnames-1.20.1-1.3.jar";
-      sha512 = "d09e64a3af5859688b43c19c25bc7a45af2b151f2130bc2a2dde5885de59323503e46b8c8f10bcaf8f36df694c1d871d0b8a6188b1c1b7d904459ff5e130b5f1";
-      name = "piglinnames-1.20.1-1.3.jar";
+      url = "https://cdn.modrinth.com/data/LOpKHB2A/versions/VdAnzzFj/waystones-fabric-1.21.1-21.1.25.jar";
+      sha512 = "2cd6a49d1d080e9912991d2cfccd19c0c4cbcd92d9c81fb3cc166f79ca9b9d654329088e40427c905215aea9ef5b3c735cf51ef5e49a00ae0253c91ff76c28c8";
+      name = "waystones-fabric-1.21.1-21.1.25.jar";
     })
-    # PresenceFootsteps-1.10.1+1.20.1.jar
+    # runes-fabric-1.2.1+1.21.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/rcTfTZr3/versions/k0t6DSmw/PresenceFootsteps-1.10.1%2B1.20.1.jar";
-      sha512 = "c306f96496aadc30abcaac0bd35e22f870e974fe532eaf1f2b66bfd5e7e5e7f6276d58b393bcd6521e8ea74b38a52b54246e2cd0344d9acf8ed4cb233f9a1e1d";
-      name = "PresenceFootsteps-1.10.1+1.20.1.jar";
+      url = "https://cdn.modrinth.com/data/lP9Yrr1E/versions/j1ymRQwT/runes-fabric-1.2.1%2B1.21.1.jar";
+      sha512 = "e09f7809280b0a07f294d732b7b4fee917b6cf1bf5df25aebc274e60b46a7ee376f203c0f0fb22717d95b5047f3619cae4ee15ed147af7b548d41743b1e28b82";
+      name = "runes-fabric-1.2.1+1.21.1.jar";
     })
-    # replantingcrops-1.20.1-5.5.jar
+    # dynamic-fps-3.9.5+minecraft-1.21.0-fabric.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/EXzIPtJo/versions/JrbAOCLs/replantingcrops-1.20.1-5.5.jar";
-      sha512 = "bcaad1c18addac1470d9fb16197add1a419f886aa0372359639f1c7037b068bbf4ddb95ca4a3e07c149cb01877da0322d118e92f3154263fd907e51cd4aba88c";
-      name = "replantingcrops-1.20.1-5.5.jar";
+      url = "https://cdn.modrinth.com/data/LQ3K71Q1/versions/td4DfKSI/dynamic-fps-3.9.5%2Bminecraft-1.21.0-fabric.jar";
+      sha512 = "2be64fb726088e20edfda8f07f7ad4eac06e787487ea54dc8485e753c664d8ef12f8fc0a6d3244e0a699300ff2ac4c84d85b8aa5fd4d58a87a8fdec74b42a6f3";
+      name = "dynamic-fps-3.9.5+minecraft-1.21.0-fabric.jar";
     })
-    # respawningshulkers-1.20.1-4.1.jar
+    # nametagtweaks-1.21.1-4.0.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/gHCmhGUV/versions/PGGBTZmK/respawningshulkers-1.20.1-4.1.jar";
-      sha512 = "0de5f26831ee90d70631a2b2c9003f4824e0cc034339354051d554753cd3ced0a618a2e8719540f20d0f184bac21773186da34e38b6c3babf03135a7e9f53d39";
-      name = "respawningshulkers-1.20.1-4.1.jar";
+      url = "https://cdn.modrinth.com/data/LrLZEnPl/versions/5Qka8LfN/nametagtweaks-1.21.1-4.0.jar";
+      sha512 = "de74cd8c264f9f5a4b18fa45486459891ca2976907e00627b1dd72b5ded61c97c5b7715f0b880c2c622cc9ca28d75be8af29aeee812001eaa93a395918deda49";
+      name = "nametagtweaks-1.21.1-4.0.jar";
     })
-    # SereneSeasons-fabric-1.20.1-9.1.0.2.jar
+    # structure_pool_api-fabric-1.2.1+1.21.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/e0bNACJD/versions/c1BdjabH/SereneSeasons-fabric-1.20.1-9.1.0.2.jar";
-      sha512 = "ea63dae236cd9d259566ab7ad0b6edeeca3ed9818edcb61079c4e85b8ab6ed731a88b978a0724f61a53e841d70ca4a23c599dc31bbd9f57cfd6ade5675256808";
-      name = "SereneSeasons-fabric-1.20.1-9.1.0.2.jar";
+      url = "https://cdn.modrinth.com/data/LrYZi08Q/versions/Y6aBoKEl/structure_pool_api-fabric-1.2.1%2B1.21.1.jar";
+      sha512 = "5db479ad64411a36ab8a4be746625cbd67189a9fb56a5853a9715159afe6cd1f8db5216018330f395211b491ae3cba1da80aa1a66f5904aa17bf18518f71fd3e";
+      name = "structure_pool_api-fabric-1.2.1+1.21.1.jar";
     })
-    # shulkerboxtooltip-fabric-4.0.4+1.20.1.jar
+    # balm-fabric-1.21.1-21.0.55.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/2M01OLQq/versions/gVxjsEiQ/shulkerboxtooltip-fabric-4.0.4%2B1.20.1.jar";
-      sha512 = "65cdc8b565e5a7f9a855dd35c7c4b20daae0c6a5822e9a32dabd0f8fd4df6353c9fbd9d1437b83c6f7824e1c65ce466a82f70a7b7ef007bd54afa63718037043";
-      name = "shulkerboxtooltip-fabric-4.0.4+1.20.1.jar";
+      url = "https://cdn.modrinth.com/data/MBAkmtvl/versions/jiTpUYmp/balm-fabric-1.21.1-21.0.55.jar";
+      sha512 = "616c8c0ca06920516a07dbd3afa4c46ba243866de375d9aa5140be803284bfe2c434e93d838462776d71c6afea98766fc6b27cd00a6880e49170478448f7415b";
+      name = "balm-fabric-1.21.1-21.0.55.jar";
     })
-    # shulkerdropstwo-1.20.1-3.5.jar
+    # Cobblemon-fabric-1.7.1+1.21.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/UjXIyw47/versions/89tfEaAo/shulkerdropstwo-1.20.1-3.5.jar";
-      sha512 = "072d5d7c11fc7498572e873ea993a94c277feee1268de29c41b242098286be0494a9648528e62148bc091c6072f19b4ebef8a0ec82578fed38a2bc17d5062c5d";
-      name = "shulkerdropstwo-1.20.1-3.5.jar";
+      url = "https://cdn.modrinth.com/data/MdwFAVRL/versions/s64m1opn/Cobblemon-fabric-1.7.1%2B1.21.1.jar";
+      sha512 = "221382ccc0aa7ae65935298802ff6272b852f485bf0d03a5ba7b51f88a15aa3110282d6c9b0d6e2993fe72515f1dfffdec236b235d411ac01eb93b7dc9e5d750";
+      name = "Cobblemon-fabric-1.7.1+1.21.1.jar";
     })
-    # silkiertouch-1.20.1-1.0.jar
+    # zombieawareness-fabric-1.21.0-1.13.2.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/dUaXeoyM/versions/QzG6pi6d/silkiertouch-1.20.1-1.0.jar";
-      sha512 = "af3a64d8e44537484cdee7980f8db58e95752b29e3d552a69a22a87980aa7a1caf8824539a1eb46c7f20969d2982a7f130a6ec22f6fc7c3ff5d6ba7f1545e066";
-      name = "silkiertouch-1.20.1-1.0.jar";
+      url = "https://cdn.modrinth.com/data/mMTOWOaA/versions/lBdgO4GL/zombieawareness-fabric-1.21.0-1.13.2.jar";
+      sha512 = "fd1492fc73ebccdbb87668e09014db4b94033003ec56c31f7bbb8a0a223200069970c0711c8f8a1b9ba5eb3683192a208e8de4728974498a7aef66f540f5a49d";
+      name = "zombieawareness-fabric-1.21.0-1.13.2.jar";
     })
-    # voicechat-fabric-1.20.1-2.6.10.jar
+    # modmenu-11.0.3.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/9eGKb6K1/versions/EU71LKN3/voicechat-fabric-1.20.1-2.6.10.jar";
-      sha512 = "ba32698dab4399ecf543df2d7aba1f6e9dd46e769842b238b15396ca885aaf0cdd31c2e9b68faadb2ebc21b8c5455b5bea00b4604fa3d6c9b929e670000a8949";
-      name = "voicechat-fabric-1.20.1-2.6.10.jar";
+      url = "https://cdn.modrinth.com/data/mOgUt4GM/versions/YIfqIJ8q/modmenu-11.0.3.jar";
+      sha512 = "4c6387a059c7ac9028acc3d78124af02a4495bef2c16783bbffe5bf449067daf2620708fd57f8725e46f0c34d0f571adf60f0869742bfe7f6101ddf13a2a87da";
+      name = "modmenu-11.0.3.jar";
     })
-    # smallernetherportals-1.20.1-3.9.jar
+    # notenoughanimations-fabric-1.11.1-mc1.21.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/fYAofsi6/versions/AKAgpUev/smallernetherportals-1.20.1-3.9.jar";
-      sha512 = "9ecae52cc42fe3edc1a45b157d495cddf867975d1f63a6c3aa65e732eeac40ac5bae3e3d1269cd342fe077e548e67cd7b9f05a1a3e760447162f192c4cfca91b";
-      name = "smallernetherportals-1.20.1-3.9.jar";
+      url = "https://cdn.modrinth.com/data/MPCX6s5C/versions/MK7dm8OP/notenoughanimations-fabric-1.11.1-mc1.21.1.jar";
+      sha512 = "d522dbbc08e098c231bb46e0a92cfc91750f0204a539f6a6f91ec5c5422e514bafcd06565ff7bd4c864594b884a169d7cb7c03ecd65af53fb550235e64065111";
+      name = "notenoughanimations-fabric-1.11.1-mc1.21.1.jar";
     })
-    # sodium-extra-0.5.9+mc1.20.1.jar
+    # stackrefill-1.21.1-4.9.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/PtjYWJkn/versions/mDbF0LZT/sodium-extra-0.5.9%2Bmc1.20.1.jar";
-      sha512 = "c47b765f8e062ca7e3471fe5e74aabdf56160d5b67b64dfcca8c177ede914715097ae4e94defe2a6b02bf86ccba1e7bf471073c71bb126e51adf21e54c5864e3";
-      name = "sodium-extra-0.5.9+mc1.20.1.jar";
+      url = "https://cdn.modrinth.com/data/mQWkB9ON/versions/5RkgQCwL/stackrefill-1.21.1-4.9.jar";
+      sha512 = "42f5bf809f533d472ff64d2b7b55f557b2ce921674469291dc34db4717cd88fc1114703ad420e1d758edf077907f4ff60a404610e24524f2cd2bce49fe2a7b74";
+      name = "stackrefill-1.21.1-4.9.jar";
     })
-    # sodium-fabric-0.5.13+mc1.20.1.jar
+    # elytraslot-fabric-9.0.1+1.21.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/AANobbMI/versions/OihdIimA/sodium-fabric-0.5.13%2Bmc1.20.1.jar";
-      sha512 = "81c64f9c2d3402dfa43ee54d8f5a054f5243bfb08984e3addcab9fe885073c79c43c1c8c41e8f30b625d26a656f82a8e5f370bbbbf222ff1c08f4b324edb7ea4";
-      name = "sodium-fabric-0.5.13+mc1.20.1.jar";
+      url = "https://cdn.modrinth.com/data/mSQF1NpT/versions/jxx2pc4h/elytraslot-fabric-9.0.1%2B1.21.1.jar";
+      sha512 = "fab675a85858199c268ec1f09bac59ef53d0eee8703c3325619ba1dc9559cbff21d274a7fcbd1046edf17aa30121c99d22a2514f714a7623e23331b985132659";
+      name = "elytraslot-fabric-9.0.1+1.21.1.jar";
     })
-    # spidersproducewebs-1.20.1-3.6.jar
+    # XaerosWorldMap_1.39.12_Fabric_1.21.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/NoznOJXq/versions/lnhVp9FD/spidersproducewebs-1.20.1-3.6.jar";
-      sha512 = "76f33d3cbb3f9581d33ce16fafd36c63372e13b2c5fcd969b485bb008b2ab6b69488fbe74f98090fdb01e5208a66b9e87f9648ac0c6d3a3d914d24fd98ec69d1";
-      name = "spidersproducewebs-1.20.1-3.6.jar";
+      url = "https://cdn.modrinth.com/data/NcUtCpym/versions/HXRzzOuL/XaerosWorldMap_1.39.12_Fabric_1.21.jar";
+      sha512 = "e1143acbe724d1b014c4a314ac8f56ca9d2f8892a33cdf0c18f9b0337f347b60bd4463a8af0e5aafd3f384c58e0078b4c7d1df3feed20a6c74656d44a6e4452f";
+      name = "XaerosWorldMap_1.39.12_Fabric_1.21.jar";
     })
-    # stackrefill-1.20.1-4.9.jar
+    # wizards-fabric-2.6.5+1.21.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/mQWkB9ON/versions/3w2JG23r/stackrefill-1.20.1-4.9.jar";
-      sha512 = "0bde00bbc05c9c1e17bd3257d28919a96a8ef8a494ddeafb88ca9cc0db0e928bd5253f59f6d9a843dcab5062704f5232b886459e49717e6779b20d20ae422b77";
-      name = "stackrefill-1.20.1-4.9.jar";
+      url = "https://cdn.modrinth.com/data/NkGaQMDA/versions/dgQ9h3nd/wizards-fabric-2.6.5%2B1.21.1.jar";
+      sha512 = "26ae765cd3237383ed27642e648bd426ca2eb1759b36ca41dffad2c4ff407f1a280348991a98a403537d3fe61fa768623da26728dbf4dc4a7962f38d113e8c99";
+      name = "wizards-fabric-2.6.5+1.21.1.jar";
     })
-    # TerraBlender-fabric-1.20.1-3.0.1.10.jar
+    # modernfix-fabric-5.25.1+mc1.21.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/kkmrDlKT/versions/J1S3aA8i/TerraBlender-fabric-1.20.1-3.0.1.10.jar";
-      sha512 = "a2d5edbe9df43185e9c83ab426cbcda4b1d0537d9ede8be630d6d650e04d5decf574ef59cbc163913255b57784fa906d26557471fc698e0f27ceee2a1ec41ed9";
-      name = "TerraBlender-fabric-1.20.1-3.0.1.10.jar";
+      url = "https://cdn.modrinth.com/data/nmDcB62a/versions/NnNX8LBn/modernfix-fabric-5.25.1%2Bmc1.21.1.jar";
+      sha512 = "dc67d6e023e1fcdeaf7837917c477cba212c611dfc2463c6ea021319c644087c79b477e0ea8194e113ddd7332fd5c6d82baa47c291eaac7f4a86252507b4e19f";
+      name = "modernfix-fabric-5.25.1+mc1.21.1.jar";
     })
-    # tntbreaksbedrock-1.20.1-3.5.jar
+    # entityculling-fabric-1.9.5-mc1.21.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/eU2O6Xp1/versions/2loAM9df/tntbreaksbedrock-1.20.1-3.5.jar";
-      sha512 = "eaad5e9274e971479af5c638beadb37ac96938a9b8eca41074fd196f85ae775cb38b2e9305144849913d7fa80087858cdda14539c9b965ddfdc425ada68405e6";
-      name = "tntbreaksbedrock-1.20.1-3.5.jar";
+      url = "https://cdn.modrinth.com/data/NNAgCjsB/versions/xcyXBGgI/entityculling-fabric-1.9.5-mc1.21.1.jar";
+      sha512 = "2a980756192abb8f7841e61017d77b16824752d349348976ba890779a8f556b4a0edb7b392bc5a29b29975342b6b18d8cfde888ae670532ce2418e5943f2009c";
+      name = "entityculling-fabric-1.9.5-mc1.21.1.jar";
     })
-    # travelersbackpack-fabric-1.20.1-9.1.43.jar
+    # spidersproducewebs-1.21.1-3.6.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/rlloIFEV/versions/hvbhRvQa/travelersbackpack-fabric-1.20.1-9.1.43.jar";
-      sha512 = "a54ae9bf255fade2bbd2e8efa403bd185714cb91df81a0e36c88fed664c66f5db3e6d52aa827b89a11c9c83f90799b9c23a65e074a19623d69e891e838881374";
-      name = "travelersbackpack-fabric-1.20.1-9.1.43.jar";
+      url = "https://cdn.modrinth.com/data/NoznOJXq/versions/cYCy5NTm/spidersproducewebs-1.21.1-3.6.jar";
+      sha512 = "dcbf236861621a15e89652f74e96e885a5b30e09c0c86c0d44c3394c47fab6f7acb81faaebd76726199522a65710e62fb1166c30c18075e4e6c3db78aecf9499";
+      name = "spidersproducewebs-1.21.1-3.6.jar";
     })
-    # TravelersTitles-1.20-Fabric-4.0.2.jar
+    # areas-1.21.1-6.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/JtifUr64/versions/MbifZGB0/TravelersTitles-1.20-Fabric-4.0.2.jar";
-      sha512 = "a8af88107664482f907e5e797156f677e79f96009b834a77f38c184cc651b88db5adac2f4edd8c6945a199157eedd9a366774f7a52458e8286fdbb492d4d8787";
-      name = "TravelersTitles-1.20-Fabric-4.0.2.jar";
+      url = "https://cdn.modrinth.com/data/NWvsqJ2Z/versions/Ppbb7pia/areas-1.21.1-6.1.jar";
+      sha512 = "0eb79d3ff53ff35e8e5a45ea1b449239cbb3783149d70159d05d4b2d6d835c04c437cbc4c21d0679009cf9f97277de5cd03f2f71f6c53f537a6e2e72eec3831e";
+      name = "areas-1.21.1-6.1.jar";
     })
-    # treeharvester-1.20.1-9.1.jar
+    # YungsBetterDungeons-1.21.1-Fabric-5.1.4.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/abooMhox/versions/EQYmDYvI/treeharvester-1.20.1-9.1.jar";
-      sha512 = "eab24be8a6b75ed03dcd9b324acb6f79145839836faa9829546a663e2cc782e4dd49323a9300e832105b02e44dd642b3994d6ad49c6dcc485d6f9f14136cdc15";
-      name = "treeharvester-1.20.1-9.1.jar";
+      url = "https://cdn.modrinth.com/data/o1C1Dkj5/versions/fQ7EjDPE/YungsBetterDungeons-1.21.1-Fabric-5.1.4.jar";
+      sha512 = "4a11b1b1f845ddd1709e6a6cad6c6d5043704afbd4b97cb2afcd316f8fdcf6e398f8dd55480d02e32326ac5b49b6b273ec99cd2b1e311bed24f786e6d176612c";
+      name = "YungsBetterDungeons-1.21.1-Fabric-5.1.4.jar";
     })
-    # trinkets-3.7.2.jar
+    # InventoryProfilesNext-fabric-1.21.1-2.2.3.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/5aaWibi9/versions/AHxQGtuC/trinkets-3.7.2.jar";
-      sha512 = "bedf97c87c5e556416410267108ad358b32806448be24ef8ae1a79ac63b78b48b9c851c00c845b8aedfc7805601385420716b9e65326fdab21340e8ba3cc4274";
-      name = "trinkets-3.7.2.jar";
+      url = "https://cdn.modrinth.com/data/O7RBXm3n/versions/A2gB9UGG/InventoryProfilesNext-fabric-1.21.1-2.2.3.jar";
+      sha512 = "6a57d78a1ee92f35e41b928070b3ebcc91701183fd2040996146e71eec9d39c055fcb13a070f5e0870427b9b5fbdd423e711f1fd80dc24dd1b33670c4b3cbc46";
+      name = "InventoryProfilesNext-fabric-1.21.1-2.2.3.jar";
     })
-    # undergroundbeacons-1.20.1-1.0.jar
+    # keepmysoiltilled-1.21.1-2.5.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/SMC0xf5E/versions/HLQ2SIMB/undergroundbeacons-1.20.1-1.0.jar";
-      sha512 = "237a3165466d96c5d81b2f3680a11fcf64611e3ca7fe890d77de15a6b0eea56f4a57f5b4fb31b888db36cd3da8a68d3cc07587ce92fe73e58d95b1b5095448a0";
-      name = "undergroundbeacons-1.20.1-1.0.jar";
+      url = "https://cdn.modrinth.com/data/OC5Zubbe/versions/SR3aj6gK/keepmysoiltilled-1.21.1-2.5.jar";
+      sha512 = "091649855568cdfb2fec2950fd537abc00844915e19e7afb58b0d712a71388676e81482c705105af4b97656653bc0a21e7df8b72ad68e244c0eadbd8b1731483";
+      name = "keepmysoiltilled-1.21.1-2.5.jar";
     })
-    # valkyrienskies-120-2.4.3.jar
+    # enhancedblockentities-0.10.2+1.21.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/V5ujR2yw/versions/PfzMKWLM/valkyrienskies-120-2.4.3.jar";
-      sha512 = "a73e063ba9f3d7671f2329c3e3890bc51c4eb17a68087c613ebf4113e90a7f434442f4f33120151aa24401c037dcf564a1aaf10dd46907e0dae14f8e10df11e0";
-      name = "valkyrienskies-120-2.4.3.jar";
+      url = "https://cdn.modrinth.com/data/OVuFYfre/versions/HBZAPs3u/enhancedblockentities-0.10.2%2B1.21.jar";
+      sha512 = "60e01db603fcf1392c0cd5c3ce742e568f7d445d83fe60828b21f546e7d29fb6947231f22d28e29b07f4bdcb767b6dc2a2398b4decea665ecba1166690a44d49";
+      name = "enhancedblockentities-0.10.2+1.21.jar";
     })
-    # villagernames-1.20.1-8.2.jar
+    # fabric-api-0.116.7+1.21.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/gqRXDo8B/versions/hvhPwZZ6/villagernames-1.20.1-8.2.jar";
-      sha512 = "6315c0f723c35f5420b720b481aecc524f3311d01ac60627425a99face0367b5aedf50f324a0a3a197c1cacf9f09efb47449dc70284e72311c19ad193e19f34b";
-      name = "villagernames-1.20.1-8.2.jar";
+      url = "https://cdn.modrinth.com/data/P7dR8mSH/versions/m6zu1K31/fabric-api-0.116.7%2B1.21.1.jar";
+      sha512 = "0d7bf97e516cfdb742d7e37a456ed51f96c46eac060c0f2b80338089670b38aba2f7a9837e5e07a6bdcbf732e902014fb1202f6e18e00d6d2b560a84ddf9c024";
+      name = "fabric-api-0.116.7+1.21.1.jar";
     })
-    # visuality-0.7.1+1.20.jar
+    # handcrafted-fabric-1.21.1-4.0.3.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/rI0hvYcd/versions/uhvQD6Ny/visuality-0.7.1%2B1.20.jar";
-      sha512 = "854148cde0cee5a10192af246aae8dd2267b36dfc46bfea5cb4550393acf67523909e22ce0bf1827607ee27c7a32878119435127802499f68e4b1768446fe9a8";
-      name = "visuality-0.7.1+1.20.jar";
+      url = "https://cdn.modrinth.com/data/pJmCFF0p/versions/f0pKpUWd/handcrafted-fabric-1.21.1-4.0.3.jar";
+      sha512 = "6274aa51bec1076faf9eef9783c676ab2a12cd87eaf9beb72258c50bf0478d702d9ea6a21e8f1fa6e4ba5084698f0aa0f7edcfe631d64b683c23e4db884c187f";
+      name = "handcrafted-fabric-1.21.1-4.0.3.jar";
     })
-    # waystones-fabric-1.20.1-14.1.17.jar
+    # animatica-0.6.1+1.21.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/LOpKHB2A/versions/USFFIy4C/waystones-fabric-1.20.1-14.1.17.jar";
-      sha512 = "9e30cee4fbfebd87632a9979db95db557010540acdd4dfc967c538d818cc613c62fb53f1e4b061485424f070f9eac5eb6f89c5addcac735abdbd4242a38932a0";
-      name = "waystones-fabric-1.20.1-14.1.17.jar";
+      url = "https://cdn.modrinth.com/data/PRN43VSY/versions/LHBm6fEV/animatica-0.6.1%2B1.21.jar";
+      sha512 = "d8cba8839c2ed329f32f63978e431a75b4e72e506282cf49d151a43302915524c50edbd29af2f5247f479d7456b074011bd768efbd0f4ece311c6e0e2ee0de3c";
+      name = "animatica-0.6.1+1.21.jar";
     })
-    # Xaeros_Minimap_25.2.10_Fabric_1.20.jar
+    # sodium-extra-fabric-0.6.0+mc1.21.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/1bokaNcj/versions/1Knv1cKY/Xaeros_Minimap_25.2.10_Fabric_1.20.jar";
-      sha512 = "5a0df7750c5b8f2a97e8756a42fc90ba8242b615d92a19e8f6ee7fdfc7dbc168806a30232971a8b39691ad8a97c7a8a112b99a1b2a8277d9b10b0cf9338a6cae";
-      name = "Xaeros_Minimap_25.2.10_Fabric_1.20.jar";
+      url = "https://cdn.modrinth.com/data/PtjYWJkn/versions/anDafurZ/sodium-extra-fabric-0.6.0%2Bmc1.21.1.jar";
+      sha512 = "fa7fa78b5d4ef19eff4b3e711f5c79cb54e71c55c6af43fa6867c86e3e54be5045a681b809b8482227c5bda4da4afdce6f30b91e8021d3fae7e34be252b9c972";
+      name = "sodium-extra-fabric-0.6.0+mc1.21.1.jar";
     })
-    # XaerosWorldMap_1.39.12_Fabric_1.20.jar
+    # archers-fabric-2.6.8+1.21.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/NcUtCpym/versions/XBgSFzXh/XaerosWorldMap_1.39.12_Fabric_1.20.jar";
-      sha512 = "f84a3f3d1794a6da7ab96ea7ac08ab776df6a3f51f4fc02dc49fb5ef57518eb02cee308805622e71b383f195749c41b3bb33ea1ec252893f26ec89accf7fb854";
-      name = "XaerosWorldMap_1.39.12_Fabric_1.20.jar";
+      url = "https://cdn.modrinth.com/data/QgooUXAJ/versions/W9R5oGCJ/archers-fabric-2.6.8%2B1.21.1.jar";
+      sha512 = "cec3fc94a6420d6623e4af421e123f6bbd8f11d1cb12c0306413436139c9ea625271de47c669925395a8c1c0607160c5c2aab41ec5c9aae870d957d8d8b890f6";
+      name = "archers-fabric-2.6.8+1.21.1.jar";
     })
-    # YungsApi-1.20-Fabric-4.0.6.jar
+    # PresenceFootsteps-1.11.1+1.21.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/Ua7DFN59/versions/lscV1N5k/YungsApi-1.20-Fabric-4.0.6.jar";
-      sha512 = "90fea70f21cd09bdeefe9cb6bd23677595b32156b1b8053611449504ba84a21ee1e13e5a620851299090ce989f41b97b9b4bdc98def1ccecb33115e19553c64e";
-      name = "YungsApi-1.20-Fabric-4.0.6.jar";
+      url = "https://cdn.modrinth.com/data/rcTfTZr3/versions/cCWAPoWg/PresenceFootsteps-1.11.1%2B1.21.jar";
+      sha512 = "c6c8bfb47bc05cade66f3250e410021f63105709198755253c9be7aebcb381957b060ade129cf4801997c379608fb1056bc73f90080867c423f2f48152553d77";
+      name = "PresenceFootsteps-1.11.1+1.21.jar";
     })
-    # YungsBetterCaves-1.20.1-Fabric-2.0.5.jar
+    # visuality-0.7.7+1.21.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/Dfu00ggU/versions/bsjRT669/YungsBetterCaves-1.20.1-Fabric-2.0.5.jar";
-      sha512 = "db01f5c133c62c23f2a92ab83e19ea81682ff88b9625374865ad4f465fb1496bd6b11d3c3453fab1601765400d2a914150c2fb018b63e835d5358971bf5fafa3";
-      name = "YungsBetterCaves-1.20.1-Fabric-2.0.5.jar";
+      url = "https://cdn.modrinth.com/data/rI0hvYcd/versions/dhKbgdIb/visuality-0.7.7%2B1.21.jar";
+      sha512 = "793f7164f9caf1b8e2b6b2f9f1327c40179b633217702bf79e16930cc5c548e44e6f0cac4628963fcc9e65cc9d63c4493678840242017c33be92a0e94c880f51";
+      name = "visuality-0.7.7+1.21.jar";
     })
-    # YungsBetterDesertTemples-1.20-Fabric-3.0.3.jar
+    # edibles-1.21.1-4.5.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/XNlO7sBv/versions/1Z9HNWpj/YungsBetterDesertTemples-1.20-Fabric-3.0.3.jar";
-      sha512 = "29839615e042435b0fdacab2b97524a6689190692a289c25e305dbaec34764f38e70c65cfd77b49ac0dcc549281b61cfe244edc62809082e39db54990ef84cbf";
-      name = "YungsBetterDesertTemples-1.20-Fabric-3.0.3.jar";
+      url = "https://cdn.modrinth.com/data/Rjl8pCZ9/versions/wkFj4frD/edibles-1.21.1-4.5.jar";
+      sha512 = "0f38a186771f559bfdb9a0d221656ef806c03d1f996dd7691ea91fe4199901c680a549dc8779b95dfd785315e8d87cb31192c82a5f35fd7be63dde1af9a582ff";
+      name = "edibles-1.21.1-4.5.jar";
     })
-    # YungsBetterDungeons-1.20-Fabric-4.0.4.jar
+    # coroutil-fabric-1.21.1-1.3.8.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/o1C1Dkj5/versions/nidyvq2m/YungsBetterDungeons-1.20-Fabric-4.0.4.jar";
-      sha512 = "02ee00641aea2e80806923c1d97a366b82eb6d6e1d749fc8fb4eeddeddea718c08f5a87ba5189427f747801b899abe5a6138a260c7e7f949e5e69b4065ac5464";
-      name = "YungsBetterDungeons-1.20-Fabric-4.0.4.jar";
+      url = "https://cdn.modrinth.com/data/rLLJ1OZM/versions/U0NUocji/coroutil-fabric-1.21.1-1.3.8.jar";
+      sha512 = "8fe6c7bc6ddf5e5b29fb0975bb8ba56f9c24330ddf1ce7d82b43400181a5a7ad24cde40e69b9b509d36c11839d37b360cfe531996e751cdd4f1e740cd67991b1";
+      name = "coroutil-fabric-1.21.1-1.3.8.jar";
     })
-    # YungsBetterEndIsland-1.20-Fabric-2.0.6.jar
+    # travelersbackpack-fabric-1.21.1-10.1.29.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/2BwBOmBQ/versions/qJTsmyiE/YungsBetterEndIsland-1.20-Fabric-2.0.6.jar";
-      sha512 = "cb63d9cdd69f955ed8044aec6f03aedbf76fdb53fd97826b254b68e3559941df301b714260505d165c58c276aa7ea7c11c2fada7509cb731f10b1815d5633b87";
-      name = "YungsBetterEndIsland-1.20-Fabric-2.0.6.jar";
+      url = "https://cdn.modrinth.com/data/rlloIFEV/versions/NykLNihR/travelersbackpack-fabric-1.21.1-10.1.29.jar";
+      sha512 = "4cddb134ed76078ed54e75b5ada94249916c01d3f45b93967bd0e1d15dc8fa9a0623e795251ac3f7633482ef2c96fa82cd83a41aaff5181c5527568ee3b03e1d";
+      name = "travelersbackpack-fabric-1.21.1-10.1.29.jar";
     })
-    # YungsBetterJungleTemples-1.20-Fabric-2.0.5.jar
+    # eating-animation-1.21+1.9.72.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/z9Ve58Ih/versions/6LPrzuB0/YungsBetterJungleTemples-1.20-Fabric-2.0.5.jar";
-      sha512 = "ea08ade714376f48cabdddd2e4b7376fc5cc5947e3911583ba4e182ab22c1335c884043441725cde21fb6e84402d17c43f509ade339d46a1a1db40f0e77ee81a";
-      name = "YungsBetterJungleTemples-1.20-Fabric-2.0.5.jar";
+      url = "https://cdn.modrinth.com/data/rUgZvGzi/versions/KWZCioh0/eating-animation-1.21%2B1.9.72.jar";
+      sha512 = "6513938ddbbbf32602982b50296c0261ce5f1bc33838675bc4574b0ec710bc9a5622f838ab5adbdc5b9c01f7e2696443c3bc377f1cc1f1b8376539004e5a871c";
+      name = "eating-animation-1.21+1.9.72.jar";
     })
-    # YungsBetterMineshafts-1.20-Fabric-4.0.4.jar
+    # GlitchCore-fabric-1.21.1-2.1.0.0.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/HjmxVlSr/versions/qLnQnqXS/YungsBetterMineshafts-1.20-Fabric-4.0.4.jar";
-      sha512 = "82d6e361ef403471beaaf2fa86964af541df167da56f53b820e5abfac693f63dd5d6c0aafbc9e9baa947b42a57c79f069ed6ede55e680a2523d2ca7f2e538b13";
-      name = "YungsBetterMineshafts-1.20-Fabric-4.0.4.jar";
+      url = "https://cdn.modrinth.com/data/s3dmwKy5/versions/lbSHOhee/GlitchCore-fabric-1.21.1-2.1.0.0.jar";
+      sha512 = "ccd5c3812faf1161f61a894deec609eb6c3de36debe63dc00b75698a9b71dfb30bc00e0a34c3e030b3adb4c224e829783f66ad66768c28dedbefc024ddbd6041";
+      name = "GlitchCore-fabric-1.21.1-2.1.0.0.jar";
     })
-    # YungsBetterNetherFortresses-1.20-Fabric-2.0.6.jar
+    # nightlights-fabric-1.3.0.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/Z2mXHnxP/versions/FL88RLRu/YungsBetterNetherFortresses-1.20-Fabric-2.0.6.jar";
-      sha512 = "a752f0dea20fa86e6d3a4f87d180af706b2ad5e3d434185aaa624692fc55329a2e2e410e67f843ec982e7b90ae63565b4aed43adbee6c50ded403ef50d91d7fd";
-      name = "YungsBetterNetherFortresses-1.20-Fabric-2.0.6.jar";
+      url = "https://cdn.modrinth.com/data/s7pMb898/versions/owmHxuVw/nightlights-fabric-1.3.0.jar";
+      sha512 = "6957ccf58bb6c7d851af90c08f9a6ac044b32d7bfeecd5b47259d2966c93968024af57ee0a7a6019ddbe802c3a896e6bc6cc4b24c5a5e521373586310d82fdf5";
+      name = "nightlights-fabric-1.3.0.jar";
     })
-    # YungsBetterOceanMonuments-1.20-Fabric-3.0.4.jar
+    # undergroundbeacons-1.21.1-1.0.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/3dT9sgt4/versions/4c00pjbt/YungsBetterOceanMonuments-1.20-Fabric-3.0.4.jar";
-      sha512 = "b050f94b70628f9cb64afe1d184b3fd5eee4a7d556ff81b05dd90e954484c415b24b235a8471085cbba2e28a1123e49de9a16e6e7bc52da585db81762562f186";
-      name = "YungsBetterOceanMonuments-1.20-Fabric-3.0.4.jar";
+      url = "https://cdn.modrinth.com/data/SMC0xf5E/versions/LHTttXOg/undergroundbeacons-1.21.1-1.0.jar";
+      sha512 = "89741776b22f597422bc5a2a0900dba3f1047a13e82ac667cbd41a683c5f4f86c8fda8c84b5ce0285f55a3300adddecffce2fd52470dc9c52926ddc01889a704";
+      name = "undergroundbeacons-1.21.1-1.0.jar";
     })
-    # YungsBetterStrongholds-1.20-Fabric-4.0.3.jar
+    # jewelry-fabric-2.3.2+1.21.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/kidLKymU/versions/yV6hn0bB/YungsBetterStrongholds-1.20-Fabric-4.0.3.jar";
-      sha512 = "e70c8daa91e88d8af97e99201264c9646c82a8cf1966b87ca1e53b591e7f1ed3cee2f8875dbe88f9b58e2a7d151fded34896bb4bd23f33f2bfef4c590fbba850";
-      name = "YungsBetterStrongholds-1.20-Fabric-4.0.3.jar";
+      url = "https://cdn.modrinth.com/data/sNJAIjUm/versions/93Bti7MQ/jewelry-fabric-2.3.2%2B1.21.1.jar";
+      sha512 = "50a1f286437cded532ddc3caea0e6ac8ae855c46fd454df9463405f01734c71450f8194f211678cef3725ad3693f47064736b07c2fe1702816ab2ed0257b9a52";
+      name = "jewelry-fabric-2.3.2+1.21.1.jar";
     })
-    # YungsBetterWitchHuts-1.20-Fabric-3.0.3.jar
+    # YungsBetterWitchHuts-1.21.1-Fabric-4.1.1.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/t5FRdP87/versions/lYpHN3iF/YungsBetterWitchHuts-1.20-Fabric-3.0.3.jar";
-      sha512 = "4182c4b580ac0446968d28561088807a5fc96c4ad792401bf918b2e693f7eb343237f2887d63121469af8a120c4ccc8c84d7add731ea1a45cb429f49092bd6ac";
-      name = "YungsBetterWitchHuts-1.20-Fabric-3.0.3.jar";
+      url = "https://cdn.modrinth.com/data/t5FRdP87/versions/bdpPtvTn/YungsBetterWitchHuts-1.21.1-Fabric-4.1.1.jar";
+      sha512 = "ca6749bd01cd5b623d6f58561a57c2e2a8f769c31e3947fceac22e495f5da5b803d05777c6e3e122da40c4dd49444d58aaface0220b0a3106a5b5e27658b2d9f";
+      name = "YungsBetterWitchHuts-1.21.1-Fabric-4.1.1.jar";
     })
-    # YungsBridges-1.20-Fabric-4.0.3.jar
+    # fabric-carpet-1.21-1.4.147+v240613.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/Ht4BfYp6/versions/hvfjXu8d/YungsBridges-1.20-Fabric-4.0.3.jar";
-      sha512 = "3cdd923781fe6446466670bce8132bbc0a1ee27ae9a76bb25bf0010c0e79c821ce1dc606405e3ffa00f22d92629aa1cd7cc680a17c98dfcf338166372b85dab1";
-      name = "YungsBridges-1.20-Fabric-4.0.3.jar";
+      url = "https://cdn.modrinth.com/data/TQTTVgYE/versions/f2mvlGrg/fabric-carpet-1.21-1.4.147%2Bv240613.jar";
+      sha512 = "e6f33d13406796a34e7598d997113f25f7bea3e55f9d334b73842adda52b2c5d0a86b7b12ac812d7e758861e3f468bf201c6c710c40162bb79d6818938204151";
+      name = "fabric-carpet-1.21-1.4.147+v240613.jar";
     })
-    # YungsCaveBiomes-1.20.1-Fabric-2.0.5.jar
+    # infinitetrading-1.21.1-4.6.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/cs7iGVq1/versions/8h469FpE/YungsCaveBiomes-1.20.1-Fabric-2.0.5.jar";
-      sha512 = "02e689eb98ddd8390f1853751891addb4e0888ce35682ab12e565dba842d999d494284ac7423783ab10c333d1888284ca30a7e21d358e5a5002b1bb8086af37d";
-      name = "YungsCaveBiomes-1.20.1-Fabric-2.0.5.jar";
+      url = "https://cdn.modrinth.com/data/U3eoZT3o/versions/QV78XqMj/infinitetrading-1.21.1-4.6.jar";
+      sha512 = "481b5ff880cc5b8adbda34f6e082c9df51956b0d2d2418703bd21257d71ad914b4f696edeeeaeec960fff475c0b2108923b3bb532abee665c4b5a075a1e26363";
+      name = "infinitetrading-1.21.1-4.6.jar";
     })
-    # YungsExtras-1.20-Fabric-4.0.3.jar
+    # jei-1.21.1-fabric-19.27.0.336.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/ZYgyPyfq/versions/pfVTUz1L/YungsExtras-1.20-Fabric-4.0.3.jar";
-      sha512 = "9fb06e136b12548ca9cb82d5d1035d760b74c7acded4b0d01ea29fb1e47c4666e1f289e6ce3e0c77510bc4bd10a64946e17633f99f60b5424a535d8d88025412";
-      name = "YungsExtras-1.20-Fabric-4.0.3.jar";
+      url = "https://cdn.modrinth.com/data/u6dRKJwZ/versions/VO5u0wi4/jei-1.21.1-fabric-19.27.0.336.jar";
+      sha512 = "03a00bc1a7c45955ec0ef2f35b379a0c1322434b75a5d467d417d47fd1cbbaeec20f161541d0133d4fd1011a7f7e1279c158de30e9f183135a5d516750707fa3";
+      name = "jei-1.21.1-fabric-19.27.0.336.jar";
     })
-    # YungsMenuTweaks-1.20.1-Fabric-1.0.2.jar
+    # YungsApi-1.21.1-Fabric-5.1.6.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/Hcy2DFKF/versions/QRV0K267/YungsMenuTweaks-1.20.1-Fabric-1.0.2.jar";
-      sha512 = "dabd072d735b802a1e62f62e8ce9b3276c931a16f6d4e160f77f31d511ebc368fa9a3580a70df8438739f86ad606e1d4e16b687b0953e5917bf9814ce5a8c930";
-      name = "YungsMenuTweaks-1.20.1-Fabric-1.0.2.jar";
+      url = "https://cdn.modrinth.com/data/Ua7DFN59/versions/9aZPNrZC/YungsApi-1.21.1-Fabric-5.1.6.jar";
+      sha512 = "fc05fb3941851cfa5c8e89f98704938a5b0581f66fe3b1b0d83b2f46f1cb903e1e1070f40c92a82da91813b36452358d6b2df7dc42a275f459dc5030ea467cb6";
+      name = "YungsApi-1.21.1-Fabric-5.1.6.jar";
     })
-    # zombieawareness-fabric-1.20.1-1.13.1.jar
+    # shulkerdropstwo-1.21.1-3.5.jar
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/mMTOWOaA/versions/nkFcvMt7/zombieawareness-fabric-1.20.1-1.13.1.jar";
-      sha512 = "3f1a04fe18d8de6bae187b4af9f424dc94e0cf7877822035de52b234ed15ad8c815c0171aa9a718e86f8a4c0364818bf8cbb6016afe016445d5c3d98f60900e9";
-      name = "zombieawareness-fabric-1.20.1-1.13.1.jar";
+      url = "https://cdn.modrinth.com/data/UjXIyw47/versions/jBF1zfoq/shulkerdropstwo-1.21.1-3.5.jar";
+      sha512 = "aa2e7678c27e7e49a51803a766620322a46d615929c7fe77d49bb34943e23c93dbe670fcc181a26e531c4d544c77c4303e5a0843af67049ee56f6f036eff473c";
+      name = "shulkerdropstwo-1.21.1-3.5.jar";
+    })
+    # ferritecore-7.0.2-hotfix-fabric.jar
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/uXXizFIs/versions/bwKMSBhn/ferritecore-7.0.2-hotfix-fabric.jar";
+      sha512 = "ca975bd3708cd96d30cf1447ac8883572113562eb2dd697e60c1cf382d6b70d0b1a511fcbfd042c51b2cf5d5ffc718b847f845e4c8a3e421e8c9ee741119a421";
+      name = "ferritecore-7.0.2-hotfix-fabric.jar";
+    })
+    # letmedespawn-1.21.x-fabric-1.5.0.jar
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/vE2FN5qn/versions/Wb7jqi55/letmedespawn-1.21.x-fabric-1.5.0.jar";
+      sha512 = "a1fc557b9985954258f30fa32d4134867d6cd1d045147171a89a711d63b1b94f5dd58564aa3060ce10e8d81c2be1d8bae7ff828ee9c24a1c1b9f8398564936a9";
+      name = "letmedespawn-1.21.x-fabric-1.5.0.jar";
+    })
+    # c2me-fabric-mc1.21.1-0.3.0+alpha.0.362.jar
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/VSNURh3q/versions/DSqOVCaF/c2me-fabric-mc1.21.1-0.3.0%2Balpha.0.362.jar";
+      sha512 = "8653a751eb2ad1ad70da38017ccad0ee2bda5448ffe405d28049f09a61936765303f63ba4fcff798f32bb1e6b4645e892c275515b69c98c1730e24caab0ba7e0";
+      name = "c2me-fabric-mc1.21.1-0.3.0+alpha.0.362.jar";
+    })
+    # combat_roll-fabric-2.0.6+1.21.1.jar
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/wGKYL7st/versions/UkTSsgGt/combat_roll-fabric-2.0.6%2B1.21.1.jar";
+      sha512 = "a39ce64716cd33ebe0ef7defd1765b8e512be8fbab10cff039d1abf9f264001fe790fd97a7c944e8ad31b26473db31b3946eec510e5dd6f8ec9c89c29db025a8";
+      name = "combat_roll-fabric-2.0.6+1.21.1.jar";
+    })
+    # Clumps-fabric-1.21.1-19.0.0.1.jar
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/Wnxd13zP/versions/3ene3W1l/Clumps-fabric-1.21.1-19.0.0.1.jar";
+      sha512 = "0aa8e3508d0a40ef814d4064c0b6cadba6326128dd878fe69f30677c889cec4ccb8f639c22bdd7083a73ae8fa76e1c115b5e4b1885904dc1244b02ab2f728e78";
+      name = "Clumps-fabric-1.21.1-19.0.0.1.jar";
+    })
+    # gazebo-fabric-2.1.0+1.21.1.jar
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/XIpMGI6r/versions/8dnK7blA/gazebo-fabric-2.1.0%2B1.21.1.jar";
+      sha512 = "b92c48cfdc82e4987cef7aeaeae207c7e76083b9ca7186d45ec901d9904ce54ee8bbcbbf4c5c0ce788a3f4514e08da9541d586802af413ce4c054711c45126c6";
+      name = "gazebo-fabric-2.1.0+1.21.1.jar";
+    })
+    # oreharvester-1.21.1-1.5.jar
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/Xiv4r347/versions/PZBcS2Yz/oreharvester-1.21.1-1.5.jar";
+      sha512 = "65be29f010f58dbeea944c11d7ee8c4bb8176951f80f54421a5ff4cac7bf83d08696b87e6e7aa7814015129948886b67836b42ba30ad183a5be21e5f8de0c515";
+      name = "oreharvester-1.21.1-1.5.jar";
+    })
+    # YungsBetterDesertTemples-1.21.1-Fabric-4.1.5.jar
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/XNlO7sBv/versions/M6eeDRkC/YungsBetterDesertTemples-1.21.1-Fabric-4.1.5.jar";
+      sha512 = "2bed532391cd1f2e5ed7986220f3b4c23d0c1302366b61baf1ca62a9620000bd58964cfd9a62fc52abbc95e76c1b3a4f85fbe88ca0a4006612f0493585c99084";
+      name = "YungsBetterDesertTemples-1.21.1-Fabric-4.1.5.jar";
+    })
+    # spell_engine-fabric-1.8.19+1.21.1.jar
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/XvoWJaA2/versions/dxnMs2Zt/spell_engine-fabric-1.8.19%2B1.21.1.jar";
+      sha512 = "0580202ab5949a4c68310e9ca4b1f55df7990263c429edc55ae10a5633201e09556696f10f5f0e8650c92cd7d4b9f3bd77fcbf7a9ace2b8acdf80225cc6a9611";
+      name = "spell_engine-fabric-1.8.19+1.21.1.jar";
+    })
+    # inventorymending-1.21.1-1.2.jar
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/y6Ryy40D/versions/VeOSd0k4/inventorymending-1.21.1-1.2.jar";
+      sha512 = "23a9fc9a48d0be75203a8f98f68439971bf5e984890956e7bbd9fc401e15ed77ae543b71f047ba8a182a6b0f29745eec5c27d5dd5cd6f6f682d92f67d57440ef";
+      name = "inventorymending-1.21.1-1.2.jar";
+    })
+    # lambdynamiclights-4.8.7+1.21.1.jar
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/yBW8D80W/versions/CQuTG9xY/lambdynamiclights-4.8.7%2B1.21.1.jar";
+      sha512 = "eac2c2f5c0a5cc3fa28895ddc3203b2b7214c680dd9c47eabf308fa96f2f54d1a1a5a16b50c35865b61068bd834d538f90e02aceb4c5d9594793807b6068123c";
+      name = "lambdynamiclights-4.8.7+1.21.1.jar";
+    })
+    # crittersandcompanions-fabric-1.21.1-2.3.4.jar
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/Yd4wb5wZ/versions/wHpQleS4/crittersandcompanions-fabric-1.21.1-2.3.4.jar";
+      sha512 = "143848ee10a4494a7e1c027171e7fa7a624ae7aa5e6f881d6cc2504fb5a5466cb66ba09eedeeab073e8c5356cb333828c300a20eb7339e7877bc298118a0eb15";
+      name = "crittersandcompanions-fabric-1.21.1-2.3.4.jar";
+    })
+    # justplayerheads-1.21.1-4.2.jar
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/YdVBZMNR/versions/Bhim3m1a/justplayerheads-1.21.1-4.2.jar";
+      sha512 = "951d13434f8b8b0a349aa07a8802f57722babc9aa6a348e119d7ae58a70236f82d3ef5e2d2dbf78a9a0cc12ad9430d98a15444bc37463a3ef06dd1a0911f1fc8";
+      name = "justplayerheads-1.21.1-4.2.jar";
+    })
+    # iris-fabric-1.8.8+mc1.21.1.jar
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/YL57xq9U/versions/zsoi0dso/iris-fabric-1.8.8%2Bmc1.21.1.jar";
+      sha512 = "2e6ba2ffa1e1a6799288245a7e0ac68ee8df1d41b98362189df58f535cae34fa9277801e4136633467341b7dae5be0e5c698011b480b3d91b66d3dd4f7567aa6";
+      name = "iris-fabric-1.8.8+mc1.21.1.jar";
+    })
+    # inventorytotem-1.21.1-3.4.jar
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/yQj7xqEM/versions/uCOQDBBn/inventorytotem-1.21.1-3.4.jar";
+      sha512 = "5a5a7dc243d7d84da1ad7d8622ee22edc36204af731b92810f78cc7eaec16ffbb4dad85e15602fb69ad4611cc5ee3e95174e662c5fea662c8233e1319168e343";
+      name = "inventorytotem-1.21.1-3.4.jar";
+    })
+    # YungsBetterNetherFortresses-1.21.1-Fabric-3.1.5.jar
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/Z2mXHnxP/versions/gxBGYcIL/YungsBetterNetherFortresses-1.21.1-Fabric-3.1.5.jar";
+      sha512 = "74f9327ce3d17e78bef1945d6b241498f517e6e5ffae37c5c7a8acdc15b53bebf7447644517f76c4cecbf8a8530a888b6ee5035cf4f3b8e9441a2f665f7385d3";
+      name = "YungsBetterNetherFortresses-1.21.1-Fabric-3.1.5.jar";
+    })
+    # YungsBetterJungleTemples-1.21.1-Fabric-3.1.2.jar
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/z9Ve58Ih/versions/uiGCmR8O/YungsBetterJungleTemples-1.21.1-Fabric-3.1.2.jar";
+      sha512 = "0b2912606607e4e85cd9b713c3d08986c4e7662da8964cad86d230ef13f57fd53adc7b7447145db95c6c3e9c85edb6c3a115a9f3126965855577792e29876e97";
+      name = "YungsBetterJungleTemples-1.21.1-Fabric-3.1.2.jar";
+    })
+    # YungsExtras-1.21.1-Fabric-5.1.1.jar
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/ZYgyPyfq/versions/aVsikHca/YungsExtras-1.21.1-Fabric-5.1.1.jar";
+      sha512 = "a5b3281fc482167864745df34d80c834c42aa434f372ebb6ccb0cd84a8882ce344c247db5a8dea0300fe30ef39e2a85fa650216ff12adeb6c435e182e0ae2e55";
+      name = "YungsExtras-1.21.1-Fabric-5.1.1.jar";
+    })
+    # moremobvariants-fabric+1.21-1.3.1.1.jar
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/JiEhJ3WG/versions/7mUHEpdy/moremobvariants-fabric%2B1.21-1.3.1.1.jar";
+      sha512 = "e9392854ae9a48dfd2612632e9bbfb05bddf1fe4d0511f5328647fe8b0f2d7ad19c8af0c4a271a5533bf984d1dde8e3d96d551dcbca723231923dd858507aee1";
+      name = "moremobvariants-fabric+1.21-1.3.1.1.jar";
+    })
+    # arsenal-fabric-1.3.4+1.21.1.jar
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/LiP9Q3KV/versions/gB8HeajH/arsenal-fabric-1.3.4%2B1.21.1.jar";
+      sha512 = "e792f79474522da1745e7380a933a2859be79958686c34840c2072fd54297ca00ab1a509cd4381e805bd737b117c09d3dac813744b1002245bd6908cda60fe1f";
+      name = "arsenal-fabric-1.3.4+1.21.1.jar";
+    })
+    # armory-fabric-1.2.10+1.21.1.jar
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/PJvJUdGw/versions/dUUkoQRX/armory-fabric-1.2.10%2B1.21.1.jar";
+      sha512 = "384065ca3d8c61a6a1eb1cf0519b0c4cb359b3c84391df02a86b178233ee67ee5b35cc3897a1518f114f86b51e87ff497aee24ddc22cbd4d28b85a42a0ee3c64";
+      name = "armory-fabric-1.2.10+1.21.1.jar";
+    })
+    # durability_tweaks-fabric-1.0.0.jar
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/HWQeS7qe/versions/8GNJinmL/durability_tweaks-fabric-1.0.0.jar";
+      sha512 = "9e48db33c2cdb9d004a97d417303b92642f1b131a5336b9f0033ea00f285e48cd1f7d956e2bdbe2826ed266bc86cbe2c4e14d8dcb2c27a0b21e38fd53eb4fab8";
+      name = "durability_tweaks-fabric-1.0.0.jar";
+    })
+    # relics-fabric-1.2.2+1.21.1.jar
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/BDQucwF0/versions/KmnF0FA7/relics-fabric-1.2.2%2B1.21.1.jar";
+      sha512 = "82d084caeb55380f801f0c8a42a61432137dd48e5ba0d0a9b6ad1c994236a95240ce879073ec917fbd281ce3dbf2c6ca044fe274e3eb10ef9f92aa144789a5ae";
+      name = "relics-fabric-1.2.2+1.21.1.jar";
+    })
+    # skill_tree-fabric-1.2.3+1.21.1.jar
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/PjDhruSC/versions/yRVKHR3V/skill_tree-fabric-1.2.3%2B1.21.1.jar";
+      sha512 = "f1a2a23387ed2ec2bf5b1cfaeccd919dac94d5b80c5f0a8a4847c0de659027eb22145270f8ce53573a4082394875ca6af9dd13f94867dea52eb4bfaffbc084a4";
+      name = "skill_tree-fabric-1.2.3+1.21.1.jar";
+    })
+    # village_taverns-fabric-1.1.5+1.21.1.jar
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/bj4a8NjJ/versions/YU3Vmiqk/village_taverns-fabric-1.1.5%2B1.21.1.jar";
+      sha512 = "14786d2b52bcca5ef4f7bb350fd62804577cc92305b7bd4ddc9290dd1bebfad6ab5682890e1ede5b6b3d5710374728af206e204eccd54cb6facfb2bd179b283e";
+      name = "village_taverns-fabric-1.1.5+1.21.1.jar";
+    })
+    # connector-2.0.0-beta.12+1.21.1-full.jar (Sinytra Connector - allows NeoForge mods on Fabric)
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/u58R1TMW/versions/YCMXHxwl/connector-2.0.0-beta.12%2B1.21.1-full.jar";
+      sha512 = "5d3746f9cf220c3592f1398f7b7380af265c91b465c3fbaa813f521c41ac022e9e5ce909b4251a05ef8c92c3b93a3ce7e0c081577ef8ec2ab2b4ca86d112799f";
+      name = "connector-2.0.0-beta.12+1.21.1-full.jar";
+    })
+    # forgified-fabric-api-0.116.7+2.2.0+1.21.1.jar (Required for Connector)
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/Aqlf1Shp/versions/tIUhtT2C/forgified-fabric-api-0.116.7%2B2.2.0%2B1.21.1.jar";
+      sha512 = "59aa2599fde40dcaaf210ce7d9d7f9e665c9173370708d7337c7230f2f0eb894a4f130bfbfb78b612d4faad25353d03ceab42691b1b3bcacd924dd72434732ef";
+      name = "forgified-fabric-api-0.116.7+2.2.0+1.21.1.jar";
+    })
+    # create-1.21.1-6.0.8.jar (NeoForge version, runs via Connector)
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/LNytGWDc/versions/88L641Un/create-1.21.1-6.0.8.jar";
+      sha512 = "cb3ffee35ee2b2ab212fb4649e75ccfcb8e99ae954cf0b0251591062e3f200e5e639e8f40d7af7c79b7dc71164a027b0e6fbcd5c0bafe2da88f888fc3ffd254c";
+      name = "create-1.21.1-6.0.8.jar";
+    })
+  ];
+
+  # Resource packs configuration
+  resourcepacks = pkgs.linkFarmFromDrvs "resourcepacks" [
+    # FreshAnimations_v1.10.3.zip
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/50dA9Sha/versions/F9QwVhGH/FreshAnimations_v1.10.3.zip";
+      sha512 = "713dd4e810a59d84844e25fa5fb3e36c83ac2e197d5259e16b61d4b4899f1a3f8bacdd4d4e5d0f5cde9a3497fad5e50ccea0c6270898f53f802e340e3fb3e73f";
+      name = "FreshAnimations_v1.10.3.zip";
+    })
+    # MoreMobVariants_FreshAnimations_1.3.1-1.9.2.zip
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/ZrnmXWf6/versions/uIOGuHMy/MoreMobVariants_FreshAnimations_1.3.1-1.9.2.zip";
+      sha512 = "262573dd4bc91133d6d5c7abb751345533b82c1d34f694ee555c50089720a90b1aa345300a1fea216aa9aa08a8e58f04b5a2e6a57a75d6027cddfd2a96afa962";
+      name = "MoreMobVariants_FreshAnimations_1.3.1-1.9.2.zip";
+    })
+    # Dramatic_Skys_Demo_1.5.3.36.2.zip
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/2YyNMled/versions/Y8mjFzcP/Dramatic%20Skys%20Demo%201.5.3.36.2.zip";
+      sha512 = "00f62d91a67bc00f83ff5be65d11cdb71f2386583dd4fec26f036b2fc400b4a37a6c404a237bf4dfd479da0230c28125a4dec86799dc0cc691d5bde863bc30a1";
+      name = "Dramatic_Skys_Demo_1.5.3.36.2.zip";
+    })
+    # Better-Leaves-9.4.zip
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/uvpymuxq/versions/JW14JsXq/Better-Leaves-9.4.zip";
+      sha512 = "d6969d044a6e48468b3637e29e0d6afa9af4618bf20bf28db7e3c588ea6bbd2f3a4cf9f154524249fe154b4ff8fb7ccc8c59099fd9ccc6d6bec714ae56ea2102";
+      name = "Better-Leaves-9.4.zip";
+    })
+    # Fresh_Moves_v3.1.zip
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/slufHzC2/versions/lHNQh6Gv/-1.21.2%20Fresh%20Moves%20v3.1%20%28No%20Animated%20Eyes%29.zip";
+      sha512 = "ac0cb4207d3b20fd94e899b63e7a29cf7e1836cb711181f94d72be5ecb8454293a87135998f7298628dc88b2cb79d59a9be2ea1cd9ebfb24ef5d1e2a16e4361c";
+      name = "Fresh_Moves_v3.1.zip";
+    })
+    # LowOnFire_1.21.3.zip
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/RRxvWKNC/versions/QL8e10aI/LowOnFire%201.21.3.zip";
+      sha512 = "2a6bcdd6963996af35474fc12cd4a57163d1435d2f8b61383eb269ca66297e80d6b687343fc7f151d4111719e05ae90020c3b4d1075bf9e1c33765cc3f68748f";
+      name = "LowOnFire_1.21.3.zip";
+    })
+    # FA+All_Extensions-v1.7.zip
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/YAVTU8mK/versions/hGa4E44T/FA%2BAll_Extensions-v1.7.zip";
+      sha512 = "4c7e8ead077cf2da3005e23a1928417374be8f27513fe4ec24c49f8eabd0305e3e57cba073228b4f851b7035d491f0f64c37dd28f3a5fb315a5d05c930233a89";
+      name = "FA_All_Extensions-v1.7.zip";
+    })
+    # cubic-sun-moon-v1.8.1a.zip
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/g4bSYbrU/versions/3svw5AHq/cubic-sun-moon-v1.8.1a.zip";
+      sha512 = "1112fd0411fb739b3b047d9ced2d5d85d35a10e9a44ae277721dcfe490b6ec5cdd64e62a0fce5e96a309ec2153d66c542fce3633195841f665bf424b7b1bf749";
+      name = "cubic-sun-moon-v1.8.1a.zip";
+    })
+    # Low_Shield.zip
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/CZrLuVQo/versions/bDbgSHEM/Low%20Shield.zip";
+      sha512 = "aac76c9f32d87e2aae42a77f39d10dc978d4095017f6d85eb541b357e46a791e35b9ae65c5fece84ae34fe464b9ed26a1532c805dda617100ac8a1eef320114e";
+      name = "Low_Shield.zip";
+    })
+    # Fresh_Food_1.1.zip
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/UoLAbzII/versions/CRI4mlJe/Fresh%20Food%201.1%20-%201.20.1-1.21.1.zip";
+      sha512 = "7079b9d28b4d28db27409e2df4240fb9c43b737386ab133498f7a7b9cd13efabf2c369d5f0a621892132d77b6c499dbf749a7687fe055e0f905e72cdbed945a1";
+      name = "Fresh_Food_1.1.zip";
+    })
+  ];
+
+  # Datapacks configuration
+  datapacks = pkgs.linkFarmFromDrvs "datapacks" [
+    # tectonic-datapack-3.0.18.zip
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/lWDHr9jE/versions/VfuqmXvF/tectonic-datapack-3.0.18.zip";
+      sha512 = "3de178cc019f481d86511d66c579317a1277167685d7886707ae591f25cc910cb2d5550ef77d69c2d35b0acdb2c67b05f7ef014c45a9feda2867281227d85e81";
+      name = "tectonic-datapack-3.0.18.zip";
     })
   ];
 in {
@@ -693,7 +935,7 @@ in {
       servers.main = {
         enable = true;
         # Using Fabric server for mod support
-        package = pkgs.fabricServers.fabric-1_20_1;
+        package = pkgs.fabricServers.fabric-1_21_1;
         openFirewall = true;
         jvmOpts = "-Xms2048m -Xmx6656m";
 
@@ -715,6 +957,8 @@ in {
         # Mods configuration using modpack
         symlinks = {
           "mods" = modpack;
+          "resourcepacks" = resourcepacks;
+          "world/datapacks" = datapacks;
         };
       };
     };
