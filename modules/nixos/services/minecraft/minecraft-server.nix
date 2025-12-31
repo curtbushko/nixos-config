@@ -460,12 +460,6 @@
       sha512 = "616c8c0ca06920516a07dbd3afa4c46ba243866de375d9aa5140be803284bfe2c434e93d838462776d71c6afea98766fc6b27cd00a6880e49170478448f7415b";
       name = "balm-fabric-1.21.1-21.0.55.jar";
     })
-    # Cobblemon-fabric-1.7.1+1.21.1.jar
-    (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/MdwFAVRL/versions/s64m1opn/Cobblemon-fabric-1.7.1%2B1.21.1.jar";
-      sha512 = "221382ccc0aa7ae65935298802ff6272b852f485bf0d03a5ba7b51f88a15aa3110282d6c9b0d6e2993fe72515f1dfffdec236b235d411ac01eb93b7dc9e5d750";
-      name = "Cobblemon-fabric-1.7.1+1.21.1.jar";
-    })
     # zombieawareness-fabric-1.21.0-1.13.2.jar
     (pkgs.fetchurl {
       url = "https://cdn.modrinth.com/data/mMTOWOaA/versions/lBdgO4GL/zombieawareness-fabric-1.21.0-1.13.2.jar";
@@ -850,6 +844,66 @@
       sha512 = "cb3ffee35ee2b2ab212fb4649e75ccfcb8e99ae954cf0b0251591062e3f200e5e639e8f40d7af7c79b7dc71164a027b0e6fbcd5c0bafe2da88f888fc3ffd254c";
       name = "create-1.21.1-6.0.8.jar";
     })
+    # azurelibarmor-fabric-1.21.1-3.1.2.jar (Required by archers, armory_rpgs, paladins, rogues, wizards)
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/pduQXSbl/versions/V1h4or08/azurelibarmor-fabric-1.21.1-3.1.2.jar";
+      sha512 = "34a8d7127d02acd56e98643b849cf9dea6ac0b7958a2f884173081475e2d2f4830fb173644775190bc9feb7a260ad5bfc0b2442f1b3239c6c97666cf671c065b";
+      name = "azurelibarmor-fabric-1.21.1-3.1.2.jar";
+    })
+    # player-animation-lib-fabric-2.0.4+1.21.1.jar (Required by spell_engine, bettercombat, combat_roll)
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/gedNE4y2/versions/CkedfDp3/player-animation-lib-fabric-2.0.4%2B1.21.1.jar";
+      sha512 = "14a931f5cf9f1a767c717a2ae65eb1041d3aab1fbb2c90e3f3a18433ed2f7264674fe40b85c136036fa08d2459543394b65e6866e73e8893e823c5ce37dfd086";
+      name = "player-animation-lib-fabric-2.0.4+1.21.1.jar";
+    })
+    # pneumonocore-1.2.1+1.21+A.jar (Required by gravestones)
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/ZLKQjA7t/versions/QKvgjhTZ/pneumonocore-1.2.1%2B1.21%2BA.jar";
+      sha512 = "028e18a7ec6719f67b3d2e2d0c57d207ff7ddf0b048d64c2dfed127566283aaafc17d70927d1c30259d4990ce0c12d5c177c4f5bbc2285a9163c08e29b364c28";
+      name = "pneumonocore-1.2.1+1.21+A.jar";
+    })
+    # resourcefullib-fabric-1.21-3.0.12.jar (Required by handcrafted)
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/G1hIVOrD/versions/Hf91FuVF/resourcefullib-fabric-1.21-3.0.12.jar";
+      sha512 = "df8a9586eaa0e2f8e1e6a5651ba79ff6c95327b0ab89cdab4708cc6ed51c3da6829d00e8f176e7e7b7b37d4af8c5bd9e3df047f3a8a04fd1af925d80c774185b";
+      name = "resourcefullib-fabric-1.21-3.0.12.jar";
+    })
+    # architectury-13.0.8-fabric.jar (Required by nightlights)
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/lhGA9TYQ/versions/Wto0RchG/architectury-13.0.8-fabric.jar";
+      sha512 = "7a24a0481732c5504b07347d64a2843c10c29e748018af8e5f5844e5ea2f4517433886231025d823f90eb0b0271d1fa9849c27e7b0c81476c73753f79f19302a";
+      name = "architectury-13.0.8-fabric.jar";
+    })
+    # puffish_skills-0.17.1-1.21-fabric.jar (Required by skill_tree_rpgs)
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/hqQqvaa4/versions/l2HbUH41/puffish_skills-0.17.1-1.21-fabric.jar";
+      sha512 = "d168d509bfe4202fd4a7dd94f7965fc48ebefb117fd71289598deba0925cab5b5bfc102a214978ee9cf28511e5f9362f1e3867d940b8feb7a6fd04d7d57c8042";
+      name = "puffish_skills-0.17.1-1.21-fabric.jar";
+    })
+    # moonlight-1.21-2.29.3-fabric.jar (Required by smarterfarmers)
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/twkfQtEc/versions/XAvedFDj/moonlight-1.21-2.29.3-fabric.jar";
+      sha512 = "d495d53a4567521f1260ea0e4dfdca95a8e69c884c591f0648afa96458d4cef73b2c070a6a16154148969935c50aecb9317b50f1343711d2598b9f275441bc3f";
+      name = "moonlight-1.21-2.29.3-fabric.jar";
+    })
+    # bclib-21.0.13.jar (Required by betterend)
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/BgNRHReB/versions/TxWM7AW8/bclib-21.0.13.jar";
+      sha512 = "93a5b45e4abcb27af6a8e8f662db9fd4115dfbb9e17adbce642f2217f5d09b48474d6b9e12b0673bdc663668e8d0d71b8fa23307c96c06176df55c090623a00c";
+      name = "bclib-21.0.13.jar";
+    })
+    # worldweaver-21.0.13.jar (Required by betterend)
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/RiN8rDVs/versions/mPmeykPR/worldweaver-21.0.13.jar";
+      sha512 = "d45470e9d1152f6ba0282a4005648738209d8f08bfdc72e147047dc0544ef2ba094689fb6d4d86ee2717dda38cb9fb01bb30743484e48dfb498c9a608ff24fcf";
+      name = "worldweaver-21.0.13.jar";
+    })
+    # wunderlib-21.0.8.jar (Required by betterend)
+    (pkgs.fetchurl {
+      url = "https://cdn.modrinth.com/data/8O0Adq7w/versions/NWOZ9B7R/wunderlib-21.0.8.jar";
+      sha512 = "01d0000f985424ed7699d22d9cacd0de8be5eb375c1c3004d1a38775f200938cfef5c42ab5fd3b6525752ec3f208c3655e51b2e5f6012f45e559454bfbd6e649";
+      name = "wunderlib-21.0.8.jar";
+    })
   ];
 
   # Resource packs configuration
@@ -934,10 +988,12 @@ in {
 
       servers.main = {
         enable = true;
-        # Using Fabric server for mod support
-        package = pkgs.fabricServers.fabric-1_21_1;
+        # Using Fabric server for mod support with Java 25 for c2me-opts-natives-math compatibility (requires Java 22+)
+        package = pkgs.fabricServers.fabric-1_21_1.override {
+          jre_headless = pkgs.temurin-jre-bin-25;
+        };
         openFirewall = true;
-        jvmOpts = "-Xms2048m -Xmx6656m";
+        jvmOpts = "-Xms2048m -Xmx6656m -Dminecraft.data.allowSymlinks=true";
 
         serverProperties = {
           difficulty = "hard";
@@ -958,7 +1014,9 @@ in {
         symlinks = {
           "mods" = modpack;
           "resourcepacks" = resourcepacks;
-          "world/datapacks" = datapacks;
+          # Temporarily disabled datapacks due to Minecraft 1.21.1 symlink validation
+          # TODO: Find alternative method to include datapacks
+          # "world/datapacks" = datapacks;
         };
       };
     };

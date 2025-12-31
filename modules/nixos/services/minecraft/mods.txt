@@ -135,3 +135,13 @@
 - [x] https://modrinth.com/resourcepack/cubic-sun-moon
 - [x] https://modrinth.com/resourcepack/low-shield-pack
 - [x] https://modrinth.com/resourcepack/fresh-food
+- [x] https://modrinth.com/mod/azurelib-armor
+- [x] https://modrinth.com/mod/player-animator
+- [x] https://modrinth.com/mod/pneumonocore
+- [x] https://modrinth.com/mod/resourcefullib
+- [x] https://modrinth.com/mod/architectury-api
+- [x] https://modrinth.com/mod/puffish-skills
+- [x] https://modrinth.com/mod/moonlight
+- [x] https://modrinth.com/mod/bclib
+- [x] https://modrinth.com/mod/wover
+- [x] https://modrinth.com/mod/wunderlib

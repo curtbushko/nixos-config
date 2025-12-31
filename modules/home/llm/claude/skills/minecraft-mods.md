@@ -195,3 +195,56 @@ curl -s "https://api.modrinth.com/v2/project/sodium" | jq -r '.id'
 ```bash
 curl -s "https://api.modrinth.com/v2/project/sodium/version" | jq -r '.[0] | "\(.version_number) - MC \(.game_versions | join(", "))"'
 ```
+
+## Utility Scripts
+
+### Fetch Mods Script
+
+This script fetches mod information from Modrinth API and outputs Nix fetchurl expressions ready to paste into minecraft-server.nix.
+
+**Script Location:** `modules/nixos/services/minecraft/fetch-mods.sh`
+
+**Usage:**
+```bash
+# From nixos-config directory
+./modules/nixos/services/minecraft/fetch-mods.sh sodium
+
+# Fetch multiple mods
+./modules/nixos/services/minecraft/fetch-mods.sh sodium iris lithium
+
+# Specify Minecraft version (default: 1.21.1)
+MC_VERSION=1.21 ./modules/nixos/services/minecraft/fetch-mods.sh sodium
+
+# Specify loader (default: fabric)
+LOADER=neoforge ./modules/nixos/services/minecraft/fetch-mods.sh create
+
+# Fetch all missing dependencies at once
+./modules/nixos/services/minecraft/fetch-mods.sh \
+  azurelib-armor player-animator pneumonocore \
+  resourcefullib architectury-api puffish-skills
+```
+
+**Output Format:**
+The script outputs ready-to-paste Nix expressions:
+```nix
+# filename.jar
+(pkgs.fetchurl {
+  url = "https://cdn.modrinth.com/...";
+  sha512 = "abc123...";
+  name = "filename.jar";
+})
+```
+
+**Common Issues:**
+
+1. **Mod not found**: The slug might be incorrect. Search for the correct slug:
+   ```bash
+   curl -s "https://api.modrinth.com/v2/search?query=<search-term>&facets=%5B%5B%22categories:fabric%22%5D%5D" | jq -r '.hits[] | "\(.slug) - \(.title)"'
+   ```
+
+2. **No version for Minecraft version**: Check available versions:
+   ```bash
+   curl -s "https://api.modrinth.com/v2/project/<slug>/version" | jq -r '.[] | select(.loaders | index("fabric")) | .game_versions[]' | sort -u
+   ```
+
+3. **Wrong loader**: Some mods are only available for NeoForge. Use `LOADER=neoforge` when fetching.
