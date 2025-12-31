@@ -5,7 +5,9 @@
   inputs,
   ...
 }: {
-  home.stateVersion = "18.09";
+  home.stateVersion = "25.11";
+  home.username = "deck";
+  home.homeDirectory = "/home/deck";
   home.enableNixpkgsReleaseCheck = false;
 
   # Let home manager manage itself
@@ -20,14 +22,14 @@
     browsers.enable = true;
     gaming.enable = true;
     git.enable = true;
-    programming.enable = true;
+    programming.enable = false;
     secrets.enable = true;
     shells.enable = true;
     terminals.enable = true;
     tools.enable = true;
     wm = {
-      tools.enable = true;
-      niri.enable = true;
+      tools.enable = false;
+      niri.enable = false;
       rofi.enable = false;
     };
     theme = {
