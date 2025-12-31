@@ -32,17 +32,17 @@ EOF
     # Install service file and protect from updates
     if [ ! -f /etc/systemd/system/tailscaled.service ] || ! diff -q $SERVICE_FILE /etc/systemd/system/tailscaled.service > /dev/null 2>&1; then
       echo "Installing tailscaled system service..."
-      $DRY_RUN_CMD sudo cp $SERVICE_FILE /etc/systemd/system/tailscaled.service
-      $DRY_RUN_CMD sudo chmod 644 /etc/systemd/system/tailscaled.service
+      $DRY_RUN_CMD /usr/bin/sudo cp $SERVICE_FILE /etc/systemd/system/tailscaled.service
+      $DRY_RUN_CMD /usr/bin/sudo chmod 644 /etc/systemd/system/tailscaled.service
 
       # Protect service from SteamOS updates
-      $DRY_RUN_CMD sudo mkdir -p /etc/atomic-update.conf.d
-      echo "/etc/systemd/system/tailscaled.service" | $DRY_RUN_CMD sudo tee /etc/atomic-update.conf.d/tailscale.conf > /dev/null
+      $DRY_RUN_CMD /usr/bin/sudo mkdir -p /etc/atomic-update.conf.d
+      echo "/etc/systemd/system/tailscaled.service" | $DRY_RUN_CMD /usr/bin/sudo tee /etc/atomic-update.conf.d/tailscale.conf > /dev/null
 
       # Enable and start the service
-      $DRY_RUN_CMD sudo systemctl daemon-reload
-      $DRY_RUN_CMD sudo systemctl enable tailscaled.service
-      $DRY_RUN_CMD sudo systemctl start tailscaled.service || true
+      $DRY_RUN_CMD /usr/bin/sudo systemctl daemon-reload
+      $DRY_RUN_CMD /usr/bin/sudo systemctl enable tailscaled.service
+      $DRY_RUN_CMD /usr/bin/sudo systemctl start tailscaled.service || true
     fi
 
     rm -f $SERVICE_FILE
