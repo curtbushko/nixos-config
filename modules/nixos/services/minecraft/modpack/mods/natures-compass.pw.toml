@@ -1,13 +1,13 @@
 name = "1.20.1-2.2.3-fabric"
-filename = "NaturesCompass-1.21-2.2.6-fabric.jar"
+filename = "NaturesCompass-1.21.1-2.2.7-fabric.jar"
 side = "both"
 
 [download]
-url = "https://cdn.modrinth.com/data/fPetb5Kh/versions/tBmAcdOX/NaturesCompass-1.21-2.2.6-fabric.jar"
+url = "https://cdn.modrinth.com/data/fPetb5Kh/versions/9W2MUsnU/NaturesCompass-1.21.1-2.2.7-fabric.jar"
 hash-format = "sha1"
-hash = "d3eb219c9b8dd93da2d10cc466140365f6158598"
+hash = "c705431dd94ae496fb527a4c36855c86fd8ef987"
 
 [update]
 [update.modrinth]
 mod-id = "fPetb5Kh"
-version = "tBmAcdOX"
+version = "9W2MUsnU"

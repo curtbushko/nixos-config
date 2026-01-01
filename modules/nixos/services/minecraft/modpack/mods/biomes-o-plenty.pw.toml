@@ -1,13 +1,13 @@
 name = "19.0.0.96 for Fabric 1.20.1"
-filename = "BiomesOPlenty-fabric-1.21-21.0.0.18.jar"
+filename = "BiomesOPlenty-fabric-1.21.1-21.1.0.13.jar"
 side = "both"
 
 [download]
-url = "https://cdn.modrinth.com/data/HXF82T3G/versions/qAKuAKD7/BiomesOPlenty-fabric-1.21-21.0.0.18.jar"
+url = "https://cdn.modrinth.com/data/HXF82T3G/versions/YPm4arUa/BiomesOPlenty-fabric-1.21.1-21.1.0.13.jar"
 hash-format = "sha1"
-hash = "e9e7d6643f313e7a5919c8070d708b5bcc03fa61"
+hash = "2b85329a1862b04c9e27e12272b6056378839bf2"
 
 [update]
 [update.modrinth]
 mod-id = "HXF82T3G"
-version = "qAKuAKD7"
+version = "YPm4arUa"
