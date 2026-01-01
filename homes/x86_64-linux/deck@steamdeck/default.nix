@@ -59,12 +59,6 @@
     TERM = "xterm-ghostty";
   };
 
-  # Set zsh as default shell
-  home.activation.setDefaultShell = inputs.home-manager.lib.hm.dag.entryAfter ["writeBoundary"] ''
-    $DRY_RUN_CMD /usr/bin/chsh -s ${pkgs.zsh}/bin/zsh || true
-  '';
-
-
   imports = [
     inputs.stylix.homeModules.stylix
     ./tailscale.nix
