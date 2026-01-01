@@ -1,13 +1,13 @@
-name = "1.9.0+1.20.1"
-filename = "bettercombat-fabric-1.9.0+1.20.1.jar"
+name = "2.3.1+1.21.1"
+filename = "bettercombat-fabric-2.3.1+1.21.1.jar"
 side = "both"
 
 [download]
-url = "https://cdn.modrinth.com/data/5sy6g3kz/versions/OtwNg4r4/bettercombat-fabric-1.9.0%2B1.20.1.jar"
+url = "https://cdn.modrinth.com/data/5sy6g3kz/versions/zZCcohvX/bettercombat-fabric-2.3.1%2B1.21.1.jar"
 hash-format = "sha512"
-hash = "477b53b13620c003dbf3da4c8facf9e5df81b101c72137aaee01a16e53b7be0bedc354d1d6e2039c40fe82a53cc92a324995d418cd6b8d6301ad02f6ad110717"
+hash = "e006007643dd2736a22a80d17e36fb2dd1cbe6c2799976d945165f04e828603979ec769358541e51168b7d50491e303f29ed9415eefa8497561e29df1dc9e4ad"
 
 [update]
 [update.modrinth]
 mod-id = "5sy6g3kz"
-version = "OtwNg4r4"
+version = "zZCcohvX"

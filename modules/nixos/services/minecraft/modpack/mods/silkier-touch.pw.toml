@@ -1,13 +1,13 @@
 name = "[Fabric/Forge/Neo] 1.20.1-1.0"
-filename = "silkiertouch-1.20.1-1.0.jar"
+filename = "silkiertouch-1.21.1-1.0.jar"
 side = "both"
 
 [download]
-url = "https://cdn.modrinth.com/data/dUaXeoyM/versions/QzG6pi6d/silkiertouch-1.20.1-1.0.jar"
-hash-format = "sha512"
-hash = "af3a64d8e44537484cdee7980f8db58e95752b29e3d552a69a22a87980aa7a1caf8824539a1eb46c7f20969d2982a7f130a6ec22f6fc7c3ff5d6ba7f1545e066"
+url = "https://cdn.modrinth.com/data/dUaXeoyM/versions/TngkMccX/silkiertouch-1.21.1-1.0.jar"
+hash-format = "sha1"
+hash = "a289b2c2b9f66575a525eb216e4b37ed1d7024b7"
 
 [update]
 [update.modrinth]
 mod-id = "dUaXeoyM"
-version = "QzG6pi6d"
+version = "TngkMccX"

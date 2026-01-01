@@ -1,13 +1,13 @@
 name = "[Fabric/Forge/Neo] 1.20.1-4.5"
-filename = "edibles-1.20.1-4.5.jar"
+filename = "edibles-1.21.1-4.5.jar"
 side = "both"
 
 [download]
-url = "https://cdn.modrinth.com/data/Rjl8pCZ9/versions/CvCMY635/edibles-1.20.1-4.5.jar"
-hash-format = "sha512"
-hash = "cf86aa75b1f79b64ee392c2af23ce7b4da7c50046acc6b10e8c63836f642940feef784f65924084ecaaf7abe95c84cb6084dd6e2e906a37ce0c850973f7ee85f"
+url = "https://cdn.modrinth.com/data/Rjl8pCZ9/versions/wkFj4frD/edibles-1.21.1-4.5.jar"
+hash-format = "sha1"
+hash = "783d953edb387033e51dda64df1386902183a21d"
 
 [update]
 [update.modrinth]
 mod-id = "Rjl8pCZ9"
-version = "CvCMY635"
+version = "wkFj4frD"

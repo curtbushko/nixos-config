@@ -1,13 +1,13 @@
 name = "Areas"
-filename = "areas-1.20.1-6.1.jar"
+filename = "areas-1.21.1-6.1.jar"
 side = "client"
 
 [download]
-url = "https://cdn.modrinth.com/data/NWvsqJ2Z/versions/z8wdbzwT/areas-1.20.1-6.1.jar"
-hash-format = "sha512"
-hash = "51d385f5bf8a7e37fb42f18d58c4b826084babecdce1b3dff21a39fc772983657ce36663a02f241d2746d203fc76c45772c699c9f5afef5b1dd3ee04e3161065"
+url = "https://cdn.modrinth.com/data/NWvsqJ2Z/versions/Ppbb7pia/areas-1.21.1-6.1.jar"
+hash-format = "sha1"
+hash = "ee453c4c814fcb366338fd238ac02e1d6fb618b1"
 
 [update]
 [update.modrinth]
 mod-id = "NWvsqJ2Z"
-version = "z8wdbzwT"
+version = "Ppbb7pia"

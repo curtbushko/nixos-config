@@ -1,5 +1,11 @@
-{lib, ...}: let
-  inherit (lib) types mkOption;
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
+  inherit (lib) types mkOption mkIf;
+  cfg = config.curtbushko.services.minecraft;
 in {
   options.curtbushko.services.minecraft = {
     enable = mkOption {
@@ -9,6 +15,12 @@ in {
         Whether to enable NixOS minecraft server
       '';
     };
+  };
+
+  config = mkIf cfg.enable {
+    environment.systemPackages = with pkgs; [
+      packwiz
+    ];
   };
 
   imports = [

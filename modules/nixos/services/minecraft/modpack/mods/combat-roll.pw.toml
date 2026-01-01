@@ -1,13 +1,13 @@
 name = "1.3.3+1.20.1"
-filename = "combatroll-fabric-1.3.3+1.20.1.jar"
+filename = "combat_roll-fabric-2.0.6+1.21.1.jar"
 side = "both"
 
 [download]
-url = "https://cdn.modrinth.com/data/wGKYL7st/versions/FyOp03FS/combatroll-fabric-1.3.3%2B1.20.1.jar"
-hash-format = "sha512"
-hash = "6703c3b2b6e6b063102b50e65aa4be29bc4b46f7830cf3a396bfb5fac78c3a29d1bcfe2b796fbe2c79f948bdb098931d076bee58f5ce5ff37a40ad699544ff04"
+url = "https://cdn.modrinth.com/data/wGKYL7st/versions/UkTSsgGt/combat_roll-fabric-2.0.6%2B1.21.1.jar"
+hash-format = "sha1"
+hash = "29ab57ff85914dd8dc20a350620c00dc5af9efec"
 
 [update]
 [update.modrinth]
 mod-id = "wGKYL7st"
-version = "FyOp03FS"
+version = "UkTSsgGt"

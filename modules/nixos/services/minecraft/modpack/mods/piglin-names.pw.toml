@@ -1,13 +1,13 @@
 name = "[Fabric/Forge/Neo] 1.20.1-1.3"
-filename = "piglinnames-1.20.1-1.3.jar"
+filename = "piglinnames-1.21.1-1.3.jar"
 side = "both"
 
 [download]
-url = "https://cdn.modrinth.com/data/54plduvG/versions/H6wd5Jo8/piglinnames-1.20.1-1.3.jar"
-hash-format = "sha512"
-hash = "d09e64a3af5859688b43c19c25bc7a45af2b151f2130bc2a2dde5885de59323503e46b8c8f10bcaf8f36df694c1d871d0b8a6188b1c1b7d904459ff5e130b5f1"
+url = "https://cdn.modrinth.com/data/54plduvG/versions/7KMoV9Oz/piglinnames-1.21.1-1.3.jar"
+hash-format = "sha1"
+hash = "ea251b8f8e54f3ede6aef95874d6ccf374528a4d"
 
 [update]
 [update.modrinth]
 mod-id = "54plduvG"
-version = "H6wd5Jo8"
+version = "7KMoV9Oz"

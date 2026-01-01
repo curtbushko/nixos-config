@@ -1,13 +1,13 @@
 name = "[Fabric/Forge/Neo] 1.20.1-3.5"
-filename = "tntbreaksbedrock-1.20.1-3.5.jar"
+filename = "tntbreaksbedrock-1.21.1-3.5.jar"
 side = "both"
 
 [download]
-url = "https://cdn.modrinth.com/data/eU2O6Xp1/versions/2loAM9df/tntbreaksbedrock-1.20.1-3.5.jar"
-hash-format = "sha512"
-hash = "eaad5e9274e971479af5c638beadb37ac96938a9b8eca41074fd196f85ae775cb38b2e9305144849913d7fa80087858cdda14539c9b965ddfdc425ada68405e6"
+url = "https://cdn.modrinth.com/data/eU2O6Xp1/versions/g3JXlbSH/tntbreaksbedrock-1.21.1-3.5.jar"
+hash-format = "sha1"
+hash = "611c7169b8eb7efd7ac10e9f9672b4cc80c44535"
 
 [update]
 [update.modrinth]
 mod-id = "eU2O6Xp1"
-version = "2loAM9df"
+version = "g3JXlbSH"

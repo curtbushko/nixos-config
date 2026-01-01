@@ -1,13 +1,13 @@
 name = "[Fabric/Forge/Neo] 1.20.1-2.6"
-filename = "fastercrouching-1.20.1-2.6.jar"
+filename = "fastercrouching-1.21.1-2.6.jar"
 side = "both"
 
 [download]
-url = "https://cdn.modrinth.com/data/lgEczyrc/versions/W5h7AXga/fastercrouching-1.20.1-2.6.jar"
-hash-format = "sha512"
-hash = "ba21ef9dd423b0e1e088928a56ea1b0a0095b21383a45a997b8a494c464d8dbfcb8dc1e58d2e98f7ce5d47426429d72dbfe1de88d83d0e82cb60fe254aec68f7"
+url = "https://cdn.modrinth.com/data/lgEczyrc/versions/cFLoIUAY/fastercrouching-1.21.1-2.6.jar"
+hash-format = "sha1"
+hash = "ab74dca61feefe64b1c66764018f5fee267ada36"
 
 [update]
 [update.modrinth]
 mod-id = "lgEczyrc"
-version = "W5h7AXga"
+version = "cFLoIUAY"

@@ -1,13 +1,13 @@
 name = "Eating Animation"
-filename = "eating-animation-1.20+1.9.61.jar"
+filename = "eating-animation-1.21+1.9.72.jar"
 side = "client"
 
 [download]
-url = "https://cdn.modrinth.com/data/rUgZvGzi/versions/AqXSvu6M/eating-animation-1.20%2B1.9.61.jar"
-hash-format = "sha512"
-hash = "7470cd63b49cd797a21b30fefe11bd53e419ca8ed0eb01f498b801e83222685bbe853e7323f2e310874a3619628fece48ec69ea53cd391dd97a139c64225d077"
+url = "https://cdn.modrinth.com/data/rUgZvGzi/versions/KWZCioh0/eating-animation-1.21%2B1.9.72.jar"
+hash-format = "sha1"
+hash = "d89ecd0ac342697e0d1c3aaff1daa6c81bebe2f6"
 
 [update]
 [update.modrinth]
 mod-id = "rUgZvGzi"
-version = "AqXSvu6M"
+version = "KWZCioh0"
