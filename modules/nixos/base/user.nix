@@ -11,7 +11,6 @@
   };
   security.sudo.wheelNeedsPassword = false;
 
-  # Keep in async with vm-shared.nix. (todo: pull this out into a file)
   nix = {
     # We need to enable flakes
     extraOptions = ''
@@ -21,6 +20,13 @@
       eval-cache = true
     '';
 
+    # Add some garbage collection and cleanup of nix
+    optimise.automatic = true;
+    gc = {
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than 7d";
+    };
     settings = {
       # Build performance settings
       cores = 0;  # Use all available cores for each build
