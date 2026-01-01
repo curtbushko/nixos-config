@@ -45,6 +45,11 @@ if [ "${HOST}" != "" ]; then
         pingWait $HOST
     fi
 
+    USER="curtbushko"
+    if [[ "$HOST" == *"steamdeck"* ]]; then
+        USER="deck"
+    fi
+
     logger INFO "Ssh'ing into $HOST"
-    ssh curtbushko@$HOST
+    ssh $USER@$HOST
 fi
