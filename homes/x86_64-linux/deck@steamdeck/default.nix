@@ -20,6 +20,7 @@
   #---------------------------------------------------------------------
   curtbushko = {
     browsers.enable = true;
+    cron.enable = true;
     gaming.enable = true;
     git.enable = true;
     programming.enable = false;

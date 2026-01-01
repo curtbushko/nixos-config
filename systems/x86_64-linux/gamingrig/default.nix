@@ -24,6 +24,7 @@
   curtbushko = {
     hardware.audio.enable = true;
     hardware.cpu.enable = true;
+    services.cron.enable = true;
     services.llm.enable = true;
     services.minecraft.enable = true;
     services.vr.enable = true;

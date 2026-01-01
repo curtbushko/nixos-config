@@ -15,6 +15,7 @@
   #---------------------------------------------------------------------
   curtbushko = {
     browsers.enable = true;
+    cron.enable = true;
     gaming.enable = true;
     git.enable = true;
     k8s.enable = true;
