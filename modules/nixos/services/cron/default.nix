@@ -5,9 +5,9 @@
   ...
 }: let
   inherit (lib) mkOption mkIf types;
-  cfg = config.services.curtbushko-cron;
+  cfg = config.curtbushko.services.cron;
 in {
-  options.services.curtbushko-cron = {
+  options.curtbushko.services.cron = {
     enable = mkOption {
       type = types.bool;
       default = false;
