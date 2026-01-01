@@ -45,7 +45,22 @@
     pkgs.cachix
     pkgs.tailscale
     inputs.neovim.packages.${pkgs.stdenv.hostPlatform.system}.default
+
+    # fonts
+    pkgs.fira-code
+    pkgs.font-awesome_5
+    pkgs.jetbrains-mono
+    pkgs.intel-one-mono
+    pkgs.nerd-fonts.symbols-only # symbols icon only
+    pkgs.nerd-fonts.fira-code
+    pkgs.nerd-fonts.jetbrains-mono
+    pkgs.noto-fonts
+    pkgs.noto-fonts-color-emoji
+    pkgs.powerline-fonts
+    pkgs.freetype # needed by Wine
   ];
+
+  fonts.fontconfig.enable = true;
 
   #---------------------------------------------------------------------
   # Env vars and dotfiles
