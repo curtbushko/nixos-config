@@ -1,0 +1,13 @@
+name = "Dungeons Content"
+filename = "dungeons_1.19_mc1.21.1.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/R0ToJjk1/versions/iyRGzLcx/dungeons_1.19_mc1.21.1.jar"
+hash-format = "sha512"
+hash = "f5f79f9b95add1585ed18c91384682c0c08fc5dd54da79276635e379693192db1823a2a4a14825ab788d7a0771f2a7eecec2a08c6a8b0f1bf33d9bae853ec795"
+
+[update]
+[update.modrinth]
+mod-id = "R0ToJjk1"
+version = "iyRGzLcx"

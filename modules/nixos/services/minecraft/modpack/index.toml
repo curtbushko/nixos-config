@@ -15,6 +15,11 @@ hash = "26cc46dde32ab0f7b20a0b3aa087d3171711ccb10f0ad22ebd084131e2a5768a"
 metafile = true
 
 [[files]]
+file = "mods/adorable-hamster-pets.pw.toml"
+hash = "dff9df35d005b5b4b805e374b561fe35028d541c4a782338de3a021c0f24c896"
+metafile = true
+
+[[files]]
 file = "mods/almanac.pw.toml"
 hash = "7f71c2a015e1605552f53bad74a2c1d01419c8faaf7459ff967f40129f3c7f0b"
 metafile = true
@@ -37,6 +42,11 @@ metafile = true
 [[files]]
 file = "mods/archers.pw.toml"
 hash = "49ffa786ad7bdab937fb9185499a96828b23609af69ef04e1d0084529ffa1450"
+metafile = true
+
+[[files]]
+file = "mods/architectury-api.pw.toml"
+hash = "ea336d25c3e21ef168aec20e1ea470c96949ad29632646ee8e8ab0d74b4bbfc9"
 metafile = true
 
 [[files]]
@@ -100,8 +110,8 @@ hash = "2f8c5e2eab88a24c5dd693b8384483abae223e6aa328a4b176095fc02a6d3ffb"
 metafile = true
 
 [[files]]
-file = "mods/c2me-fabric.pw.toml"
-hash = "018284b453b55b1ec18e091596e32aff053f3515c9570bb982006e909331f614"
+file = "mods/c2me-neoforge.pw.toml"
+hash = "8e4abfea25c864a1a1bd31948f95020b3486370e53d2f53bcc4f869ad95c4536"
 metafile = true
 
 [[files]]
@@ -156,12 +166,17 @@ metafile = true
 
 [[files]]
 file = "mods/creativecore.pw.toml"
-hash = "d209867cf2dfb2902365efb73d12252aa396e0f9a612f7063b60536842270991"
+hash = "e4e3ddf6fe5125378ffd090374bcaeed96b0ae462cb3cc0104798a3a87f25482"
 metafile = true
 
 [[files]]
 file = "mods/critical-strike.pw.toml"
 hash = "bc254fc7a82e6ee575ebdad8cf18d1d417cc8ec76c221382e2005e08798559e3"
+metafile = true
+
+[[files]]
+file = "mods/critters-and-companions.pw.toml"
+hash = "55a0ba4e06c9c4098eb04611b0cba005256c06db7421007fea1a7ddd36d7b375"
 metafile = true
 
 [[files]]
@@ -202,6 +217,11 @@ metafile = true
 [[files]]
 file = "mods/dungeons-and-taverns.pw.toml"
 hash = "b8cb736687552d7fc820110bb494699bb64b9153234a40ca0ed0ec12458ebc14"
+metafile = true
+
+[[files]]
+file = "mods/dungeons-content.pw.toml"
+hash = "def3deca8ec4003decf4d48f8a62e1121dc0d883c81e88586def040d7b2fa8fd"
 metafile = true
 
 [[files]]
@@ -262,6 +282,11 @@ metafile = true
 [[files]]
 file = "mods/forgified-fabric-api.pw.toml"
 hash = "fcddfa08833f4855aa383d53a81dc39604f289ba34cbc1060e0be68376339ef8"
+metafile = true
+
+[[files]]
+file = "mods/fzzy-config.pw.toml"
+hash = "0580a44f77a6e88c906bce984b369ca757a0a73062203e9ce1a144544ede9c8a"
 metafile = true
 
 [[files]]
@@ -435,6 +460,11 @@ hash = "f313651fc543b769d302e5bbe7a8ba44b53239df9651f4936fae016b0a2bd6bb"
 metafile = true
 
 [[files]]
+file = "mods/patchouli.pw.toml"
+hash = "04ba8a8c91a6c25c42321493a2d233762bb01169fac5fd834e434887cdbf8596"
+metafile = true
+
+[[files]]
 file = "mods/piglin-names.pw.toml"
 hash = "391c77e94787a3bbd604f5972cd30496731e61ec2e730de1f4005f6726efd205"
 metafile = true
@@ -491,7 +521,7 @@ metafile = true
 
 [[files]]
 file = "mods/serene-seasons.pw.toml"
-hash = "3f0c409eef09a743cc9338ab4e3932824b5bdd502286d1a11fd202ceeb173fbc"
+hash = "73b1e4f6608fcd396acc3e4e7aa753d314c8810ef4caf831ed93d9932d93f896"
 metafile = true
 
 [[files]]

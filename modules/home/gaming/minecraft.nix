@@ -13,6 +13,7 @@ in {
         openjdk25
         vulkan-loader
         glfw
+        packwiz
         #prismlauncher
         (prismlauncher.override {additionalLibs = [vulkan-loader];})
       ];
