@@ -156,7 +156,7 @@ metafile = true
 
 [[files]]
 file = "mods/create.pw.toml"
-hash = "b62201702f54d4a2227cb7a1c1e2153754a5767c887236dfbd88d533bac10882"
+hash = "9da22561c3a5e45beb91121518a49f2e8a62bedb332574ce43a9d9b287ebc705"
 metafile = true
 
 [[files]]
@@ -315,6 +315,11 @@ hash = "b825c52920102ccdca07f330e53bb135518fe422c238ab3d38feb90a764ae068"
 metafile = true
 
 [[files]]
+file = "mods/iceberg.pw.toml"
+hash = "019fea93516a470bbcad284dd0cbad6f4e2914d96221c86e3f87c12fe6321e10"
+metafile = true
+
+[[files]]
 file = "mods/immediatelyfast.pw.toml"
 hash = "b517a8e65de9fac1ce38bb4cda8a64c1ebeca5cd230842cdf5f6f7e928d3c516"
 metafile = true
@@ -447,6 +452,11 @@ metafile = true
 [[files]]
 file = "mods/ore-harvester.pw.toml"
 hash = "89e1024a3ec6d23c0f7111995ed0cb72f6b3c209edd133daa40c4e5c53f37148"
+metafile = true
+
+[[files]]
+file = "mods/owo-lib.pw.toml"
+hash = "46831c04077a06df823bcd0f254833a90a9a9ccc78f5069f4b4c27fa301ac0cf"
 metafile = true
 
 [[files]]
