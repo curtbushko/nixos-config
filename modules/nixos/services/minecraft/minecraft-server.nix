@@ -150,7 +150,7 @@ in {
           # Server type and version
           TYPE = "NEOFORGE";
           VERSION = "1.21.1";
-          NEOFORGE_VERSION = "21.1.80";
+          NEOFORGE_VERSION = "21.1.217";
 
           # Accept EULA
           EULA = "TRUE";
