@@ -29,19 +29,27 @@
 
     # Helper function to write big-endian 16-bit integer
     write_short() {
-      printf '\x%02x\x%02x' $(($1 >> 8)) $(($1 & 0xFF))
+      local value=$1
+      local byte1=$((value >> 8))
+      local byte2=$((value & 0xFF))
+      printf "\\x$(printf '%02x' $byte1)\\x$(printf '%02x' $byte2)"
     }
 
     # Helper function to write big-endian 32-bit integer
     write_int() {
-      printf '\x%02x\x%02x\x%02x\x%02x' $(($1 >> 24)) $((($1 >> 16) & 0xFF)) $((($1 >> 8) & 0xFF)) $(($1 & 0xFF))
+      local value=$1
+      local byte1=$((value >> 24))
+      local byte2=$(((value >> 16) & 0xFF))
+      local byte3=$(((value >> 8) & 0xFF))
+      local byte4=$((value & 0xFF))
+      printf "\\x$(printf '%02x' $byte1)\\x$(printf '%02x' $byte2)\\x$(printf '%02x' $byte3)\\x$(printf '%02x' $byte4)"
     }
 
     # Helper function to write NBT string (length + data)
     write_nbt_string() {
       local str="$1"
       local len=''${#str}
-      write_short "$len"
+      write_short $len
       printf '%s' "$str"
     }
 
