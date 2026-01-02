@@ -733,3 +733,8 @@ metafile = true
 file = "resourcepacks/attribute-icons-rpg-series.pw.toml"
 hash = "0949997e33a9a6da6902fecaaf426f03f62ca906d38087947b94035d37857758"
 metafile = true
+
+[[files]]
+file = "shaderpacks/complementary-reimagined.pw.toml"
+hash = "dab75b3a7685b899a24a0a3ef1dda7b77047997f8e2a627ac126cfb820fa761d"
+metafile = true

@@ -114,15 +114,24 @@
     })
   ];
 
-  # Datapacks configuration
-  datapacks = pkgs.linkFarmFromDrvs "datapacks" [
-    # tectonic-datapack-3.0.18.zip
+  # Shader packs configuration (requires Iris mod)
+  shaderpacks = pkgs.linkFarmFromDrvs "shaderpacks" [
+    # ComplementaryReimagined_r5.6.1.zip
     (pkgs.fetchurl {
-      url = "https://cdn.modrinth.com/data/lWDHr9jE/versions/VfuqmXvF/tectonic-datapack-3.0.18.zip";
-      sha512 = "3de178cc019f481d86511d66c579317a1277167685d7886707ae591f25cc910cb2d5550ef77d69c2d35b0acdb2c67b05f7ef014c45a9feda2867281227d85e81";
-      name = "tectonic-datapack-3.0.18.zip";
+      url = "https://cdn.modrinth.com/data/HVnmMxH1/versions/OfRF7dTR/ComplementaryReimagined_r5.6.1.zip";
+      sha512 = "01426ce261df8a4fa99366efe30e98656bac43ac8a71db1265edb0b49c5e4abb9ada09d6877a6c1d728244fde202f57118339d3a0503a1cbc8af88325c8d4f5a";
+      name = "ComplementaryReimagined_r5.6.1.zip";
     })
   ];
+
+  # Datapacks configuration
+  # Note: These are kept as individual fetchurl derivations
+  # They will be copied (not symlinked) to the world directory in preStart
+  tectonicDatapack = pkgs.fetchurl {
+    url = "https://cdn.modrinth.com/data/lWDHr9jE/versions/VfuqmXvF/tectonic-datapack-3.0.18.zip";
+    sha512 = "3de178cc019f481d86511d66c579317a1277167685d7886707ae591f25cc910cb2d5550ef77d69c2d35b0acdb2c67b05f7ef014c45a9feda2867281227d85e81";
+    name = "tectonic-datapack-3.0.18.zip";
+  };
 
 in {
   config = mkIf cfg.enable {
@@ -179,8 +188,11 @@ in {
           # Mount resourcepacks (read-only)
           "${resourcepacks}:/data/resourcepacks:ro"
 
-          # Mount datapacks (read-only)
-          "${datapacks}:/data/world/datapacks:ro"
+          # Mount shaderpacks (read-only)
+          "${shaderpacks}:/data/shaderpacks:ro"
+
+          # Note: datapacks are copied in preStart, not mounted as volume
+          # to avoid symlink security issues with Minecraft
         ];
 
         ports = [
@@ -189,7 +201,7 @@ in {
       };
     };
 
-    # Create whitelist.json before container starts
+    # Create whitelist.json and copy datapacks before container starts
     systemd.services.docker-minecraft-server = {
       preStart = ''
         mkdir -p /var/lib/minecraft-server
@@ -207,6 +219,19 @@ in {
           }
         ]
         EOF
+
+        # Copy datapacks (cannot use symlinks due to Minecraft security validation)
+        # Note: world directory may not exist yet on first run
+        # The Docker container will create it, and we'll update datapacks on subsequent starts
+        if [ -d /var/lib/minecraft-server/world ]; then
+          mkdir -p /var/lib/minecraft-server/world/datapacks
+
+          # Remove any existing symlinks (from previous configuration)
+          find /var/lib/minecraft-server/world/datapacks -type l -delete
+
+          # Copy tectonic datapack (overwrite if exists to ensure updates)
+          cp -f ${tectonicDatapack} /var/lib/minecraft-server/world/datapacks/tectonic-datapack-3.0.18.zip
+        fi
       '';
     };
 
