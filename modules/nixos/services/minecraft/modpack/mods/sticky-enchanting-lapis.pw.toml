@@ -1,0 +1,13 @@
+name = "Sticky Enchanting Lapis"
+filename = "stickyenchantinglapis-1.21.1-1.5.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/tH1zAs3C/versions/XRcikRVs/stickyenchantinglapis-1.21.1-1.5.jar"
+hash-format = "sha1"
+hash = "10f792f2aa0309614cc6539cafeb1b42fd3bba9f"
+
+[update]
+[update.modrinth]
+mod-id = "tH1zAs3C"
+version = "XRcikRVs"

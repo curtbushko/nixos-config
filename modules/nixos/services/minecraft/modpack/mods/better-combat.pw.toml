@@ -1,13 +1,13 @@
 name = "2.3.1+1.21.1"
-filename = "bettercombat-fabric-2.3.1+1.21.1.jar"
+filename = "bettercombat-neoforge-2.3.1+1.21.1.jar"
 side = "both"
 
 [download]
-url = "https://cdn.modrinth.com/data/5sy6g3kz/versions/zZCcohvX/bettercombat-fabric-2.3.1%2B1.21.1.jar"
-hash-format = "sha512"
-hash = "e006007643dd2736a22a80d17e36fb2dd1cbe6c2799976d945165f04e828603979ec769358541e51168b7d50491e303f29ed9415eefa8497561e29df1dc9e4ad"
+url = "https://cdn.modrinth.com/data/5sy6g3kz/versions/vyOG66rq/bettercombat-neoforge-2.3.1%2B1.21.1.jar"
+hash-format = "sha1"
+hash = "0ab8800ae6d10279f6728ae4f85672cba3f36190"
 
 [update]
 [update.modrinth]
 mod-id = "5sy6g3kz"
-version = "zZCcohvX"
+version = "vyOG66rq"

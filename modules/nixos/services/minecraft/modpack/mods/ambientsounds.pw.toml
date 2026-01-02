@@ -1,13 +1,13 @@
-name = "6.3.1"
-filename = "AmbientSounds_FABRIC_v6.3.1_mc1.21.1.jar"
+name = "AmbientSounds"
+filename = "AmbientSounds_NEOFORGE_v6.3.1_mc1.21.1.jar"
 side = "client"
 
 [download]
-url = "https://cdn.modrinth.com/data/fM515JnW/versions/ybXRUW4r/AmbientSounds_FABRIC_v6.3.1_mc1.21.1.jar"
+url = "https://cdn.modrinth.com/data/fM515JnW/versions/Tn6XoNdJ/AmbientSounds_NEOFORGE_v6.3.1_mc1.21.1.jar"
 hash-format = "sha1"
-hash = "bfd9c4e3da734283331c0f3a7720f27525904a3d"
+hash = "10e4fbb2da01933b226be9859898d24418c10ff7"
 
 [update]
 [update.modrinth]
 mod-id = "fM515JnW"
-version = "ybXRUW4r"
+version = "Tn6XoNdJ"

@@ -1,13 +1,13 @@
 name = "YUNG's Cave Biomes"
-filename = "YungsCaveBiomes-1.21.1-Fabric-3.1.1.jar"
+filename = "YungsCaveBiomes-1.21.1-NeoForge-3.1.1.jar"
 side = "both"
 
 [download]
-url = "https://cdn.modrinth.com/data/cs7iGVq1/versions/geZa9lJS/YungsCaveBiomes-1.21.1-Fabric-3.1.1.jar"
+url = "https://cdn.modrinth.com/data/cs7iGVq1/versions/HYGqXWqQ/YungsCaveBiomes-1.21.1-NeoForge-3.1.1.jar"
 hash-format = "sha1"
-hash = "cffaf7a9f2184d6a19255802eac7f9a0b9acaf52"
+hash = "bcab81f578b3cb31e599ae327c6634b9fa8d0f04"
 
 [update]
 [update.modrinth]
 mod-id = "cs7iGVq1"
-version = "geZa9lJS"
+version = "HYGqXWqQ"

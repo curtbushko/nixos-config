@@ -1,0 +1,13 @@
+name = "Create Deco"
+filename = "createdeco-2.1.2-1.21.1-neo.jar"
+side = "both"
+
+[download]
+url = "https://cdn.modrinth.com/data/sMvUb4Rb/versions/k95JcfbJ/createdeco-2.1.2-1.21.1-neo.jar"
+hash-format = "sha1"
+hash = "cff4f94238d15db929bf0db48f006da438d345b5"
+
+[update]
+[update.modrinth]
+mod-id = "sMvUb4Rb"
+version = "k95JcfbJ"

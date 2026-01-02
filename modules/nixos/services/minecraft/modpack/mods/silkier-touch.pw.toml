@@ -1,6 +1,6 @@
-name = "[Fabric/Forge/Neo] 1.20.1-1.0"
+name = "Silkier Touch"
 filename = "silkiertouch-1.21.1-1.0.jar"
-side = "both"
+side = "server"
 
 [download]
 url = "https://cdn.modrinth.com/data/dUaXeoyM/versions/TngkMccX/silkiertouch-1.21.1-1.0.jar"

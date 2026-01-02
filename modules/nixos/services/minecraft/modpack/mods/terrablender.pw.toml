@@ -1,13 +1,13 @@
 name = "TerraBlender"
-filename = "TerraBlender-fabric-1.21.1-4.1.0.8.jar"
+filename = "TerraBlender-neoforge-1.21.1-4.1.0.8.jar"
 side = "both"
 
 [download]
-url = "https://cdn.modrinth.com/data/kkmrDlKT/versions/XNtIBXyQ/TerraBlender-fabric-1.21.1-4.1.0.8.jar"
+url = "https://cdn.modrinth.com/data/kkmrDlKT/versions/6e8GCrLb/TerraBlender-neoforge-1.21.1-4.1.0.8.jar"
 hash-format = "sha1"
-hash = "4a969dae334681103d3a0977b9448be0c7f4fe07"
+hash = "744394d979b422be560babf9df7a6800ede9ac5b"
 
 [update]
 [update.modrinth]
 mod-id = "kkmrDlKT"
-version = "XNtIBXyQ"
+version = "6e8GCrLb"

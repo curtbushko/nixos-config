@@ -1,13 +1,13 @@
-name = "IPN 1.10.19 for fabric 1.20.1"
-filename = "InventoryProfilesNext-fabric-1.21.1-2.2.3.jar"
+name = "Inventory Profiles Next"
+filename = "InventoryProfilesNext-neoforge-1.21.1-2.2.3.jar"
 side = "client"
 
 [download]
-url = "https://cdn.modrinth.com/data/O7RBXm3n/versions/A2gB9UGG/InventoryProfilesNext-fabric-1.21.1-2.2.3.jar"
+url = "https://cdn.modrinth.com/data/O7RBXm3n/versions/TkopiUdv/InventoryProfilesNext-neoforge-1.21.1-2.2.3.jar"
 hash-format = "sha1"
-hash = "ba3444f3037aab9950171f3ff81f34f793932e28"
+hash = "62e9fdf2c150b8caaf9ec071d545258fb3681ba6"
 
 [update]
 [update.modrinth]
 mod-id = "O7RBXm3n"
-version = "A2gB9UGG"
+version = "TkopiUdv"

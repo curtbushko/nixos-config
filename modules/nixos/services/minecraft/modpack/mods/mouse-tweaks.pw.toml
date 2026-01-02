@@ -1,13 +1,13 @@
 name = "[1.20–1.20.4 Fabric] Mouse Tweaks 2.26"
-filename = "MouseTweaks-fabric-mc1.21-2.26.jar"
+filename = "MouseTweaks-neoforge-mc1.21-2.26.1.jar"
 side = "client"
 
 [download]
-url = "https://cdn.modrinth.com/data/aC3cM3Vq/versions/ylmBQ38A/MouseTweaks-fabric-mc1.21-2.26.jar"
+url = "https://cdn.modrinth.com/data/aC3cM3Vq/versions/9I21YYxf/MouseTweaks-neoforge-mc1.21-2.26.1.jar"
 hash-format = "sha1"
-hash = "ee81af33a5606ef2cd057e075833d7c69836c210"
+hash = "6dae57f4f50f7808d2ed9a18f6cd1c0d4640c6bc"
 
 [update]
 [update.modrinth]
 mod-id = "aC3cM3Vq"
-version = "ylmBQ38A"
+version = "9I21YYxf"

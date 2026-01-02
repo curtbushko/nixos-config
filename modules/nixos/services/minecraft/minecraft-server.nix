@@ -123,48 +123,94 @@
       name = "tectonic-datapack-3.0.18.zip";
     })
   ];
+
 in {
   config = mkIf cfg.enable {
-    services.minecraft-servers = {
-      enable = true;
-      eula = true;
-      dataDir = "/var/lib/minecraft";
+    # Enable Docker for running Minecraft server
+    virtualisation.docker.enable = true;
 
-      servers.main = {
-        enable = true;
-        # Using Fabric server for mod support with Java 25 for c2me-opts-natives-math compatibility (requires Java 22+)
-        package = pkgs.fabricServers.fabric-1_21_1.override {
-          jre_headless = pkgs.temurin-jre-bin-25;
-        };
-        openFirewall = true;
-        jvmOpts = "-Xms2048m -Xmx6656m -Dminecraft.data.allowSymlinks=true";
+    # Run Minecraft NeoForge server in Docker using itzg/minecraft-server
+    virtualisation.oci-containers = {
+      backend = "docker";
 
-        serverProperties = {
-          difficulty = "hard";
-          gamemode = "survival";
-          max-players = 3;
-          view-distance = 64;
-          simulation-distance = 8;
-          motd = "D&J Minecraft Server";
-          white-list = true;
+      containers.minecraft-server = {
+        image = "itzg/minecraft-server:java21";
+        autoStart = true;
+
+        environment = {
+          # Server type and version
+          TYPE = "NEOFORGE";
+          VERSION = "1.21.1";
+          NEOFORGE_VERSION = "21.1.80";
+
+          # Accept EULA
+          EULA = "TRUE";
+
+          # Server properties
+          DIFFICULTY = "hard";
+          MODE = "survival";
+          MAX_PLAYERS = "3";
+          VIEW_DISTANCE = "64";
+          SIMULATION_DISTANCE = "8";
+          MOTD = "D&J Minecraft Server";
+          ENABLE_WHITELIST = "TRUE";
+
+          # Memory settings
+          MEMORY = "6G";
+          INIT_MEMORY = "2G";
+
+          # JVM options
+          JVM_XX_OPTS = "-XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200";
+
+          # Allow symlinks for mod directories
+          ALLOW_FLIGHT = "FALSE";
+
+          # Disable built-in mod download (we manage mods via packwiz)
+          REMOVE_OLD_MODS = "FALSE";
         };
 
-        whitelist = {
-          Trospar = "79995c56-739b-4e4d-a6a7-c6b15781565d";
-          PumpkinStigen = "5601a49d-1242-41f3-aaf5-13a995617132";
-        };
+        volumes = [
+          # Persistent world data
+          "/var/lib/minecraft-server:/data"
 
-        # Mods configuration using modpack
-        symlinks = {
-          "mods" = modpack;
-          "resourcepacks" = resourcepacks;
-        };
+          # Mount packwiz-managed mods (read-only)
+          "${modpack}:/data/mods:ro"
 
-        # Datapacks copied as files to satisfy Minecraft 1.21.1 validation
-        files = {
-          "world/datapacks" = datapacks;
-        };
+          # Mount resourcepacks (read-only)
+          "${resourcepacks}:/data/resourcepacks:ro"
+
+          # Mount datapacks (read-only)
+          "${datapacks}:/data/world/datapacks:ro"
+        ];
+
+        ports = [
+          "25565:25565/tcp"  # Minecraft server port
+        ];
       };
     };
+
+    # Create whitelist.json before container starts
+    systemd.services.docker-minecraft-server = {
+      preStart = ''
+        mkdir -p /var/lib/minecraft-server
+
+        # Create whitelist.json
+        cat > /var/lib/minecraft-server/whitelist.json <<'EOF'
+        [
+          {
+            "uuid": "79995c56-739b-4e4d-a6a7-c6b15781565d",
+            "name": "Trospar"
+          },
+          {
+            "uuid": "5601a49d-1242-41f3-aaf5-13a995617132",
+            "name": "PumpkinStigen"
+          }
+        ]
+        EOF
+      '';
+    };
+
+    # Open firewall for Minecraft
+    networking.firewall.allowedTCPPorts = [ 25565 ];
   };
 }

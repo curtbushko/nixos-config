@@ -1,13 +1,13 @@
 name = "YUNG's Bridges"
-filename = "YungsBridges-1.21.1-Fabric-5.1.1.jar"
+filename = "YungsBridges-1.21.1-NeoForge-5.1.1.jar"
 side = "server"
 
 [download]
-url = "https://cdn.modrinth.com/data/Ht4BfYp6/versions/8h9N9fvs/YungsBridges-1.21.1-Fabric-5.1.1.jar"
+url = "https://cdn.modrinth.com/data/Ht4BfYp6/versions/urkCzBf6/YungsBridges-1.21.1-NeoForge-5.1.1.jar"
 hash-format = "sha1"
-hash = "58dc490d1ba8e1cfa08ef42f805eb03df2314fb0"
+hash = "18099c2d54acd16bb8ab90a66f40fa16496d065e"
 
 [update]
 [update.modrinth]
 mod-id = "Ht4BfYp6"
-version = "8h9N9fvs"
+version = "urkCzBf6"

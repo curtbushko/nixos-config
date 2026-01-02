@@ -1,13 +1,13 @@
-name = "[Fabric] Handcrafted 3.0.6"
-filename = "handcrafted-fabric-1.21.1-4.0.3.jar"
+name = "Handcrafted"
+filename = "handcrafted-neoforge-1.21.1-4.0.3.jar"
 side = "both"
 
 [download]
-url = "https://cdn.modrinth.com/data/pJmCFF0p/versions/f0pKpUWd/handcrafted-fabric-1.21.1-4.0.3.jar"
+url = "https://cdn.modrinth.com/data/pJmCFF0p/versions/JfqnpP2Z/handcrafted-neoforge-1.21.1-4.0.3.jar"
 hash-format = "sha1"
-hash = "a9579fecd7ed429c282be21d5c921d220197acc6"
+hash = "8ecd27f1d66f9b742cfae3c8ffa773765f574b52"
 
 [update]
 [update.modrinth]
 mod-id = "pJmCFF0p"
-version = "f0pKpUWd"
+version = "JfqnpP2Z"

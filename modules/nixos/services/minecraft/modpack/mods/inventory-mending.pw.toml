@@ -1,6 +1,6 @@
-name = "[Fabric/Forge/Neo] 1.20.1-1.2"
+name = "Inventory Mending"
 filename = "inventorymending-1.21.1-1.2.jar"
-side = "both"
+side = "server"
 
 [download]
 url = "https://cdn.modrinth.com/data/y6Ryy40D/versions/VeOSd0k4/inventorymending-1.21.1-1.2.jar"

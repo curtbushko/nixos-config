@@ -1,13 +1,13 @@
 name = "More Culling"
-filename = "moreculling-fabric-1.21.1-1.0.6.jar"
+filename = "moreculling-neoforge-1.21.1-1.0.6.jar"
 side = "client"
 
 [download]
-url = "https://cdn.modrinth.com/data/51shyZVL/versions/1V6UtDhN/moreculling-fabric-1.21.1-1.0.6.jar"
+url = "https://cdn.modrinth.com/data/51shyZVL/versions/2w0zNJb4/moreculling-neoforge-1.21.1-1.0.6.jar"
 hash-format = "sha1"
-hash = "e14150baf443abc24ee6236b837c287dd5950e95"
+hash = "f6f43344e0622ac05ad7aca5378ec35aad31ac30"
 
 [update]
 [update.modrinth]
 mod-id = "51shyZVL"
-version = "1V6UtDhN"
+version = "2w0zNJb4"

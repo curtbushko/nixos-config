@@ -1,13 +1,13 @@
 name = "YUNG's Menu Tweaks"
-filename = "YungsMenuTweaks-1.21.1-Fabric-2.1.2.jar"
+filename = "YungsMenuTweaks-1.21.1-NeoForge-2.1.2.jar"
 side = "client"
 
 [download]
-url = "https://cdn.modrinth.com/data/Hcy2DFKF/versions/ROfVrQnL/YungsMenuTweaks-1.21.1-Fabric-2.1.2.jar"
+url = "https://cdn.modrinth.com/data/Hcy2DFKF/versions/OB9hQTpQ/YungsMenuTweaks-1.21.1-NeoForge-2.1.2.jar"
 hash-format = "sha1"
-hash = "0e5cd18ee58f199bfe4476d34c20cf5c908e3a69"
+hash = "da42e597009dae71faa37290e98b7b69bca52c25"
 
 [update]
 [update.modrinth]
 mod-id = "Hcy2DFKF"
-version = "ROfVrQnL"
+version = "OB9hQTpQ"

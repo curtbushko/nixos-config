@@ -1,13 +1,13 @@
 name = "YUNG's Extras"
-filename = "YungsExtras-1.21.1-Fabric-5.1.1.jar"
+filename = "YungsExtras-1.21.1-NeoForge-5.1.1.jar"
 side = "server"
 
 [download]
-url = "https://cdn.modrinth.com/data/ZYgyPyfq/versions/aVsikHca/YungsExtras-1.21.1-Fabric-5.1.1.jar"
+url = "https://cdn.modrinth.com/data/ZYgyPyfq/versions/N2EpMhR7/YungsExtras-1.21.1-NeoForge-5.1.1.jar"
 hash-format = "sha1"
-hash = "9f27e1c879b6569f4a1a4b4ef082698081082a32"
+hash = "62833733aaf407f36bdacf648ed4b2ef9940662b"
 
 [update]
 [update.modrinth]
 mod-id = "ZYgyPyfq"
-version = "aVsikHca"
+version = "N2EpMhR7"

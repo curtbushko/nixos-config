@@ -1,13 +1,13 @@
-name = "[Fabric 1.20.1] v4.0.4+1.20.1"
-filename = "shulkerboxtooltip-fabric-5.1.8+1.21.1.jar"
-side = "client"
+name = "Shulker Box Tooltip"
+filename = "shulkerboxtooltip-neoforge-5.1.8+1.21.1.jar"
+side = "both"
 
 [download]
-url = "https://cdn.modrinth.com/data/2M01OLQq/versions/nGPvABlf/shulkerboxtooltip-fabric-5.1.8%2B1.21.1.jar"
+url = "https://cdn.modrinth.com/data/2M01OLQq/versions/EXXWm5xF/shulkerboxtooltip-neoforge-5.1.8%2B1.21.1.jar"
 hash-format = "sha1"
-hash = "1eabfda9db507194203aad41c3172a5ac57a0b89"
+hash = "d708b1153749dacf6b8b62d98ee4ee562d481cfc"
 
 [update]
 [update.modrinth]
 mod-id = "2M01OLQq"
-version = "nGPvABlf"
+version = "EXXWm5xF"

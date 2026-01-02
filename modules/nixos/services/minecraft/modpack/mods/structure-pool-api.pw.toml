@@ -1,0 +1,13 @@
+name = "Structure Pool API"
+filename = "structure_pool_api-neoforge-1.2.1+1.21.1.jar"
+side = "server"
+
+[download]
+url = "https://cdn.modrinth.com/data/LrYZi08Q/versions/kdWVYKdx/structure_pool_api-neoforge-1.2.1%2B1.21.1.jar"
+hash-format = "sha1"
+hash = "5150191b29de8462705e5aa715c2554a5744dc7b"
+
+[update]
+[update.modrinth]
+mod-id = "LrYZi08Q"
+version = "kdWVYKdx"

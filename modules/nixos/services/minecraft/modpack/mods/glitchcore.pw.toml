@@ -1,13 +1,13 @@
 name = "0.0.1.1 for Fabric 1.20.1"
-filename = "GlitchCore-fabric-1.21.1-2.1.0.0.jar"
+filename = "GlitchCore-neoforge-1.21.1-2.1.0.0.jar"
 side = "both"
 
 [download]
-url = "https://cdn.modrinth.com/data/s3dmwKy5/versions/lbSHOhee/GlitchCore-fabric-1.21.1-2.1.0.0.jar"
+url = "https://cdn.modrinth.com/data/s3dmwKy5/versions/8wmCpbQ2/GlitchCore-neoforge-1.21.1-2.1.0.0.jar"
 hash-format = "sha1"
-hash = "46e6a284ca15f1f90114048b3e5bb64d831f8d72"
+hash = "b95318c14ef20bd24886480d7640a5eca6aa6cec"
 
 [update]
 [update.modrinth]
 mod-id = "s3dmwKy5"
-version = "lbSHOhee"
+version = "8wmCpbQ2"

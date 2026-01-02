@@ -1,13 +1,13 @@
-name = "Zombie Awareness 1.20.1-1.13.1"
-filename = "zombieawareness-fabric-1.21.0-1.13.2.jar"
+name = "Zombie Awareness"
+filename = "zombieawareness-neoforge-1.21.0-1.13.2.jar"
 side = "both"
 
 [download]
-url = "https://cdn.modrinth.com/data/mMTOWOaA/versions/lBdgO4GL/zombieawareness-fabric-1.21.0-1.13.2.jar"
+url = "https://cdn.modrinth.com/data/mMTOWOaA/versions/KNtnADP6/zombieawareness-neoforge-1.21.0-1.13.2.jar"
 hash-format = "sha1"
-hash = "040a6cb20164c33db3a629e1a65af7134d612988"
+hash = "266a95f6fcdb7a629ed6e95d7b3d2b35724dc6a7"
 
 [update]
 [update.modrinth]
 mod-id = "mMTOWOaA"
-version = "lBdgO4GL"
+version = "KNtnADP6"

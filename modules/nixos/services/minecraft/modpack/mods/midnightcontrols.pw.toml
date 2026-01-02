@@ -1,13 +1,13 @@
 name = "MidnightControls 1.9.4 - 1.20.1"
-filename = "midnightcontrols-fabric-1.10.0.1.jar"
+filename = "midnightcontrols-neoforge-1.10.0.1.jar"
 side = "client"
 
 [download]
-url = "https://cdn.modrinth.com/data/bXX9h73M/versions/mZMBB8jx/midnightcontrols-fabric-1.10.0.1.jar"
+url = "https://cdn.modrinth.com/data/bXX9h73M/versions/oz41N6Dp/midnightcontrols-neoforge-1.10.0.1.jar"
 hash-format = "sha1"
-hash = "e6bb066912a0380e46754c897ca5d005c926934c"
+hash = "21c3ca3da1ad6d093bb8d04b7da5c61ddf797e01"
 
 [update]
 [update.modrinth]
 mod-id = "bXX9h73M"
-version = "mZMBB8jx"
+version = "oz41N6Dp"
