@@ -31,9 +31,6 @@ in {
       libsForQt5.qt5.qtwayland
     ];
 
-    # Use custom xkeyboard-config system-wide
-    services.xserver.xkb.dir = "${xkeyboard-config-custom}/share/X11/xkb";
-
     # Enable xdg-desktop-portal at system level
     xdg.portal = {
       enable = true;
@@ -54,6 +51,8 @@ in {
       dpi = 180;
       videoDrivers = ["nvidia"];
       xkb = {
+        # Use custom xkeyboard-config system-wide
+        dir = "${xkeyboard-config-custom}/share/X11/xkb";
         layout = "us";
         variant = "";
         options = "caps:escape";

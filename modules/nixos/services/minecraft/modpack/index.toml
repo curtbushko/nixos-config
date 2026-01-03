@@ -305,6 +305,11 @@ hash = "d67994684a457b3accfd97a3915b220e5c11817df832910ca5a523076585d19d"
 metafile = true
 
 [[files]]
+file = "mods/gravestone-mod.pw.toml"
+hash = "911f1d06cf2a82106f38ceb51e2c4e6a0208f796bc9e0ace285b19683af2c19b"
+metafile = true
+
+[[files]]
 file = "mods/handcrafted.pw.toml"
 hash = "69ddcae358b0791745c56da7da32e7a8a0b0bed3624d24c244b0e5d67896e50e"
 metafile = true
@@ -316,7 +321,7 @@ metafile = true
 
 [[files]]
 file = "mods/iceberg.pw.toml"
-hash = "019fea93516a470bbcad284dd0cbad6f4e2914d96221c86e3f87c12fe6321e10"
+hash = "a2fbecad69fcbff54919864ea8b95e54d140a1a2c637d73307fb366e76066fe6"
 metafile = true
 
 [[files]]
@@ -611,7 +616,7 @@ metafile = true
 
 [[files]]
 file = "mods/structure-pool-api.pw.toml"
-hash = "80398082340dc5c258c0030c0ebe809a27f6a4bb142d649b894ab257a13d6abf"
+hash = "a1c72a67655ffc1c770e5e987c2f7fac1aee1d268d67e5ea273de2fde15df66a"
 metafile = true
 
 [[files]]
@@ -681,12 +686,12 @@ metafile = true
 
 [[files]]
 file = "mods/xaeros-minimap.pw.toml"
-hash = "129902c7ba901a689a1a7ca311090949f5ea53900b63948693377c42735aef62"
+hash = "407712f7717b07de5915d5b066f53da843bf8165150da3f3370fbd5c4beb1926"
 metafile = true
 
 [[files]]
 file = "mods/xaeros-world-map.pw.toml"
-hash = "b788f4b4c22af8a6c5011267c9c7ff13f4f7370a689e1ab16ec862cd97e64d7a"
+hash = "dcf09d6869f21c15069fe2115128e3e450805257b56a95af5916b5e06825c86d"
 metafile = true
 
 [[files]]
