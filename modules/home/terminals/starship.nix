@@ -21,11 +21,30 @@ in {
         add_newline = true;
         command_timeout = 2000;
         # The  is a mix of what section came first and after
-        format = "[░▒▓](${a_bg})[  ](bg:${a_bg} fg:${a_fg})$hostname[](bg:${b_bg} fg:${a_bg})$directory[](fg:${b_bg}
+        format = "[  ░▒▓](${a_bg})[](bg:${a_bg} fg:${a_fg})\${custom.hostname_fixed}[](bg:${b_bg} fg:${a_bg})$directory[](fg:${b_bg}
         bg:${c_bg})$git_branch$git_status[](fg:${c_bg})$character";
-        hostname = {
-          format = "[ @$hostname ]($style)";
-          ssh_only = true;
+        custom.hostname_fixed = {
+          command = ''
+            h=$(hostname)
+            case "$h" in
+              m4-pro)    icon=" "; name="M4 Pro" ;;
+              gamingrig) icon=" "; name="Gamingrig" ;;
+              relay)     icon="󰙁 "; name="Relay" ;;
+              steamdeck) icon=" "; name="Steamdeck" ;;
+              node00)    icon="󱃾 "; name="K8s Node 00" ;;
+              node01)    icon="󱃾 "; name="K8s Node 01" ;;
+              node02)    icon="󱃾 "; name="K8s Node 02" ;;
+              curtbushko-X3FR7279D2) icon=" "; name="Workit" ;;
+              *)         icon="󰣘 "; name="$h" ;;
+            esac
+            len=''${#name}
+            space=11
+            left=$(( (space - len) / 2 ))
+            right=$(( space - len - left ))
+            printf '%s%*s%s%*s\u200B' "$icon" "$left" "" "$name" "$right" ""
+          '';
+          format = "[ $output ]($style)";
+          when = "true";  # ssh_only = false equivalent
           style = "bg:${a_bg} fg:${a_fg}";
         };
         directory = {

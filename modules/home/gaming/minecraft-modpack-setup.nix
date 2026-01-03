@@ -149,6 +149,13 @@ HELP
         exit 1
       fi
 
+      echo "Syncing packwiz manifest from server modpack..."
+      # Remove old packwiz files and copy updated ones
+      chmod -R u+w "$INSTANCE_DIR/.minecraft/packwiz" 2>/dev/null || true
+      rm -rf "$INSTANCE_DIR/.minecraft/packwiz"
+      mkdir -p "$INSTANCE_DIR/.minecraft/packwiz"
+      cp -r ${modpackPath}/* "$INSTANCE_DIR/.minecraft/packwiz/"
+
       echo "Syncing mods, shader packs, and resource packs from server modpack..."
       bash "$INSTANCE_DIR/.minecraft/install-mods.sh"
       echo "✓ Content synced!"
@@ -219,13 +226,19 @@ EOF
           # Skip if no .pw.toml files found (glob didn't match)
           [ -f "\$modfile" ] || continue
 
-          # Extract URL and filename using basic parsing
+          # Extract side, URL and filename using basic parsing
+          side=\$(grep '^side = ' "\$modfile" 2>/dev/null | cut -d'"' -f2)
           url=\$(grep '^url = ' "\$modfile" 2>/dev/null | cut -d'"' -f2)
           filename=\$(grep '^filename = ' "\$modfile" 2>/dev/null | cut -d'"' -f2)
 
-          if [ -n "\$url" ] && [ -n "\$filename" ]; then
-            echo "  Downloading \$filename..."
-            curl -L -o "\$MODS_DIR/\$filename" "\$url"
+          # Only install client-side and both-side mods (skip server-only)
+          if [ "\$side" = "client" ] || [ "\$side" = "both" ]; then
+            if [ -n "\$url" ] && [ -n "\$filename" ]; then
+              echo "  Downloading \$filename..."
+              curl -L -o "\$MODS_DIR/\$filename" "\$url"
+            fi
+          else
+            echo "  Skipping server-only mod: \$filename"
           fi
         done
       fi
