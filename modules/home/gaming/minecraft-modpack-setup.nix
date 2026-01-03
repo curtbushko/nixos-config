@@ -8,9 +8,10 @@
   modpackPath = ../../nixos/services/minecraft/modpack;
 
   # Platform-specific PrismLauncher directory
+  # On Linux, check for Flatpak installation first, then fall back to native
   prismDir = if pkgs.stdenv.isDarwin
     then "$HOME/Library/Application Support/PrismLauncher"
-    else "$HOME/.local/share/PrismLauncher";
+    else "$(if [ -d \"$HOME/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher\" ]; then echo \"$HOME/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher\"; else echo \"$HOME/.local/share/PrismLauncher\"; fi)";
 
   # Bash script to generate servers.dat file with NBT format
   # NBT structure: root compound { servers: List<Compound> }
@@ -92,6 +93,19 @@
     INSTANCE_NAME="DnJ-Server-Modpack"
     PRISM_DIR="${prismDir}"
     INSTANCE_DIR="$PRISM_DIR/instances/$INSTANCE_NAME"
+
+    # Verify PrismLauncher directory exists
+    if [ ! -d "$PRISM_DIR" ]; then
+      echo "Error: PrismLauncher directory not found: $PRISM_DIR"
+      echo ""
+      echo "Please ensure PrismLauncher is installed and has been run at least once."
+      echo ""
+      echo "Checked locations:"
+      echo "  - Flatpak: ~/.var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher"
+      echo "  - Native:  ~/.local/share/PrismLauncher"
+      echo ""
+      exit 1
+    fi
 
     # Parse command line arguments
     FORCE_SETUP=false
