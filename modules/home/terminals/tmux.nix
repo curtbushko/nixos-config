@@ -21,6 +21,7 @@ in {
           hash = "sha256-Z9XHpyh4Y6iBI4+SfFBCGA8huFJpRFZy9nEB7+WQVJE=";
         };
       });
+      terminal = "xterm-ghostty";
       tmuxinator.enable = true;
       plugins = with pkgs.tmuxPlugins; [
         better-mouse-mode
@@ -35,6 +36,9 @@ in {
         background = "${colors.bg_dark}";
         foreground = "${colors.blue0}";
       in ''
+        # fix tmux not showing italics in neovim
+        # to test, do: echo -e "\e[3mThis text should be italic\e[0m"
+        set -g default-terminal "tmux-256color"
         set -g mouse on
         set -g set-clipboard on
         set -g history-limit 102400
