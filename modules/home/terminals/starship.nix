@@ -27,14 +27,14 @@ in {
           command = ''
             h=$(hostname)
             case "$h" in
-              m4-pro)    icon=" "; name="M4 Pro" ;;
-              gamingrig) icon=" "; name="Gamingrig" ;;
-              relay)     icon="󰙁 "; name="Relay" ;;
-              steamdeck) icon=" "; name="Steamdeck" ;;
-              node00)    icon="󱃾 "; name="K8s Node 00" ;;
-              node01)    icon="󱃾 "; name="K8s Node 01" ;;
-              node02)    icon="󱃾 "; name="K8s Node 02" ;;
-              curtbushko-X3FR7279D2) icon=" "; name="Workit" ;;
+              m4-pro)    icon=" "; name="m4-pro" ;;
+              gamingrig) icon=" "; name="gamingrig" ;;
+              relay)     icon="󰙁 "; name="relay" ;;
+              steamdeck) icon=" "; name="steamdeck" ;;
+              node00)    icon="󱃾 "; name="node00 (k8s)" ;;
+              node01)    icon="󱃾 "; name="node01 (k8s)" ;;
+              node02)    icon="󱃾 "; name="node02 (k8s)" ;;
+              curtbushko-X3FR7279D2) icon=" "; name="work" ;;
               *)         icon="󰣘 "; name="$h" ;;
             esac
             len=''${#name}
