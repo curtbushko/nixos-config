@@ -46,9 +46,12 @@
     (builtins.filter (file: lib.hasSuffix ".pw.toml" file) modFiles)
   );
 
-  # Modpack configuration using linkFarmFromDrvs
-  # Mods are automatically loaded from packwiz .pw.toml files
-  modpack = pkgs.linkFarmFromDrvs "modpack-mods" serverMods;
+  # Modpack configuration - copy actual JAR files instead of symlinks
+  # This is necessary because symlinks to Nix store don't work inside Docker
+  modpack = pkgs.runCommand "modpack-mods" {} ''
+    mkdir -p $out
+    ${lib.concatMapStringsSep "\n" (mod: "cp ${mod} $out/") serverMods}
+  '';
 
   # Resource packs configuration
   resourcepacks = pkgs.linkFarmFromDrvs "resourcepacks" [

@@ -121,7 +121,6 @@ in {
           sep=" "
 
           # Build the statusline
-          echo "\033[D"
           printf "%b""''${a_bg_code}''${a_fg_code}▓▒░"
           printf "%b" "''${a_bg_code}''${a_fg_code} 󱚝 ''${model_padded}"
           printf "%b""''${b_bg_code}$(hex_to_ansi "${a_bg}")''${sep}"

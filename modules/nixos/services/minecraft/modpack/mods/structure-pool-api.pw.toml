@@ -1,6 +1,6 @@
 name = "Structure Pool API"
 filename = "structure_pool_api-neoforge-1.2.1+1.21.1.jar"
-side = "server"
+side = "both"
 
 [download]
 url = "https://cdn.modrinth.com/data/LrYZi08Q/versions/kdWVYKdx/structure_pool_api-neoforge-1.2.1%2B1.21.1.jar"
