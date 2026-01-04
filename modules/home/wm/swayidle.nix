@@ -41,12 +41,9 @@ in {
     services.swayidle = {
       enable = true;
       systemdTarget = "graphical-session.target";
-      events = [
-        {
-          event = "after-resume";
-          command = "${pkgs.niri}/bin/niri msg action power-on-monitors";
-        }
-      ];
+      events = {
+        after-resume = "${pkgs.niri}/bin/niri msg action power-on-monitors";
+      };
       timeouts = [
         {
           timeout = 900;
