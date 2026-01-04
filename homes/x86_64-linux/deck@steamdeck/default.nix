@@ -1,4 +1,5 @@
 {
+  lib,
   # An instance of `pkgs` with your overlays and packages applied is also available.
   pkgs,
   # You also have access to your flake's inputs.
@@ -61,8 +62,6 @@
     pkgs.freetype # needed by Wine
   ];
 
-  fonts.fontconfig.enable = true;
-
   #---------------------------------------------------------------------
   # Env vars and dotfiles
   #---------------------------------------------------------------------
@@ -79,4 +78,10 @@
     inputs.stylix.homeModules.stylix
     ./tailscale.nix
   ];
+
+  # Disable stylix for KDE Plasma to prevent desktop breaking
+  stylix.targets.kde.enable = false;
+  stylix.targets.qt.enable = false;
+  stylix.targets.xresources.enable = false;
+  stylix.targets.gtk.enable = lib.mkForce false;
 }
