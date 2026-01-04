@@ -31,22 +31,24 @@ in {
     ];
 
     # Add krew bin directory to PATH
-    programs.zsh.initExtra = ''
-      export PATH=$PATH:$HOME/.krew/bin
+    programs.zsh.initContent = ''
+      export PATH=''$PATH:''$HOME/.krew/bin
     '';
 
     # Install krew plugins
     home.activation.installKrewPlugins = config.lib.dag.entryAfter ["writeBoundary"] ''
-      export PATH="${pkgs.kubectl}/bin:${pkgs.krew}/bin:$PATH"
+      export PATH="${pkgs.kubectl}/bin:${pkgs.krew}/bin:${pkgs.git}/bin:''$PATH"
+      # Use system SSH to support macOS-specific options like UseKeychain
+      export GIT_SSH_COMMAND="/usr/bin/ssh"
 
       # Install ctx plugin (kubectx)
       if ! ${pkgs.krew}/bin/krew list 2>/dev/null | grep -q "^ctx$"; then
-        $DRY_RUN_CMD ${pkgs.krew}/bin/krew install ctx
+        ''$DRY_RUN_CMD ${pkgs.krew}/bin/krew install ctx
       fi
 
       # Install ns plugin
       if ! ${pkgs.krew}/bin/krew list 2>/dev/null | grep -q "^ns$"; then
-        $DRY_RUN_CMD ${pkgs.krew}/bin/krew install ns
+        ''$DRY_RUN_CMD ${pkgs.krew}/bin/krew install ns
       fi
     '';
     # extract kubecontext
