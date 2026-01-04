@@ -51,22 +51,26 @@ in {
           command = ''
             git_common=$(git rev-parse --git-common-dir 2>/dev/null)
             if [ -n "$git_common" ]; then
+              # In a git repository or worktree
+              icon="󰊢 "
               if [ "$git_common" = ".git" ]; then
                 name=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)")
               else
                 name=$(basename "$(dirname "$git_common")")
               fi
             else
+              # Regular directory (not a git repo)
+              icon=" "
               name=$(basename "$PWD")
             fi
 
-            # Apply icon and name mappings
+            # Apply icon and name mappings (overrides defaults)
             case "$name" in
               Documents)             icon="󰈙 "; name="Documents" ;;
               Downloads)             icon=" "; name="Downloads" ;;
               Music)                 icon="󰝚 "; name="Music" ;;
-              Pictures)              icon ="󰄀 "; name="Pictures" ;;
-              Videos)                icon =" "; name="Videos" ;;
+              Pictures)              icon="󰄀 "; name="Pictures" ;;
+              Videos)                icon=" "; name="Videos" ;;
               ghostty)               icon="󰊠 "; name="ghostty" ;;
               consul-k8s)            icon="󱃾 "; name="consul-k8s" ;;
               nixos-config)          icon="󱄅 "; name="nixos-config" ;;
@@ -74,7 +78,6 @@ in {
               terraform)             icon="󱁢 "; name="terraform" ;;
               crusaders)             icon="󱢾 "; name="crusaders" ;;
               kaiju)                 icon="󰺵 "; name="kaiju" ;;
-              *)                     icon=""; name="$name" ;;
             esac
 
             len=''${#name}
