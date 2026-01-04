@@ -27,8 +27,28 @@ in {
       pkgs.kind
       pkgs.kubebuilder
       pkgs.kubectl
-      pkgs.kubectx
+      pkgs.krew
     ];
+
+    # Add krew bin directory to PATH
+    programs.zsh.initExtra = ''
+      export PATH=$PATH:$HOME/.krew/bin
+    '';
+
+    # Install krew plugins
+    home.activation.installKrewPlugins = config.lib.dag.entryAfter ["writeBoundary"] ''
+      export PATH="${pkgs.kubectl}/bin:${pkgs.krew}/bin:$PATH"
+
+      # Install ctx plugin (kubectx)
+      if ! ${pkgs.krew}/bin/krew list 2>/dev/null | grep -q "^ctx$"; then
+        $DRY_RUN_CMD ${pkgs.krew}/bin/krew install ctx
+      fi
+
+      # Install ns plugin
+      if ! ${pkgs.krew}/bin/krew list 2>/dev/null | grep -q "^ns$"; then
+        $DRY_RUN_CMD ${pkgs.krew}/bin/krew install ns
+      fi
+    '';
     # extract kubecontext
     sops = {
       age.keyFile = "${config.xdg.configHome}/sops/age/keys.txt";
