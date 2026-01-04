@@ -27,14 +27,14 @@ in {
           command = ''
             h=$(hostname)
             case "$h" in
-              m4-pro)    icon=" "; name="m4-pro" ;;
+              curtbushko-X3FR7279D2) icon=" "; name="work" ;;
               gamingrig) icon=" "; name="gamingrig" ;;
-              relay)     icon="󰙁 "; name="relay" ;;
-              steamdeck) icon=" "; name="steamdeck" ;;
+              m4-pro)    icon=" "; name="m4-pro" ;;
               node00)    icon="󱃾 "; name="node00 (k8s)" ;;
               node01)    icon="󱃾 "; name="node01 (k8s)" ;;
               node02)    icon="󱃾 "; name="node02 (k8s)" ;;
-              curtbushko-X3FR7279D2) icon=" "; name="work" ;;
+              relay)     icon="󰙁 "; name="relay" ;;
+              steamdeck) icon=" "; name="steamdeck" ;;
               *)         icon="󰣘 "; name="$h" ;;
             esac
             len=''${#name}
@@ -66,18 +66,19 @@ in {
 
             # Apply icon and name mappings (overrides defaults)
             case "$name" in
+              consul-k8s)            icon="󱃾 "; name="consul-k8s" ;;
+              crusaders)             icon="󱢾 "; name="crusaders" ;;
               Documents)             icon="󰈙 "; name="Documents" ;;
               Downloads)             icon=" "; name="Downloads" ;;
-              Music)                 icon="󰝚 "; name="Music" ;;
-              Pictures)              icon="󰄀 "; name="Pictures" ;;
-              Videos)                icon=" "; name="Videos" ;;
               ghostty)               icon="󰊠 "; name="ghostty" ;;
-              consul-k8s)            icon="󱃾 "; name="consul-k8s" ;;
-              nixos-config)          icon="󱄅 "; name="nixos-config" ;;
-              neovim-flake)          icon=" "; name="neovim-flake" ;;
-              terraform)             icon="󱁢 "; name="terraform" ;;
-              crusaders)             icon="󱢾 "; name="crusaders" ;;
               kaiju)                 icon="󰺵 "; name="kaiju" ;;
+              kb)                    icon="󰧑 "; name="kb" ;;
+              Music)                 icon="󰝚 "; name="Music" ;;
+              neovim-flake)          icon=" "; name="neovim-flake" ;;
+              nixos-config)          icon="󱄅 "; name="nixos-config" ;;
+              Pictures)              icon="󰄀 "; name="Pictures" ;;
+              terraform)             icon="󱁢 "; name="terraform" ;;
+              Videos)                icon=" "; name="Videos" ;;
             esac
 
             len=''${#name}
