@@ -36,7 +36,7 @@
     };
     theme = {
       name = "gruvbox-material";
-      wallpaper = "cyberpunk-three.png";
+      wallpaper = "firewatch-green.jpg";
     };
 
   };

@@ -21,7 +21,7 @@ in {
         add_newline = true;
         command_timeout = 2000;
         # The  is a mix of what section came first and after
-        format = "[  ░▒▓](${a_bg})[](bg:${a_bg} fg:${a_fg})\${custom.hostname_fixed}[](bg:${b_bg} fg:${a_bg})$directory[](fg:${b_bg}
+        format = "[  ░▒▓](${a_bg})[](bg:${a_bg} fg:${a_fg})\${custom.hostname_fixed}[ ](bg:${b_bg} fg:${a_bg})\${custom.worktree}[](fg:${b_bg}
         bg:${c_bg})$git_branch$git_status[](fg:${c_bg})$character";
         custom.hostname_fixed = {
           command = ''
@@ -47,23 +47,45 @@ in {
           when = "true";  # ssh_only = false equivalent
           style = "bg:${a_bg} fg:${a_fg}";
         };
-        directory = {
-          truncation_symbol = "…/";
-          truncation_length = 3;
-          format = "[ $path ]($style)";
+        custom.worktree = {
+          command = ''
+            git_common=$(git rev-parse --git-common-dir 2>/dev/null)
+            if [ -n "$git_common" ]; then
+              if [ "$git_common" = ".git" ]; then
+                name=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)")
+              else
+                name=$(basename "$(dirname "$git_common")")
+              fi
+            else
+              name=$(basename "$PWD")
+            fi
+
+            # Apply icon and name mappings
+            case "$name" in
+              Documents)             icon="󰈙 "; name="Documents" ;;
+              Downloads)             icon=" "; name="Downloads" ;;
+              Music)                 icon="󰝚 "; name="Music" ;;
+              Pictures)              icon ="󰄀 "; name="Pictures" ;;
+              Videos)                icon =" "; name="Videos" ;;
+              ghostty)               icon="󰊠 "; name="ghostty" ;;
+              consul-k8s)            icon="󱃾 "; name="consul-k8s" ;;
+              nixos-config)          icon="󱄅 "; name="nixos-config" ;;
+              neovim-flake)          icon=" "; name="neovim-flake" ;;
+              terraform)             icon="󱁢 "; name="terraform" ;;
+              crusaders)             icon="󱢾 "; name="crusaders" ;;
+              kaiju)                 icon="󰺵 "; name="kaiju" ;;
+              *)                     icon=""; name="$name" ;;
+            esac
+
+            len=''${#name}
+            space=11
+            left=$(( (space - len) / 2 ))
+            right=$(( space - len - left ))
+            printf '%s%*s%s%*s\u200B' "$icon" "$left" "" "$name" "$right" ""
+          '';
+          format = "[$output ]($style)";
+          when = "true";
           style = "fg:${b_fg} bg:${b_bg}";
-        };
-        directory.substitutions = {
-          "Documents" = "󰈙 ";
-          "Downloads" = " ";
-          "Music" = " ";
-          "Pictures" = " ";
-          "ghostty" = "󰊠 ";
-          "consul-k8s" = "󱃾 ";
-          "nixos-config" = "󱄅 ";
-          "github.com/curtbushko" = " ";
-          "neovim-flake" = " ";
-          "terraform" = "󱁢 ";
         };
         git_branch = {
           symbol = "";
