@@ -67,7 +67,6 @@ in {
         pkgs.unzip
         pkgs.zoxide
         pkgs.zstd
-        pkgs.presenterm
       ]
       ++ (lib.optionals isDarwin [
         pkgs.cachix
