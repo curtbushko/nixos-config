@@ -124,7 +124,7 @@ in {
           printf "%b""''${a_bg_code}''${a_fg_code}▓▒░"
           printf "%b" "''${a_bg_code}''${a_fg_code} 󱚝 ''${model_padded}"
           printf "%b""''${b_bg_code}$(hex_to_ansi "${a_bg}")''${sep}"
-          printf "%b""''${b_bg_code}''${b_fg_code} ''${repo:-$(basename "$(echo "$input" | jq -r '.workspace.current_dir')")} "
+          printf "%b""''${b_bg_code}''${b_fg_code}󰊢 ''${repo:-$(basename "$(echo "$input" | jq -r '.workspace.current_dir')")} "
           if [ -n "$branch" ]; then
             printf "%b" "''${c_bg_code}$(hex_to_ansi "${b_bg}")''${sep}"
             printf "%b" "''${c_bg_code}''${c_fg_code} ''${branch} "
