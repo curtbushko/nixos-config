@@ -7,7 +7,9 @@
   inherit (lib) mkIf;
   cfg = config.curtbushko.wm.niri;
   isLinux = pkgs.stdenv.isLinux;
-  wallpaper = ../styles/wallpapers/3440x1440/${config.curtbushko.theme.wallpaper};
+  wallpaper = builtins.fetchurl {
+    url = "https://raw.githubusercontent.com/curtbushko/nixos-wallpapers/main/3440x1440/${config.curtbushko.theme.wallpaper}";
+  };
 in {
   config = mkIf cfg.enable {
     systemd.user.services.swaybg = {

@@ -1,6 +1,8 @@
 {config, lib, pkgs, ...}: let
   colors = lib.importJSON ./${config.curtbushko.theme.name}.json;
-  wallpaper = ./wallpapers/3440x1440/${config.curtbushko.theme.wallpaper};
+  wallpaper = builtins.fetchurl {
+    url = "https://raw.githubusercontent.com/curtbushko/nixos-wallpapers/main/3440x1440/${config.curtbushko.theme.wallpaper}";
+  };
   isLinux = pkgs.stdenv.isLinux;
 in {
   # Base16 guide (https://github.com/chriskempson/base16/blob/main/styling.md)
