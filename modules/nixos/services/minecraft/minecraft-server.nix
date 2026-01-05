@@ -162,14 +162,14 @@ in {
           DIFFICULTY = "hard";
           MODE = "survival";
           MAX_PLAYERS = "3";
-          VIEW_DISTANCE = "64";
+          VIEW_DISTANCE = "12";
           SIMULATION_DISTANCE = "8";
           MOTD = "D&J Minecraft Server";
           ENABLE_WHITELIST = "TRUE";
 
           # Memory settings
-          MEMORY = "6G";
-          INIT_MEMORY = "2G";
+          MEMORY = "12G";
+          INIT_MEMORY = "6G";
 
           # JVM options
           JVM_XX_OPTS = "-XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200";

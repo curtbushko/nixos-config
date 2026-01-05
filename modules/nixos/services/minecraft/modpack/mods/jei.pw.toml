@@ -1,13 +1,13 @@
 name = "15.20.0.129 for Fabric 1.20.1"
-filename = "jei-1.21.1-neoforge-19.27.0.336.jar"
+filename = "jei-1.21.1-neoforge-19.27.0.339.jar"
 side = "both"
 
 [download]
-url = "https://cdn.modrinth.com/data/u6dRKJwZ/versions/Zgmbmpd4/jei-1.21.1-neoforge-19.27.0.336.jar"
+url = "https://cdn.modrinth.com/data/u6dRKJwZ/versions/KbENlUcA/jei-1.21.1-neoforge-19.27.0.339.jar"
 hash-format = "sha1"
-hash = "d02c849e4e321e7b056a48e0242ec641560c2ab8"
+hash = "a20c6d0a41f61163ae0e663d338d9d5d66386cdf"
 
 [update]
 [update.modrinth]
 mod-id = "u6dRKJwZ"
-version = "Zgmbmpd4"
+version = "KbENlUcA"

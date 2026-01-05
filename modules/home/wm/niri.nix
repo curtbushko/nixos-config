@@ -87,6 +87,7 @@ in {
           QT_IM_MODULE = "wayland";
         };
         spawn-at-startup = [
+          { command = [ "systemctl" "--user" "import-environment" "WAYLAND_DISPLAY" "XDG_CURRENT_DESKTOP" ]; }
           { command = [ "wl-paste --type text --watch cliphist store" ]; }
           { command = [ "wl-paste --type image --watch cliphist store" ]; }
           { command = [ "xwayland-satellite" ":0" ]; }

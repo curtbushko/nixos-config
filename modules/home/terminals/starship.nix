@@ -53,10 +53,13 @@ in {
             if [ -n "$git_common" ]; then
               # In a git repository or worktree
               icon="󰊢 "
-              if [ "$git_common" = ".git" ]; then
-                name=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)")
-              else
+              # Check if this is a worktree by looking for .bare in the path
+              if echo "$git_common" | grep -q '\.bare'; then
+                # In a worktree - use dirname of git_common
                 name=$(basename "$(dirname "$git_common")")
+              else
+                # In normal repo - use toplevel directory name
+                name=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)")
               fi
             else
               # Regular directory (not a git repo)

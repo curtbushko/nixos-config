@@ -110,11 +110,6 @@ hash = "2f8c5e2eab88a24c5dd693b8384483abae223e6aa328a4b176095fc02a6d3ffb"
 metafile = true
 
 [[files]]
-file = "mods/c2me-neoforge.pw.toml"
-hash = "8e4abfea25c864a1a1bd31948f95020b3486370e53d2f53bcc4f869ad95c4536"
-metafile = true
-
-[[files]]
 file = "mods/caelus.pw.toml"
 hash = "0bdcc9420ca552e7498037c79669bdeb7916d68dfcd4acc2e8fdce1f55addf01"
 metafile = true
@@ -195,11 +190,6 @@ hash = "3bcbe067758c8fae144e875813067e3147452dac6843bb0f1657d19b8c175384"
 metafile = true
 
 [[files]]
-file = "mods/distanthorizons.pw.toml"
-hash = "52d124ee03c663f9e092c8c2f5e4128c3eae2d5a5a7d0d6bca024009b353f256"
-metafile = true
-
-[[files]]
 file = "mods/double-doors.pw.toml"
 hash = "4b1d22d47cd63e76528586d045ce2135da425af83aaeca18377a911ba7ed0daa"
 metafile = true
@@ -231,7 +221,7 @@ metafile = true
 
 [[files]]
 file = "mods/dynamic-fps.pw.toml"
-hash = "79fe054c6146cf0bc078d3f9f81e75c617c8dc202ad6d6c2a127c0cd14f7ecde"
+hash = "51d9269b2a7bb89e458b33949a5c5ad02dd815ee65afb677870230d99cff1b14"
 metafile = true
 
 [[files]]
@@ -296,7 +286,7 @@ metafile = true
 
 [[files]]
 file = "mods/geckolib.pw.toml"
-hash = "7dc5be2afab237e64921c8e585d97393473c45e8e4213a31f5bf2edc03b316d0"
+hash = "0a48dd0fe80a4d5aa92dc4ca7ec2d9268c7e8fb3b09177e297aca5f92e78e795"
 metafile = true
 
 [[files]]
@@ -361,7 +351,7 @@ metafile = true
 
 [[files]]
 file = "mods/jei.pw.toml"
-hash = "1ed11a72c19a826eca862cf301a0f8a2851b2000f46fa1589848562113c5b653"
+hash = "91015f2ad8302f98d71d8206c294bc50f58ed5fca14bf1aa5b6b8a2e96f0bd8d"
 metafile = true
 
 [[files]]
@@ -402,11 +392,6 @@ metafile = true
 [[files]]
 file = "mods/lmd.pw.toml"
 hash = "2fdbec97397c297b909388a93d37907937ca6e3eed1f075e403b43f7047b1cf7"
-metafile = true
-
-[[files]]
-file = "mods/midnightcontrols.pw.toml"
-hash = "6480b22b8dedf682e8a1359fb527d7d240a2b4ccff7c3600b05c63eae5634db0"
 metafile = true
 
 [[files]]
@@ -561,7 +546,7 @@ metafile = true
 
 [[files]]
 file = "mods/simple-voice-chat.pw.toml"
-hash = "9c3fbe37ef82775cd9576fb597bfb08e9b4ecab4f30cbfd18e801d64412ce6a4"
+hash = "eb91447e1b21abaad79d8c771dc04c1bdd8f28da784cb642e3169d9ae80eff15"
 metafile = true
 
 [[files]]
@@ -691,7 +676,7 @@ metafile = true
 
 [[files]]
 file = "mods/xaeros-world-map.pw.toml"
-hash = "dcf09d6869f21c15069fe2115128e3e450805257b56a95af5916b5e06825c86d"
+hash = "c0fb630d3d0af71c2bd46a57d16109323ab633a8f75c0c960c1f5b184f07dae6"
 metafile = true
 
 [[files]]
