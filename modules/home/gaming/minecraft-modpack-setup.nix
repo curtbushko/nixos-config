@@ -236,6 +236,9 @@ EOF
       # Parse the .pw.toml files and download mods
       if [ -d "\$PACKWIZ_DIR/mods" ]; then
         echo "Processing mods..."
+        # Clean mods directory to ensure removed mods are deleted
+        echo "  Clearing old mods..."
+        rm -f "\$MODS_DIR"/*.jar
         for modfile in "\$PACKWIZ_DIR/mods"/*.pw.toml; do
           # Skip if no .pw.toml files found (glob didn't match)
           [ -f "\$modfile" ] || continue
@@ -260,6 +263,9 @@ EOF
       # Parse and download shader packs
       if [ -d "\$PACKWIZ_DIR/shaderpacks" ]; then
         echo "Processing shader packs..."
+        # Clean shaderpacks directory to ensure removed packs are deleted
+        echo "  Clearing old shader packs..."
+        rm -f "\$SHADERPACKS_DIR"/*.zip
         for shaderfile in "\$PACKWIZ_DIR/shaderpacks"/*.pw.toml; do
           # Skip if no .pw.toml files found (glob didn't match)
           [ -f "\$shaderfile" ] || continue
@@ -278,6 +284,9 @@ EOF
       # Parse and download resource packs
       if [ -d "\$PACKWIZ_DIR/resourcepacks" ]; then
         echo "Processing resource packs..."
+        # Clean resourcepacks directory to ensure removed packs are deleted
+        echo "  Clearing old resource packs..."
+        rm -f "\$RESOURCEPACKS_DIR"/*.zip
         for resourcefile in "\$PACKWIZ_DIR/resourcepacks"/*.pw.toml; do
           # Skip if no .pw.toml files found (glob didn't match)
           [ -f "\$resourcefile" ] || continue
