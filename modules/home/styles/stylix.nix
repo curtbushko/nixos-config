@@ -7,7 +7,7 @@
     "cyberpunk-tokyo.png" = lib.fakeHash;
     "cyberpunk_2077_phantom_liberty_katana.jpg" = lib.fakeHash;
     "green-pasture.jpg" = lib.fakeHash;
-    "cyberpunk-three.png" = lib.fakeHash;
+    "cyberpunk-three.png" = "sha256-9SOiWOXP8Ys/eO0C1KoqKt2pO37qv6gDtkmBwNB/0n0=";
   };
 
   wallpaper = pkgs.fetchurl {
