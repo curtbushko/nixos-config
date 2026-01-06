@@ -140,6 +140,11 @@ hash = "ded731a21a515b3b113b2dabaa56537ebff1407eafc8a5df632c760e1cfb0ec8"
 metafile = true
 
 [[files]]
+file = "mods/controlify.pw.toml"
+hash = "dcd4ff2d2751f09b16f08d8a0203fca4c23c0a4e3662ec496607a0ac97ce1eb1"
+metafile = true
+
+[[files]]
 file = "mods/coroutil.pw.toml"
 hash = "9d6211af651095fc4be088a228f02973a028437b4b19c1483753e4fd4cf044d7"
 metafile = true
@@ -677,6 +682,11 @@ metafile = true
 [[files]]
 file = "mods/xaeros-world-map.pw.toml"
 hash = "c0fb630d3d0af71c2bd46a57d16109323ab633a8f75c0c960c1f5b184f07dae6"
+metafile = true
+
+[[files]]
+file = "mods/yacl.pw.toml"
+hash = "9a89a97f142873b9ab62d2c7c807ac22e6f16c828282052b416a6f3f7f785a48"
 metafile = true
 
 [[files]]

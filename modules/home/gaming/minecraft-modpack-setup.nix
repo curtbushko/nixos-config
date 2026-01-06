@@ -170,6 +170,92 @@ HELP
       mkdir -p "$INSTANCE_DIR/.minecraft/packwiz"
       cp -r ${modpackPath}/* "$INSTANCE_DIR/.minecraft/packwiz/"
 
+      echo "Updating install-mods.sh script..."
+      # Regenerate the install script to ensure we have the latest logic
+      cat > "$INSTANCE_DIR/.minecraft/install-mods.sh" <<MODSCRIPT
+      #!/usr/bin/env bash
+      set -e
+
+      INSTANCE_NAME="DnJ-Server-Modpack"
+      PRISM_DIR="${prismDir}"
+      PACKWIZ_DIR="\$PRISM_DIR/instances/\$INSTANCE_NAME/.minecraft/packwiz"
+      MODS_DIR="\$PRISM_DIR/instances/\$INSTANCE_NAME/.minecraft/mods"
+      SHADERPACKS_DIR="\$PRISM_DIR/instances/\$INSTANCE_NAME/.minecraft/shaderpacks"
+      RESOURCEPACKS_DIR="\$PRISM_DIR/instances/\$INSTANCE_NAME/.minecraft/resourcepacks"
+
+      echo "Installing content from packwiz manifest..."
+
+      # Clean up old content to ensure removed mods/packs are deleted
+      echo "Cleaning up old content..."
+      rm -f "\$MODS_DIR"/*.jar 2>/dev/null || true
+      rm -f "\$SHADERPACKS_DIR"/*.zip 2>/dev/null || true
+      rm -f "\$RESOURCEPACKS_DIR"/*.zip 2>/dev/null || true
+
+      # Parse the .pw.toml files and download mods
+      if [ -d "\$PACKWIZ_DIR/mods" ]; then
+        echo "Processing mods..."
+        for modfile in "\$PACKWIZ_DIR/mods"/*.pw.toml; do
+          # Skip if no .pw.toml files found (glob didn't match)
+          [ -f "\$modfile" ] || continue
+
+          # Extract side, URL and filename using basic parsing
+          side=\$(grep '^side = ' "\$modfile" 2>/dev/null | cut -d'"' -f2)
+          url=\$(grep '^url = ' "\$modfile" 2>/dev/null | cut -d'"' -f2)
+          filename=\$(grep '^filename = ' "\$modfile" 2>/dev/null | cut -d'"' -f2)
+
+          # Only install client-side and both-side mods (skip server-only)
+          if [ "\$side" = "client" ] || [ "\$side" = "both" ]; then
+            if [ -n "\$url" ] && [ -n "\$filename" ]; then
+              echo "  Downloading \$filename..."
+              curl -L -o "\$MODS_DIR/\$filename" "\$url"
+            fi
+          else
+            echo "  Skipping server-only mod: \$filename"
+          fi
+        done
+      fi
+
+      # Parse and download shader packs
+      if [ -d "\$PACKWIZ_DIR/shaderpacks" ]; then
+        echo "Processing shader packs..."
+        for shaderfile in "\$PACKWIZ_DIR/shaderpacks"/*.pw.toml; do
+          # Skip if no .pw.toml files found (glob didn't match)
+          [ -f "\$shaderfile" ] || continue
+
+          # Extract URL and filename using basic parsing
+          url=\$(grep '^url = ' "\$shaderfile" 2>/dev/null | cut -d'"' -f2)
+          filename=\$(grep '^filename = ' "\$shaderfile" 2>/dev/null | cut -d'"' -f2)
+
+          if [ -n "\$url" ] && [ -n "\$filename" ]; then
+            echo "  Downloading \$filename..."
+            curl -L -o "\$SHADERPACKS_DIR/\$filename" "\$url"
+          fi
+        done
+      fi
+
+      # Parse and download resource packs
+      if [ -d "\$PACKWIZ_DIR/resourcepacks" ]; then
+        echo "Processing resource packs..."
+        for resourcefile in "\$PACKWIZ_DIR/resourcepacks"/*.pw.toml; do
+          # Skip if no .pw.toml files found (glob didn't match)
+          [ -f "\$resourcefile" ] || continue
+
+          # Extract URL and filename using basic parsing
+          url=\$(grep '^url = ' "\$resourcefile" 2>/dev/null | cut -d'"' -f2)
+          filename=\$(grep '^filename = ' "\$resourcefile" 2>/dev/null | cut -d'"' -f2)
+
+          if [ -n "\$url" ] && [ -n "\$filename" ]; then
+            echo "  Downloading \$filename..."
+            curl -L -o "\$RESOURCEPACKS_DIR/\$filename" "\$url"
+          fi
+        done
+      fi
+
+      echo "All content installed successfully!"
+MODSCRIPT
+
+      chmod +x "$INSTANCE_DIR/.minecraft/install-mods.sh"
+
       echo "Syncing mods, shader packs, and resource packs from server modpack..."
       bash "$INSTANCE_DIR/.minecraft/install-mods.sh"
       echo "✓ Content synced!"
@@ -195,6 +281,9 @@ HELP
       notes=D&J Minecraft Server Modpack - Auto-generated from nixos-config (NeoForge)
       IntendedVersion=1.21.1
       JavaPath=${pkgs.openjdk25}/bin/java
+      OverrideMemory=true
+      MinMemAlloc=8192
+      MaxMemAlloc=12288
 EOF
 
       # Create mmc-pack.json with proper format (using NeoForge to match server)
@@ -232,6 +321,12 @@ EOF
       RESOURCEPACKS_DIR="\$PRISM_DIR/instances/\$INSTANCE_NAME/.minecraft/resourcepacks"
 
       echo "Installing content from packwiz manifest..."
+
+      # Clean up old content to ensure removed mods/packs are deleted
+      echo "Cleaning up old content..."
+      rm -f "\$MODS_DIR"/*.jar 2>/dev/null || true
+      rm -f "\$SHADERPACKS_DIR"/*.zip 2>/dev/null || true
+      rm -f "\$RESOURCEPACKS_DIR"/*.zip 2>/dev/null || true
 
       # Parse the .pw.toml files and download mods
       if [ -d "\$PACKWIZ_DIR/mods" ]; then
