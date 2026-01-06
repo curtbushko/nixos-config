@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Update all packwiz mods to latest versions for Minecraft 1.21.1
-# This script iterates through all .pw.toml files and updates them using packwiz
+# Update all packwiz mods to latest versions
+# Checks both exact version (e.g., "1.21.1") and wildcard version (e.g., "1.21.x") on Modrinth
+# This handles cases where mods are tagged with either format on Modrinth
 
 set -euo pipefail
 
@@ -23,6 +24,16 @@ if ! command -v packwiz &> /dev/null; then
     exit 1
 fi
 
+if ! command -v curl &> /dev/null; then
+    echo -e "${RED}Error: curl is not installed${NC}" >&2
+    exit 1
+fi
+
+if ! command -v jq &> /dev/null; then
+    echo -e "${RED}Error: jq is not installed (needed for Modrinth API queries)${NC}" >&2
+    exit 1
+fi
+
 # Check if modpack directory exists
 if [ ! -d "$MODPACK_DIR" ]; then
     echo -e "${RED}Error: Modpack directory '$MODPACK_DIR' not found${NC}" >&2
@@ -30,6 +41,58 @@ if [ ! -d "$MODPACK_DIR" ]; then
 fi
 
 cd "$MODPACK_DIR"
+
+# Get Minecraft version from pack.toml and derive wildcard version
+MC_VERSION=$(grep '^minecraft = ' pack.toml | cut -d'"' -f2)
+# Convert 1.21.1 to 1.21.x by replacing the patch version with 'x'
+MC_VERSION_WILDCARD=$(echo "$MC_VERSION" | sed -E 's/\.[0-9]+$/\.x/')
+
+echo -e "${BLUE}Minecraft version: ${YELLOW}$MC_VERSION${NC}"
+echo -e "${BLUE}Will also check for mods tagged with: ${YELLOW}$MC_VERSION_WILDCARD${NC}"
+echo ""
+
+# Get loader type
+LOADER="neoforge"
+if ! grep -q '^neoforge = ' pack.toml; then
+    if grep -q '^fabric = ' pack.toml; then
+        LOADER="fabric"
+    fi
+fi
+
+# Function to get the latest version for a mod checking both exact and wildcard MC versions
+get_latest_mod_version() {
+    local mod_id="$1"
+    local exact_version="$2"
+    local wildcard_version="$3"
+    local loader="$4"
+
+    # Query Modrinth API for all versions of this mod
+    local api_response=$(curl -s "https://api.modrinth.com/v2/project/${mod_id}/version")
+
+    # Find the latest version that matches our criteria
+    # Check for versions supporting either exact version OR wildcard version
+    local latest=$(echo "$api_response" | jq -r --arg exact "$exact_version" --arg wildcard "$wildcard_version" --arg loader "$loader" '
+        [.[] |
+         select(.loaders[] | contains($loader)) |
+         select(.game_versions[] | (. == $exact or . == $wildcard)) |
+         {
+           id: .id,
+           version_number: .version_number,
+           date_published: .date_published,
+           filename: .files[0].filename,
+           game_versions: .game_versions
+         }
+        ] |
+        sort_by(.date_published) |
+        last')
+
+    if [ "$latest" != "null" ] && [ -n "$latest" ]; then
+        echo "$latest"
+        return 0
+    else
+        return 1
+    fi
+}
 
 # Refresh packwiz index to pick up any pack.toml changes (like Minecraft version)
 echo -e "${BLUE}Refreshing packwiz index...${NC}"
@@ -76,12 +139,38 @@ for mod_file in $mod_files; do
     else
         # Get current version before update
         old_version=""
+        current_version_id=""
+        mod_id=""
         if [ -f "$mod_file" ]; then
             old_version=$(grep '^filename = ' "$mod_file" | cut -d'"' -f2 | head -1)
+            # Extract Modrinth mod ID from [update.modrinth] section
+            mod_id=$(grep -A 2 '^\[update\.modrinth\]' "$mod_file" | grep '^mod-id = ' | cut -d'"' -f2)
+            current_version_id=$(grep -A 2 '^\[update\.modrinth\]' "$mod_file" | grep '^version = ' | cut -d'"' -f2)
+        fi
+
+        # Try to find latest version using Modrinth API (checking both exact and wildcard versions)
+        latest_version_info=""
+        if [ -n "$mod_id" ]; then
+            latest_version_info=$(get_latest_mod_version "$mod_id" "$MC_VERSION" "$MC_VERSION_WILDCARD" "$LOADER" 2>/dev/null || echo "")
+        fi
+
+        # Determine which update method to use
+        update_cmd="packwiz update \"$mod_name\""
+        use_api_version=false
+        if [ -n "$latest_version_info" ]; then
+            latest_version_id=$(echo "$latest_version_info" | jq -r '.id')
+            latest_filename=$(echo "$latest_version_info" | jq -r '.filename')
+
+            # Only use specific version if it's different from current
+            if [ -n "$latest_version_id" ] && [ "$latest_version_id" != "null" ] && [ "$latest_version_id" != "$current_version_id" ]; then
+                update_cmd="packwiz modrinth install \"$mod_id\" --version-id \"$latest_version_id\" -y"
+                use_api_version=true
+                echo -e "  ${BLUE}→${NC} Found newer version via API: $latest_filename"
+            fi
         fi
 
         # Run packwiz update and capture output
-        if output=$(packwiz update "$mod_name" 2>&1); then
+        if output=$(eval "$update_cmd" 2>&1); then
             # Get new version after update
             new_version=""
             if [ -f "$mod_file" ]; then
