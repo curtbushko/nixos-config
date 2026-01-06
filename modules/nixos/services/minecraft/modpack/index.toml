@@ -76,7 +76,7 @@ metafile = true
 
 [[files]]
 file = "mods/balm.pw.toml"
-hash = "aea4ec9d47350de7e68dd61ab49804648979cc1c8666c5c8f35223c99a3de61f"
+hash = "547660bb17452fae6e46504c87eea9e75eeb50de440495cadcee9ad49c6d131d"
 metafile = true
 
 [[files]]
@@ -276,7 +276,7 @@ metafile = true
 
 [[files]]
 file = "mods/forgified-fabric-api.pw.toml"
-hash = "fcddfa08833f4855aa383d53a81dc39604f289ba34cbc1060e0be68376339ef8"
+hash = "b5d7571bff8454770fcbba30a4c90d8f020e84d626c731f92d46dc9ecea34d85"
 metafile = true
 
 [[files]]
@@ -397,6 +397,11 @@ metafile = true
 [[files]]
 file = "mods/lmd.pw.toml"
 hash = "2fdbec97397c297b909388a93d37907937ca6e3eed1f075e403b43f7047b1cf7"
+metafile = true
+
+[[files]]
+file = "mods/midnightcontrols.pw.toml"
+hash = "d14cd7a3295c115d1c108baae93b4fe57c23980739e615a7dd3d7da203b720e3"
 metafile = true
 
 [[files]]
