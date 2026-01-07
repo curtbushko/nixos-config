@@ -141,7 +141,7 @@ metafile = true
 
 [[files]]
 file = "mods/controlify.pw.toml"
-hash = "dcd4ff2d2751f09b16f08d8a0203fca4c23c0a4e3662ec496607a0ac97ce1eb1"
+hash = "cbc3acdd4c139d8aa1d89cb5300381e5574d874269477a9d17b2f1fb1505684d"
 metafile = true
 
 [[files]]
@@ -397,11 +397,6 @@ metafile = true
 [[files]]
 file = "mods/lmd.pw.toml"
 hash = "2fdbec97397c297b909388a93d37907937ca6e3eed1f075e403b43f7047b1cf7"
-metafile = true
-
-[[files]]
-file = "mods/midnightcontrols.pw.toml"
-hash = "d14cd7a3295c115d1c108baae93b4fe57c23980739e615a7dd3d7da203b720e3"
 metafile = true
 
 [[files]]
@@ -691,7 +686,7 @@ metafile = true
 
 [[files]]
 file = "mods/yacl.pw.toml"
-hash = "9a89a97f142873b9ab62d2c7c807ac22e6f16c828282052b416a6f3f7f785a48"
+hash = "3262003ef9430ea856cb63edf9c227fb62db125e7f0482a802e25df9a2c567cb"
 metafile = true
 
 [[files]]

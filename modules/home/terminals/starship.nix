@@ -20,7 +20,7 @@ in {
       settings = {
         add_newline = true;
         command_timeout = 2000;
-        right_format = "[ ](fg:${a_bg} bg:${c_bg})$directory[](fg:${b_bg} bg:${b_bg})[](fg:${b_fg} bg:${b_bg})[▓▒░ ](${a_bg})";
+        right_format = "[ ](fg:${a_bg})$directory[](fg:${b_bg} bg:${b_bg})[](fg:${b_fg} bg:${b_bg})[▓▒░ ](${a_bg})";
         # The  is a mix of what section came first and after
         format = "[ ░▒▓](${a_bg})[](bg:${a_bg} fg:${a_fg})\${custom.hostname_fixed}[ ](bg:${b_bg} fg:${a_bg})\${custom.worktree}[](fg:${b_bg}
         bg:${c_bg})$git_branch$git_status[](fg:${c_bg})$character";
