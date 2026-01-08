@@ -1,0 +1,13 @@
+name = "Recolored Grass"
+filename = "Recolored Grass.zip"
+side = "client"
+
+[download]
+url = "https://cdn.modrinth.com/data/64E9MNRJ/versions/NsBLzyt2/Recolored%20Grass.zip"
+hash-format = "sha1"
+hash = "418d8e28b2961bcc117730388e13194f8e71e4e5"
+
+[update]
+[update.modrinth]
+mod-id = "64E9MNRJ"
+version = "NsBLzyt2"

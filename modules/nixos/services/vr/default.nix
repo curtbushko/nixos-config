@@ -47,6 +47,7 @@ in {
       freetype
       steamtinkerlaunch
       nexusmods-app-unfree
+      cemu
     ];
 
     programs.steam = {

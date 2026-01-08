@@ -163,7 +163,7 @@ for mod_file in $mod_files; do
 
             # Only use specific version if it's different from current
             if [ -n "$latest_version_id" ] && [ "$latest_version_id" != "null" ] && [ "$latest_version_id" != "$current_version_id" ]; then
-                update_cmd="packwiz modrinth install \"$mod_id\" --version-id \"$latest_version_id\" -y"
+                update_cmd="packwiz modrinth install --project-id \"$mod_id\" --version-id \"$latest_version_id\" -y"
                 use_api_version=true
                 echo -e "  ${BLUE}→${NC} Found newer version via API: $latest_filename"
             fi

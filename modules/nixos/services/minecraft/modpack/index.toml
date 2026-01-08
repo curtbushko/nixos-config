@@ -141,7 +141,7 @@ metafile = true
 
 [[files]]
 file = "mods/controlify.pw.toml"
-hash = "cbc3acdd4c139d8aa1d89cb5300381e5574d874269477a9d17b2f1fb1505684d"
+hash = "cc054419a88469189f0ac79987a626b9236363203d0956d6be32e715bd30a0f1"
 metafile = true
 
 [[files]]
@@ -350,13 +350,18 @@ hash = "33e11c0430a8565ad0f63f7ef381d7528f4343bdabfa0541ef243d19af41593e"
 metafile = true
 
 [[files]]
+file = "mods/irons-spells-n-spellbooks.pw.toml"
+hash = "5d5faaec62a3551bfcf47759e7fae644b3bd8fa9aad782bfe6bc2495678a6f65"
+metafile = true
+
+[[files]]
 file = "mods/item-highlighter.pw.toml"
 hash = "2bfe7f20965e8037849a4421f3b1095c723ec70bdef3b7d00e7df2a9f0b0db3f"
 metafile = true
 
 [[files]]
 file = "mods/jei.pw.toml"
-hash = "91015f2ad8302f98d71d8206c294bc50f58ed5fca14bf1aa5b6b8a2e96f0bd8d"
+hash = "c1b7ecd0b42805c3d775149fcdd9c4524682b11bfbf08bc9b50eaff4b06063b6"
 metafile = true
 
 [[files]]
@@ -631,7 +636,7 @@ metafile = true
 
 [[files]]
 file = "mods/travelersbackpack.pw.toml"
-hash = "146648623417380579f98aa7c924ec506fee88c2634b5005da1b33126b8f08e3"
+hash = "7637b0632a9a3ccad3d1b5c6f2f8c340635fc82e5de5a5184ce2cc6b8bc46777"
 metafile = true
 
 [[files]]
@@ -770,11 +775,51 @@ hash = "f122147ca554cd2e0a70e1580f1aee4d6753bf0e4dcdc8a282b35ed7be81516e"
 metafile = true
 
 [[files]]
+file = "resourcepacks/animated-items.pw.toml"
+hash = "9ddc08752300afcc2170d75986b74b173607339dbd234edee3f75840e0af3af6"
+metafile = true
+
+[[files]]
 file = "resourcepacks/attribute-icons-rpg-series.pw.toml"
 hash = "0949997e33a9a6da6902fecaaf426f03f62ca906d38087947b94035d37857758"
 metafile = true
 
 [[files]]
+file = "resourcepacks/fancy-crops.pw.toml"
+hash = "2a225e6b531ed8ee21417f7c8632c84eb0f56f8e2a62dfa2c93410ecf81f48fd"
+metafile = true
+
+[[files]]
+file = "resourcepacks/fresh-animations.pw.toml"
+hash = "c332430a57c5687e3bbda30c2cf18774f38c3e254e9657a764da410f84f4ab38"
+metafile = true
+
+[[files]]
+file = "resourcepacks/low-on-fire.pw.toml"
+hash = "8c1435311c1a799fe6b8cfcfc59f91255ba900254ae01d1a20b744843f3855a3"
+metafile = true
+
+[[files]]
+file = "resourcepacks/recolored-grass.pw.toml"
+hash = "a24df5aa3e2275d1412abbc3b01711f9de6e703dd3bd25e7b985bde6738f282d"
+metafile = true
+
+[[files]]
+file = "resourcepacks/simple-grass-flowers.pw.toml"
+hash = "5b77107b392eca7ebbb157dae039f866b8e49b76cc16a886a33763bfe7c1e75b"
+metafile = true
+
+[[files]]
+file = "resourcepacks/tras-fresh-player.pw.toml"
+hash = "394f0039beb4b5c48ba9587b7cfbc306e94b3cb1448f8dd7a624e27af573eedb"
+metafile = true
+
+[[files]]
 file = "shaderpacks/complementary-reimagined.pw.toml"
 hash = "dab75b3a7685b899a24a0a3ef1dda7b77047997f8e2a627ac126cfb820fa761d"
+metafile = true
+
+[[files]]
+file = "shaderpacks/photon-shader.pw.toml"
+hash = "c6298573d1d5d1ea8b71254146e0f9b14bc352ac1d8d232438ca67775801c4f1"
 metafile = true
