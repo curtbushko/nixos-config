@@ -31,7 +31,7 @@ metafile = true
 
 [[files]]
 file = "mods/ambientsounds.pw.toml"
-hash = "680d15082eb1637f30e374cb1a6fafb53e596b9fc6def73f1b065872a271e1b8"
+hash = "1a21f7fb7977db9f189a24273d5d52aac7b4a7083dece0495c37448871e25815"
 metafile = true
 
 [[files]]
@@ -141,7 +141,7 @@ metafile = true
 
 [[files]]
 file = "mods/controlify.pw.toml"
-hash = "cc054419a88469189f0ac79987a626b9236363203d0956d6be32e715bd30a0f1"
+hash = "e01ba1e09f0798ef76e923b482fc3e520fc6ccd2ab1bfe5ffdd4452749d274bb"
 metafile = true
 
 [[files]]
@@ -210,16 +210,6 @@ hash = "0e649c222025275cd43c4ae31784e7105aa62d5858c50335653520b324ce9e50"
 metafile = true
 
 [[files]]
-file = "mods/dungeons-and-taverns.pw.toml"
-hash = "b8cb736687552d7fc820110bb494699bb64b9153234a40ca0ed0ec12458ebc14"
-metafile = true
-
-[[files]]
-file = "mods/dungeons-content.pw.toml"
-hash = "def3deca8ec4003decf4d48f8a62e1121dc0d883c81e88586def040d7b2fa8fd"
-metafile = true
-
-[[files]]
 file = "mods/durability-tweaks.pw.toml"
 hash = "1e1480cee0354acc358bf27c9e9c4a4a0edd578adcb772ec9bf30de0d7ef5176"
 metafile = true
@@ -276,7 +266,7 @@ metafile = true
 
 [[files]]
 file = "mods/forgified-fabric-api.pw.toml"
-hash = "b5d7571bff8454770fcbba30a4c90d8f020e84d626c731f92d46dc9ecea34d85"
+hash = "fcddfa08833f4855aa383d53a81dc39604f289ba34cbc1060e0be68376339ef8"
 metafile = true
 
 [[files]]
@@ -611,7 +601,7 @@ metafile = true
 
 [[files]]
 file = "mods/structure-pool-api.pw.toml"
-hash = "a1c72a67655ffc1c770e5e987c2f7fac1aee1d268d67e5ea273de2fde15df66a"
+hash = "80398082340dc5c258c0030c0ebe809a27f6a4bb142d649b894ab257a13d6abf"
 metafile = true
 
 [[files]]
@@ -691,7 +681,7 @@ metafile = true
 
 [[files]]
 file = "mods/yacl.pw.toml"
-hash = "3262003ef9430ea856cb63edf9c227fb62db125e7f0482a802e25df9a2c567cb"
+hash = "a234bac3a9980073e51960be652b8c67c7cbe35755e26658ebaf78ea82c03645"
 metafile = true
 
 [[files]]
