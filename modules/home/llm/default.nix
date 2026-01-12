@@ -18,6 +18,13 @@ in {
     };
   };
 
+  config = mkIf cfg.enable {
+    home.packages =
+      [
+        pkgs.llama-cpp
+      ];
+  };
+
   imports = [
     ./claude.nix
   ];

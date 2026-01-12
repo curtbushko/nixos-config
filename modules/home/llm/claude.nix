@@ -142,18 +142,10 @@ in {
   };
 
     # Deploy Claude Code skills
-    home.file.".claude/skills/bash.md".source = ./claude/skills/bash.md;
-    home.file.".claude/skills/golang.md".source = ./claude/skills/golang.md;
-    home.file.".claude/skills/start-project.md".source = ./claude/skills/start-project.md;
-    home.file.".claude/skills/minecraft-mods.md".source = ./claude/skills/minecraft-mods.md;
-    home.file.".claude/skills/go-code-review/SKILL.md".source = ./claude/skills/go-code-review/SKILL.md;
-    home.file.".claude/skills/go-code-review/knowledge-base.md".source = ./claude/skills/go-code-review/knowledge-base.md;
-    home.file.".claude/skills/go-code-review/real-world-patterns.md".source = ./claude/skills/go-code-review/real-world-patterns.md;
+    home.file.".claude/skills".source = ./claude/skills;
 
     # Claude Code commands
-    home.file.".claude/commands/cleanup-code.md".source = ./claude/commands/cleanup-code.md;
-    home.file.".claude/commands/docs-review.md".source = ./claude/commands/docs-review.md;
-    home.file.".claude/commands/pr-review.md".source = ./claude/commands/pr-review.md;
+    home.file.".claude/commands".source = ./claude/commands;
 
   };
 }
