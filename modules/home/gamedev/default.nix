@@ -30,6 +30,17 @@ in {
         krita
         godot_4
         obs-studio
+        # Vulkan SDK
+        vulkan-tools
+        vulkan-headers
+        vulkan-loader
+        vulkan-validation-layers
       ]);
+
+    home.sessionVariables = lib.mkIf isLinux {
+      VK_LAYER_PATH = "${pkgs.vulkan-validation-layers}/share/vulkan/explicit_layer.d";
+      VULKAN_SDK = "${pkgs.vulkan-headers}";
+      LD_LIBRARY_PATH = "${pkgs.vulkan-loader}/lib:${pkgs.vulkan-validation-layers}/lib\${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}";
+    };
   };
 }
