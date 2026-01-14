@@ -47,7 +47,7 @@ in {
             space=11
             left=$(( (space - len) / 2 ))
             right=$(( space - len - left ))
-            printf '%s%*s%s%*s\u200B' "$icon" "$left" "" "$name" "$right" ""
+            printf '%s%*s%s%*s' "$icon" "$left" "" "$name" "$right" ""
           '';
           format = "[ $output ]($style)";
           when = "true";  # ssh_only = false equivalent
@@ -94,7 +94,7 @@ in {
             space=11
             left=$(( (space - len) / 2 ))
             right=$(( space - len - left ))
-            printf '%s%*s%s%*s\u200B' "$icon" "$left" "" "$name" "$right" ""
+            printf '%s%*s%s%*s' "$icon" "$left" "" "$name" "$right" ""
           '';
           format = "[$output ]($style)";
           when = "true";
