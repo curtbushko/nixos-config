@@ -141,6 +141,9 @@ in {
     };
   };
 
+    # Deploy Claude Code global instructions (CLAUDE.md)
+    home.file.".claude/CLAUDE.md".source = ./claude/CLAUDE.md;
+
     # Deploy Claude Code skills
     home.file.".claude/skills".source = ./claude/skills;
 
