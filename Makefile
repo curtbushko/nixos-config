@@ -90,7 +90,7 @@ update-flake: ## Update nix packages
 
 .PHONY: update-claude-code
 update-claude-code: ## Update the claude-code flake
-	nix flake update claude-code 
+	nix flake update claude-code
 
 .PHONY: update-ghostty
 update-ghostty: ## Update the ghostty flake
@@ -101,8 +101,8 @@ update-neovim: ## Update the neovim flake
 	nix flake update neovim
 
 .PHONY: update-minecraft
-update-minecraft: ## Update nix-minecraft flake
-	nix flake update nix-minecraft
+update-minecraft: ## Update minecraft-servers flake
+	nix flake update minecraft-servers 
 
 .PHONY: update-vicinae
 update-vicinae: ## Update vicinae flake

@@ -26,6 +26,21 @@
       url = "github:ghostty-org/ghostty";
     };
 
+    minecraft-servers = {
+      url = "github:curtbushko/minecraft-servers";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    neovim = {
+      url = "github:curtbushko/neovim-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    niri = {
+      url = "github:sodiboo/niri-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     snowfall-lib = {
       url = "github:snowfallorg/lib";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -44,21 +59,6 @@
       # pin to this version of stylix
       #https://github.com/danth/stylix/issues/835
       #url = "github:danth/stylix?ref=b00c9f46ae6c27074d24d2db390f0ac5ebcc329f";
-    };
-
-    neovim = {
-      url = "github:curtbushko/neovim-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    niri = {
-      url = "github:sodiboo/niri-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    nix-minecraft = {
-      url = "github:Infinidoge/nix-minecraft";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     vicinae = {
@@ -99,7 +99,6 @@
       };
 
       overlays = with inputs; [
-        nix-minecraft.overlay
         zig.overlays.default
       ];
 

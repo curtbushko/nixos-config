@@ -9,7 +9,6 @@
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
     ../../../modules/nixos/base
-    inputs.nix-minecraft.nixosModules.minecraft-servers
   ];
 
   # StevenBlack/hosts blocklist configuration

@@ -166,22 +166,6 @@
     "flake-compat_2": {
       "flake": false,
       "locked": {
-        "lastModified": 1747046372,
-        "narHash": "sha256-CIVLLkVgvHYbgI2UpXvIIBJ12HWgX+fjA8Xf8PUmqCY=",
-        "owner": "edolstra",
-        "repo": "flake-compat",
-        "rev": "9100a0f413b0c601e0533d1d94ffd501ce2e7885",
-        "type": "github"
-      },
-      "original": {
-        "owner": "edolstra",
-        "repo": "flake-compat",
-        "type": "github"
-      }
-    },
-    "flake-compat_3": {
-      "flake": false,
-      "locked": {
         "lastModified": 1650374568,
         "narHash": "sha256-Z+s0J8/r907g149rllvwhb4pKi8Wam5ij0st8PwAh+E=",
         "owner": "edolstra",
@@ -195,7 +179,7 @@
         "type": "github"
       }
     },
-    "flake-compat_4": {
+    "flake-compat_3": {
       "flake": false,
       "locked": {
         "lastModified": 1696426674,
@@ -351,7 +335,7 @@
     },
     "flake-utils_3": {
       "inputs": {
-        "systems": "systems_4"
+        "systems": "systems_3"
       },
       "locked": {
         "lastModified": 1731533236,
@@ -502,6 +486,27 @@
         "type": "github"
       }
     },
+    "minecraft-servers": {
+      "inputs": {
+        "flake-utils": "flake-utils_3",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1768791167,
+        "narHash": "sha256-vVq5yd9w6kPPni0yZ0f+TjBnA5t1LfaYGw81+MF5zmg=",
+        "owner": "curtbushko",
+        "repo": "minecraft-servers",
+        "rev": "9f322abef9a38f52dc6fa919d5e1e1fe7c6291cb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "curtbushko",
+        "repo": "minecraft-servers",
+        "type": "github"
+      }
+    },
     "neovim": {
       "inputs": {
         "flake-parts": "flake-parts",
@@ -622,28 +627,6 @@
         "type": "github"
       }
     },
-    "nix-minecraft": {
-      "inputs": {
-        "flake-compat": "flake-compat_2",
-        "flake-utils": "flake-utils_3",
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1767147099,
-        "narHash": "sha256-395ehjdAtaqCbKmx+PhKAqnkYLvTtAzq2qzFG9qaGDw=",
-        "owner": "Infinidoge",
-        "repo": "nix-minecraft",
-        "rev": "01f571579edd64433f97c4294137fbc366deef4b",
-        "type": "github"
-      },
-      "original": {
-        "owner": "Infinidoge",
-        "repo": "nix-minecraft",
-        "type": "github"
-      }
-    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1768032153,
@@ -759,7 +742,7 @@
           "neovim",
           "nixpkgs"
         ],
-        "systems": "systems_3"
+        "systems": "systems_4"
       },
       "locked": {
         "lastModified": 1767553127,
@@ -807,9 +790,9 @@
         "firefox-addons": "firefox-addons",
         "ghostty": "ghostty",
         "home-manager": "home-manager_2",
+        "minecraft-servers": "minecraft-servers",
         "neovim": "neovim",
         "niri": "niri",
-        "nix-minecraft": "nix-minecraft",
         "nixpkgs": "nixpkgs_2",
         "snowfall-lib": "snowfall-lib",
         "sops-nix": "sops-nix",
@@ -821,7 +804,7 @@
     },
     "snowfall-lib": {
       "inputs": {
-        "flake-compat": "flake-compat_3",
+        "flake-compat": "flake-compat_2",
         "flake-utils-plus": "flake-utils-plus",
         "nixpkgs": [
           "nixpkgs"
@@ -1197,7 +1180,7 @@
     },
     "zig_2": {
       "inputs": {
-        "flake-compat": "flake-compat_4",
+        "flake-compat": "flake-compat_3",
         "flake-utils": "flake-utils_5",
         "nixpkgs": "nixpkgs_5"
       },
