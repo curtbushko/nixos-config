@@ -1,0 +1,108 @@
+# go-arch-lint configuration for Hexagonal/Onion Architecture
+# Copy this file to your project root as .go-arch-lint.yml
+#
+# Install: go install github.com/fe3dback/go-arch-lint@latest
+# Usage:   go-arch-lint check
+# Graph:   go-arch-lint graph
+
+version: 3
+workdir: internal
+
+# Define architectural components
+components:
+  # OUTER LAYER: Adapters (Infrastructure)
+  handlers:
+    in: adapters/handlers/**
+
+  repositories:
+    in: adapters/repositories/**
+
+  # INNER LAYERS: Core Business Logic
+  services:
+    in: core/services/**
+
+  ports:
+    in: core/ports/**
+
+  domain:
+    in: core/domain/**
+
+  # Supporting
+  config:
+    in: config/**
+
+# Components that can be used by all other components
+commonComponents:
+  - domain
+  - ports
+  - config
+
+# Common vendor dependencies allowed everywhere
+commonVendors:
+  - context
+  - errors
+  - fmt
+  - time
+  - strings
+  - strconv
+  - encoding/**
+  - github.com/google/uuid
+
+# Dependency rules - defines allowed import relationships
+deps:
+  # Handlers can depend on services (to call use cases)
+  handlers:
+    mayDependOn:
+      - services
+    canUse:
+      - net/http
+      - github.com/gin-gonic/**
+      - github.com/labstack/echo/**
+      - github.com/go-chi/**
+      - google.golang.org/grpc/**
+
+  # Services implement business logic using ports
+  services:
+    mayDependOn:
+      - ports
+    # Services should NOT depend on concrete implementations
+
+  # Ports define interfaces - no dependencies on implementations
+  ports:
+    # Ports only depend on domain types (via commonComponents)
+
+  # Domain is pure - NO external dependencies
+  domain:
+    # Domain has no mayDependOn - it's the innermost layer
+    # Only stdlib types allowed
+
+  # Repositories implement port interfaces
+  repositories:
+    mayDependOn:
+      - ports
+    canUse:
+      - database/sql
+      - github.com/jmoiron/sqlx
+      - github.com/jackc/pgx/**
+      - github.com/go-redis/redis/**
+      - go.mongodb.org/mongo-driver/**
+
+  # Config can use environment/file loading
+  config:
+    canUse:
+      - os
+      - github.com/spf13/viper
+      - github.com/kelseyhightower/envconfig
+
+# Exclude from analysis
+exclude:
+  - "**/*_test.go"
+  - "**/mock_*.go"
+  - "**/mocks/**"
+  - "**/testdata/**"
+
+# Exclude specific files from matching
+excludeFiles:
+  - ".git/**"
+  - "vendor/**"
+  - "**/*_generated.go"

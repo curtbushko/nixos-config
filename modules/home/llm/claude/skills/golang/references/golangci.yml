@@ -1,0 +1,294 @@
+# golangci-lint configuration - Enhanced for AI-Generated Code Detection
+# https://go.dev/doc/effective_go
+#
+# This config specifically targets common AI/LLM code generation mistakes:
+# - Error handling issues
+# - Nil pointer safety
+# - Resource leaks
+# - Concurrency problems
+# - Context misuse
+# - Type assertion safety
+#
+# Copy this file to your project root as .golangci.yml
+#
+# Install: go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+# Usage:   golangci-lint run
+# Fix:     golangci-lint run --fix
+
+version: "2"
+
+run:
+  timeout: 5m
+  modules-download-mode: readonly
+
+formatters:
+  gofmt:
+    simplify: true
+  goimports:
+    # Change this to your module path
+    local-prefixes: github.com/curtbushko
+
+linters:
+  enable:
+    # ============================================
+    # ERROR HANDLING (AI Problem #1 - Critical)
+    # AI often ignores or mishandles errors
+    # ============================================
+    - errcheck       # Checks for unchecked errors
+    - errorlint      # Finds error wrapping issues (Go 1.13+)
+    - wrapcheck      # Ensures external errors are wrapped
+    - nilerr         # Finds code returning nil error incorrectly
+    - err113         # Checks error handling expressions
+
+    # ============================================
+    # NIL SAFETY (AI Problem #2 - Critical)
+    # AI generates nil pointer dereferences
+    # ============================================
+    - staticcheck    # Comprehensive static analysis including nil checks
+    - govet          # Standard Go vet checks
+
+    # ============================================
+    # RESOURCE LEAKS (AI Problem #3 - Critical)
+    # AI forgets to close resources
+    # ============================================
+    - bodyclose      # Checks HTTP response body is closed
+    - rowserrcheck   # Checks sql.Rows error is checked
+    - sqlclosecheck  # Checks sql.Rows and sql.Stmt are closed
+
+    # ============================================
+    # CONCURRENCY (AI Problem #4 - Critical)
+    # AI creates race conditions and goroutine leaks
+    # ============================================
+    # govet and staticcheck cover most issues
+    # Also run: go test -race ./...
+
+    # ============================================
+    # CONTEXT USAGE (AI Problem #5 - High)
+    # AI uses context.Background() everywhere
+    # ============================================
+    - noctx          # Finds HTTP requests without context
+    - contextcheck   # Checks proper context usage
+
+    # ============================================
+    # TYPE ASSERTIONS (AI Problem #6 - High)
+    # AI uses unsafe type assertions
+    # ============================================
+    - forcetypeassert  # Requires comma-ok form for assertions
+
+    # ============================================
+    # CODE QUALITY & PATTERNS
+    # ============================================
+    - gocritic       # Opinionated checks for bugs, performance, style
+    - revive         # Extensible linter with naming rules
+    - ineffassign    # Detects ineffectual assignments
+    - unused         # Finds unused code
+    - unconvert      # Removes unnecessary type conversions
+    - unparam        # Reports unused function parameters
+    - predeclared    # Prevents shadowing predeclared identifiers
+
+    # ============================================
+    # PERFORMANCE
+    # AI often generates inefficient code
+    # ============================================
+    - prealloc       # Suggests slice preallocation
+    - makezero       # Finds slice declarations with non-zero length
+    - perfsprint     # Suggests faster alternatives to fmt.Sprintf
+
+    # ============================================
+    # INTERFACES (AI Problem #10)
+    # AI creates bloated interfaces
+    # ============================================
+    - interfacebloat # Checks interface method count
+    - ireturn        # Accept interfaces, return concrete types
+
+    # ============================================
+    # SECURITY
+    # ============================================
+    - gosec          # Security-focused linter
+
+    # ============================================
+    # DOCUMENTATION & STYLE
+    # ============================================
+    - godot          # Checks if comments end in a period
+    - misspell       # Finds misspelled words in comments
+    - whitespace     # Detects unnecessary whitespace
+
+    # ============================================
+    # CODE STRUCTURE
+    # ============================================
+    - gocyclo        # Checks cyclomatic complexity
+    - funlen         # Checks function length
+    - nestif         # Reports deeply nested if statements
+    - dupl           # Detects code duplication
+    - goconst        # Finds repeated strings for constants
+    - varnamelen     # Checks variable name length matches scope
+
+  disable:
+    # Linters that are too strict or conflict with other tools
+    - gochecknoglobals  # Global variables sometimes necessary
+    - gochecknoinits    # Init functions have valid uses
+    - exhaustruct       # Not always practical to initialize all fields
+    - nonamedreturns    # Named returns are idiomatic in Go
+
+linters-settings:
+  # ERROR HANDLING
+  errcheck:
+    check-type-assertions: true  # Critical for AI code!
+    check-blank: true            # Catch _ = err patterns
+    exclude-functions:
+      - io/ioutil.ReadFile
+      - io.Copy(*bytes.Buffer)
+      - io.Copy(os.Stdout)
+
+  errorlint:
+    errorf: true
+    asserts: true
+    comparison: true
+
+  # NIL SAFETY
+  govet:
+    enable-all: true
+    disable:
+      - fieldalignment  # Can conflict with readability
+
+  staticcheck:
+    checks: ["all"]
+
+  # INTERFACES
+  interfacebloat:
+    max: 5  # Enforce small interfaces (Effective Go)
+
+  # CODE QUALITY
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - performance
+      - style
+    disabled-checks:
+      - hugeParam       # Can be too strict
+      - rangeValCopy    # Sometimes intentional
+    settings:
+      captLocal:
+        paramsOnly: true
+      underef:
+        skipRecvDeref: true
+
+  revive:
+    rules:
+      # Naming conventions aligned with Effective Go
+      - name: var-naming
+        arguments:
+          - ["ID", "URL", "HTTP", "JSON", "XML", "API", "UUID", "SQL", "TCP", "UDP", "IP"]
+          - ["VM"]
+      - name: exported
+      - name: dot-imports
+      - name: blank-imports
+      - name: context-as-argument      # Context should be first param
+      - name: context-keys-type        # Context keys should be typed
+      - name: defer                    # Defer checks
+      - name: error-return             # Error should be last return
+      - name: error-strings            # Error strings should not be capitalized
+      - name: error-naming             # Error vars should be named errXxx
+      - name: if-return
+      - name: increment-decrement
+      - name: var-declaration
+      - name: range
+      - name: range-val-in-closure     # Critical for AI code!
+      - name: range-val-address        # Critical for AI code!
+      - name: receiver-naming
+      - name: time-naming
+      - name: indent-error-flow
+      - name: errorf
+      - name: empty-block
+      - name: superfluous-else
+      - name: unreachable-code
+      - name: redefines-builtin-id
+
+  # PERFORMANCE
+  varnamelen:
+    min-name-length: 1
+    ignore-type-assert-ok: true
+    ignore-map-index-ok: true
+    ignore-chan-recv-ok: true
+    ignore-names:
+      - err
+      - ok
+      - id
+      - i
+      - j
+      - k
+      - v
+      - t
+      - db
+      - tx
+      - ctx
+      - wg
+
+  # COMPLEXITY
+  funlen:
+    lines: 80
+    statements: 40
+
+  gocyclo:
+    min-complexity: 15
+
+  nestif:
+    min-complexity: 4
+
+  # DOCUMENTATION
+  godot:
+    scope: declarations
+    capital: true
+
+  misspell:
+    locale: US
+
+  # SECURITY
+  gosec:
+    excludes:
+      - G104  # Audit errors not checked (handled by errcheck)
+    config:
+      G306: "0644"  # Expected file permissions
+
+issues:
+  exclude-use-default: false
+  exclude-rules:
+    # Test files get relaxed rules
+    - path: _test\.go
+      linters:
+        - errcheck
+        - wrapcheck
+        - forcetypeassert
+        - dupl
+        - gosec
+        - funlen
+        - gocyclo
+        - contextcheck
+
+    # Generated files
+    - path: _generated\.go
+      linters:
+        - all
+
+    # Mock files
+    - path: mock_.*\.go
+      linters:
+        - all
+
+    # Main functions can be more complex
+    - text: "cyclomatic complexity"
+      path: main\.go
+
+    # Allow context.Background in main
+    - text: "context.Background"
+      path: main\.go
+
+    # Known false positives
+    - text: "Use of weak random number generator"
+      linters:
+        - gosec
+
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  new-from-rev: ""
+  fix: false

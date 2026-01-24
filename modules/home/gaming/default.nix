@@ -13,5 +13,6 @@ in {
 
   imports = [
     ./minecraft.nix
+    ./skyrimvr.nix
   ];
 }

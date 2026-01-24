@@ -22,6 +22,22 @@ in {
     settings = {
       includeCoAuthoredBy = false;
       hooks = {
+        SessionStart = [
+          {
+            hooks = [
+              {
+                type = "command";
+                timeout = 10;
+                command = ''
+                  # Ensure Go config files exist in curtbushko repos
+                  if [ -x "$HOME/.claude/scripts/ensure-go-configs.sh" ]; then
+                    "$HOME/.claude/scripts/ensure-go-configs.sh" "$(pwd)"
+                  fi
+                '';
+              }
+            ];
+          }
+        ];
         UserPromptSubmit = [
           {
             hooks = [
@@ -32,6 +48,62 @@ in {
                   if echo "$PROMPT" | grep -qiE "implement|create|build|write.*code|add.*feature"; then
                     echo "REMINDER: Check ~/.claude/skills/ before coding!"
                   fi
+                '';
+              }
+            ];
+          }
+        ];
+        PostToolUse = [
+          {
+            matcher = "Write|Edit";
+            hooks = [
+              {
+                type = "command";
+                timeout = 10;
+                command = ''
+                  # Check for emojis in written/edited files
+                  INPUT=$(cat)
+                  FILE=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
+                  if [ -n "$FILE" ] && [ -f "$FILE" ]; then
+                    if echo "$FILE" | grep -qE '\.(go|js|ts|jsx|tsx|py|rs|sh|bash|nix)$'; then
+                      if grep -P '[\x{1F600}-\x{1F64F}\x{1F300}-\x{1F5FF}\x{1F680}-\x{1F6FF}\x{2600}-\x{26FF}]' "$FILE" 2>/dev/null; then
+                        echo "Warning: File contains emojis. Use Nerd Font icons instead." >&2
+                      fi
+                    fi
+                  fi
+                  exit 0
+                '';
+              }
+            ];
+          }
+          {
+            matcher = "Bash";
+            hooks = [
+              {
+                type = "command";
+                timeout = 5;
+                command = ''
+                  # Validate bash scripts after creation
+                  INPUT=$(cat)
+                  CMD=$(echo "$INPUT" | jq -r '.tool_input.command // empty')
+                  # Check if command created a .sh file
+                  if echo "$CMD" | grep -qE '>\s*[^|]+\.sh'; then
+                    echo "Reminder: New bash script should have shebang and set -euo pipefail" >&2
+                  fi
+                  exit 0
+                '';
+              }
+            ];
+          }
+        ];
+        Stop = [
+          {
+            hooks = [
+              {
+                type = "command";
+                timeout = 5;
+                command = ''
+                  echo "Reminder: Run ~/.claude/scripts/quality-gates.sh before committing"
                 '';
               }
             ];
@@ -149,6 +221,13 @@ in {
 
     # Claude Code commands
     home.file.".claude/commands".source = ./claude/commands;
+
+    # Claude Code validation scripts
+    home.file.".claude/scripts" = {
+      source = ./claude/scripts;
+      recursive = true;
+      executable = true;
+    };
 
   };
 }

@@ -258,6 +258,9 @@
     # Modesetting is required.
     modesetting.enable = true;
 
+    # Keep NVIDIA driver state alive to help with monitor hotplug/wake
+    nvidiaPersistenced = true;
+
     # Nvidia power management. Experimental, and can cause sleep/suspend to fail.
     powerManagement.enable = true;
     # Fine-grained power management. Turns off GPU when not in use.
@@ -284,7 +287,7 @@
       sha256_aarch64 = "sha256-zLRCbpiik2fGDa+d80wqV3ZV1U1b4lRjzNQJsLLlICk=";
       openSha256 = "sha256-RFwDGQOi9jVngVONCOB5m/IYKZIeGEle7h0+0yGnBEI=";
       settingsSha256 = "sha256-F2wmUEaRrpR1Vz0TQSwVK4Fv13f3J9NJLtBe4UP2f14=";
-      persistencedSha256 = lib.fakeHash;
+      persistencedSha256 = "sha256-QCwxXQfG/Pa7jSTBB0xD3lsIofcerAWWAHKvWjWGQtg=";
     };
   };
 

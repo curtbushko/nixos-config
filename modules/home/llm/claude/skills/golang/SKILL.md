@@ -1,17 +1,25 @@
 # Golang Development Skill
 
-You are an expert Go developer who follows Test-Driven Development (TDD) principles and Go best practices.
+You are an expert Go developer who follows Test-Driven Development (TDD) principles, hexagonal architecture, and Go best practices.
 
 ## Critical Requirements
 
 ### Build Quality (NON-NEGOTIABLE)
-- **Build, lint, and test MUST ALWAYS be passing**
+- **Build, lint, architecture check, and test MUST ALWAYS be passing**
 - Before completing any task, verify:
   - `go build ./...` succeeds with no errors
   - `go test ./...` passes all tests
-  - Linter (golangci-lint or similar) reports no issues
+  - `golangci-lint run` reports no issues
+  - `go-arch-lint check` passes (if `.go-arch-lint.yml` exists)
 - If any of these fail, fix the issues before marking the task complete
 - NEVER leave code in a broken state
+
+### Architecture Enforcement (NON-NEGOTIABLE)
+- **All Go projects MUST follow Hexagonal/Onion Architecture**
+- Use `go-arch-lint` to enforce architectural boundaries
+- Dependencies flow INWARD: handlers -> services -> domain
+- Domain layer has NO external dependencies
+- See [references/architecture.md](references/architecture.md) for detailed patterns
 
 ### Output and Documentation Standards
 - **NEVER use emojis in code, comments, documentation, or any output**
@@ -48,21 +56,56 @@ You are an expert Go developer who follows Test-Driven Development (TDD) princip
 
 ## Code Organization
 
-### Package Structure
-**Use packages to isolate components and concerns:**
+### Hexagonal Architecture Structure (MANDATORY)
+**All Go projects MUST follow this layered architecture:**
 
 ```
 project/
-├── cmd/              # Application entry points
+├── cmd/                      # Application entry points
 │   └── myapp/
-│       └── main.go
-├── internal/         # Private application code
-│   ├── api/          # HTTP handlers and routing
-│   ├── storage/      # Database and persistence
-│   ├── service/      # Business logic
-│   └── models/       # Domain types
-├── pkg/              # Public library code (reusable)
+│       └── main.go           # Wires everything together
+├── internal/
+│   ├── adapters/             # OUTER LAYER: Infrastructure
+│   │   ├── handlers/         # HTTP/gRPC handlers (primary/driving)
+│   │   │   ├── http/
+│   │   │   └── grpc/
+│   │   └── repositories/     # Database implementations (secondary/driven)
+│   │       ├── postgres/
+│   │       └── redis/
+│   ├── core/                 # INNER LAYERS: Business Logic
+│   │   ├── domain/           # Entities, value objects, domain errors
+│   │   │   ├── user.go
+│   │   │   └── errors.go
+│   │   ├── ports/            # Interfaces (contracts)
+│   │   │   ├── repositories.go
+│   │   │   └── services.go
+│   │   └── services/         # Use cases / application logic
+│   │       └── user_service.go
+│   └── config/               # Configuration loading
+├── pkg/                      # Public library code (reusable)
+├── .go-arch-lint.yml         # Architecture enforcement rules
+├── .golangci.yml             # Linting rules
 └── go.mod
+```
+
+### Architectural Layers
+
+| Layer | Location | Depends On | Description |
+|-------|----------|------------|-------------|
+| Domain | `internal/core/domain/` | Nothing | Entities, value objects, domain errors |
+| Ports | `internal/core/ports/` | Domain | Interfaces defining contracts |
+| Services | `internal/core/services/` | Domain, Ports | Business logic / use cases |
+| Adapters | `internal/adapters/` | Ports, Domain | Infrastructure implementations |
+| Main | `cmd/` | Everything | Dependency injection, wiring |
+
+### Dependency Rules (ENFORCED BY go-arch-lint)
+```
+handlers   -> services  (handlers call services)
+services   -> ports     (services use port interfaces)
+services   -> domain    (services use domain types)
+adapters   -> ports     (adapters implement ports)
+adapters   -> domain    (adapters use domain types)
+domain     -> (nothing) (domain is pure, no dependencies)
 ```
 
 **Package Design Principles:**
@@ -71,6 +114,7 @@ project/
 - Use `pkg/` for code that could be reused in other projects
 - Package names are part of the API—choose them carefully
 - Avoid circular dependencies between packages
+- **Domain layer MUST NOT import from adapters or external packages**
 
 ### Interfaces for Testability
 **Design with interfaces to enable easy testing:**
@@ -280,34 +324,39 @@ func ProcessConcurrently(items []Item, maxWorkers int) error {
 
 ### Before You Start Coding
 1. Understand the requirement clearly
-2. Identify which packages/interfaces will be affected
-3. Plan the test cases you'll need to write
-4. Consider the API design before implementation
+2. Identify which layer the code belongs to (domain/ports/services/adapters)
+3. Identify which packages/interfaces will be affected
+4. Plan the test cases you'll need to write
+5. Consider the API design before implementation
 
 ### During Development
 1. Write the test first (RED)
 2. Implement minimal code to pass (GREEN)
 3. Refactor while keeping tests green (REFACTOR)
 4. Commit frequently with clear messages
-5. Run build, lint, and test regularly
+5. Run build, lint, architecture check, and test regularly
 
 ### Before Completing
 1. Run `go build ./...` (must pass)
 2. Run `go test ./...` (must pass)
-3. Run linter (must pass)
-4. Review function names for simplicity
-5. Check that interfaces are properly defined
-6. Verify package organization is clean
-7. Ensure error handling is proper
-8. Verify no emojis in code, comments, or documentation
+3. Run `golangci-lint run` (must pass)
+4. Run `go-arch-lint check` (must pass, if config exists)
+5. Review function names for simplicity
+6. Check that interfaces are properly defined
+7. Verify package organization follows hexagonal architecture
+8. Ensure error handling is proper
+9. Verify no emojis in code, comments, or documentation
 
 ## Code Review Checklist
 
 - [ ] All tests pass (`go test ./...`)
 - [ ] Build succeeds (`go build ./...`)
-- [ ] Linter passes (no warnings)
+- [ ] Linter passes (`golangci-lint run`)
+- [ ] Architecture check passes (`go-arch-lint check`)
 - [ ] Code follows TDD—tests written first
-- [ ] Interfaces used for dependencies
+- [ ] Code placed in correct architectural layer
+- [ ] Domain layer has no external dependencies
+- [ ] Interfaces (ports) used for dependencies
 - [ ] Function names are simple (no edge cases in names)
 - [ ] Package names are short and clear
 - [ ] Error handling is proper (no ignored errors)
@@ -384,6 +433,128 @@ func (m *MockUploader) Upload(ctx context.Context, data []byte) error {
 }
 ```
 
+## Linting and Architecture Enforcement
+
+### Required Tools
+```bash
+# Install golangci-lint
+go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+
+# Install go-arch-lint
+go install github.com/fe3dback/go-arch-lint@latest
+```
+
+### Configuration Files
+Every Go project MUST have these configuration files:
+- `.golangci.yml` - See [references/golangci.yml](references/golangci.yml)
+- `.go-arch-lint.yml` - See [references/go-arch-lint.yml](references/go-arch-lint.yml)
+
+### Running Checks
+```bash
+# Full validation (run before every commit)
+go build ./...
+go test ./...
+golangci-lint run
+go-arch-lint check
+
+# Quick architecture visualization
+go-arch-lint graph
+```
+
+### Handling Lint Errors (CRITICAL - Prevents Fix Loops)
+
+**When you encounter a linting error, STOP and think before fixing:**
+
+1. **Understand the WHY** - Read the error message completely. What problem is it preventing?
+2. **Understand the CONSEQUENCE** - What would happen if you ignored this?
+3. **Plan the FIX** - What is the correct pattern to use?
+4. **Avoid common wrong fixes** - See table below
+
+**Common Lint Errors and Correct Fixes:**
+
+| Error | WRONG Fix | CORRECT Fix |
+|-------|-----------|-------------|
+| `defer in loop` | Remove defer | Extract to helper function |
+| `defer in loop` | Move defer outside loop | Extract to helper function |
+| `error ignored` | Add `_ = err` | Handle the error or wrap and return |
+| `error ignored` | Delete the line | Check error and handle appropriately |
+| `nil map write` | Remove the write | Initialize with `make(map[K]V)` |
+| `context.TODO()` | Remove context | Pass context from caller or use `context.Background()` |
+| `context.TODO()` | Use `context.Background()` everywhere | Accept `context.Context` as first parameter |
+| `GetX() naming` | Rename to `GetterX()` | Rename to `X()` (drop Get prefix) |
+| `goroutine no cancel` | Add `return` statement | Add `ctx.Done()` check in select |
+| `interface too large` | Add more methods | Split into smaller focused interfaces |
+| `wg.Done not deferred` | Remove wg.Done() | Wrap with `defer wg.Done()` at goroutine start |
+| `string concat in loop` | Use `fmt.Sprintf` | Use `strings.Builder` |
+| `panic in library` | Remove panic | Return error instead |
+| `unsafe type assertion` | Keep as-is | Use comma-ok: `v, ok := x.(T)` |
+
+**Example - Fixing "defer in loop" correctly:**
+
+```go
+// ORIGINAL (triggers AIL001)
+for _, f := range files {
+    file, _ := os.Open(f)
+    defer file.Close()  // ERROR: defer in loop
+    process(file)
+}
+
+// WRONG FIX 1: Removing defer
+for _, f := range files {
+    file, _ := os.Open(f)
+    process(file)
+    file.Close()  // WRONG: skipped on panic or early return
+}
+
+// WRONG FIX 2: Moving defer outside
+var file *os.File
+for _, f := range files {
+    file, _ = os.Open(f)
+    process(file)
+}
+defer file.Close()  // WRONG: only closes last file
+
+// CORRECT FIX: Extract to helper function
+for _, f := range files {
+    if err := processFile(f); err != nil {
+        return err
+    }
+}
+
+func processFile(path string) error {
+    file, err := os.Open(path)
+    if err != nil {
+        return err
+    }
+    defer file.Close()  // CORRECT: closes after each iteration
+    return process(file)
+}
+```
+
+**If you find yourself in a fix loop (same error keeps appearing):**
+1. STOP making changes
+2. Re-read the original error message
+3. Check the "WRONG Fix" patterns above
+4. Ask for clarification if needed
+
+## Quick Reference
+
+| Task | Command |
+|------|---------|
+| Build | `go build ./...` |
+| Test | `go test ./...` |
+| Test with race detector | `go test -race ./...` |
+| Lint | `golangci-lint run` |
+| Lint with fix | `golangci-lint run --fix` |
+| Architecture check | `go-arch-lint check` |
+| Architecture graph | `go-arch-lint graph` |
+
+## Additional Resources
+
+- Architecture patterns: [references/architecture.md](references/architecture.md)
+- golangci-lint config: [references/golangci.yml](references/golangci.yml)
+- go-arch-lint config: [references/go-arch-lint.yml](references/go-arch-lint.yml)
+
 ---
 
-**Remember**: Write tests first, keep it simple, use interfaces for testing, organize with packages, ensure build/lint/test always pass, and never use emojis!
+**Remember**: Write tests first, follow hexagonal architecture, keep domain pure, use interfaces for dependencies, ensure build/lint/arch-check/test always pass, and never use emojis!
