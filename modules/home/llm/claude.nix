@@ -200,11 +200,10 @@ in {
           if [ -n "$branch" ]; then
             printf "%b" "''${c_bg_code}$(hex_to_ansi "${b_bg}")''${sep}"
             printf "%b" "''${c_bg_code}''${c_fg_code} ''${branch} "
-            printf "%b" "$(hex_to_ansi "${c_bg}")''${sep}''${reset}"
+            printf "%b" "$(hex_to_ansi "${c_bg}")''${sep}''${reset}\033[K"
           else
-            printf "%b" "$(hex_to_ansi "${b_bg}")''${sep}''${reset}"
+            printf "%b" "$(hex_to_ansi "${b_bg}")''${sep}''${reset}\033[K"
           fi
-          echo
         '';
         padding = 0;
         type = "command";

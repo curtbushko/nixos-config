@@ -18,7 +18,10 @@
   #---------------------------------------------------------------------
   curtbushko = {
     browsers.enable = true;
-    gamedev.enable = true;
+    gamedev = {
+      enable = true;
+      waveform.enable = true;
+    };
     gaming.enable = true;
     im.enable = true;
     k8s.enable = true;

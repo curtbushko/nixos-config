@@ -22,6 +22,7 @@ in {
     home.packages = with pkgs;
       []
       ++ (lib.optionals isLinux [
+        ardour
         audacity
         blender
         # davinci-resolve-studio Disable until https://github.com/NixOS/nixpkgs/issues/341634
@@ -29,7 +30,9 @@ in {
         gimp
         krita
         godot_4
+        lmms
         obs-studio
+        zrythm
         # Vulkan SDK
         vulkan-tools
         vulkan-headers
@@ -43,4 +46,8 @@ in {
       LD_LIBRARY_PATH = "${pkgs.vulkan-loader}/lib:${pkgs.vulkan-validation-layers}/lib\${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}";
     };
   };
+
+  imports = [
+    ./waveform.nix
+  ];
 }
