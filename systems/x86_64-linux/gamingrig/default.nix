@@ -25,7 +25,8 @@
     hardware.cpu.enable = true;
     services.cron.enable = true;
     services.llm.enable = true;
-    services.minecraft.enable = true;
+    services.minecraft.dj-server.enable = true;
+    services.minecraft.homestead.enable = true;
     services.vr.enable = true;
     services.wm.enable = true; # qt and wayland
   };

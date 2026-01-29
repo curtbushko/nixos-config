@@ -76,11 +76,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1769112782,
-        "narHash": "sha256-eyZyRHRdKK6ee6+BAk29Ru+s0UNuI0bbh4mWqO07sIQ=",
+        "lastModified": 1769519544,
+        "narHash": "sha256-OADcfhtc1bNrR1idm0j8K4qSOXz6yid5zWh7p2HCO9I=",
         "owner": "sadjow",
         "repo": "claude-code-nix",
-        "rev": "3b0daf80f588d6e068732eb19eb080a11f2448dd",
+        "rev": "fdea255c6dac5c1414ceb2674de28edc4bd13ea5",
         "type": "github"
       },
       "original": {
@@ -494,11 +494,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1768791167,
-        "narHash": "sha256-vVq5yd9w6kPPni0yZ0f+TjBnA5t1LfaYGw81+MF5zmg=",
+        "lastModified": 1769575560,
+        "narHash": "sha256-57eEzRuoplv/XHmUQfpNXmaqMN8Y5Bf4fVK/1QmTzAQ=",
         "owner": "curtbushko",
         "repo": "minecraft-servers",
-        "rev": "9f322abef9a38f52dc6fa919d5e1e1fe7c6291cb",
+        "rev": "0700c6d362cb0a8b08cc8b0af0527b43854808e2",
         "type": "github"
       },
       "original": {

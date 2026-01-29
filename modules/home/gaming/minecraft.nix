@@ -16,9 +16,10 @@ in {
     # Enable the minecraft-servers module for Prism Launcher setup
     programs.minecraft-servers = {
       enable = true;
-      # Pre-configure the D&J server in the multiplayer menu
+      # Pre-configure servers in the multiplayer menu
       serverEntries = [
         { name = "D&J Server (gamingrig)"; ip = "gamingrig:25565"; }
+        { name = "Homestead (gamingrig)"; ip = "gamingrig:25566"; }
       ];
     };
 
