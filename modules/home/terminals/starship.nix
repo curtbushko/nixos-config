@@ -31,7 +31,7 @@ in {
         };
         custom.hostname_fixed = {
           command = ''
-            h=$(hostname)
+            h=$(timeout 1s hostname 2>/dev/null || echo "unknown")
             case "$h" in
               curtbushko-X3FR7279D2) icon=" "; name="work" ;;
               gamingrig) icon=" "; name="gamingrig" ;;
@@ -55,7 +55,8 @@ in {
         };
         custom.worktree = {
           command = ''
-            git_common=$(git rev-parse --git-common-dir 2>/dev/null)
+            export GIT_OPTIONAL_LOCKS=0
+            git_common=$(timeout 1s git rev-parse --git-common-dir 2>/dev/null)
             if [ -n "$git_common" ]; then
               # In a git repository or worktree
               icon="󰊢 "
@@ -65,7 +66,7 @@ in {
                 name=$(basename "$(dirname "$git_common")")
               else
                 # In normal repo - use toplevel directory name
-                name=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)")
+                name=$(basename "$(timeout 1s git rev-parse --show-toplevel 2>/dev/null)")
               fi
             else
               # Regular directory (not a git repo)
