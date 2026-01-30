@@ -31,7 +31,7 @@ in {
         };
         custom.hostname_fixed = {
           command = ''
-            h=$(timeout 1s hostname 2>/dev/null || echo "unknown")
+            h=$(hostname)
             case "$h" in
               curtbushko-X3FR7279D2) icon=" "; name="work" ;;
               gamingrig) icon=" "; name="gamingrig" ;;
@@ -56,7 +56,7 @@ in {
         custom.worktree = {
           command = ''
             export GIT_OPTIONAL_LOCKS=0
-            git_common=$(timeout 1s git rev-parse --git-common-dir 2>/dev/null)
+            git_common=$(timeout 2s git rev-parse --git-common-dir 2>/dev/null)
             if [ -n "$git_common" ]; then
               # In a git repository or worktree
               icon="󰊢 "
