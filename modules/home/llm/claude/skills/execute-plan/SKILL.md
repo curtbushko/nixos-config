@@ -1,15 +1,19 @@
 ---
-name: executing-plans
+name: execute-plan
 description: Use when you have a written implementation plan and need to execute it. Batch execution with checkpoints for review between batches.
+user-invocable: true
+arguments: plan-file
 ---
 
-# Executing Plans
+# Execute Plan
 
 ## Core Principle
 
 **Batch execution with checkpoints for architect review.**
 
-Use when you have a written implementation plan and are executing in a session (possibly separate from planning).
+Use when you have a written implementation plan and need to execute it. Invoke with:
+- `/execute-plan path/to/plan.md`
+- Or manually load a plan and follow this process
 
 ## The Process
 
@@ -74,6 +78,14 @@ If all tasks complete:
 - Run full test suite
 - Run linter
 - Report final status
+
+## TDD and Quality Gates
+
+**IMPORTANT:** Follow these practices throughout execution:
+
+- **Test First** - Follow TDD steps exactly (write test before implementation)
+- **Quality Gates Between Batches** - Run tests and linter after each batch
+- **Never Skip Verification** - Every task must pass its verification before marking complete
 
 ## When to STOP and Ask
 
