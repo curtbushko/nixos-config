@@ -24,6 +24,7 @@ in {
       hooks = {
         SessionStart = [
           {
+            matcher = "startup|resume|clear|compact";
             hooks = [
               {
                 type = "command";
@@ -32,6 +33,16 @@ in {
                   # Ensure Go config files exist in curtbushko repos
                   if [ -x "$HOME/.claude/scripts/ensure-go-configs.sh" ]; then
                     "$HOME/.claude/scripts/ensure-go-configs.sh" "$(pwd)"
+                  fi
+                '';
+              }
+              {
+                type = "command";
+                timeout = 10;
+                command = ''
+                  # Inject skill awareness and TDD reminders
+                  if [ -x "$HOME/.claude/scripts/session-start.sh" ]; then
+                    "$HOME/.claude/scripts/session-start.sh"
                   fi
                 '';
               }
@@ -220,6 +231,9 @@ in {
 
     # Claude Code commands
     home.file.".claude/commands".source = ./claude/commands;
+
+    # Claude Code agents
+    home.file.".claude/agents".source = ./claude/agents;
 
     # Claude Code validation scripts
     home.file.".claude/scripts" = {
