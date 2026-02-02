@@ -8,6 +8,10 @@
   ids.gids.nixbld = 30000;
   # Enable touch for sudo
   security.pam.services.sudo_local.touchIdAuth = true;
+  # Increase sudo timeout to 30 minutes
+  security.sudo.extraConfig = ''
+    Defaults timestamp_timeout=30
+  '';
 
   # Keep in async with vm-shared.nix. (todo: pull this out into a file)
   nix = {
