@@ -22,6 +22,7 @@
     shells.enable = true;
     terminals.enable = true;
     tools.enable = true;
+    llm.enable = true;
     theme = {
       name = "gruvbox-material";
       wallpaper = "green-pasture.jpg";
@@ -40,6 +41,7 @@
     pkgs.python312
     pkgs.terraform
     pkgs.kubernetes-helm
+    pkgs.awscli2
   ];
 
   #---------------------------------------------------------------------
