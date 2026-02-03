@@ -170,7 +170,27 @@ in {
           else
             repo=$(basename "$(dirname "$git_common")")
           fi
-          model=$(echo "$input" | jq -r '.model.display_name')
+          raw_model=$(echo "$input" | jq -r '.model.display_name')
+          # Extract model family and version from various formats:
+          # - "global.anthropic.claude-sonnet-4-5-20250929-v1:0" -> "sonnet-4.5"
+          # - "claude-opus-4-5-20251101" -> "opus-4.5"
+          # - "claude-3-5-sonnet-20241022" -> "sonnet-3.5"
+          model=$(echo "$raw_model" | sed -E '
+            # Handle claude-X-Y-family format (e.g., claude-3-5-sonnet)
+            s/.*claude-([0-9]+)-([0-9]+)-([a-z]+).*/\3-\1.\2/;
+            t done;
+            # Handle family-X-Y format (e.g., claude-sonnet-4-5)
+            s/.*claude-([a-z]+)-([0-9]+)-([0-9]+).*/\1-\2.\3/;
+            t done;
+            # Handle family-X format (e.g., claude-sonnet-4)
+            s/.*claude-([a-z]+)-([0-9]+)[^0-9].*/\1-\2/;
+            t done;
+            :done
+          ')
+          # Fallback: truncate to 10 chars if extraction failed
+          if [ "$model" = "$raw_model" ] || [ -z "$model" ]; then
+            model=$(echo "$raw_model" | cut -c1-10)
+          fi
           width=12
           len=''${#model}
           pad=$(( (width - len) / 2 ))
