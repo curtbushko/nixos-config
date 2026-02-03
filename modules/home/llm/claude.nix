@@ -164,13 +164,21 @@ in {
         command = ''
           input=$(cat)
           branch=$(git branch --show-current 2>/dev/null)
+          aws_icon=" "
+          default_icon="󱚝 "
+          # Select icon based on whether model is from AWS Bedrock
+          raw_model=$(echo "$input" | jq -r '.model.display_name')
+          if echo "$raw_model" | grep -qE '\.anthropic\.' ; then
+            icon="$aws_icon"
+          else
+            icon="$default_icon"
+          fi
           git_common=$(git rev-parse --git-common-dir 2>/dev/null)
           if [ "$git_common" = ".git" ]; then
             repo=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)")
           else
             repo=$(basename "$(dirname "$git_common")")
           fi
-          raw_model=$(echo "$input" | jq -r '.model.display_name')
           # Extract model family and version from various formats:
           # - "global.anthropic.claude-sonnet-4-5-20250929-v1:0" -> "sonnet-4.5"
           # - "claude-opus-4-5-20251101" -> "opus-4.5"
@@ -225,7 +233,7 @@ in {
 
           # Build the statusline
           printf "%b""''${a_bg_code}''${a_fg_code}▓▒░"
-          printf "%b" "''${a_bg_code}''${a_fg_code} 󱚝 ''${model_padded}"
+          printf "%b" "''${a_bg_code}''${a_fg_code} ''${icon}''${model_padded}"
           printf "%b""''${b_bg_code}$(hex_to_ansi "${a_bg}")''${sep}"
           printf "%b""''${b_bg_code}''${b_fg_code}󰊢 ''${repo:-$(basename "$(echo "$input" | jq -r '.workspace.current_dir')")} "
           if [ -n "$branch" ]; then
