@@ -5,6 +5,10 @@
 # Usage: planner.sh [output_file]
 #        Default output: PLAN.md
 #
+# Modes:
+#   - Create: If file doesn't exist, create new feature
+#   - Append: If file exists, add scenarios to existing feature
+#
 
 set -euo pipefail
 
@@ -21,6 +25,13 @@ NC='\033[0m' # No Color
 
 # Output file
 OUTPUT_FILE="${1:-PLAN.md}"
+
+# State variables for append mode
+EXISTING_FEATURE=""
+EXISTING_USER_STORY=""
+EXISTING_BACKGROUND=""
+EXISTING_SCENARIOS=()
+EXISTING_NOTES=""
 
 # Print colored output
 print_header() {
@@ -109,111 +120,170 @@ show_steps_preview() {
     fi
 }
 
-# Main script
-main() {
-    print_header "BDD Feature Planner"
+# Parse existing PLAN.md file
+parse_existing_file() {
+    local file="$1"
+    local current_section=""
+    local current_scenario_name=""
+    local current_given=""
+    local current_when=""
+    local current_then=""
+    local in_scenario=false
 
-    echo -e "${BOLD}Output:${NC} ${CYAN}${OUTPUT_FILE}${NC}"
-
-    # Check if file exists
-    if [[ -f "$OUTPUT_FILE" ]]; then
-        print_warning "File already exists: ${OUTPUT_FILE}"
-        echo -en "${BOLD}${YELLOW}▸${NC} Overwrite? ${DIM}(y/n)${NC}: ${CYAN}"
-        read -r confirm
-        echo -en "${NC}"
-        if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
-            echo -e "${DIM}Aborted.${NC}"
-            exit 0
-        fi
-    fi
-
-    # Feature name
-    print_section "Feature Definition"
-    feature_name=$(prompt "Feature name")
-
-    if [[ -z "$feature_name" ]]; then
-        print_error "Feature name is required!"
-        exit 1
-    fi
-
-    # User story (optional)
-    print_section "User Story ${DIM}(optional)${NC}"
-    print_info "Describe WHO wants WHAT and WHY"
-    as_a=$(prompt_optional "As a")
-    i_want=$(prompt_optional "I want")
-    so_that=$(prompt_optional "So that")
-
-    # Background (optional)
-    print_section "Background ${DIM}(optional)${NC}"
-    print_info "Steps that run before EACH scenario"
-    background_steps=$(collect_steps "Given" "${BLUE}")
-    show_steps_preview "background" "$background_steps" "${BLUE}"
-
-    # Scenarios
-    scenarios=()
-    scenario_num=1
-
-    while true; do
-        print_section "Scenario ${scenario_num}"
-
-        scenario_name=$(prompt "Scenario name")
-        if [[ -z "$scenario_name" ]]; then
-            print_warning "Scenario name required. Try again."
+    while IFS= read -r line || [[ -n "$line" ]]; do
+        # Feature line
+        if [[ "$line" =~ ^Feature:[[:space:]]*(.*) ]]; then
+            EXISTING_FEATURE="${BASH_REMATCH[1]}"
             continue
         fi
 
-        echo ""
-        echo -e "${BOLD}${BLUE}Given${NC} ${DIM}(preconditions/context)${NC}"
-        given_steps=$(collect_steps "Given" "${BLUE}")
-        show_steps_preview "Given" "$given_steps" "${BLUE}"
-
-        echo ""
-        echo -e "${BOLD}${YELLOW}When${NC} ${DIM}(actions performed)${NC}"
-        when_steps=$(collect_steps "When" "${YELLOW}")
-        show_steps_preview "When" "$when_steps" "${YELLOW}"
-
-        echo ""
-        echo -e "${BOLD}${GREEN}Then${NC} ${DIM}(expected outcomes)${NC}"
-        then_steps=$(collect_steps "Then" "${GREEN}")
-        show_steps_preview "Then" "$then_steps" "${GREEN}"
-
-        # Store scenario
-        scenarios+=("${scenario_name}|${given_steps}|${when_steps}|${then_steps}")
-
-        echo ""
-        echo -en "${BOLD}${CYAN}▸${NC} Add another scenario? ${DIM}(y/n)${NC}: ${CYAN}"
-        read -r add_more
-        echo -en "${NC}"
-        if [[ "$add_more" != "y" && "$add_more" != "Y" ]]; then
-            break
+        # User story lines
+        if [[ "$line" =~ ^[[:space:]]*As\ a[[:space:]]+(.*) ]]; then
+            EXISTING_USER_STORY+="As a ${BASH_REMATCH[1]}"$'\n'
+            continue
+        fi
+        if [[ "$line" =~ ^[[:space:]]*I\ want[[:space:]]+(.*) ]]; then
+            EXISTING_USER_STORY+="I want ${BASH_REMATCH[1]}"$'\n'
+            continue
+        fi
+        if [[ "$line" =~ ^[[:space:]]*So\ that[[:space:]]+(.*) ]]; then
+            EXISTING_USER_STORY+="So that ${BASH_REMATCH[1]}"$'\n'
+            continue
         fi
 
-        ((scenario_num++))
+        # Background section
+        if [[ "$line" =~ ^[[:space:]]*Background: ]]; then
+            current_section="background"
+            continue
+        fi
+
+        # Scenario section
+        if [[ "$line" =~ ^[[:space:]]*Scenario:[[:space:]]*(.*) ]]; then
+            # Save previous scenario if exists
+            if [[ -n "$current_scenario_name" ]]; then
+                EXISTING_SCENARIOS+=("${current_scenario_name}|${current_given}|${current_when}|${current_then}")
+            fi
+            current_scenario_name="${BASH_REMATCH[1]}"
+            current_given=""
+            current_when=""
+            current_then=""
+            current_section="scenario"
+            in_scenario=true
+            continue
+        fi
+
+        # Notes
+        if [[ "$line" =~ ^[[:space:]]*#[[:space:]]*Note:[[:space:]]*(.*) ]]; then
+            EXISTING_NOTES+="${BASH_REMATCH[1]}"$'\n'
+            continue
+        fi
+
+        # Given/When/Then/And steps
+        if [[ "$current_section" == "background" ]]; then
+            if [[ "$line" =~ ^[[:space:]]*(Given|And)[[:space:]]+(.*) ]]; then
+                EXISTING_BACKGROUND+="${BASH_REMATCH[2]}"$'\n'
+            fi
+        elif [[ "$current_section" == "scenario" ]]; then
+            if [[ "$line" =~ ^[[:space:]]*Given[[:space:]]+(.*) ]]; then
+                current_given+="${BASH_REMATCH[1]}"$'\n'
+                current_section="given"
+            elif [[ "$line" =~ ^[[:space:]]*When[[:space:]]+(.*) ]]; then
+                current_when+="${BASH_REMATCH[1]}"$'\n'
+                current_section="when"
+            elif [[ "$line" =~ ^[[:space:]]*Then[[:space:]]+(.*) ]]; then
+                current_then+="${BASH_REMATCH[1]}"$'\n'
+                current_section="then"
+            elif [[ "$line" =~ ^[[:space:]]*And[[:space:]]+(.*) ]]; then
+                case "$current_section" in
+                    given) current_given+="${BASH_REMATCH[1]}"$'\n' ;;
+                    when) current_when+="${BASH_REMATCH[1]}"$'\n' ;;
+                    then) current_then+="${BASH_REMATCH[1]}"$'\n' ;;
+                esac
+            fi
+        elif [[ "$current_section" == "given" || "$current_section" == "when" || "$current_section" == "then" ]]; then
+            if [[ "$line" =~ ^[[:space:]]*Given[[:space:]]+(.*) ]]; then
+                current_given+="${BASH_REMATCH[1]}"$'\n'
+                current_section="given"
+            elif [[ "$line" =~ ^[[:space:]]*When[[:space:]]+(.*) ]]; then
+                current_when+="${BASH_REMATCH[1]}"$'\n'
+                current_section="when"
+            elif [[ "$line" =~ ^[[:space:]]*Then[[:space:]]+(.*) ]]; then
+                current_then+="${BASH_REMATCH[1]}"$'\n'
+                current_section="then"
+            elif [[ "$line" =~ ^[[:space:]]*And[[:space:]]+(.*) ]]; then
+                case "$current_section" in
+                    given) current_given+="${BASH_REMATCH[1]}"$'\n' ;;
+                    when) current_when+="${BASH_REMATCH[1]}"$'\n' ;;
+                    then) current_then+="${BASH_REMATCH[1]}"$'\n' ;;
+                esac
+            fi
+        fi
+    done < "$file"
+
+    # Save last scenario
+    if [[ -n "$current_scenario_name" ]]; then
+        EXISTING_SCENARIOS+=("${current_scenario_name}|${current_given}|${current_when}|${current_then}")
+    fi
+}
+
+# Display existing feature summary
+show_existing_summary() {
+    print_section "Existing Feature"
+
+    echo -e "${BOLD}Feature:${NC} ${CYAN}${EXISTING_FEATURE}${NC}"
+
+    if [[ -n "$EXISTING_USER_STORY" ]]; then
+        echo -e "${DIM}$(echo "$EXISTING_USER_STORY" | head -3 | sed 's/^/  /')${NC}"
+    fi
+
+    if [[ -n "$EXISTING_BACKGROUND" ]]; then
+        local bg_count=$(echo "$EXISTING_BACKGROUND" | grep -c '^' || true)
+        echo -e "${BLUE}Background:${NC} ${DIM}${bg_count} step(s)${NC}"
+    fi
+
+    echo ""
+    echo -e "${BOLD}Existing Scenarios:${NC}"
+    local i=1
+    for scenario_data in "${EXISTING_SCENARIOS[@]}"; do
+        IFS='|' read -r name given when then <<< "$scenario_data"
+        local given_count=$(echo "$given" | grep -c '^' || true)
+        local when_count=$(echo "$when" | grep -c '^' || true)
+        local then_count=$(echo "$then" | grep -c '^' || true)
+        echo -e "  ${MAGENTA}${i}.${NC} ${name}"
+        echo -e "     ${DIM}Given:${given_count} When:${when_count} Then:${then_count}${NC}"
+        ((i++))
     done
 
-    # Notes (optional)
-    print_section "Implementation Notes ${DIM}(optional)${NC}"
-    print_info "Hints for the developer implementing this feature"
-    notes=$(collect_steps "Note" "${MAGENTA}")
-    show_steps_preview "note" "$notes" "${MAGENTA}"
+    if [[ -n "$EXISTING_NOTES" ]]; then
+        local note_count=$(echo "$EXISTING_NOTES" | grep -c '^' || true)
+        echo ""
+        echo -e "${DIM}Notes: ${note_count} note(s)${NC}"
+    fi
+}
 
-    # Generate the feature file
-    print_section "Generating Feature File"
+# Write the complete feature file
+write_feature_file() {
+    local feature_name="$1"
+    local user_story="$2"
+    local background="$3"
+    local notes="$4"
+    shift 4
+    local scenarios=("$@")
 
     {
         echo "Feature: ${feature_name}"
 
         # User story
-        if [[ -n "$as_a" || -n "$i_want" || -n "$so_that" ]]; then
-            [[ -n "$as_a" ]] && echo "  As a ${as_a}"
-            [[ -n "$i_want" ]] && echo "  I want ${i_want}"
-            [[ -n "$so_that" ]] && echo "  So that ${so_that}"
+        if [[ -n "$user_story" ]]; then
+            echo "$user_story" | while IFS= read -r line; do
+                [[ -n "$line" ]] && echo "  ${line}"
+            done
         fi
 
         echo ""
 
         # Background
-        if [[ -n "$background_steps" ]]; then
+        if [[ -n "$background" ]]; then
             echo "  Background:"
             first=true
             while IFS= read -r step; do
@@ -224,7 +294,7 @@ main() {
                 else
                     echo "    And ${step}"
                 fi
-            done <<< "$background_steps"
+            done <<< "$background"
             echo ""
         fi
 
@@ -282,14 +352,14 @@ main() {
         fi
 
     } > "$OUTPUT_FILE"
+}
 
-    echo ""
-    print_success "Created: ${OUTPUT_FILE}"
+# Show syntax-highlighted preview
+show_preview() {
     echo ""
     echo -e "${BOLD}${CYAN}Preview:${NC}"
     echo -e "${DIM}────────────────────────────────────────${NC}"
 
-    # Syntax highlighted preview
     while IFS= read -r line; do
         if [[ "$line" =~ ^Feature: ]]; then
             echo -e "${BOLD}${CYAN}${line}${NC}"
@@ -314,17 +384,207 @@ main() {
         else
             echo "$line"
         fi
-    done < <(head -40 "$OUTPUT_FILE")
+    done < <(head -50 "$OUTPUT_FILE")
 
     line_count=$(wc -l < "$OUTPUT_FILE")
-    if [[ $line_count -gt 40 ]]; then
+    if [[ $line_count -gt 50 ]]; then
         echo -e "${DIM}...${NC}"
         echo -e "${DIM}(${line_count} total lines)${NC}"
     fi
 
     echo -e "${DIM}────────────────────────────────────────${NC}"
+}
+
+# Collect new scenarios
+collect_scenarios() {
+    local start_num="${1:-1}"
+    local scenarios=()
+    local scenario_num=$start_num
+
+    while true; do
+        print_section "Scenario ${scenario_num}"
+
+        scenario_name=$(prompt "Scenario name")
+        if [[ -z "$scenario_name" ]]; then
+            print_warning "Scenario name required. Try again."
+            continue
+        fi
+
+        echo ""
+        echo -e "${BOLD}${BLUE}Given${NC} ${DIM}(preconditions/context)${NC}"
+        given_steps=$(collect_steps "Given" "${BLUE}")
+        show_steps_preview "Given" "$given_steps" "${BLUE}"
+
+        echo ""
+        echo -e "${BOLD}${YELLOW}When${NC} ${DIM}(actions performed)${NC}"
+        when_steps=$(collect_steps "When" "${YELLOW}")
+        show_steps_preview "When" "$when_steps" "${YELLOW}"
+
+        echo ""
+        echo -e "${BOLD}${GREEN}Then${NC} ${DIM}(expected outcomes)${NC}"
+        then_steps=$(collect_steps "Then" "${GREEN}")
+        show_steps_preview "Then" "$then_steps" "${GREEN}"
+
+        # Store scenario
+        scenarios+=("${scenario_name}|${given_steps}|${when_steps}|${then_steps}")
+
+        echo ""
+        echo -en "${BOLD}${CYAN}▸${NC} Add another scenario? ${DIM}(y/n)${NC}: ${CYAN}"
+        read -r add_more
+        echo -en "${NC}"
+        if [[ "$add_more" != "y" && "$add_more" != "Y" ]]; then
+            break
+        fi
+
+        ((scenario_num++))
+    done
+
+    # Return scenarios
+    printf '%s\n' "${scenarios[@]}"
+}
+
+# Append mode - add scenarios to existing file
+append_mode() {
+    print_header "BDD Feature Planner (Append Mode)"
+
+    echo -e "${BOLD}File:${NC} ${CYAN}${OUTPUT_FILE}${NC}"
+
+    # Parse existing file
+    parse_existing_file "$OUTPUT_FILE"
+
+    # Show summary
+    show_existing_summary
+
+    echo ""
+    echo -en "${BOLD}${CYAN}▸${NC} Add new scenarios to this feature? ${DIM}(y/n)${NC}: ${CYAN}"
+    read -r confirm
+    echo -en "${NC}"
+
+    if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
+        echo -e "${DIM}Aborted.${NC}"
+        exit 0
+    fi
+
+    # Collect new scenarios
+    local start_num=$((${#EXISTING_SCENARIOS[@]} + 1))
+    local new_scenarios_raw
+    new_scenarios_raw=$(collect_scenarios "$start_num")
+
+    # Parse new scenarios into array
+    local new_scenarios=()
+    while IFS= read -r line; do
+        [[ -n "$line" ]] && new_scenarios+=("$line")
+    done <<< "$new_scenarios_raw"
+
+    # Ask about adding notes
+    print_section "Additional Notes ${DIM}(optional)${NC}"
+    print_info "Add more implementation hints"
+    local new_notes
+    new_notes=$(collect_steps "Note" "${MAGENTA}")
+
+    # Combine notes
+    local combined_notes="$EXISTING_NOTES"
+    if [[ -n "$new_notes" ]]; then
+        combined_notes+="$new_notes"
+    fi
+
+    # Combine all scenarios
+    local all_scenarios=("${EXISTING_SCENARIOS[@]}" "${new_scenarios[@]}")
+
+    # Reconstruct user story for writing
+    local user_story=""
+    if [[ -n "$EXISTING_USER_STORY" ]]; then
+        user_story="$EXISTING_USER_STORY"
+    fi
+
+    # Write the file
+    print_section "Updating ${OUTPUT_FILE}"
+    write_feature_file "$EXISTING_FEATURE" "$user_story" "$EXISTING_BACKGROUND" "$combined_notes" "${all_scenarios[@]}"
+
+    echo ""
+    print_success "Updated: ${OUTPUT_FILE}"
+    print_success "Added ${#new_scenarios[@]} new scenario(s)"
+    print_info "Total scenarios: ${#all_scenarios[@]}"
+
+    show_preview
+
     echo ""
     echo -e "${GREEN}Ready to use with ${BOLD}/go-team${NC}${GREEN} or ${BOLD}/zig-team${NC}"
+}
+
+# Create mode - create new file
+create_mode() {
+    print_header "BDD Feature Planner (Create Mode)"
+
+    echo -e "${BOLD}Output:${NC} ${CYAN}${OUTPUT_FILE}${NC}"
+
+    # Feature name
+    print_section "Feature Definition"
+    feature_name=$(prompt "Feature name")
+
+    if [[ -z "$feature_name" ]]; then
+        print_error "Feature name is required!"
+        exit 1
+    fi
+
+    # User story (optional)
+    print_section "User Story ${DIM}(optional)${NC}"
+    print_info "Describe WHO wants WHAT and WHY"
+    as_a=$(prompt_optional "As a")
+    i_want=$(prompt_optional "I want")
+    so_that=$(prompt_optional "So that")
+
+    # Build user story string
+    local user_story=""
+    [[ -n "$as_a" ]] && user_story+="As a ${as_a}"$'\n'
+    [[ -n "$i_want" ]] && user_story+="I want ${i_want}"$'\n'
+    [[ -n "$so_that" ]] && user_story+="So that ${so_that}"$'\n'
+
+    # Background (optional)
+    print_section "Background ${DIM}(optional)${NC}"
+    print_info "Steps that run before EACH scenario"
+    background_steps=$(collect_steps "Given" "${BLUE}")
+    show_steps_preview "background" "$background_steps" "${BLUE}"
+
+    # Collect scenarios
+    local scenarios_raw
+    scenarios_raw=$(collect_scenarios 1)
+
+    # Parse scenarios into array
+    local scenarios=()
+    while IFS= read -r line; do
+        [[ -n "$line" ]] && scenarios+=("$line")
+    done <<< "$scenarios_raw"
+
+    # Notes (optional)
+    print_section "Implementation Notes ${DIM}(optional)${NC}"
+    print_info "Hints for the developer implementing this feature"
+    notes=$(collect_steps "Note" "${MAGENTA}")
+    show_steps_preview "note" "$notes" "${MAGENTA}"
+
+    # Write the file
+    print_section "Generating ${OUTPUT_FILE}"
+    write_feature_file "$feature_name" "$user_story" "$background_steps" "$notes" "${scenarios[@]}"
+
+    echo ""
+    print_success "Created: ${OUTPUT_FILE}"
+
+    show_preview
+
+    echo ""
+    echo -e "${GREEN}Ready to use with ${BOLD}/go-team${NC}${GREEN} or ${BOLD}/zig-team${NC}"
+}
+
+# Main script
+main() {
+    # Check if file exists
+    if [[ -f "$OUTPUT_FILE" ]]; then
+        # File exists - append mode
+        append_mode
+    else
+        # File doesn't exist - create mode
+        create_mode
+    fi
 }
 
 main "$@"
