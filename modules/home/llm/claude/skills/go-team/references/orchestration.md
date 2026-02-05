@@ -78,16 +78,25 @@ if PLAN_CONTENT is empty:
     error "Plan file not found or empty: {PLAN_FILE}"
 ```
 
-**Expected Plan File Format:**
-```markdown
-# Feature: [Short Name]
+**Expected Plan File Format (BDD/Gherkin):**
+```gherkin
+Feature: [Short Name]
+  As a [role]
+  I want [capability]
+  So that [benefit]
 
-## Description
-[Detailed description]
+  Background:
+    Given [common precondition]
 
-## Acceptance Criteria
-- [ ] [Criterion 1]
-- [ ] [Criterion 2]
+  Scenario: [Behavior 1]
+    Given [context]
+    When [action]
+    Then [outcome]
+
+  Scenario: [Behavior 2]
+    Given [context]
+    When [action]
+    Then [outcome]
 ```
 
 ---
@@ -114,19 +123,28 @@ Task tool call:
 
     ### Your Mission
 
-    1. **Parse the Plan**
-       - Extract feature name from `# Feature:` heading
-       - Extract description from `## Description` section
-       - Extract acceptance criteria from `## Acceptance Criteria` section
-       - Note any additional context from `## Notes` section
+    1. **Parse the Gherkin Feature File**
+       - Extract feature name from `Feature:` line
+       - Extract user story from `As a / I want / So that` (if present)
+       - Extract `Background:` steps (common preconditions)
+       - Extract each `Scenario:` with its Given/When/Then steps
+       - Note any `# Note:` comments for implementation hints
 
-    2. **Explore the Codebase**
+    2. **Map Scenarios to Implementation Tasks**
+       - Each Scenario typically becomes one or more tests
+       - Group related scenarios that test the same component
+       - Background steps inform test setup/fixtures
+       - Given = test precondition/setup
+       - When = action under test
+       - Then = assertion
+
+    3. **Explore the Codebase**
        - Identify existing patterns and conventions
        - Find related code that this feature will integrate with
        - Understand the current architecture (expect hexagonal/onion)
        - Locate test patterns and helpers
 
-    3. **Identify Architectural Layer**
+    4. **Identify Architectural Layer**
        Determine which layers this feature touches:
        - `internal/core/domain/` - Entities, value objects, domain errors
        - `internal/core/ports/` - Interface definitions
@@ -134,22 +152,34 @@ Task tool call:
        - `internal/adapters/handlers/` - HTTP/gRPC handlers
        - `internal/adapters/repositories/` - Database implementations
 
-    4. **Break Down into Tasks**
+    5. **Break Down into Tasks**
        Create tasks that are:
        - 2-5 minutes each
        - Follow TDD (test file created before implementation)
        - Have clear dependencies
        - Include exact file paths
+       - Reference specific scenarios they implement
 
-    4. **Output Format**
+    6. **Output Format**
        Return YAML with this structure:
 
        ```yaml
        feature: {FEATURE}
+       user_story: "As a ... I want ... So that ..."
+       background_setup: "[common test setup from Background:]"
+
+       scenarios:
+         - name: "[Scenario name]"
+           given: ["step 1", "step 2"]
+           when: ["action"]
+           then: ["outcome 1", "outcome 2"]
+
        tasks:
          - id: 1
            name: "[task name]"
            layer: [domain|ports|services|adapters]
+           scenarios_covered:
+             - "[Scenario name this task implements]"
            files:
              create:
                - path: [exact/path]
@@ -157,11 +187,15 @@ Task tool call:
              modify:
                - path: [exact/path]
                  changes: [what]
-           acceptance_criteria:
-             - [criterion this task addresses]
+           test_cases:
+             - scenario: "[Scenario name]"
+               test_name: "Test[ScenarioName]"
+               given_setup: "[how to implement Given steps]"
+               when_action: "[how to implement When step]"
+               then_assert: "[how to implement Then assertions]"
            dependencies: []
            tdd_steps:
-             - step: "Write failing test"
+             - step: "Write failing test for scenario"
                file: [test file]
                description: [what test verifies]
              - step: "Implement"

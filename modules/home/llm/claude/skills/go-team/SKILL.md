@@ -112,78 +112,142 @@ The Go Team skill implements features you define. You provide the WHAT (feature 
 
 ---
 
-## Plan File Format (PLAN.md)
+## Plan File Format (PLAN.md) - BDD/Gherkin
 
-The plan file should contain the feature specification in this format:
+The plan file uses **BDD (Behavior-Driven Development)** format with Gherkin syntax.
+This provides executable specifications that map directly to tests.
 
-```markdown
-# Feature: [Short Name]
+```gherkin
+Feature: [Short descriptive name]
+  As a [role/persona]
+  I want [capability]
+  So that [benefit]
 
-## Description
+  Background:
+    Given [common precondition for all scenarios]
 
-[Detailed description of what to build]
+  Scenario: [Specific behavior being tested]
+    Given [initial context/state]
+    And [additional context]
+    When [action taken]
+    And [additional action]
+    Then [expected outcome]
+    And [additional outcome]
 
-## Acceptance Criteria
+  Scenario: [Another behavior]
+    Given [context]
+    When [action]
+    Then [outcome]
 
-- [ ] [Criterion 1]
-- [ ] [Criterion 2]
-- [ ] [Criterion 3]
-
-## Notes (optional)
-
-[Any additional context, constraints, or references]
+  # Optional: Notes section for implementation hints
+  # Note: Use existing domain types from internal/core/domain/
+  # Note: Token secret should come from config
 ```
+
+### Gherkin Keywords
+
+| Keyword | Purpose |
+|---------|---------|
+| `Feature:` | High-level description of the capability |
+| `As a / I want / So that` | User story format (optional but recommended) |
+| `Background:` | Steps run before each scenario |
+| `Scenario:` | Specific testable behavior |
+| `Given` | Precondition/initial state |
+| `When` | Action being performed |
+| `Then` | Expected outcome |
+| `And` / `But` | Additional steps (continues previous keyword type) |
 
 ### Example PLAN.md
 
-```markdown
-# Feature: JWT Authentication
+```gherkin
+Feature: JWT Authentication
+  As an API consumer
+  I want requests to be authenticated via JWT
+  So that only authorized users can access protected endpoints
 
-## Description
+  Background:
+    Given the JWT secret is configured
+    And the authentication middleware is enabled
 
-Add JWT authentication middleware for API endpoints. The middleware should
-validate tokens, extract user claims, and attach user context to requests.
-Should integrate with existing HTTP handler chain.
+  Scenario: Valid token grants access
+    Given I have a valid JWT token for user "alice"
+    When I make a request to a protected endpoint
+    Then the request should succeed
+    And the user context should contain user ID "alice"
 
-## Acceptance Criteria
+  Scenario: Expired token is rejected
+    Given I have an expired JWT token
+    When I make a request to a protected endpoint
+    Then I should receive a 401 Unauthorized response
+    And the response body should contain error "token expired"
 
-- [ ] Validate JWT signature using configured secret
-- [ ] Reject expired tokens with 401 response
-- [ ] Reject malformed tokens with 401 response
-- [ ] Extract user ID from token claims
-- [ ] Attach user to request context
-- [ ] Return JSON error body for unauthorized requests
-- [ ] Skip auth for health check endpoints
+  Scenario: Malformed token is rejected
+    Given I have a malformed JWT token "not-a-valid-jwt"
+    When I make a request to a protected endpoint
+    Then I should receive a 401 Unauthorized response
+    And the response body should contain error "invalid token"
 
-## Notes
+  Scenario: Missing token is rejected
+    Given I make a request without an Authorization header
+    When I access a protected endpoint
+    Then I should receive a 401 Unauthorized response
+    And the response body should contain error "missing token"
 
-- Use existing `internal/core/domain/user.go` for User type
-- Token secret should come from config, not hardcoded
+  Scenario: Health check bypasses authentication
+    Given I make a request without an Authorization header
+    When I access the "/health" endpoint
+    Then the request should succeed
+
+  # Note: Use existing `internal/core/domain/user.go` for User type
+  # Note: Token secret should come from config, not hardcoded
+  # Note: Consider using godog for BDD test execution
 ```
+
+### Benefits of BDD Format
+
+1. **Each Scenario = One Test** - Direct mapping to test cases
+2. **Executable** - Can use `godog` to run Gherkin specs directly
+3. **Precise** - Given/When/Then forces clear thinking about preconditions and outcomes
+4. **Stakeholder Readable** - Non-technical team members can review specs
 
 ---
 
 ## Phase 1: Task Manager Agent
 
-**Purpose:** Read the plan file, explore the codebase, and create a detailed task breakdown.
+**Purpose:** Read the BDD feature file, explore the codebase, and create a detailed task breakdown.
 
 ### Dispatch Template
 
 ```
 ## Task Manager: Plan Feature from {PLAN_FILE}
 
-### Plan File Contents
+### Plan File Contents (Gherkin/BDD)
 {PLAN_CONTENT}
 
 ### Your Mission
 
-1. **Explore the Codebase**
+1. **Parse the Gherkin Feature File**
+   - Extract feature name from `Feature:` line
+   - Extract user story from `As a / I want / So that` (if present)
+   - Extract `Background:` steps (common preconditions for all scenarios)
+   - Extract each `Scenario:` with its Given/When/Then steps
+   - Note any `# Note:` comments for implementation hints
+
+2. **Map Scenarios to Implementation**
+   - Each Scenario becomes one or more test cases
+   - `Background:` steps become test setup/fixtures
+   - `Given` = test precondition/setup
+   - `When` = action under test
+   - `Then` = assertion
+   - Consider using godog for BDD test execution
+
+3. **Explore the Codebase**
    - Identify existing patterns and conventions
    - Find related code that this feature will integrate with
    - Understand the current architecture (expect hexagonal/onion)
    - Locate test patterns and helpers
 
-2. **Identify Architectural Layer**
+4. **Identify Architectural Layer**
    Determine which layers this feature touches:
    - `internal/core/domain/` - Entities, value objects, domain errors
    - `internal/core/ports/` - Interface definitions
@@ -191,18 +255,27 @@ Should integrate with existing HTTP handler chain.
    - `internal/adapters/handlers/` - HTTP/gRPC handlers
    - `internal/adapters/repositories/` - Database implementations
 
-3. **Break Down into Tasks**
+5. **Break Down into Tasks**
    Create tasks that are:
    - 2-5 minutes each
    - Follow TDD (test file created before implementation)
    - Have clear dependencies
    - Include exact file paths
+   - Reference specific scenarios they implement
 
-4. **Output Format**
+6. **Output Format**
 
 ```yaml
 feature: {{feature}}
-description: {{description}}
+user_story: "As a ... I want ... So that ..."
+background_setup: "[common test setup from Background:]"
+
+scenarios:
+  - name: "[Scenario name]"
+    given: ["step 1", "step 2"]
+    when: ["action"]
+    then: ["outcome 1", "outcome 2"]
+
 architecture_analysis:
   layers_affected:
     - layer: [domain|ports|services|adapters]
@@ -219,6 +292,8 @@ tasks:
   - id: 1
     name: "[descriptive task name]"
     layer: [domain|ports|services|adapters]
+    scenarios_covered:
+      - "[Scenario name this task implements]"
     files:
       create:
         - path: [exact/path/to/file.go]
@@ -228,11 +303,15 @@ tasks:
       modify:
         - path: [exact/path/to/existing.go]
           changes: [what changes]
-    acceptance_criteria:
-      - [specific criterion this task addresses]
+    test_cases:
+      - scenario: "[Scenario name]"
+        test_name: "Test[ScenarioInPascalCase]"
+        given_setup: "[how to implement Given steps]"
+        when_action: "[how to implement When step]"
+        then_assert: "[how to implement Then assertions]"
     dependencies: []  # task IDs this depends on
     tdd_steps:
-      - step: "Write failing test"
+      - step: "Write failing test for scenario"
         file: [test file path]
         description: [what the test verifies]
       - step: "Implement minimal code"
@@ -246,6 +325,8 @@ tasks:
 
   - id: 2
     name: "[next task]"
+    scenarios_covered:
+      - "[Another scenario]"
     dependencies: [1]  # depends on task 1
     ...
 
@@ -257,6 +338,7 @@ execution_order: [1, 2, 3, ...]  # respecting dependencies
 - Tasks MUST follow hexagonal architecture
 - Domain layer MUST NOT import from adapters
 - Each task MUST have a test file
+- Each scenario MUST map to at least one test case
 - Dependencies flow: handlers -> services -> domain
 - Use existing patterns found in codebase
 ```
@@ -292,9 +374,17 @@ Dependencies completed: {{task.dependencies}}
 {{/each}}
 {{/if}}
 
-### Acceptance Criteria for This Task
-{{#each task.acceptance_criteria}}
-- [ ] {{this}}
+### Scenarios to Implement
+{{#each task.scenarios_covered}}
+- {{this}}
+{{/each}}
+
+### Test Cases (from Gherkin scenarios)
+{{#each task.test_cases}}
+**{{this.scenario}}** → `{{this.test_name}}`
+- Setup (Given): {{this.given_setup}}
+- Action (When): {{this.when_action}}
+- Assert (Then): {{this.then_assert}}
 {{/each}}
 
 ### TDD Steps
@@ -452,9 +542,14 @@ blockers:
 Feature: {{feature}}
 Task: {{task.name}}
 
-### Acceptance Criteria
-{{#each task.acceptance_criteria}}
-- [ ] {{this}}
+### Scenarios This Task Must Implement
+{{#each task.scenarios_covered}}
+- {{this}}
+{{/each}}
+
+### Test Cases Required
+{{#each task.test_cases}}
+- {{this.test_name}}: {{this.scenario}}
 {{/each}}
 
 ### Builder Output
@@ -472,26 +567,26 @@ Task: {{task.name}}
 
 ## Review Checklist
 
-### 1. Requirements Match
-For each acceptance criterion:
-- Is it fully implemented?
-- Is it testable/tested?
-- Any edge cases missed?
+### 1. Scenario Coverage
+For each scenario in `scenarios_covered`:
+- Is there a test case implementing this scenario?
+- Does the test follow Given/When/Then structure?
+- Are all Then assertions verified?
 
 ### 2. Under-Building Check
-- Are any requirements partially implemented?
-- Are any requirements missing entirely?
+- Are any scenarios partially implemented?
+- Are any scenarios missing entirely?
 - Are there TODO comments for unfinished work?
 
 ### 3. Over-Building Check
-- Is there code not required by the spec?
-- Are there extra features added?
+- Is there code not required by any scenario?
+- Are there extra features added beyond the Feature spec?
 - Is there premature optimization?
 
-### 4. Test Coverage
-- Does each requirement have a corresponding test?
-- Are edge cases tested?
-- Are error conditions tested?
+### 4. Test Quality
+- Does each scenario have a corresponding test?
+- Do tests follow the Given/When/Then mapping?
+- Are error scenarios tested (scenarios with "should get error")?
 
 ---
 
@@ -502,39 +597,43 @@ review_type: spec_compliance
 task_id: {{task.id}}
 status: APPROVED|CHANGES_NEEDED
 
-criteria_assessment:
-{{#each task.acceptance_criteria}}
-  - criterion: "{{this}}"
-    status: met|partial|missing
-    evidence: [file:line or test name]
-    notes: [if not fully met]
+scenario_assessment:
+{{#each task.scenarios_covered}}
+  - scenario: "{{this}}"
+    status: implemented|partial|missing
+    test_name: "[test that implements this scenario]"
+    given_verified: true|false
+    when_verified: true|false
+    then_verified: true|false
+    notes: "[if not fully implemented]"
 {{/each}}
 
 under_building:
   found: true|false
   issues:
-    - requirement: [what's missing]
+    - scenario: "[which scenario is missing/incomplete]"
       severity: critical|major
-      suggestion: [how to fix]
+      suggestion: "[how to fix]"
 
 over_building:
   found: true|false
   issues:
-    - description: [what's extra]
-      files: [affected files]
+    - description: "[what's extra beyond scenarios]"
+      files: "[affected files]"
       recommendation: remove|keep_with_justification
 
-test_coverage:
+test_quality:
   adequate: true|false
   missing_tests:
-    - scenario: [what needs testing]
-      suggested_test: [test description]
+    - scenario: "[scenario without test]"
+      suggested_test: "[test description with Given/When/Then]"
 
 verdict: APPROVED|CHANGES_NEEDED
 changes_required:
   - priority: 1
-    description: [what to fix]
-    files: [which files]
+    description: "[what to fix]"
+    scenario: "[which scenario]"
+    files: "[which files]"
 ```
 ```
 

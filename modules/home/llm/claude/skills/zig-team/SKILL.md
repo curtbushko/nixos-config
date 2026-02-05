@@ -114,103 +114,184 @@ The Zig Team skill implements features you define. You provide the WHAT (feature
 
 ---
 
-## Plan File Format (PLAN.md)
+## Plan File Format (PLAN.md) - BDD/Gherkin
 
-The plan file should contain the feature specification in this format:
+The plan file uses **BDD (Behavior-Driven Development)** format with Gherkin syntax.
+This provides executable specifications that map directly to tests.
 
-```markdown
-# Feature: [Short Name]
+```gherkin
+Feature: [Short descriptive name]
+  As a [role/persona]
+  I want [capability]
+  So that [benefit]
 
-## Description
+  Background:
+    Given [common precondition for all scenarios]
 
-[Detailed description of what to build]
+  Scenario: [Specific behavior being tested]
+    Given [initial context/state]
+    And [additional context]
+    When [action taken]
+    And [additional action]
+    Then [expected outcome]
+    And [additional outcome]
 
-## Acceptance Criteria
+  Scenario: [Another behavior]
+    Given [context]
+    When [action]
+    Then [outcome]
 
-- [ ] [Criterion 1]
-- [ ] [Criterion 2]
-- [ ] [Criterion 3]
-
-## Notes (optional)
-
-[Any additional context, constraints, or references]
+  # Optional: Notes section for implementation hints
+  # Note: Use comptime for lookup tables
+  # Note: Allocator should be passed explicitly
 ```
+
+### Gherkin Keywords
+
+| Keyword | Purpose |
+|---------|---------|
+| `Feature:` | High-level description of the capability |
+| `As a / I want / So that` | User story format (optional but recommended) |
+| `Background:` | Steps run before each scenario |
+| `Scenario:` | Specific testable behavior |
+| `Given` | Precondition/initial state |
+| `When` | Action being performed |
+| `Then` | Expected outcome |
+| `And` / `But` | Additional steps (continues previous keyword type) |
 
 ### Example PLAN.md
 
-```markdown
-# Feature: JSON Parser
+```gherkin
+Feature: JSON Parser
+  As a developer
+  I want to parse JSON documents incrementally
+  So that I can handle large files without loading entirely into memory
 
-## Description
+  Background:
+    Given a JSON parser initialized with an allocator
 
-Implement a streaming JSON parser that can parse JSON documents
-incrementally. Should handle large files without loading entirely
-into memory.
+  Scenario: Parse simple object
+    Given the input '{"name": "alice", "age": 30}'
+    When I parse the JSON
+    Then I should get an object with 2 keys
+    And the key "name" should have string value "alice"
+    And the key "age" should have number value 30
 
-## Acceptance Criteria
+  Scenario: Parse array of values
+    Given the input '[1, 2, 3, "four", true, null]'
+    When I parse the JSON
+    Then I should get an array with 6 elements
+    And element 0 should be number 1
+    And element 3 should be string "four"
+    And element 4 should be boolean true
+    And element 5 should be null
 
-- [ ] Parse JSON objects and arrays
-- [ ] Parse strings with escape sequences
-- [ ] Parse numbers (integers and floats)
-- [ ] Parse booleans and null
-- [ ] Stream parsing without full document in memory
-- [ ] Clear error messages with line/column info
-- [ ] Zero allocations for small documents (stack buffer)
+  Scenario: Parse string with escape sequences
+    Given the input '"hello\nworld\t\"quoted\""'
+    When I parse the JSON
+    Then I should get a string "hello\nworld\t\"quoted\""
 
-## Notes
+  Scenario: Parse numbers with exponents
+    Given the input '{"small": 1e-10, "big": 1.5e+8, "negative": -42}'
+    When I parse the JSON
+    Then the key "small" should have value approximately 0.0000000001
+    And the key "big" should have value approximately 150000000
+    And the key "negative" should have value -42
 
-- Use std.json as reference but implement streaming
-- Allocator should be passed explicitly
-- Consider using comptime for parser table generation
+  Scenario: Streaming parse large document
+    Given a JSON document larger than 1MB
+    When I parse using the streaming API
+    Then memory usage should stay under 64KB
+    And all values should be correctly parsed
+
+  Scenario: Error with line and column info
+    Given the input with invalid JSON at line 3, column 5
+    When I attempt to parse
+    Then I should get a parse error
+    And the error should indicate line 3
+    And the error should indicate column 5
+
+  Scenario: Zero allocations for small documents
+    Given the input '{"a": 1}'
+    When I parse with a stack buffer of 256 bytes
+    Then the allocator should have 0 allocations
+
+  # Note: Use std.json as reference but implement streaming
+  # Note: Allocator should be passed explicitly
+  # Note: Consider using comptime for parser table generation
 ```
+
+### Benefits of BDD Format
+
+1. **Each Scenario = One Test** - Direct mapping to test cases
+2. **Precise** - Given/When/Then forces clear thinking about preconditions and outcomes
+3. **Stakeholder Readable** - Non-technical team members can review specs
+4. **Edge Cases Explicit** - Scenarios naturally capture error conditions
 
 ---
 
 ## Phase 1: Task Manager Agent
 
-**Purpose:** Read the plan file, explore the codebase, and create a detailed task breakdown.
+**Purpose:** Read the BDD feature file, explore the codebase, and create a detailed task breakdown.
 
 ### Dispatch Template
 
 ```
 ## Task Manager: Plan Feature from {PLAN_FILE}
 
-### Plan File Contents
+### Plan File Contents (Gherkin/BDD)
 {PLAN_CONTENT}
 
 ### Your Mission
 
-1. **Parse the Plan**
-   - Extract feature name from `# Feature:` heading
-   - Extract description from `## Description` section
-   - Extract acceptance criteria from `## Acceptance Criteria` section
-   - Note any additional context from `## Notes` section
+1. **Parse the Gherkin Feature File**
+   - Extract feature name from `Feature:` line
+   - Extract user story from `As a / I want / So that` (if present)
+   - Extract `Background:` steps (common preconditions for all scenarios)
+   - Extract each `Scenario:` with its Given/When/Then steps
+   - Note any `# Note:` comments for implementation hints
 
-2. **Explore the Codebase**
+2. **Map Scenarios to Implementation**
+   - Each Scenario becomes one or more test cases
+   - `Background:` steps become test setup
+   - `Given` = test precondition/setup
+   - `When` = action under test
+   - `Then` = assertion (use std.testing.expect*)
+
+3. **Explore the Codebase**
    - Identify existing patterns and conventions
    - Find related code that this feature will integrate with
    - Understand the current module structure
-   - Locate test patterns and helpers
+   - Locate test patterns
 
-3. **Identify Module Structure**
+5. **Identify Module Structure**
    Determine the module organization:
    - `src/` - Main source files
    - `src/lib.zig` or `src/main.zig` - Entry point
    - Module files for logical separation
    - `build.zig` - Build configuration
 
-4. **Break Down into Tasks**
+6. **Break Down into Tasks**
    Create tasks that are:
    - 2-5 minutes each
    - Follow TDD (test written before implementation)
    - Have clear dependencies
    - Include exact file paths
+   - Reference specific scenarios they implement
 
-5. **Output Format**
+7. **Output Format**
 
 ```yaml
 feature: [feature name]
-description: [description]
+user_story: "As a ... I want ... So that ..."
+background_setup: "[common test setup from Background:]"
+
+scenarios:
+  - name: "[Scenario name]"
+    given: ["step 1", "step 2"]
+    when: ["action"]
+    then: ["outcome 1", "outcome 2"]
+
 architecture_analysis:
   modules_affected:
     - module: [module name]
@@ -223,6 +304,8 @@ architecture_analysis:
 tasks:
   - id: 1
     name: "[descriptive task name]"
+    scenarios_covered:
+      - "[Scenario name this task implements]"
     files:
       create:
         - path: [exact/path/to/file.zig]
@@ -230,11 +313,15 @@ tasks:
       modify:
         - path: [exact/path/to/existing.zig]
           changes: [what changes]
-    acceptance_criteria:
-      - [specific criterion this task addresses]
+    test_cases:
+      - scenario: "[Scenario name]"
+        test_name: "test [scenario in snake_case]"
+        given_setup: "[how to implement Given steps]"
+        when_action: "[how to implement When step]"
+        then_assert: "[std.testing assertions to use]"
     dependencies: []
     tdd_steps:
-      - step: "Write failing test"
+      - step: "Write failing test for scenario"
         file: [test file path]
         description: [what the test verifies]
       - step: "Implement minimal code"
@@ -247,6 +334,8 @@ tasks:
 
   - id: 2
     name: "[next task]"
+    scenarios_covered:
+      - "[Another scenario]"
     dependencies: [1]
     ...
 
