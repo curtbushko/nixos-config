@@ -15,6 +15,7 @@ in {
     ./direnv.nix
     ./mpv.nix
     ./yazi.nix
+    ./zed.nix
   ];
   options.curtbushko.tools = {
     enable = mkOption {
