@@ -120,6 +120,16 @@ in
           show_sign_in = false;
         };
 
+        # Disable edit predictions status bar button
+        features = {
+          edit_prediction_provider = "none";
+        };
+
+        # Hide collaboration panel button from status bar
+        collaboration_panel = {
+          button = false;
+        };
+
         # Telemetry
         telemetry = {
           diagnostics = false;
