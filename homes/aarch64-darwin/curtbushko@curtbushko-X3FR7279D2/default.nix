@@ -39,6 +39,9 @@
     inputs.neovim.packages.${pkgs.stdenv.hostPlatform.system}.default
     pkgs.podman
     pkgs.python312
+    pkgs.python3Packages.pip
+    pkgs.python3Packages.virtualenv
+    pkgs.pre-commit
     pkgs.terraform
     pkgs.kubernetes-helm
     pkgs.awscli2
