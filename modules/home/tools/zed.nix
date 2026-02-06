@@ -7,13 +7,27 @@
 let
   inherit (lib) mkIf;
   cfg = config.curtbushko.tools;
+  isLinux = pkgs.stdenv.isLinux;
   colors = lib.importJSON ../styles/${config.curtbushko.theme.name}.json;
 in
 {
   config = mkIf cfg.enable {
-    home.packages = [
+    home.packages = lib.optionals isLinux [
       pkgs.zed-editor
     ];
+
+    xdg.desktopEntries = lib.optionalAttrs isLinux {
+      zed = {
+        name = "Zed";
+        comment = "A high-performance, multiplayer code editor";
+        exec = "zed %F";
+        icon = "zed";
+        terminal = false;
+        type = "Application";
+        categories = ["Development" "TextEditor" "Utility"];
+        mimeType = ["text/plain" "inode/directory"];
+      };
+    };
 
     # Zed settings matching neovim configuration
     xdg.configFile."zed/settings.json" = {
@@ -120,14 +134,51 @@ in
           show_sign_in = false;
         };
 
-        # Disable edit predictions status bar button
-        features = {
-          edit_prediction_provider = "none";
+        # Disable edit predictions
+        edit_predictions = {
+          provider = "none";
+          disabled_globs = [
+            "**/.env*"
+            "**/*.pem"
+            "**/*.key"
+            "**/*.cert"
+            "**/*.crt"
+            "**/.dev.vars"
+            "**/secrets.yml"
+          ];
         };
 
         # Hide collaboration panel button from status bar
         collaboration_panel = {
           button = false;
+        };
+
+        # Agent - only allow Claude Code external agent
+        agent = {
+          default_model = {
+            provider = "claude_code";
+            model = "claude_code";
+          };
+          always_allow_tool_actions = false;
+        };
+
+        # Disable all built-in language model providers
+        language_models = {
+          anthropic = {
+            available_models = [];
+          };
+          openai = {
+            available_models = [];
+          };
+          google = {
+            available_models = [];
+          };
+          copilot_chat = {
+            available_models = [];
+          };
+          ollama = {
+            available_models = [];
+          };
         };
 
         # Telemetry

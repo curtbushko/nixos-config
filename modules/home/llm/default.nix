@@ -22,6 +22,7 @@ in {
     home.packages =
       [
         pkgs.llama-cpp
+        pkgs.claude-code-acp
       ];
   };
 
