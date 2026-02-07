@@ -154,6 +154,11 @@ in {
           "WebFetch(domain:gist.github.com)"
           "WebFetch(domain:modrinth.com)"
           "WebFetch(domain:api.modrinth.com)"
+          "WebFetch(domain:ziglang.org)"
+          "WebFetch(domain:zig.guide)"
+          "Bash(golangci-lint run)"
+          "Bash(go-arch-lint check)"
+          "Bash(go-ai-lint ./...)"
         ];
         deny = [ ];
         ask = [
