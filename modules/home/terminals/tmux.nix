@@ -39,6 +39,7 @@ in {
         # fix tmux not showing italics in neovim
         # to test, do: echo -e "\e[3mThis text should be italic\e[0m"
         set -g default-terminal "tmux-256color"
+        set -ag terminal-features ",tmux-256color:RGB"
         set -g mouse on
         set -g set-clipboard on
         set -g history-limit 102400

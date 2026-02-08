@@ -8,13 +8,15 @@
 - Read the plan file (Step 1)
 - Dispatch subagents using the Task tool
 - Extract status from subagent output (APPROVED / CHANGES_NEEDED / blocked / complete)
-- Track task progress using TaskCreate / TaskUpdate
+- Track task progress in `.tasks/status.yaml` (persistent, file-based)
+- Optionally use TaskCreate / TaskUpdate for in-session UI visibility
 - Run final validation commands (Step 4)
 - Report summary to user
 
 ### You MUST NOT:
 - Read source code files (builders and reviewers do this)
 - Read `builder-context.md` or `reviewer-context.md` (subagents read these themselves)
+- Read `.tasks/task-*.yaml` detail files (builders and reviewers read these)
 - Write or edit any source code
 - Analyze code quality or architecture (reviewers do this)
 - Debug test failures (builders do this)
@@ -25,7 +27,7 @@
 - Keep your messages SHORT - only coordination status updates
 - When a subagent returns, extract ONLY: `status`, `verdict`, and `changes_required` list
 - Do NOT echo back full subagent output
-- Do NOT include reference file contents in your own context
+- Do NOT read task detail files - only read `.tasks/status.yaml`
 - Subagents are disposable - they get fresh context each dispatch
 
 ---
@@ -37,12 +39,14 @@ Subagents read their own context files. You do NOT read these:
 | Agent | Reads | Path |
 |-------|-------|------|
 | Node Builder | Development standards | `~/.claude/skills/node-team/references/builder-context.md` |
+| Node Builder | Task details | `.tasks/task-{id}.yaml` |
 | Node Reviewer | Review checklist | `~/.claude/skills/node-team/references/reviewer-context.md` |
+| Node Reviewer | Task details | `.tasks/task-{id}.yaml` |
 | Task Manager | (explores codebase) | N/A |
 
 ---
 
-## Step 1: Read Plan File
+## Step 1: Read Plan and Check State
 
 ```
 PLAN_FILE = args.plan or "PLAN.md"
@@ -51,13 +55,21 @@ PLAN_CONTENT = Read(PLAN_FILE)
 
 if PLAN_CONTENT is empty:
     error "Plan file not found or empty: {PLAN_FILE}"
+
+# Check for existing task state
+if file_exists(".tasks/status.yaml"):
+    STATUS = Read(".tasks/status.yaml")
+    if SPECIFIC_TASK is set:
+        Skip to Step 3 (execute only that task)
+    if STATUS has pending tasks:
+        Skip to Step 3 (resume from where we left off)
 ```
 
 ---
 
 ## Step 2: Task Manager Dispatch
 
-**Skip if:** `SPECIFIC_TASK` is set
+**Skip if:** `.tasks/status.yaml` exists with pending tasks, or `SPECIFIC_TASK` is set
 
 ### 2.1 Dispatch
 
@@ -78,54 +90,79 @@ Task tool call:
     3. Identify which components/layers are affected
        (components / middleware / config / errors / utils)
     4. Break down into 2-5 minute tasks following TDD
-    5. Return YAML output (format below)
+    5. Write output files (format below)
 
-    Each task MUST include:
-    - Exact file paths to create/modify
-    - Test cases mapped to scenarios (Given/When/Then)
-    - Dependencies on other tasks
-    - TDD steps (write test, implement, validate)
+    ### Output: Write these files
 
-    ### Output Format
-    Return YAML:
+    First, create the directory: `mkdir -p .tasks`
+
+    **File 1: `.tasks/status.yaml`** (coordination summary)
     ```yaml
-    feature: [name]
-    scenarios:
-      - name: "[Scenario name]"
-        given: [steps]
-        when: [action]
-        then: [outcomes]
+    feature: "[feature name]"
+    plan: "{PLAN_FILE}"
+    execution_order: [1, 2, 3]
     tasks:
       - id: 1
         name: "[task name]"
-        component: [component name]
-        scenarios_covered: [list]
-        files:
-          create: [{path, purpose}]
-          modify: [{path, changes}]
-        test_cases:
-          - scenario: "[name]"
-            test_name: "should [behavior]"
-            given_setup: "[setup]"
-            when_action: "[action]"
-            then_assert: "[assertions]"
-        dependencies: []
-        tdd_steps: [{step, file, description}]
+        status: pending
+        deps: []
+      - id: 2
+        name: "[task name]"
+        status: pending
+        deps: [1]
+    ```
+
+    **File 2: `.tasks/task-{id}.yaml`** (one per task, full details)
+    ```yaml
+    id: 1
+    name: "[task name]"
+    feature: "[feature name]"
+    component: "[component name]"
+    scenarios_covered:
+      - "[Scenario name]"
+    files:
+      create:
+        - path: "[file path]"
+          purpose: "[why]"
+      modify:
+        - path: "[file path]"
+          changes: "[what to change]"
+    test_cases:
+      - scenario: "[name]"
+        test_name: "should [behavior]"
+        given_setup: "[setup]"
+        when_action: "[action]"
+        then_assert: "[assertions]"
+    acceptance_criteria:
+      - "[criterion from scenarios]"
+    tdd_steps:
+      - step: "[red|green|refactor]"
+        file: "[file path]"
+        description: "[what to do]"
+    ```
+
+    After writing all files, return a short confirmation:
+    ```yaml
+    status: complete
+    tasks_created: [count]
     execution_order: [1, 2, ...]
     ```
 ```
 
-### 2.2 Parse Output
-
-Extract from YAML: `TASKS[]` and `EXECUTION_ORDER[]`
-
-### 2.3 Create Tracking Entries
+### 2.2 Verify Output
 
 ```
-For each task in TASKS:
+Verify .tasks/status.yaml exists: Read(".tasks/status.yaml")
+Extract EXECUTION_ORDER and task count
+```
+
+### 2.3 Create In-Session Tracking (Optional)
+
+```
+For each task in .tasks/status.yaml:
   TaskCreate:
     subject: "[{FEATURE}] Task {task.id}: {task.name}"
-    description: "Component: {task.component} | Files: {task.files} | Deps: {task.dependencies}"
+    description: "Details: .tasks/task-{task.id}.yaml"
     activeForm: "Implementing {task.name}"
 ```
 
@@ -135,9 +172,18 @@ For each task in TASKS:
 
 ```
 MAX_REVIEW_CYCLES = 3
+STATUS = Read(".tasks/status.yaml")
 
-For task_id in EXECUTION_ORDER:
-  TaskUpdate(task_id, status: "in_progress")
+For task in STATUS.tasks (following execution_order):
+  if task.status == "completed": continue
+  if SPECIFIC_TASK is set and task.id != SPECIFIC_TASK: continue
+
+  # Check dependencies
+  for dep in task.deps:
+    if dep.status != "completed": error "Dependency task {dep} not complete"
+
+  # Update status to in_progress
+  Edit .tasks/status.yaml: set task.status to "in_progress"
 
   # 3a: Build
   builder_output = dispatch_builder(task)
@@ -159,7 +205,7 @@ For task_id in EXECUTION_ORDER:
     else: escalate_to_user
 
   # 3d: Complete
-  TaskUpdate(task_id, status: "completed")
+  Edit .tasks/status.yaml: set task.status to "completed"
 ```
 
 ---
@@ -175,17 +221,9 @@ Task tool:
   prompt: |
     ## Node Builder: Task {task.id} - {task.name}
 
-    Feature: {FEATURE}
-    Component: {task.component}
-    Dependencies completed: {task.dependencies}
+    **Read your task details from:** `.tasks/task-{task.id}.yaml`
+    **Read your coding standards from:** `~/.claude/skills/node-team/references/builder-context.md`
 
-    Files to create: {task.files.create}
-    Files to modify: {task.files.modify}
-    Acceptance criteria: {task.acceptance_criteria}
-    TDD steps: {task.tdd_steps}
-
-    **MANDATORY**: Before writing code, Read the file:
-    ~/.claude/skills/node-team/references/builder-context.md
     Follow ALL standards: TDD (RED/GREEN/REFACTOR), build gates
     (npm test, npm run lint), component architecture, async patterns.
 
@@ -211,10 +249,9 @@ Task tool:
   prompt: |
     ## Spec Compliance Review: Task {task.id} - {task.name}
 
-    Feature: {FEATURE}
-    Acceptance criteria: {task.acceptance_criteria}
-    Builder output summary: {builder_output}
-    Files to review: {file list}
+    **Read task acceptance criteria from:** `.tasks/task-{task.id}.yaml`
+    Builder output summary: {builder_output.summary}
+    Files changed: {builder_output.files_created + files_modified}
 
     Review checklist:
     1. Requirements match - each criterion fully implemented and tested?
@@ -222,7 +259,7 @@ Task tool:
     3. Over-building - code beyond spec? Extra features? Premature optimization?
     4. Test coverage - each requirement has tests? Edge cases? Error paths?
 
-    Read the files listed above and verify against criteria.
+    Read the source files listed above and verify against the task's acceptance criteria.
 
     Return YAML:
     ```yaml
@@ -243,12 +280,11 @@ Task tool:
   prompt: |
     ## Code Quality Review: Task {task.id} - {task.name}
 
-    Feature: {FEATURE}
     Spec Review: APPROVED
-    Files to review: {file list}
+    Files to review: {file list from builder output}
 
     **MANDATORY**: Read the review standards at:
-    ~/.claude/skills/node-team/references/reviewer-context.md
+    `~/.claude/skills/node-team/references/reviewer-context.md`
     Follow ALL review standards including Node.js best practices,
     async/await patterns, error handling, security, and testing quality.
 
@@ -275,12 +311,11 @@ Task tool:
   prompt: |
     ## Fix Review Feedback: Task {task.id} - {task.name}
 
-    Feature: {FEATURE}
+    **Read task details from:** `.tasks/task-{task.id}.yaml`
+    **Read coding standards from:** `~/.claude/skills/node-team/references/builder-context.md`
+
     Changes required:
     {review_result.changes_required}
-
-    **MANDATORY**: Read the file:
-    ~/.claude/skills/node-team/references/builder-context.md
 
     Fix each issue in priority order. Run tests after each change.
     Ensure npm test && npm run lint pass. Commit fixes.
@@ -310,6 +345,7 @@ Report to user:
 ```
 ## Node Team Complete: {FEATURE}
 - Tasks completed: {count}
+- Task state: .tasks/status.yaml
 - Validation: test={result} lint={result}
 - Commits: {list}
 ```
@@ -318,7 +354,8 @@ Report to user:
 
 ## Error Handling
 
-**Blocker: missing dependency** - Check if dependency task completed, reorder if needed
+**Blocker: missing dependency** - Check `.tasks/status.yaml` for dep status, reorder if needed
 **Blocker: unclear requirement** - AskUserQuestion with options
 **Blocker: test failure** - Include error output in next builder dispatch
 **Review cycles exceeded (3+)** - AskUserQuestion: skip / manual fix / abort
+**Stale .tasks/ state** - If task files reference nonexistent source files, re-run Task Manager

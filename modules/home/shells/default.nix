@@ -19,6 +19,12 @@ in {
     };
   };
 
+  config = mkIf cfg.enable {
+    home.sessionVariables = {
+      COLORTERM = "truecolor";
+    };
+  };
+
   imports = [
     ./bash.nix
     ./zsh.nix

@@ -166,89 +166,7 @@ in {
         ];
       };
       statusLine = {
-        command = ''
-          input=$(cat)
-          branch=$(git branch --show-current 2>/dev/null)
-          aws_icon=" "
-          default_icon="󱚝 "
-          # Select icon based on whether model is from AWS Bedrock
-          raw_model=$(echo "$input" | jq -r '.model.display_name')
-          if echo "$raw_model" | grep -qE '\.anthropic\.' ; then
-            icon="$aws_icon"
-          else
-            icon="$default_icon"
-          fi
-          git_common=$(git rev-parse --git-common-dir 2>/dev/null)
-          if [ "$git_common" = ".git" ]; then
-            repo=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)")
-          else
-            repo=$(basename "$(dirname "$git_common")")
-          fi
-          # Extract model family and version from various formats:
-          # - "global.anthropic.claude-sonnet-4-5-20250929-v1:0" -> "sonnet-4.5"
-          # - "claude-opus-4-5-20251101" -> "opus-4.5"
-          # - "claude-3-5-sonnet-20241022" -> "sonnet-3.5"
-          model=$(echo "$raw_model" | sed -E '
-            # Handle claude-X-Y-family format (e.g., claude-3-5-sonnet)
-            s/.*claude-([0-9]+)-([0-9]+)-([a-z]+).*/\3-\1.\2/;
-            t done;
-            # Handle family-X-Y format (e.g., claude-sonnet-4-5)
-            s/.*claude-([a-z]+)-([0-9]+)-([0-9]+).*/\1-\2.\3/;
-            t done;
-            # Handle family-X format (e.g., claude-sonnet-4)
-            s/.*claude-([a-z]+)-([0-9]+)[^0-9].*/\1-\2/;
-            t done;
-            :done
-          ')
-          # Fallback: truncate to 10 chars if extraction failed
-          if [ "$model" = "$raw_model" ] || [ -z "$model" ]; then
-            model=$(echo "$raw_model" | cut -c1-10)
-          fi
-          width=12
-          len=''${#model}
-          pad=$(( (width - len) / 2 ))
-          pad_right=$(( width - len - pad ))
-          model_padded=$(printf "%*s%s%*s" "$pad" "" "$model" "$pad_right" "")
-
-          # Convert hex colors to ANSI escape codes
-          hex_to_ansi() {
-            hex=''${1#\#}
-            r=$((16#''${hex:0:2}))
-            g=$((16#''${hex:2:2}))
-            b=$((16#''${hex:4:2}))
-            echo "\033[38;2;''${r};''${g};''${b}m"
-          }
-
-          hex_to_ansi_bg() {
-            hex=''${1#\#}
-            r=$((16#''${hex:0:2}))
-            g=$((16#''${hex:2:2}))
-            b=$((16#''${hex:4:2}))
-            echo "\033[48;2;''${r};''${g};''${b}m"
-          }
-
-          a_bg_code=$(hex_to_ansi_bg "${a_bg}")
-          a_fg_code=$(hex_to_ansi "${a_fg}")
-          b_bg_code=$(hex_to_ansi_bg "${b_bg}")
-          b_fg_code=$(hex_to_ansi "${b_fg}")
-          c_bg_code=$(hex_to_ansi_bg "${c_bg}")
-          c_fg_code=$(hex_to_ansi "${c_fg}")
-          reset="\033[0m"
-          sep=" "
-
-          # Build the statusline
-          printf "%b""''${a_bg_code}''${a_fg_code}▓▒░"
-          printf "%b" "''${a_bg_code}''${a_fg_code} ''${icon}''${model_padded}"
-          printf "%b""''${b_bg_code}$(hex_to_ansi "${a_bg}")''${sep}"
-          printf "%b""''${b_bg_code}''${b_fg_code}󰊢 ''${repo:-$(basename "$(echo "$input" | jq -r '.workspace.current_dir')")} "
-          if [ -n "$branch" ]; then
-            printf "%b" "''${c_bg_code}$(hex_to_ansi "${b_bg}")''${sep}"
-            printf "%b" "''${c_bg_code}''${c_fg_code} ''${branch} "
-            printf "%b" "$(hex_to_ansi "${c_bg}")''${sep}''${reset}\033[K"
-          else
-            printf "%b" "$(hex_to_ansi "${b_bg}")''${sep}''${reset}\033[K"
-          fi
-        '';
+        command = "node $HOME/.claude/statusline.mjs";
         padding = 0;
         type = "command";
       };
@@ -273,6 +191,104 @@ in {
       source = ./claude/scripts;
       recursive = true;
       executable = true;
+    };
+
+    # Claude Code statusline (Node.js for faster rendering)
+    home.file.".claude/statusline.mjs" = {
+      text = ''
+        import { execSync } from "node:child_process";
+        import { readFileSync } from "node:fs";
+
+        const A_BG = "${a_bg}";
+        const A_FG = "${a_fg}";
+        const B_BG = "${b_bg}";
+        const B_FG = "${b_fg}";
+        const C_BG = "${c_bg}";
+        const C_FG = "${c_fg}";
+        const RESET = "\x1b[0m";
+        const CLR = "\x1b[K";
+
+        function hexToFg(hex) {
+          const r = parseInt(hex.slice(1, 3), 16);
+          const g = parseInt(hex.slice(3, 5), 16);
+          const b = parseInt(hex.slice(5, 7), 16);
+          return "\x1b[38;2;" + r + ";" + g + ";" + b + "m";
+        }
+
+        function hexToBg(hex) {
+          const r = parseInt(hex.slice(1, 3), 16);
+          const g = parseInt(hex.slice(3, 5), 16);
+          const b = parseInt(hex.slice(5, 7), 16);
+          return "\x1b[48;2;" + r + ";" + g + ";" + b + "m";
+        }
+
+        function run(cmd) {
+          try {
+            return execSync(cmd, { encoding: "utf8", stdio: ["pipe", "pipe", "pipe"] }).trim();
+          } catch {
+            return "";
+          }
+        }
+
+        function extractModel(raw) {
+          let m;
+          // claude-3-5-sonnet -> sonnet-3.5
+          m = raw.match(/claude-(\d+)-(\d+)-([a-z]+)/);
+          if (m) return m[3] + "-" + m[1] + "." + m[2];
+          // claude-sonnet-4-5 -> sonnet-4.5
+          m = raw.match(/claude-([a-z]+)-(\d+)-(\d+)/);
+          if (m) return m[1] + "-" + m[2] + "." + m[3];
+          // claude-sonnet-4 -> sonnet-4
+          m = raw.match(/claude-([a-z]+)-(\d+)\D/);
+          if (m) return m[1] + "-" + m[2];
+          return raw.slice(0, 10);
+        }
+
+        const input = JSON.parse(readFileSync(0, "utf8"));
+        const branch = run("git branch --show-current");
+        const rawModel = input.model?.display_name || "";
+
+        // Icon: AWS Bedrock vs default
+        const icon = /\.anthropic\./.test(rawModel) ? " " : "󱚝 ";
+
+        // Repo name
+        const gitCommon = run("git rev-parse --git-common-dir");
+        let repo = "";
+        if (gitCommon === ".git") {
+          repo = run("git rev-parse --show-toplevel").split("/").pop() || "";
+        } else if (gitCommon) {
+          const parts = gitCommon.split("/");
+          repo = parts[parts.length - 2] || "";
+        }
+        if (!repo) {
+          repo = (input.workspace?.current_dir || "").split("/").pop() || "";
+        }
+
+        // Extract and center-pad model name
+        const model = extractModel(rawModel);
+        const width = 12;
+        const padLeft = Math.floor((width - model.length) / 2);
+        const padRight = width - model.length - padLeft;
+        const modelPadded = " ".repeat(Math.max(0, padLeft)) + model + " ".repeat(Math.max(0, padRight));
+
+        const sep = " ";
+
+        // Build statusline
+        let out = RESET;
+        out += hexToBg(A_BG) + hexToFg(A_FG) + "▓▒░";
+        out += hexToBg(A_BG) + hexToFg(A_FG) + " " + icon + modelPadded;
+        out += hexToBg(B_BG) + hexToFg(A_BG) + sep;
+        out += hexToBg(B_BG) + hexToFg(B_FG) + "󰊢 " + repo + " ";
+        if (branch) {
+          out += hexToBg(C_BG) + hexToFg(B_BG) + sep;
+          out += hexToBg(C_BG) + hexToFg(C_FG) + " " + branch + " ";
+          out += hexToFg(C_BG) + sep + RESET + CLR;
+        } else {
+          out += hexToFg(B_BG) + sep + RESET + CLR;
+        }
+
+        process.stdout.write(out);
+      '';
     };
 
   };
