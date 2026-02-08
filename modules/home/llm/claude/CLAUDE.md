@@ -9,7 +9,7 @@
 3. **Follow skill guidelines**: All instructions in skill files are MANDATORY, not suggestions
 
 ### Skill Priority Order
-1. Language-specific skills (e.g., `golang/`, `nodejs-tdd/`)
+1. Language-specific skills (e.g., `golang/`, `node-team/`)
 2. Framework-specific skills
 3. General development skills (e.g., `bash/`)
 
