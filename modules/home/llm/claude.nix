@@ -145,6 +145,7 @@ in {
           "Bash(chmod:*)"
           "Bash(nix-option:*)"
           "Bash(unzip:*)"
+          "Read(~/.claude/**)"
           "WebFetch(domain:pkg.go.dev)"
           "WebFetch(domain:github.com)"
           "WebFetch(domain:github.io)"
