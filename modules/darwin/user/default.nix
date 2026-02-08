@@ -19,6 +19,7 @@
       "obsidian"
       "rectangle"
       "slack"
+      "krita"
       "vlc"
       "notunes"
       "podman-desktop"

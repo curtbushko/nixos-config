@@ -14,185 +14,181 @@ arguments:
 The Planner skill helps you create and extend BDD-style feature specifications through an interactive prompt-based workflow. It automatically detects whether to create a new file or append to an existing one.
 
 **Two Modes:**
-- **Create Mode** - When PLAN.md doesn't exist, creates new feature from scratch
-- **Append Mode** - When PLAN.md exists, parses it and adds new scenarios
-
-## Usage
-
-### Run the Interactive Script
-
-```bash
-# Create new PLAN.md or append to existing one
-~/.claude/skills/planner/planner.sh
-
-# Specify output file
-~/.claude/skills/planner/planner.sh my-feature.feature
-
-# Or use the skill invocation (runs the script)
-/planner
-/planner output="features/auth.feature"
-```
-
-## Modes
-
-### Create Mode (No Existing File)
-
-When PLAN.md doesn't exist, the script:
-
-1. **Prompt for Feature** - Name and user story (As a/I want/So that)
-2. **Prompt for Background** - Optional common setup steps
-3. **Loop for Scenarios** - Add scenarios with Given/When/Then
-4. **Add Notes** - Optional implementation hints
-5. **Write PLAN.md** - Generates properly formatted Gherkin file
-
-### Append Mode (File Exists)
-
-When PLAN.md already exists, the script:
-
-1. **Parse existing file** - Extracts feature, user story, background, scenarios, notes
-2. **Show summary** - Displays existing content with counts
-3. **Confirm append** - Ask before modifying
-4. **Add new scenarios** - Numbered from existing count + 1
-5. **Add notes** - Optional additional implementation hints
-6. **Rewrite file** - Preserves all existing content + new scenarios
-
-**Append Mode Summary Display:**
-```
-┌─── Existing Feature ───
-Feature: User Authentication
-  As a registered user
-  I want to log in
-  So that I can access my account
-Background: 2 step(s)
-
-Existing Scenarios:
-  1. Successful login
-     Given:2 When:2 Then:2
-  2. Invalid password
-     Given:1 When:2 Then:2
-
-Notes: 3 note(s)
-```
-
-## Template
-
-The script uses the template in `[[template.feature]]` as reference.
-
-## Example Sessions
-
-### Create Mode Example
-
-```
-$ planner.sh
-
-╔══════════════════════════════════════════════════════════╗
-║  BDD Feature Planner (Create Mode)
-╚══════════════════════════════════════════════════════════╝
-
-Output: PLAN.md
-
-┌─── Feature Definition ───
-▸ Feature name: User Authentication
-
-┌─── User Story (optional) ───
-Describe WHO wants WHAT and WHY
-▸ As a (Enter to skip): registered user
-▸ I want (Enter to skip): to log in with my credentials
-▸ So that (Enter to skip): I can access my account
-
-┌─── Background (optional) ───
-Steps that run before EACH scenario
-▸ Given #1 (empty to finish): the authentication service is running
-▸ Given #2 (empty to finish):
-  └─ 1 background step(s) added
-
-┌─── Scenario 1 ───
-▸ Scenario name: Successful login with valid credentials
-
-Given (preconditions/context)
-▸ Given #1 (empty to finish): I am on the login page
-▸ Given #2 (empty to finish): I have a valid account with username "alice"
-▸ Given #3 (empty to finish):
-  └─ 2 Given step(s) added
-
-When (actions performed)
-▸ When #1 (empty to finish): I enter username "alice" and password "secret123"
-▸ When #2 (empty to finish): I click the login button
-▸ When #3 (empty to finish):
-  └─ 2 When step(s) added
-
-Then (expected outcomes)
-▸ Then #1 (empty to finish): I should be redirected to the dashboard
-▸ Then #2 (empty to finish): I should see "Welcome, Alice"
-▸ Then #3 (empty to finish):
-  └─ 2 Then step(s) added
-
-▸ Add another scenario? (y/n): n
-
-✓ Created: PLAN.md
-```
-
-### Append Mode Example
-
-```
-$ planner.sh
-
-╔══════════════════════════════════════════════════════════╗
-║  BDD Feature Planner (Append Mode)
-╚══════════════════════════════════════════════════════════╝
-
-File: PLAN.md
-
-┌─── Existing Feature ───
-Feature: User Authentication
-  As a registered user
-  I want to log in with my credentials
-  So that I can access my account
-Background: 1 step(s)
-
-Existing Scenarios:
-  1. Successful login with valid credentials
-     Given:2 When:2 Then:2
-
-▸ Add new scenarios to this feature? (y/n): y
-
-┌─── Scenario 2 ───
-▸ Scenario name: Invalid password rejected
-
-Given (preconditions/context)
-▸ Given #1 (empty to finish): I am on the login page
-▸ Given #2 (empty to finish):
-  └─ 1 Given step(s) added
-
-When (actions performed)
-▸ When #1 (empty to finish): I enter username "alice" and wrong password
-▸ When #2 (empty to finish):
-  └─ 1 When step(s) added
-
-Then (expected outcomes)
-▸ Then #1 (empty to finish): I should see "Invalid credentials"
-▸ Then #2 (empty to finish): I should remain on the login page
-▸ Then #3 (empty to finish):
-  └─ 2 Then step(s) added
-
-▸ Add another scenario? (y/n): n
-
-✓ Updated: PLAN.md
-✓ Added 1 new scenario(s)
-Total scenarios: 2
-```
-
-## Output Format
-
-The generated file follows standard Gherkin syntax compatible with:
-- go-team skill
-- zig-team skill
-- Cucumber/godog BDD runners
+- **Create Mode** - When the output file doesn't exist, creates new feature from scratch
+- **Append Mode** - When the output file exists, parses it and adds new scenarios
 
 ## EXECUTION INSTRUCTIONS
 
 When this skill is invoked via `/planner`:
 
-1. Run the script: `~/.claude/skills/planner/planner.sh {output}`
-2. The script handles all interaction
-3. Report the created file path when done
+### Step 1: Determine Mode
+
+Check if the output file (default: `PLAN.md` in the current working directory) exists.
+- If it does NOT exist, follow **Create Mode** below.
+- If it DOES exist, follow **Append Mode** below.
+
+---
+
+### Create Mode
+
+#### 1a. Prompt for Feature Definition
+
+Use AskUserQuestion to ask:
+
+**Question**: "What is the feature name?"
+- Header: "Feature"
+- This is REQUIRED. Do not proceed without a feature name.
+
+#### 1b. Prompt for User Story (optional)
+
+Ask the user for the user story using AskUserQuestion:
+
+**Question**: "Describe the user story. Provide the role (As a...), capability (I want...), and benefit (So that...). Leave blank to skip."
+- Header: "User Story"
+- Options: "Provide user story", "Skip"
+
+If the user chooses to provide a story, ask them to describe it in free text. Parse the response to extract:
+- **As a** [role]
+- **I want** [capability]
+- **So that** [benefit]
+
+If the user gives a natural language description instead of the exact format, convert it into the As a/I want/So that structure.
+
+#### 1c. Prompt for Background (optional)
+
+Ask the user:
+
+**Question**: "Are there common setup steps that should run before EACH scenario (Background)?"
+- Header: "Background"
+- Options: "Add background steps", "Skip"
+
+If they choose to add background steps, ask them to list the Given preconditions. Collect all steps.
+
+#### 1d. Collect Scenarios (at least 1 required)
+
+For each scenario, ask the user:
+
+1. **Scenario name** - What is this scenario called?
+2. **Given steps** - What are the preconditions/context? (collect multiple)
+3. **When steps** - What actions are performed? (collect multiple)
+4. **Then steps** - What are the expected outcomes? (collect multiple)
+
+After each scenario, ask:
+
+**Question**: "Add another scenario?"
+- Header: "More?"
+- Options: "Yes, add another", "No, done with scenarios"
+
+Continue collecting scenarios until the user says they're done.
+
+#### 1e. Prompt for Notes (optional)
+
+Ask the user:
+
+**Question**: "Any implementation notes or hints to include?"
+- Header: "Notes"
+- Options: "Add notes", "Skip"
+
+If they choose to add notes, collect them.
+
+#### 1f. Write the File
+
+Generate the PLAN.md file using the Gherkin format below and write it with the Write tool.
+
+---
+
+### Append Mode
+
+#### 2a. Parse and Display Existing Content
+
+Read the existing output file. Parse and display a summary:
+
+```
+Existing Feature: {name}
+  As a {role}
+  I want {capability}
+  So that {benefit}
+Background: {N} step(s)
+
+Existing Scenarios:
+  1. {scenario_name}
+     Given:{N} When:{N} Then:{N}
+  2. {scenario_name}
+     Given:{N} When:{N} Then:{N}
+
+Notes: {N} note(s)
+```
+
+#### 2b. Confirm Append
+
+Ask the user:
+
+**Question**: "Add new scenarios to this feature?"
+- Header: "Append"
+- Options: "Yes, add scenarios", "No, cancel"
+
+If they say no, stop.
+
+#### 2c. Collect New Scenarios
+
+Follow the same scenario collection flow as Create Mode step 1d, numbering scenarios starting from the next number after existing ones.
+
+#### 2d. Prompt for Additional Notes (optional)
+
+Same as Create Mode step 1e.
+
+#### 2e. Rewrite the File
+
+Preserve ALL existing content (feature, user story, background, existing scenarios, existing notes) and append the new scenarios and notes. Write the complete file using the Write tool.
+
+---
+
+## Output Format (Gherkin)
+
+The generated file MUST follow this exact format:
+
+```gherkin
+Feature: {FEATURE_NAME}
+  As a {ROLE}
+  I want {CAPABILITY}
+  So that {BENEFIT}
+
+  Background:
+    Given {COMMON_PRECONDITION}
+    And {ADDITIONAL_COMMON_PRECONDITION}
+
+  Scenario: {SCENARIO_NAME}
+    Given {PRECONDITION}
+    And {ADDITIONAL_PRECONDITION}
+    When {ACTION}
+    And {ADDITIONAL_ACTION}
+    Then {OUTCOME}
+    And {ADDITIONAL_OUTCOME}
+
+  Scenario: {SCENARIO_NAME_2}
+    Given {PRECONDITION}
+    When {ACTION}
+    Then {OUTCOME}
+
+  # Note: {IMPLEMENTATION_HINT}
+  # Note: {ANOTHER_HINT}
+```
+
+Rules:
+- Feature line has NO leading indentation
+- User story lines are indented 2 spaces
+- Background, Scenario are indented 2 spaces
+- Given/When/Then/And steps are indented 4 spaces
+- First step of each type uses Given/When/Then, subsequent steps of the same type use And
+- Notes use `# Note:` prefix, indented 2 spaces
+- Blank line between sections
+- Omit User Story section if not provided
+- Omit Background section if not provided
+- Omit Notes section if not provided
+
+## Compatibility
+
+The generated file follows standard Gherkin syntax compatible with:
+- go-team skill
+- zig-team skill
+- Cucumber/godog BDD runners
