@@ -41,7 +41,7 @@ The Node Team skill implements features you define. You provide the WHAT (featur
                           │
                           ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                      TASK MANAGER                               │
+│                      TASK MANAGER (subagent)                     │
 │  - Explores codebase for patterns and conventions               │
 │  - Breaks down into 2-5 minute implementation tasks             │
 │  - Identifies which files/components to create or modify        │
@@ -55,17 +55,19 @@ The Node Team skill implements features you define. You provide the WHAT (featur
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                      NODE BUILDER                               │
-│  - Follows TDD: RED -> GREEN -> REFACTOR                        │
-│  - Uses component-based architecture                            │
-│  - Runs npm test, npm run lint                                  │
-│  - Commits with descriptive messages                            │
+│                    NODE BUILDER (subagent)                        │
+│  - Reads: references/builder-context.md                          │
+│  - Follows TDD: RED -> GREEN -> REFACTOR                         │
+│  - Uses component-based architecture                             │
+│  - Runs npm test, npm run lint                                   │
+│  - Commits with descriptive messages                             │
 └─────────────────────────┬───────────────────────────────────────┘
                           │
                           ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                      NODE REVIEWER                              │
-│  Stage 1: Spec Compliance                                       │
+│                    NODE REVIEWER (subagent)                       │
+│  - Reads: references/reviewer-context.md                         │
+│  Stage 1: Spec Compliance                                        │
 │  - Does implementation match acceptance criteria?               │
 │  - No under-building or over-building?                          │
 │                                                                 │
@@ -157,300 +159,25 @@ Feature: [Short descriptive name]
 | `Then` | Expected outcome |
 | `And` / `But` | Additional steps (continues previous keyword type) |
 
-### Example PLAN.md
-
-```gherkin
-Feature: JWT Authentication
-  As an API consumer
-  I want requests to be authenticated via JWT
-  So that only authorized users can access protected endpoints
-
-  Background:
-    Given the JWT secret is configured
-    And the authentication middleware is enabled
-
-  Scenario: Valid token grants access
-    Given I have a valid JWT token for user "alice"
-    When I make a request to a protected endpoint
-    Then the request should succeed
-    And the user context should contain user ID "alice"
-
-  Scenario: Expired token is rejected
-    Given I have an expired JWT token
-    When I make a request to a protected endpoint
-    Then I should receive a 401 Unauthorized response
-    And the response body should contain error "token expired"
-
-  Scenario: Malformed token is rejected
-    Given I have a malformed JWT token "not-a-valid-jwt"
-    When I make a request to a protected endpoint
-    Then I should receive a 401 Unauthorized response
-    And the response body should contain error "invalid token"
-
-  Scenario: Missing token is rejected
-    Given I make a request without an Authorization header
-    When I access a protected endpoint
-    Then I should receive a 401 Unauthorized response
-    And the response body should contain error "missing token"
-
-  Scenario: Health check bypasses authentication
-    Given I make a request without an Authorization header
-    When I access the "/health" endpoint
-    Then the request should succeed
-
-  # Note: Use existing user model from src/components/users/
-  # Note: Token secret should come from config, not hardcoded
-  # Note: Use jsonwebtoken package
-```
-
-### Benefits of BDD Format
-
-1. **Each Scenario = One Test** - Direct mapping to test cases
-2. **Precise** - Given/When/Then forces clear thinking about preconditions and outcomes
-3. **Stakeholder Readable** - Non-technical team members can review specs
-4. **Edge Cases Explicit** - Scenarios naturally capture error conditions
-
 ---
 
-## Phase 1: Task Manager Agent
+## Agents and Their Context
 
-**Purpose:** Read the BDD feature file, explore the codebase, and create a detailed task breakdown.
+Each agent is a subagent dispatched via the Task tool. The orchestrator does NOT read these files - subagents read their own context.
 
-### Dispatch Template
+| Agent | Role | Context File |
+|-------|------|--------------|
+| **Task Manager** | Parses plan, explores codebase, creates task breakdown | (explores codebase directly) |
+| **Node Builder** | Implements tasks following TDD, component architecture | `references/builder-context.md` |
+| **Node Reviewer** | Two-stage review: spec compliance then code quality | `references/reviewer-context.md` |
 
-```
-## Task Manager: Plan Feature from {PLAN_FILE}
-
-### Plan File Contents (Gherkin/BDD)
-{PLAN_CONTENT}
-
-### Your Mission
-
-1. **Parse the Gherkin Feature File**
-   - Extract feature name from `Feature:` line
-   - Extract user story from `As a / I want / So that` (if present)
-   - Extract `Background:` steps (common preconditions for all scenarios)
-   - Extract each `Scenario:` with its Given/When/Then steps
-   - Note any `# Note:` comments for implementation hints
-
-2. **Map Scenarios to Implementation**
-   - Each Scenario becomes one or more test cases
-   - `Background:` steps become test setup/fixtures (beforeEach)
-   - `Given` = test precondition/setup (Arrange)
-   - `When` = action under test (Act)
-   - `Then` = assertion (Assert)
-
-3. **Explore the Codebase**
-   - Identify existing patterns and conventions
-   - Find related code that this feature will integrate with
-   - Understand the current architecture (expect component-based)
-   - Locate test patterns and helpers
-
-4. **Identify Component Structure**
-   Determine which components/layers this feature touches:
-   - `src/components/[name]/` - Business domain modules
-   - `src/middleware/` - Express/Fastify middleware
-   - `src/config/` - Configuration management
-   - `src/errors/` - Custom error classes
-   - `src/utils/` - Shared utilities
-   - `tests/` - Integration/E2E tests
-
-5. **Break Down into Tasks**
-   Create tasks that are:
-   - 2-5 minutes each
-   - Follow TDD (test file created before implementation)
-   - Have clear dependencies
-   - Include exact file paths
-   - Reference specific scenarios they implement
-
-6. **Output Format**
-
-```yaml
-feature: {{feature}}
-user_story: "As a ... I want ... So that ..."
-background_setup: "[common test setup from Background:]"
-
-scenarios:
-  - name: "[Scenario name]"
-    given: ["step 1", "step 2"]
-    when: ["action"]
-    then: ["outcome 1", "outcome 2"]
-
-architecture_analysis:
-  components_affected:
-    - component: [component name]
-      reason: [why this component is needed]
-  existing_patterns:
-    - pattern: [pattern name]
-      location: [file path]
-      relevance: [how it applies]
-  integration_points:
-    - file: [path]
-      description: [what needs to connect]
-
-tasks:
-  - id: 1
-    name: "[descriptive task name]"
-    component: [component name]
-    scenarios_covered:
-      - "[Scenario name this task implements]"
-    files:
-      create:
-        - path: [exact/path/to/file.js]
-          purpose: [why this file]
-        - path: [exact/path/to/file.test.js]
-          purpose: test file
-      modify:
-        - path: [exact/path/to/existing.js]
-          changes: [what changes]
-    test_cases:
-      - scenario: "[Scenario name]"
-        test_name: "should [behavior in lowercase]"
-        given_setup: "[how to implement Given steps]"
-        when_action: "[how to implement When step]"
-        then_assert: "[how to implement Then assertions]"
-    dependencies: []  # task IDs this depends on
-    tdd_steps:
-      - step: "Write failing test for scenario"
-        file: [test file path]
-        description: [what the test verifies]
-      - step: "Implement minimal code"
-        file: [implementation file]
-        description: [what to implement]
-      - step: "Run validation"
-        commands:
-          - npm test
-          - npm run lint
-
-  - id: 2
-    name: "[next task]"
-    scenarios_covered:
-      - "[Another scenario]"
-    dependencies: [1]  # depends on task 1
-    ...
-
-execution_order: [1, 2, 3, ...]  # respecting dependencies
-```
-
-### Constraints
-
-- Tasks MUST follow component-based architecture
-- Business logic MUST live in service layer, not controllers
-- Each task MUST have a test file
-- Each scenario MUST map to at least one test case
-- Dependencies flow: routes -> controllers -> services -> repositories
-- Use existing patterns found in codebase
-```
-
----
-
-## Phase 2: Node Builder Agent
-
-**Purpose:** Implement a single task following TDD and Node.js best practices.
-
-### Dispatch Template
-
-See [[references/builder-context.md]] for the full builder context that gets injected.
-
----
-
-## Phase 3: Node Reviewer Agent
-
-**Purpose:** Two-stage review - spec compliance then code quality.
-
-### Stage A: Spec Compliance Review
-
-Validates that the implementation matches the acceptance criteria exactly.
-
-### Stage B: Code Quality Review
-
-See [[references/reviewer-context.md]] for the full reviewer context including:
-- Node.js best practices
-- Async/await patterns
-- Error handling checklist
-- Security review
-- Testing anti-patterns
-
----
-
-## Orchestration Flow
-
-### Main Loop
-
-```
-1. If skip_planning != "true":
-   - Dispatch Task Manager
-   - Wait for task breakdown
-   - Create TaskList entries for each task
-
-2. For each task in execution_order:
-   a. Mark task as in_progress
-   b. Dispatch Node Builder with task context
-   c. If Builder returns blocked/needs_clarification:
-      - Handle blocker
-      - Re-dispatch Builder
-   d. Dispatch Node Reviewer (Stage A: Spec Compliance)
-   e. If Stage A returns CHANGES_NEEDED:
-      - Dispatch Builder with feedback
-      - Re-run Stage A
-      - Repeat until APPROVED
-   f. Dispatch Node Reviewer (Stage B: Code Quality)
-   g. If Stage B returns CHANGES_NEEDED:
-      - Dispatch Builder with feedback
-      - Re-run Stage B
-      - Repeat until APPROVED
-   h. Mark task as completed
-   i. Continue to next task
-
-3. After all tasks complete:
-   - Run full test suite
-   - Run full lint check
-   - Report summary
-```
-
-### Error Recovery
-
-If a task fails repeatedly (3+ review cycles):
-1. Stop the loop
-2. Report the stuck task
-3. Ask for human intervention
-
----
-
-## Quick Reference
-
-### Dispatch Task Manager
-```
-subagent_type: "general-purpose"
-description: "Plan {{feature}}"
-prompt: [Task Manager Template with arguments injected]
-```
-
-### Dispatch Node Builder
-```
-subagent_type: "general-purpose"
-description: "Build task {{task.id}}"
-prompt: [Node Builder Template with task context injected]
-```
-
-### Dispatch Node Reviewer (Spec)
-```
-subagent_type: "general-purpose"
-description: "Review spec {{task.id}}"
-prompt: [Spec Compliance Template with task and builder output]
-```
-
-### Dispatch Node Reviewer (Quality)
-```
-subagent_type: "code-quality-reviewer"
-description: "Review quality {{task.id}}"
-prompt: [Code Quality Template with task context]
-```
+See [[references/orchestration.md]] for exact dispatch templates and the coordination loop.
 
 ---
 
 ## Anti-Patterns
 
+- Orchestrator reading source code or reference files (subagents do this)
 - Running code quality review before spec compliance
 - Skipping either review stage
 - Dispatching multiple builders in parallel (causes conflicts)

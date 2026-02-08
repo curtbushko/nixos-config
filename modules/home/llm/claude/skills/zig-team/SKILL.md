@@ -41,7 +41,7 @@ The Zig Team skill implements features you define. You provide the WHAT (feature
                           │
                           ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                      TASK MANAGER                               │
+│                      TASK MANAGER (subagent)                     │
 │  - Explores codebase for patterns and conventions               │
 │  - Breaks down into 2-5 minute implementation tasks             │
 │  - Identifies which files/modules to create or modify           │
@@ -55,19 +55,21 @@ The Zig Team skill implements features you define. You provide the WHAT (feature
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                       ZIG BUILDER                               │
-│  - Follows TDD: RED -> GREEN -> REFACTOR                        │
-│  - Uses std.testing for tests                                   │
-│  - Proper error handling with error unions                      │
-│  - Explicit allocator management                                │
-│  - Runs zig build, zig test                                     │
-│  - Commits with descriptive messages                            │
+│                    ZIG BUILDER (subagent)                         │
+│  - Reads: references/builder-context.md                          │
+│  - Follows TDD: RED -> GREEN -> REFACTOR                         │
+│  - Uses std.testing for tests                                    │
+│  - Proper error handling with error unions                       │
+│  - Explicit allocator management                                 │
+│  - Runs zig build, zig test                                      │
+│  - Commits with descriptive messages                             │
 └─────────────────────────┬───────────────────────────────────────┘
                           │
                           ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                      ZIG REVIEWER                               │
-│  Stage 1: Spec Compliance                                       │
+│                    ZIG REVIEWER (subagent)                        │
+│  - Reads: references/reviewer-context.md                         │
+│  Stage 1: Spec Compliance                                        │
 │  - Does implementation match acceptance criteria?               │
 │  - No under-building or over-building?                          │
 │                                                                 │
@@ -159,221 +161,36 @@ Feature: [Short descriptive name]
 | `Then` | Expected outcome |
 | `And` / `But` | Additional steps (continues previous keyword type) |
 
-### Example PLAN.md
+---
 
-```gherkin
-Feature: JSON Parser
-  As a developer
-  I want to parse JSON documents incrementally
-  So that I can handle large files without loading entirely into memory
+## Agents and Their Context
 
-  Background:
-    Given a JSON parser initialized with an allocator
+Each agent is a subagent dispatched via the Task tool. The orchestrator does NOT read these files - subagents read their own context.
 
-  Scenario: Parse simple object
-    Given the input '{"name": "alice", "age": 30}'
-    When I parse the JSON
-    Then I should get an object with 2 keys
-    And the key "name" should have string value "alice"
-    And the key "age" should have number value 30
+| Agent | Role | Context File |
+|-------|------|--------------|
+| **Task Manager** | Parses plan, explores codebase, creates task breakdown | (explores codebase directly) |
+| **Zig Builder** | Implements tasks following TDD, Zig best practices | `references/builder-context.md` |
+| **Zig Reviewer** | Two-stage review: spec compliance then code quality | `references/reviewer-context.md` |
 
-  Scenario: Parse array of values
-    Given the input '[1, 2, 3, "four", true, null]'
-    When I parse the JSON
-    Then I should get an array with 6 elements
-    And element 0 should be number 1
-    And element 3 should be string "four"
-    And element 4 should be boolean true
-    And element 5 should be null
-
-  Scenario: Parse string with escape sequences
-    Given the input '"hello\nworld\t\"quoted\""'
-    When I parse the JSON
-    Then I should get a string "hello\nworld\t\"quoted\""
-
-  Scenario: Parse numbers with exponents
-    Given the input '{"small": 1e-10, "big": 1.5e+8, "negative": -42}'
-    When I parse the JSON
-    Then the key "small" should have value approximately 0.0000000001
-    And the key "big" should have value approximately 150000000
-    And the key "negative" should have value -42
-
-  Scenario: Streaming parse large document
-    Given a JSON document larger than 1MB
-    When I parse using the streaming API
-    Then memory usage should stay under 64KB
-    And all values should be correctly parsed
-
-  Scenario: Error with line and column info
-    Given the input with invalid JSON at line 3, column 5
-    When I attempt to parse
-    Then I should get a parse error
-    And the error should indicate line 3
-    And the error should indicate column 5
-
-  Scenario: Zero allocations for small documents
-    Given the input '{"a": 1}'
-    When I parse with a stack buffer of 256 bytes
-    Then the allocator should have 0 allocations
-
-  # Note: Use std.json as reference but implement streaming
-  # Note: Allocator should be passed explicitly
-  # Note: Consider using comptime for parser table generation
-```
-
-### Benefits of BDD Format
-
-1. **Each Scenario = One Test** - Direct mapping to test cases
-2. **Precise** - Given/When/Then forces clear thinking about preconditions and outcomes
-3. **Stakeholder Readable** - Non-technical team members can review specs
-4. **Edge Cases Explicit** - Scenarios naturally capture error conditions
+See [[references/orchestration.md]] for exact dispatch templates and the coordination loop.
 
 ---
 
-## Phase 1: Task Manager Agent
+## Anti-Patterns
 
-**Purpose:** Read the BDD feature file, explore the codebase, and create a detailed task breakdown.
-
-### Dispatch Template
-
-```
-## Task Manager: Plan Feature from {PLAN_FILE}
-
-### Plan File Contents (Gherkin/BDD)
-{PLAN_CONTENT}
-
-### Your Mission
-
-1. **Parse the Gherkin Feature File**
-   - Extract feature name from `Feature:` line
-   - Extract user story from `As a / I want / So that` (if present)
-   - Extract `Background:` steps (common preconditions for all scenarios)
-   - Extract each `Scenario:` with its Given/When/Then steps
-   - Note any `# Note:` comments for implementation hints
-
-2. **Map Scenarios to Implementation**
-   - Each Scenario becomes one or more test cases
-   - `Background:` steps become test setup
-   - `Given` = test precondition/setup
-   - `When` = action under test
-   - `Then` = assertion (use std.testing.expect*)
-
-3. **Explore the Codebase**
-   - Identify existing patterns and conventions
-   - Find related code that this feature will integrate with
-   - Understand the current module structure
-   - Locate test patterns
-
-5. **Identify Module Structure**
-   Determine the module organization:
-   - `src/` - Main source files
-   - `src/lib.zig` or `src/main.zig` - Entry point
-   - Module files for logical separation
-   - `build.zig` - Build configuration
-
-6. **Break Down into Tasks**
-   Create tasks that are:
-   - 2-5 minutes each
-   - Follow TDD (test written before implementation)
-   - Have clear dependencies
-   - Include exact file paths
-   - Reference specific scenarios they implement
-
-7. **Output Format**
-
-```yaml
-feature: [feature name]
-user_story: "As a ... I want ... So that ..."
-background_setup: "[common test setup from Background:]"
-
-scenarios:
-  - name: "[Scenario name]"
-    given: ["step 1", "step 2"]
-    when: ["action"]
-    then: ["outcome 1", "outcome 2"]
-
-architecture_analysis:
-  modules_affected:
-    - module: [module name]
-      reason: [why this module is needed]
-  existing_patterns:
-    - pattern: [pattern name]
-      location: [file path]
-      relevance: [how it applies]
-
-tasks:
-  - id: 1
-    name: "[descriptive task name]"
-    scenarios_covered:
-      - "[Scenario name this task implements]"
-    files:
-      create:
-        - path: [exact/path/to/file.zig]
-          purpose: [why this file]
-      modify:
-        - path: [exact/path/to/existing.zig]
-          changes: [what changes]
-    test_cases:
-      - scenario: "[Scenario name]"
-        test_name: "test [scenario in snake_case]"
-        given_setup: "[how to implement Given steps]"
-        when_action: "[how to implement When step]"
-        then_assert: "[std.testing assertions to use]"
-    dependencies: []
-    tdd_steps:
-      - step: "Write failing test for scenario"
-        file: [test file path]
-        description: [what the test verifies]
-      - step: "Implement minimal code"
-        file: [implementation file]
-        description: [what to implement]
-      - step: "Run validation"
-        commands:
-          - zig build
-          - zig build test
-
-  - id: 2
-    name: "[next task]"
-    scenarios_covered:
-      - "[Another scenario]"
-    dependencies: [1]
-    ...
-
-execution_order: [1, 2, 3, ...]
-```
-```
-
----
-
-## Phase 2: Zig Builder Agent
-
-**Purpose:** Implement a single task following TDD and Zig best practices.
-
-### Dispatch Template
-
-See [[references/builder-context.md]] for the full builder context that gets injected.
-
----
-
-## Phase 3: Zig Reviewer Agent
-
-**Purpose:** Two-stage review - spec compliance then code quality.
-
-### Stage A: Spec Compliance Review
-
-Validates that the implementation matches the acceptance criteria exactly.
-
-### Stage B: Code Quality Review
-
-See [[references/reviewer-context.md]] for the full reviewer context including:
-- Zig idioms and best practices
-- Memory safety patterns
-- Error handling checklist
-- Testing anti-patterns
+- Orchestrator reading source code or reference files (subagents do this)
+- Running code quality review before spec compliance
+- Skipping either review stage
+- Dispatching multiple builders in parallel (causes conflicts)
+- Proceeding with CHANGES_NEEDED status
+- Builder reading plan files instead of receiving full context
+- Ignoring memory safety issues
+- Marking task complete with failing tests
 
 ---
 
 ## Integration with Other Skills
 
-- **skill-creation**: Can create new Zig-specific skills
+- **planner**: Can be used to create the initial plan that Task Manager refines
 - **prd/rfc**: Use these to write the feature specification before implementing

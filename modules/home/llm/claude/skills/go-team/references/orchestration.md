@@ -1,241 +1,131 @@
 # Go Team Orchestration Procedure
 
-This document defines the automated dispatch loop for the Go Team skill.
+## ORCHESTRATOR RULES (CRITICAL - READ FIRST)
 
-## Context Files to Inject
+**You are a COORDINATOR, not a worker. Your ONLY job is to dispatch subagents and track status.**
 
-When dispatching agents, inject the appropriate context from these reference files:
+### You MUST:
+- Read the plan file (Step 1)
+- Dispatch subagents using the Task tool
+- Extract status from subagent output (APPROVED / CHANGES_NEEDED / blocked / complete)
+- Track task progress using TaskCreate / TaskUpdate
+- Run final validation commands (Step 4)
+- Report summary to user
 
-| Agent | Context File | Contents |
-|-------|--------------|----------|
-| **Go Builder** | `[[builder-context.md]]` | TDD workflow, architecture patterns, code examples, lint fixes, systematic debugging, testing anti-patterns |
-| **Go Reviewer** | `[[reviewer-context.md]]` | AI code problems checklist, 100 Go Mistakes, testing anti-patterns, architecture violations, output formats |
-| **Task Manager** | (inline in template) | Architecture layer definitions, task breakdown guidelines |
+### You MUST NOT:
+- Read source code files (builders and reviewers do this)
+- Read `builder-context.md` or `reviewer-context.md` (subagents read these themselves)
+- Write or edit any source code
+- Analyze code quality or architecture (reviewers do this)
+- Debug test failures (builders do this)
+- Make implementation decisions (builders and task managers do this)
+- Repeat or summarize full subagent output back into your context
 
-**IMPORTANT:** The full content of the relevant context file MUST be included in each agent's dispatch prompt. Do not just reference the file - paste the content.
+### Context Preservation
+- Keep your messages SHORT - only coordination status updates
+- When a subagent returns, extract ONLY: `status`, `verdict`, and `changes_required` list
+- Do NOT echo back full subagent output
+- Do NOT include reference file contents in your own context
+- Subagents are disposable - they get fresh context each dispatch
 
 ---
 
-## Orchestration Overview
+## Subagent Context Files
 
-```
-┌────────────────────────────────────────────────────────────────────┐
-│                        ORCHESTRATOR                                │
-│  (Main agent following this procedure)                             │
-└────────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌────────────────────────────────────────────────────────────────────┐
-│ STEP 1: Read Plan File                                             │
-│ - Read PLAN.md (or specified plan file)                            │
-│ - Validate it contains feature spec + acceptance criteria          │
-│ - Check for specific task number argument                          │
-└────────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌────────────────────────────────────────────────────────────────────┐
-│ STEP 2: Task Breakdown (if no specific task specified)             │
-│ - Dispatch Task Manager to break down into implementation tasks    │
-│ - Parse YAML output into task list                                 │
-│ - Create TaskList entries for tracking                             │
-└────────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌────────────────────────────────────────────────────────────────────┐
-│ STEP 3: Execution Loop                                             │
-│ For each task in execution_order:                                  │
-│   ├── 3a: Dispatch Go Builder                                      │
-│   ├── 3b: Dispatch Spec Reviewer → fix loop if needed              │
-│   ├── 3c: Dispatch Quality Reviewer → fix loop if needed           │
-│   └── 3d: Mark task complete                                       │
-└────────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌────────────────────────────────────────────────────────────────────┐
-│ STEP 4: Final Validation                                           │
-│ - Run full test suite                                              │
-│ - Run full lint check                                              │
-│ - Run architecture check                                           │
-│ - Generate summary report                                          │
-└────────────────────────────────────────────────────────────────────┘
-```
+Subagents read their own context files. You do NOT read these:
+
+| Agent | Reads | Path |
+|-------|-------|------|
+| Go Builder | Development standards | `~/.claude/skills/go-team/references/builder-context.md` |
+| Go Reviewer | Review checklist | `~/.claude/skills/go-team/references/reviewer-context.md` |
+| Task Manager | (explores codebase) | N/A |
 
 ---
 
 ## Step 1: Read Plan File
 
-When the skill is invoked:
-
 ```
-PLAN_FILE = args.plan or "PLAN.md"        # Default to PLAN.md
-SPECIFIC_TASK = args.task or null         # Optional specific task number
-
-# Read the plan file
+PLAN_FILE = args.plan or "PLAN.md"
+SPECIFIC_TASK = args.task or null
 PLAN_CONTENT = Read(PLAN_FILE)
 
-# Validate plan file exists and has content
 if PLAN_CONTENT is empty:
     error "Plan file not found or empty: {PLAN_FILE}"
-```
-
-**Expected Plan File Format (BDD/Gherkin):**
-```gherkin
-Feature: [Short Name]
-  As a [role]
-  I want [capability]
-  So that [benefit]
-
-  Background:
-    Given [common precondition]
-
-  Scenario: [Behavior 1]
-    Given [context]
-    When [action]
-    Then [outcome]
-
-  Scenario: [Behavior 2]
-    Given [context]
-    When [action]
-    Then [outcome]
 ```
 
 ---
 
 ## Step 2: Task Manager Dispatch
 
-**Skip if:** `SPECIFIC_TASK` is set (tasks already exist from previous run)
+**Skip if:** `SPECIFIC_TASK` is set
 
-### 2.1 Dispatch Task Manager
+### 2.1 Dispatch
 
 ```
 Task tool call:
   subagent_type: "general-purpose"
-  description: "Plan feature from {PLAN_FILE}"
+  description: "Plan {feature}"
   prompt: |
-    ## Task Manager: Plan Feature
+    ## Task Manager: Break down feature into implementation tasks
 
     ### Plan File: {PLAN_FILE}
-
     ### Plan Contents
-    ```markdown
     {PLAN_CONTENT}
+
+    ### Instructions
+    1. Parse the Gherkin feature file (extract Feature, scenarios, background, notes)
+    2. Explore the codebase to find existing patterns, architecture, test helpers
+    3. Identify which hexagonal architecture layers are affected
+       (domain / ports / services / adapters)
+    4. Break down into 2-5 minute tasks following TDD
+    5. Return YAML output (format below)
+
+    Each task MUST include:
+    - Exact file paths to create/modify
+    - Test cases mapped to scenarios (Given/When/Then)
+    - Dependencies on other tasks
+    - TDD steps (write test, implement, validate)
+
+    ### Output Format
+    Return YAML:
+    ```yaml
+    feature: [name]
+    scenarios:
+      - name: "[Scenario name]"
+        given: [steps]
+        when: [action]
+        then: [outcomes]
+    tasks:
+      - id: 1
+        name: "[task name]"
+        layer: [domain|ports|services|adapters]
+        scenarios_covered: [list]
+        files:
+          create: [{path, purpose}]
+          modify: [{path, changes}]
+        test_cases:
+          - scenario: "[name]"
+            test_name: "Test[Name]"
+            given_setup: "[setup]"
+            when_action: "[action]"
+            then_assert: "[assertions]"
+        dependencies: []
+        tdd_steps: [{step, file, description}]
+    execution_order: [1, 2, ...]
     ```
-
-    ### Your Mission
-
-    1. **Parse the Gherkin Feature File**
-       - Extract feature name from `Feature:` line
-       - Extract user story from `As a / I want / So that` (if present)
-       - Extract `Background:` steps (common preconditions)
-       - Extract each `Scenario:` with its Given/When/Then steps
-       - Note any `# Note:` comments for implementation hints
-
-    2. **Map Scenarios to Implementation Tasks**
-       - Each Scenario typically becomes one or more tests
-       - Group related scenarios that test the same component
-       - Background steps inform test setup/fixtures
-       - Given = test precondition/setup
-       - When = action under test
-       - Then = assertion
-
-    3. **Explore the Codebase**
-       - Identify existing patterns and conventions
-       - Find related code that this feature will integrate with
-       - Understand the current architecture (expect hexagonal/onion)
-       - Locate test patterns and helpers
-
-    4. **Identify Architectural Layer**
-       Determine which layers this feature touches:
-       - `internal/core/domain/` - Entities, value objects, domain errors
-       - `internal/core/ports/` - Interface definitions
-       - `internal/core/services/` - Business logic / use cases
-       - `internal/adapters/handlers/` - HTTP/gRPC handlers
-       - `internal/adapters/repositories/` - Database implementations
-
-    5. **Break Down into Tasks**
-       Create tasks that are:
-       - 2-5 minutes each
-       - Follow TDD (test file created before implementation)
-       - Have clear dependencies
-       - Include exact file paths
-       - Reference specific scenarios they implement
-
-    6. **Output Format**
-       Return YAML with this structure:
-
-       ```yaml
-       feature: {FEATURE}
-       user_story: "As a ... I want ... So that ..."
-       background_setup: "[common test setup from Background:]"
-
-       scenarios:
-         - name: "[Scenario name]"
-           given: ["step 1", "step 2"]
-           when: ["action"]
-           then: ["outcome 1", "outcome 2"]
-
-       tasks:
-         - id: 1
-           name: "[task name]"
-           layer: [domain|ports|services|adapters]
-           scenarios_covered:
-             - "[Scenario name this task implements]"
-           files:
-             create:
-               - path: [exact/path]
-                 purpose: [why]
-             modify:
-               - path: [exact/path]
-                 changes: [what]
-           test_cases:
-             - scenario: "[Scenario name]"
-               test_name: "Test[ScenarioName]"
-               given_setup: "[how to implement Given steps]"
-               when_action: "[how to implement When step]"
-               then_assert: "[how to implement Then assertions]"
-           dependencies: []
-           tdd_steps:
-             - step: "Write failing test for scenario"
-               file: [test file]
-               description: [what test verifies]
-             - step: "Implement"
-               file: [impl file]
-               description: [what to implement]
-       execution_order: [1, 2, 3, ...]
-       ```
 ```
 
-### 2.2 Parse Task Manager Output
+### 2.2 Parse Output
 
-Extract from the YAML response:
-- `TASKS[]` - array of task objects
-- `EXECUTION_ORDER[]` - array of task IDs in order
+Extract from YAML: `TASKS[]` and `EXECUTION_ORDER[]`
 
-### 2.3 Create Task Tracking Entries
+### 2.3 Create Tracking Entries
 
 ```
 For each task in TASKS:
   TaskCreate:
     subject: "[{FEATURE}] Task {task.id}: {task.name}"
-    description: |
-      Layer: {task.layer}
-
-      Files to create:
-      {for each file in task.files.create}
-      - {file.path}: {file.purpose}
-      {end for}
-
-      Files to modify:
-      {for each file in task.files.modify}
-      - {file.path}: {file.changes}
-      {end for}
-
-      Acceptance criteria:
-      {for each criterion in task.acceptance_criteria}
-      - {criterion}
-      {end for}
-
-      Dependencies: {task.dependencies}
+    description: "Layer: {task.layer} | Files: {task.files} | Deps: {task.dependencies}"
     activeForm: "Implementing {task.name}"
 ```
 
@@ -247,382 +137,161 @@ For each task in TASKS:
 MAX_REVIEW_CYCLES = 3
 
 For task_id in EXECUTION_ORDER:
-  task = TASKS[task_id]
-
-  # Mark task in progress
   TaskUpdate(task_id, status: "in_progress")
 
-  # 3a: Build Phase
+  # 3a: Build
   builder_output = dispatch_builder(task)
+  if builder_output.status == "blocked": handle_blocker, retry once
 
-  if builder_output.status == "blocked":
-    handle_blocker(builder_output)
-    builder_output = dispatch_builder(task)  # retry
-
-  # 3b: Spec Review Phase
-  spec_cycles = 0
-  loop:
+  # 3b: Spec Review (loop)
+  for cycle in 1..MAX_REVIEW_CYCLES:
     spec_result = dispatch_spec_reviewer(task, builder_output)
-
-    if spec_result.verdict == "APPROVED":
-      break loop
-
-    spec_cycles += 1
-    if spec_cycles >= MAX_REVIEW_CYCLES:
-      escalate_to_user("Spec review failed after {MAX_REVIEW_CYCLES} cycles", task)
-      break loop
-
-    # Fix and retry
+    if spec_result.verdict == "APPROVED": break
     builder_output = dispatch_builder_fix(task, spec_result.changes_required)
+  else: escalate_to_user
 
-  # 3c: Quality Review Phase (only if spec passed)
+  # 3c: Quality Review (only if spec passed, loop)
   if spec_result.verdict == "APPROVED":
-    quality_cycles = 0
-    loop:
+    for cycle in 1..MAX_REVIEW_CYCLES:
       quality_result = dispatch_quality_reviewer(task, builder_output)
-
-      if quality_result.verdict == "APPROVED":
-        break loop
-
-      quality_cycles += 1
-      if quality_cycles >= MAX_REVIEW_CYCLES:
-        escalate_to_user("Quality review failed after {MAX_REVIEW_CYCLES} cycles", task)
-        break loop
-
-      # Fix and retry
+      if quality_result.verdict == "APPROVED": break
       builder_output = dispatch_builder_fix(task, quality_result.changes_required)
+    else: escalate_to_user
 
-  # 3d: Mark complete
+  # 3d: Complete
   TaskUpdate(task_id, status: "completed")
 ```
 
 ---
 
-## Step 3a: Go Builder Dispatch
+## Dispatch Templates
 
-**IMPORTANT:** Include the full content of `[[builder-context.md]]` in this prompt.
+### 3a: Builder Dispatch
 
 ```
-Task tool call:
+Task tool:
   subagent_type: "general-purpose"
   description: "Build task {task.id}"
   prompt: |
-    ## Go Builder: Implement Task {task.id} - {task.name}
+    ## Go Builder: Task {task.id} - {task.name}
 
-    ### Task Context
     Feature: {FEATURE}
     Layer: {task.layer}
     Dependencies completed: {task.dependencies}
 
-    ### Files to Work With
+    Files to create: {task.files.create}
+    Files to modify: {task.files.modify}
+    Acceptance criteria: {task.acceptance_criteria}
+    TDD steps: {task.tdd_steps}
 
-    **Create:**
-    {for each file in task.files.create}
-    - {file.path} ({file.purpose})
-    {end for}
+    **MANDATORY**: Before writing code, Read the file:
+    ~/.claude/skills/go-team/references/builder-context.md
+    Follow ALL standards: TDD (RED/GREEN/REFACTOR), build gates
+    (go build, go test, golangci-lint, go-arch-lint), hex architecture.
 
-    **Modify:**
-    {for each file in task.files.modify}
-    - {file.path}: {file.changes}
-    {end for}
-
-    ### Acceptance Criteria for This Task
-    {for each criterion in task.acceptance_criteria}
-    - [ ] {criterion}
-    {end for}
-
-    ### TDD Steps
-    {for index, step in task.tdd_steps}
-    {index + 1}. {step.step}
-       - File: {step.file}
-       - Description: {step.description}
-    {end for}
-
-    ---
-
-    ## Go Development Standards
-
-    {INJECT: Full content of builder-context.md here}
-
-    This includes:
-    - TDD Workflow (RED -> GREEN -> REFACTOR)
-    - Build Quality Gates (build, test, lint, arch-check)
-    - Hexagonal Architecture patterns and examples
-    - Code patterns (error handling, interfaces, table-driven tests)
-    - Common lint fixes with correct solutions
-    - Systematic debugging (when stuck)
-    - Testing anti-patterns to avoid
-
-    ---
-
-    ### Output Format
     Return YAML:
     ```yaml
-    task_id: {task.id}
-    task_name: "{task.name}"
+    task_id: {id}
     status: complete|blocked|needs_clarification
-
-    files_created:
-      - path: [path]
-        purpose: [why]
-    files_modified:
-      - path: [path]
-        changes: [what changed]
-    tests_added:
-      - name: [test name]
-        file: [test file]
-        covers: [what it tests]
-
-    validation:
-      build: pass|fail
-      test: pass|fail
-      lint: pass|fail
-      arch: pass|fail|skipped
-
-    commits:
-      - hash: [short hash]
-        message: [message]
-
-    summary: [1-2 sentences]
+    files_created: [{path, purpose}]
+    files_modified: [{path, changes}]
+    tests_added: [{name, file, covers}]
+    validation: {build, test, lint, arch}
+    commits: [{hash, message}]
+    summary: "[1-2 sentences]"
     ```
 ```
 
----
-
-## Step 3b: Spec Compliance Review Dispatch
+### 3b: Spec Review Dispatch
 
 ```
-Task tool call:
+Task tool:
   subagent_type: "general-purpose"
   description: "Review spec {task.id}"
   prompt: |
-    ## Go Reviewer: Spec Compliance - Task {task.id}
+    ## Spec Compliance Review: Task {task.id} - {task.name}
 
-    ### Original Specification
     Feature: {FEATURE}
-    Task: {task.name}
+    Acceptance criteria: {task.acceptance_criteria}
+    Builder output summary: {builder_output}
+    Files to review: {file list}
 
-    ### Acceptance Criteria
-    {for each criterion in task.acceptance_criteria}
-    - [ ] {criterion}
-    {end for}
+    Review checklist:
+    1. Requirements match - each criterion fully implemented and tested?
+    2. Under-building - any missing or partial implementations? TODOs?
+    3. Over-building - code beyond spec? Extra features? Premature optimization?
+    4. Test coverage - each requirement has tests? Edge cases? Error paths?
 
-    ### Builder Output
-    ```yaml
-    {builder_output}
-    ```
+    Read the files listed above and verify against criteria.
 
-    ### Files to Review
-    {for each file in task.files.create}
-    - {file.path}
-    {end for}
-    {for each file in task.files.modify}
-    - {file.path}
-    {end for}
-
-    ---
-
-    ## Review Checklist
-
-    ### 1. Requirements Match
-    For EACH acceptance criterion:
-    - Is it FULLY implemented (not partial)?
-    - Is it tested?
-    - Edge cases covered?
-
-    ### 2. Under-Building Check
-    - Any requirements partially implemented?
-    - Any requirements missing entirely?
-    - Any TODO comments for unfinished work?
-
-    ### 3. Over-Building Check
-    - Code not required by spec?
-    - Extra features added?
-    - Premature optimization?
-
-    ### 4. Test Coverage
-    - Each requirement has corresponding test?
-    - Edge cases tested?
-    - Error conditions tested?
-
-    ---
-
-    ## Output Format
     Return YAML:
     ```yaml
     review_type: spec_compliance
-    task_id: {task.id}
-    status: APPROVED|CHANGES_NEEDED
-
-    criteria_assessment:
-      - criterion: "[criterion text]"
-        status: met|partial|missing
-        evidence: "[file:line or test name]"
-        notes: "[if not fully met]"
-
-    under_building:
-      found: true|false
-      issues:
-        - requirement: "[what's missing]"
-          severity: critical|major
-
-    over_building:
-      found: true|false
-      issues:
-        - description: "[what's extra]"
-
-    test_coverage:
-      adequate: true|false
-      missing_tests:
-        - scenario: "[what needs testing]"
-
+    task_id: {id}
     verdict: APPROVED|CHANGES_NEEDED
-    changes_required:
-      - priority: 1
-        description: "[what to fix]"
-        files: "[which files]"
+    criteria_assessment: [{criterion, status, evidence}]
+    changes_required: [{priority, description, files}]
     ```
 ```
 
----
-
-## Step 3c: Code Quality Review Dispatch
-
-**IMPORTANT:** Include the full content of `[[reviewer-context.md]]` in this prompt.
+### 3c: Quality Review Dispatch
 
 ```
-Task tool call:
+Task tool:
   subagent_type: "code-quality-reviewer"
   description: "Review quality {task.id}"
   prompt: |
-    ## Go Reviewer: Code Quality - Task {task.id}
+    ## Code Quality Review: Task {task.id} - {task.name}
 
-    ### Context
     Feature: {FEATURE}
-    Task: {task.name}
     Spec Review: APPROVED
+    Files to review: {file list}
 
-    ### Files to Review
-    {for each file in task.files.create}
-    - {file.path}
-    {end for}
-    {for each file in task.files.modify}
-    - {file.path}
-    {end for}
+    **MANDATORY**: Read the review standards at:
+    ~/.claude/skills/go-team/references/reviewer-context.md
+    Follow ALL review standards including 100 Go Mistakes, hex architecture
+    compliance, error handling, concurrency safety, and testing quality.
 
-    ---
-
-    ## Go Review Standards
-
-    {INJECT: Full content of reviewer-context.md here}
-
-    This includes:
-    - AI-Generated Code Problems checklist (10 categories)
-    - 100 Go Mistakes quick reference
-    - Testing Anti-Patterns
-    - Architecture violation patterns
-    - Review priority order (Critical > Major > Minor)
-    - Output format templates
-
-    ---
-
-    ### Output Format
     Return YAML:
     ```yaml
     review_type: code_quality
-    task_id: {task.id}
-    status: APPROVED|CHANGES_NEEDED
-
-    findings:
-      critical:
-        - issue: "[description]"
-          location: "[file:line]"
-          mistake_ref: "[#number]"
-          fix: "[how to fix]"
-      major:
-        - issue: "[description]"
-          location: "[file:line]"
-          fix: "[how to fix]"
-      minor:
-        - issue: "[description]"
-          suggestion: "[improvement]"
-
-    architecture:
-      compliant: true|false
-      violations:
-        - layer: "[which]"
-          issue: "[what's wrong]"
-
+    task_id: {id}
     verdict: APPROVED|CHANGES_NEEDED
-    changes_required:
-      - priority: 1
-        description: "[what to fix]"
-        location: "[file:line]"
+    findings:
+      critical: [{issue, location, fix}]
+      major: [{issue, location, fix}]
+      minor: [{issue, suggestion}]
+    architecture: {compliant, violations}
+    changes_required: [{priority, description, location}]
     ```
 ```
 
----
-
-## Step 3 (Fix Loop): Builder Fix Dispatch
-
-When a review returns `CHANGES_NEEDED`:
+### 3d: Builder Fix Dispatch
 
 ```
-Task tool call:
+Task tool:
   subagent_type: "general-purpose"
   description: "Fix task {task.id}"
   prompt: |
-    ## Go Builder: Fix Review Feedback - Task {task.id}
+    ## Fix Review Feedback: Task {task.id} - {task.name}
 
-    ### Original Task
     Feature: {FEATURE}
-    Task: {task.name}
+    Changes required:
+    {review_result.changes_required}
 
-    ### Review Feedback to Address
-    {for each change in review_result.changes_required}
-    **Priority {change.priority}:** {change.description}
-    {if change.location}Location: {change.location}{end if}
-    {if change.files}Files: {change.files}{end if}
-    {end for}
+    **MANDATORY**: Read the file:
+    ~/.claude/skills/go-team/references/builder-context.md
 
-    {if review_result.findings}
-    ### Detailed Findings
-    {for each finding in review_result.findings.critical}
-    - [CRITICAL] {finding.issue} at {finding.location}
-      Fix: {finding.fix}
-    {end for}
-    {for each finding in review_result.findings.major}
-    - [MAJOR] {finding.issue} at {finding.location}
-      Fix: {finding.fix}
-    {end for}
-    {end if}
+    Fix each issue in priority order. Run tests after each change.
+    Ensure go build, go test, golangci-lint all pass. Commit fixes.
 
-    ### Instructions
-    1. Address each issue in priority order
-    2. Run tests after each change
-    3. Ensure build/lint/test/arch all pass
-    4. Commit fixes with descriptive message
-
-    ### Output Format
     Return YAML:
     ```yaml
-    task_id: {task.id}
+    task_id: {id}
     status: complete|blocked
-
-    fixes_applied:
-      - issue: "[what was fixed]"
-        location: "[file:line]"
-        change: "[what changed]"
-
-    validation:
-      build: pass|fail
-      test: pass|fail
-      lint: pass|fail
-      arch: pass|fail|skipped
-
-    commits:
-      - hash: [short hash]
-        message: [message]
+    fixes_applied: [{issue, location, change}]
+    validation: {build, test, lint, arch}
+    commits: [{hash, message}]
     ```
 ```
 
@@ -630,149 +299,28 @@ Task tool call:
 
 ## Step 4: Final Validation
 
-After all tasks complete:
+After all tasks complete, run (as the orchestrator, via Bash):
 
 ```
-# Run full validation suite
-Bash: go build ./...
-Bash: go test ./... -race
-Bash: golangci-lint run
-Bash: go-arch-lint check  # if config exists
+go build ./...
+go test ./... -race
+golangci-lint run
+go-arch-lint check  # if config exists
+```
 
-# Generate summary
-summary = {
-  feature: FEATURE,
-  tasks_completed: len(TASKS),
-  total_files_created: count(all files_created),
-  total_tests_added: count(all tests_added),
-  validation: {
-    build: result,
-    test: result,
-    lint: result,
-    arch: result
-  },
-  commits: collect(all commits)
-}
-
-# Report to user
-Output: |
-  ## Go Team Complete: {FEATURE}
-
-  ### Summary
-  - Tasks completed: {summary.tasks_completed}
-  - Files created: {summary.total_files_created}
-  - Tests added: {summary.total_tests_added}
-
-  ### Validation
-  - Build: {summary.validation.build}
-  - Test: {summary.validation.test}
-  - Lint: {summary.validation.lint}
-  - Arch: {summary.validation.arch}
-
-  ### Commits
-  {for each commit in summary.commits}
-  - {commit.hash}: {commit.message}
-  {end for}
+Report to user:
+```
+## Go Team Complete: {FEATURE}
+- Tasks completed: {count}
+- Validation: build={result} test={result} lint={result} arch={result}
+- Commits: {list}
 ```
 
 ---
 
 ## Error Handling
 
-### Blocker Handling
-
-If Builder returns `status: blocked`:
-
-```
-if builder_output.blockers contains "missing dependency":
-  # Check if dependency task exists and is completed
-  # If not, reorder execution
-
-if builder_output.blockers contains "unclear requirement":
-  # Escalate to user with AskUserQuestion
-  question = AskUserQuestion(
-    questions: [{
-      question: "The builder needs clarification: {blocker.description}",
-      header: "Clarify",
-      options: [
-        {label: "Option A", description: "..."},
-        {label: "Option B", description: "..."}
-      ]
-    }]
-  )
-  # Re-dispatch builder with clarification
-
-if builder_output.blockers contains "test failure":
-  # Include test output in next builder dispatch
-  # May need to adjust acceptance criteria
-```
-
-### Escalation
-
-If review cycles exceed MAX_REVIEW_CYCLES:
-
-```
-AskUserQuestion(
-  questions: [{
-    question: "Task {task.id} failed review {MAX_REVIEW_CYCLES} times. How to proceed?",
-    header: "Stuck Task",
-    options: [
-      {label: "Skip task", description: "Mark as blocked and continue"},
-      {label: "Manual fix", description: "I'll fix it manually, then continue"},
-      {label: "Abort", description: "Stop the entire workflow"}
-    ]
-  }]
-)
-```
-
----
-
-## State Management
-
-The orchestrator maintains state between dispatches:
-
-```yaml
-orchestration_state:
-  feature: "{FEATURE}"
-  phase: "planning|executing|validating|complete"
-  current_task_index: 0
-  tasks:
-    - id: 1
-      status: pending|in_progress|completed|blocked
-      builder_output: {...}
-      spec_review_cycles: 0
-      quality_review_cycles: 0
-    - id: 2
-      ...
-  errors: []
-  commits: []
-```
-
-This state allows:
-- Resuming after interruption
-- Tracking progress
-- Debugging failures
-
----
-
-## Quick Reference: Dispatch Sequence
-
-```
-1. Parse arguments
-2. If not skip_planning:
-   - Task(general-purpose, "Plan {feature}", TASK_MANAGER_TEMPLATE)
-   - Parse YAML → TASKS[]
-   - Create TaskList entries
-
-3. For each task:
-   a. TaskUpdate(in_progress)
-   b. Task(general-purpose, "Build task {id}", BUILDER_TEMPLATE)
-   c. Task(general-purpose, "Review spec {id}", SPEC_REVIEWER_TEMPLATE)
-      - Loop: fix → re-review until APPROVED
-   d. Task(code-quality-reviewer, "Review quality {id}", QUALITY_REVIEWER_TEMPLATE)
-      - Loop: fix → re-review until APPROVED
-   e. TaskUpdate(completed)
-
-4. Final validation (Bash commands)
-5. Summary report
-```
+**Blocker: missing dependency** - Check if dependency task completed, reorder if needed
+**Blocker: unclear requirement** - AskUserQuestion with options
+**Blocker: test failure** - Include error output in next builder dispatch
+**Review cycles exceeded (3+)** - AskUserQuestion: skip / manual fix / abort
