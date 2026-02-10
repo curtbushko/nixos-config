@@ -13,12 +13,17 @@ The Iron Law: NO SKILL WITHOUT A FAILING TEST FIRST.
 
 ## Skill Location
 
-Skills live in: `~/.claude/skills/<skill-name>/SKILL.md`
+Skills are managed in the nixos-config repository and deployed via home-manager:
+
+- **Source of truth**: `modules/home/llm/claude/skills/<skill-name>/SKILL.md` (in the nixos-config repo)
+- **Deployed to**: `~/.claude/skills/<skill-name>/SKILL.md` (symlinked by home-manager)
+
+Always create and edit skills in the nix repo, never directly in `~/.claude/skills/`.
 
 ## Directory Structure
 
 ```
-skills/
+modules/home/llm/claude/skills/
   skill-name/
     SKILL.md              # Main reference (required)
     references/           # Optional - detailed docs
