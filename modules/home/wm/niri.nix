@@ -35,6 +35,10 @@ in {
   imports = [inputs.niri.homeModules.niri];
 
   config = mkIf cfg.enable {
+    home.sessionVariables = {
+      WAYLAND_DISPLAY = "wayland-1";
+    };
+
     home.packages = with pkgs;
     [
       alacritty
@@ -67,7 +71,7 @@ in {
       settings = {
         environment = {
           CLUTTER_BACKEND = "wayland";
-          DISPLAY = ":0";
+          # DISPLAY is managed by niri's built-in xwayland integration
           GDK_BACKEND = "wayland,x11";
           GSK_RENDERER = "ngl"; # 2025-09-16 - seems to be needed for nautilus to work
           MOZ_ENABLE_WAYLAND = "1";
@@ -90,8 +94,8 @@ in {
           { command = [ "systemctl" "--user" "import-environment" "WAYLAND_DISPLAY" "XDG_CURRENT_DESKTOP" ]; }
           { command = [ "wl-paste --type text --watch cliphist store" ]; }
           { command = [ "wl-paste --type image --watch cliphist store" ]; }
-          { command = [ "xwayland-satellite" ":0" ]; }
-          { command = [ "xprop -root -f _XWAYLAND_GLOBAL_OUTPUT_SCALE 32c -set _XWAYLAND_GLOBAL_OUTPUT_SCALE 1" ]; }
+          # xwayland-satellite is managed by niri's built-in integration (since 25.08)
+          # niri creates X11 sockets, exports DISPLAY, and spawns xwayland-satellite on demand
         ];
         input = {
           keyboard.xkb.layout = "us";
