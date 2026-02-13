@@ -1,48 +1,29 @@
 # Zig Team Orchestration Procedure
 
-## ORCHESTRATOR RULES (CRITICAL - READ FIRST)
+## ORCHESTRATOR RULES
 
-**You are a COORDINATOR, not a worker. Your ONLY job is to dispatch subagents and track status.**
+**You are a COORDINATOR, not a worker.**
 
 ### You MUST:
-- Read the plan file (Step 1)
+- Read the plan file
 - Dispatch subagents using the Task tool
-- Extract status from subagent output (APPROVED / CHANGES_NEEDED / blocked / complete)
-- Track task progress in `.tasks/status.yaml` (persistent, file-based)
-- Optionally use TaskCreate / TaskUpdate for in-session UI visibility
-- Run final validation commands (Step 4)
+- Extract ONLY `status`, `verdict`, and `changes_required` from subagent output
+- Track task progress in `.tasks/status.yaml`
+- Optionally use TaskCreate/TaskUpdate for in-session UI visibility
+- Run final validation commands
 - Report summary to user
 
 ### You MUST NOT:
-- Read source code files (builders and reviewers do this)
-- Read `builder-context.md` or `reviewer-context.md` (subagents read these themselves)
-- Read `.tasks/task-*.yaml` detail files (builders and reviewers read these)
+- Read source code, `builder-context.md`, `reviewer-context.md`, or `.tasks/task-*.yaml`
 - Write or edit any source code
-- Analyze code quality or architecture (reviewers do this)
-- Debug test failures (builders do this)
-- Make implementation decisions (builders and task managers do this)
+- Analyze code quality or debug test failures
 - Repeat or summarize full subagent output back into your context
 
 ### Context Preservation
-- Keep your messages SHORT - only coordination status updates
+- Keep messages SHORT - only coordination status
 - When a subagent returns, extract ONLY: `status`, `verdict`, and `changes_required` list
 - Do NOT echo back full subagent output
-- Do NOT read task detail files - only read `.tasks/status.yaml`
 - Subagents are disposable - they get fresh context each dispatch
-
----
-
-## Subagent Context Files
-
-Subagents read their own context files. You do NOT read these:
-
-| Agent | Reads | Path |
-|-------|-------|------|
-| Zig Builder | Development standards | `~/.claude/skills/zig-team/references/builder-context.md` |
-| Zig Builder | Task details | `.tasks/task-{id}.yaml` |
-| Zig Reviewer | Review checklist | `~/.claude/skills/zig-team/references/reviewer-context.md` |
-| Zig Reviewer | Task details | `.tasks/task-{id}.yaml` |
-| Task Manager | (explores codebase) | N/A |
 
 ---
 
@@ -56,25 +37,20 @@ PLAN_CONTENT = Read(PLAN_FILE)
 if PLAN_CONTENT is empty:
     error "Plan file not found or empty: {PLAN_FILE}"
 
-# Check for existing task state
 if file_exists(".tasks/status.yaml"):
     STATUS = Read(".tasks/status.yaml")
-    if SPECIFIC_TASK is set:
-        Skip to Step 3 (execute only that task)
-    if STATUS has pending tasks:
-        Skip to Step 3 (resume from where we left off)
+    if SPECIFIC_TASK is set: Skip to Step 3 (that task only)
+    if STATUS has pending tasks: Skip to Step 3 (resume)
 ```
 
 ---
 
 ## Step 2: Task Manager Dispatch
 
-**Skip if:** `.tasks/status.yaml` exists with pending tasks, or `SPECIFIC_TASK` is set
-
-### 2.1 Dispatch
+**Skip if:** `.tasks/status.yaml` exists with pending tasks, or `SPECIFIC_TASK` is set.
 
 ```
-Task tool call:
+Task tool:
   subagent_type: "general-purpose"
   description: "Plan {feature}"
   prompt: |
@@ -95,7 +71,7 @@ Task tool call:
 
     First, create the directory: `mkdir -p .tasks`
 
-    **File 1: `.tasks/status.yaml`** (coordination summary)
+    **`.tasks/status.yaml`** (coordination summary)
     ```yaml
     feature: "[feature name]"
     plan: "{PLAN_FILE}"
@@ -105,64 +81,34 @@ Task tool call:
         name: "[task name]"
         status: pending
         deps: []
-      - id: 2
-        name: "[task name]"
-        status: pending
-        deps: [1]
     ```
 
-    **File 2: `.tasks/task-{id}.yaml`** (one per task, full details)
+    **`.tasks/task-{id}.yaml`** (one per task, full details)
     ```yaml
     id: 1
     name: "[task name]"
     feature: "[feature name]"
-    scenarios_covered:
-      - "[Scenario name]"
+    scenarios_covered: ["[Scenario name]"]
     files:
-      create:
-        - path: "[file path]"
-          purpose: "[why]"
-      modify:
-        - path: "[file path]"
-          changes: "[what to change]"
+      create: [{path, purpose}]
+      modify: [{path, changes}]
     test_cases:
       - scenario: "[name]"
         test_name: "test [scenario_snake_case]"
         given_setup: "[setup]"
         when_action: "[action]"
         then_assert: "[std.testing assertions]"
-    acceptance_criteria:
-      - "[criterion from scenarios]"
+    acceptance_criteria: ["[criterion from scenarios]"]
     tdd_steps:
       - step: "[red|green|refactor]"
         file: "[file path]"
         description: "[what to do]"
     ```
 
-    After writing all files, return a short confirmation:
-    ```yaml
-    status: complete
-    tasks_created: [count]
-    execution_order: [1, 2, ...]
-    ```
+    Return: `status: complete`, `tasks_created: N`, `execution_order: [...]`
 ```
 
-### 2.2 Verify Output
-
-```
-Verify .tasks/status.yaml exists: Read(".tasks/status.yaml")
-Extract EXECUTION_ORDER and task count
-```
-
-### 2.3 Create In-Session Tracking (Optional)
-
-```
-For each task in .tasks/status.yaml:
-  TaskCreate:
-    subject: "[{FEATURE}] Task {task.id}: {task.name}"
-    description: "Details: .tasks/task-{task.id}.yaml"
-    activeForm: "Implementing {task.name}"
-```
+Verify `.tasks/status.yaml` exists after dispatch. Optionally create TaskCreate entries for UI tracking.
 
 ---
 
@@ -170,47 +116,24 @@ For each task in .tasks/status.yaml:
 
 ```
 MAX_REVIEW_CYCLES = 3
-STATUS = Read(".tasks/status.yaml")
 
-For task in STATUS.tasks (following execution_order):
-  if task.status == "completed": continue
-  if SPECIFIC_TASK is set and task.id != SPECIFIC_TASK: continue
+For each task (following execution_order, skip completed):
+  Check dependencies are completed
+  Set task status to in_progress in .tasks/status.yaml
 
-  # Check dependencies
-  for dep in task.deps:
-    if dep.status != "completed": error "Dependency task {dep} not complete"
-
-  # Update status to in_progress
-  Edit .tasks/status.yaml: set task.status to "in_progress"
-
-  # 3a: Build
-  builder_output = dispatch_builder(task)
-  if builder_output.status == "blocked": handle_blocker, retry once
-
-  # 3b: Spec Review (loop)
-  for cycle in 1..MAX_REVIEW_CYCLES:
-    spec_result = dispatch_spec_reviewer(task, builder_output)
-    if spec_result.verdict == "APPROVED": break
-    builder_output = dispatch_builder_fix(task, spec_result.changes_required)
-  else: escalate_to_user
-
-  # 3c: Quality Review (only if spec passed, loop)
-  if spec_result.verdict == "APPROVED":
-    for cycle in 1..MAX_REVIEW_CYCLES:
-      quality_result = dispatch_quality_reviewer(task, builder_output)
-      if quality_result.verdict == "APPROVED": break
-      builder_output = dispatch_builder_fix(task, quality_result.changes_required)
-    else: escalate_to_user
-
-  # 3d: Complete
-  Edit .tasks/status.yaml: set task.status to "completed"
+  3a: dispatch_builder(task)
+  3b: dispatch_spec_reviewer (loop up to MAX_REVIEW_CYCLES)
+      If CHANGES_NEEDED: dispatch_builder_fix, re-review
+  3c: dispatch_quality_reviewer (only if spec passed, same loop)
+      If CHANGES_NEEDED: dispatch_builder_fix, re-review
+  3d: Set task status to completed
 ```
 
 ---
 
 ## Dispatch Templates
 
-### 3a: Builder Dispatch
+### 3a: Builder
 
 ```
 Task tool:
@@ -238,7 +161,7 @@ Task tool:
     ```
 ```
 
-### 3b: Spec Review Dispatch
+### 3b: Spec Reviewer
 
 ```
 Task tool:
@@ -251,13 +174,8 @@ Task tool:
     Builder output summary: {builder_output.summary}
     Files changed: {builder_output.files_created + files_modified}
 
-    Review checklist:
-    1. Requirements match - each criterion fully implemented and tested?
-    2. Under-building - any missing or partial implementations? TODOs?
-    3. Over-building - code beyond spec? Extra features? Premature optimization?
-    4. Test coverage - each requirement has tests? Edge cases? Error paths?
-
-    Read the source files listed above and verify against the task's acceptance criteria.
+    Check: 1) Requirements match 2) No under-building 3) No over-building 4) Test coverage
+    Read the source files and verify against acceptance criteria.
 
     Return YAML:
     ```yaml
@@ -269,7 +187,7 @@ Task tool:
     ```
 ```
 
-### 3c: Quality Review Dispatch
+### 3c: Quality Reviewer
 
 ```
 Task tool:
@@ -281,10 +199,7 @@ Task tool:
     Spec Review: APPROVED
     Files to review: {file list from builder output}
 
-    **MANDATORY**: Read the review standards at:
-    `~/.claude/skills/zig-team/references/reviewer-context.md`
-    Follow ALL review standards including memory safety, allocator usage,
-    error handling, comptime usage, and testing quality.
+    **Read review standards from:** `~/.claude/skills/zig-team/references/reviewer-context.md`
 
     Return YAML:
     ```yaml
@@ -300,7 +215,7 @@ Task tool:
     ```
 ```
 
-### 3d: Builder Fix Dispatch
+### 3d: Builder Fix
 
 ```
 Task tool:
@@ -315,8 +230,7 @@ Task tool:
     Changes required:
     {review_result.changes_required}
 
-    Fix each issue in priority order. Run tests after each change.
-    Ensure zig build && zig build test pass. Commit fixes.
+    Fix each issue. Run zig build && zig build test. Commit fixes.
 
     Return YAML:
     ```yaml
@@ -332,29 +246,16 @@ Task tool:
 
 ## Step 4: Final Validation
 
-After all tasks complete, run (as the orchestrator, via Bash):
+Run via Bash: `zig build && zig build test && zig fmt --check src/`
 
-```
-zig build
-zig build test
-zig fmt --check src/
-```
-
-Report to user:
-```
-## Zig Team Complete: {FEATURE}
-- Tasks completed: {count}
-- Task state: .tasks/status.yaml
-- Validation: build={result} test={result} fmt={result}
-- Commits: {list}
-```
+Report: feature name, tasks completed, validation results, commits.
 
 ---
 
 ## Error Handling
 
-**Blocker: missing dependency** - Check `.tasks/status.yaml` for dep status, reorder if needed
-**Blocker: unclear requirement** - AskUserQuestion with options
-**Blocker: compile error** - Include error output in next builder dispatch
-**Review cycles exceeded (3+)** - AskUserQuestion: skip / manual fix / abort
-**Stale .tasks/ state** - If task files reference nonexistent source files, re-run Task Manager
+- **Missing dependency**: Check `.tasks/status.yaml`, reorder if needed
+- **Unclear requirement**: AskUserQuestion with options
+- **Compile error**: Include error output in next builder dispatch
+- **Review cycles exceeded (3+)**: AskUserQuestion: skip / manual fix / abort
+- **Stale .tasks/**: If task files reference nonexistent source, re-run Task Manager

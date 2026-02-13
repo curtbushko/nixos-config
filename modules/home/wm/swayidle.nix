@@ -46,10 +46,6 @@ in {
       };
       timeouts = [
         {
-          timeout = 900;
-          command = "${pkgs.niri}/bin/niri msg action power-off-monitors";
-        }
-        {
           timeout = 2700;
           command = ''${pkgs.coreutils}/bin/sleep 10; ${suspend-script}/bin/suspend-script'';
         }

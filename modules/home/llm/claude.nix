@@ -175,6 +175,8 @@ in {
     };
   };
 
+    programs.zsh.shellAliases.yolo = "claude --dangerously-skip-permissions";
+
     # Deploy Claude Code global instructions (CLAUDE.md)
     home.file.".claude/CLAUDE.md".source = ./claude/CLAUDE.md;
 

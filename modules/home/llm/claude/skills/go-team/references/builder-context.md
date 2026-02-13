@@ -18,6 +18,8 @@ go build ./...
 go test ./...
 golangci-lint run
 go-arch-lint check  # if config exists
+make lint            # if Makefile exists
+task lint            # if Taskfile exists (fallback if no Makefile)
 ```
 
 ---

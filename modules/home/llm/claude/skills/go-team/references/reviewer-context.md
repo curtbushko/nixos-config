@@ -4,6 +4,16 @@ This context is injected into every Go Reviewer agent dispatch.
 
 ---
 
+## Lint Verification
+
+Before approving, confirm lint passes. Run whichever applies:
+```bash
+make lint            # if Makefile exists
+task lint            # if Taskfile exists (fallback if no Makefile)
+```
+
+---
+
 ## Review Priority Order
 
 ```

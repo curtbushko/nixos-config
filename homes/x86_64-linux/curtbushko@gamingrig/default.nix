@@ -53,6 +53,7 @@
     pkgs.cachix
     pkgs.tailscale
     inputs.neovim.packages.${pkgs.stdenv.hostPlatform.system}.default
+    pkgs.xclicker
   ];
 
   #---------------------------------------------------------------------

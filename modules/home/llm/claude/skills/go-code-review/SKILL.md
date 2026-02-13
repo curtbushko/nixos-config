@@ -11,7 +11,7 @@ Auto-triggers when reviewing Go code to catch common mistakes from https://100go
 ## Review Process
 
 1. Read Go file(s) mentioned
-2. Check against patterns in [[knowledge-base.md]]
+2. Check against patterns in `knowledge-base.md`
 3. Report issues with:
    - Severity (Critical/Major/Minor)
    - Location (file:line)
@@ -37,7 +37,7 @@ Auto-triggers when reviewing Go code to catch common mistakes from https://100go
 
 ## Reference Knowledge Base
 
-See [[knowledge-base.md]] for full 100 Go mistakes reference.
+See `knowledge-base.md` for full 100 Go mistakes reference.
 
 ## Example Output
 

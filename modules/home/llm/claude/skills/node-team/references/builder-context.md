@@ -16,6 +16,8 @@ Before completing, ALL must pass:
 ```bash
 npm test
 npm run lint
+make lint            # if Makefile exists
+task lint            # if Taskfile exists (fallback if no Makefile)
 ```
 
 ---

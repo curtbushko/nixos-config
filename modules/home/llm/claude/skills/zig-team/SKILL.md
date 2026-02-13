@@ -14,16 +14,9 @@ arguments:
 
 ## EXECUTION INSTRUCTIONS
 
-**When this skill is invoked, you MUST follow the orchestration procedure in [[references/orchestration.md]].**
+**Follow the orchestration procedure in `references/orchestration.md`.**
 
-The orchestration procedure defines:
-1. How to read and validate the plan file
-2. Exact prompts to dispatch each agent
-3. The review loop with fix cycles
-4. Error handling and escalation
-5. Final validation steps
-
-**Do not deviate from the orchestration procedure.** The templates ensure consistent context is passed to each sub-agent.
+**DO NOT read** `references/builder-context.md`, `references/reviewer-context.md`, or `references/examples.md`. Those are read by subagents only.
 
 ---
 
@@ -173,7 +166,7 @@ Each agent is a subagent dispatched via the Task tool. The orchestrator does NOT
 | **Zig Builder** | Implements tasks following TDD, Zig best practices | `references/builder-context.md` |
 | **Zig Reviewer** | Two-stage review: spec compliance then code quality | `references/reviewer-context.md` |
 
-See [[references/orchestration.md]] for exact dispatch templates and the coordination loop.
+See `references/orchestration.md` for exact dispatch templates and the coordination loop.
 
 ---
 
