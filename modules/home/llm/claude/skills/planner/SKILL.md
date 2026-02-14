@@ -101,9 +101,13 @@ Generate the PLAN.md file using the Gherkin format below and write it with the W
 
 #### 2a. Parse and Display Existing Content
 
-Read the existing output file. Parse and display a summary:
+Read the existing output file. Parse and display a summary, starting with the Implementation Status:
 
 ```
+Implementation Status:
+  [x] {completed_scenario_name}
+  [ ] {pending_scenario_name}
+
 Existing Feature: {name}
   As a {role}
   I want {capability}
@@ -143,11 +147,20 @@ Preserve ALL existing content (feature, user story, background, existing scenari
 
 ---
 
-## Output Format (Gherkin)
+## Output Format
 
-The generated file MUST follow this exact format:
+The generated file MUST follow this exact format. The file has two sections:
+1. **Implementation Status** - A markdown checklist tracking scenario completion (top)
+2. **Feature Specification** - The Gherkin feature spec
 
-```gherkin
+```markdown
+## Implementation Status
+
+- [ ] {SCENARIO_NAME}
+- [ ] {SCENARIO_NAME_2}
+
+---
+
 Feature: {FEATURE_NAME}
   As a {ROLE}
   I want {CAPABILITY}
@@ -174,7 +187,15 @@ Feature: {FEATURE_NAME}
   # Note: {ANOTHER_HINT}
 ```
 
-Rules:
+### Implementation Status Rules
+- The `## Implementation Status` section MUST appear FIRST in the file
+- One `- [ ]` line per scenario, using the exact scenario name
+- When a scenario is fully implemented and tested, change `[ ]` to `[x]`
+- In Append Mode, add new checklist entries for new scenarios (preserve existing checkmarks)
+- The `---` separator divides the status from the spec
+- On session resume, read only this section first to determine what work remains
+
+### Gherkin Rules
 - Feature line has NO leading indentation
 - User story lines are indented 2 spaces
 - Background, Scenario are indented 2 spaces

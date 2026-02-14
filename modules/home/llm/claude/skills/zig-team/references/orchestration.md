@@ -37,6 +37,10 @@ PLAN_CONTENT = Read(PLAN_FILE)
 if PLAN_CONTENT is empty:
     error "Plan file not found or empty: {PLAN_FILE}"
 
+# On resume: read the Implementation Status checklist at the top of PLAN.md first.
+# This shows which scenarios are [x] done vs [ ] pending without re-reading code.
+# Display completed/pending counts to user.
+
 if file_exists(".tasks/status.yaml"):
     STATUS = Read(".tasks/status.yaml")
     if SPECIFIC_TASK is set: Skip to Step 3 (that task only)
@@ -127,6 +131,9 @@ For each task (following execution_order, skip completed):
   3c: dispatch_quality_reviewer (only if spec passed, same loop)
       If CHANGES_NEEDED: dispatch_builder_fix, re-review
   3d: Set task status to completed
+  # Update PLAN.md checklist: mark completed scenarios as [x]
+  For each scenario covered by this task (from .tasks/task-{id}.yaml scenarios_covered):
+    Edit PLAN_FILE: change "- [ ] {scenario_name}" to "- [x] {scenario_name}"
 ```
 
 ---
