@@ -1,6 +1,24 @@
 # Go Reviewer Context Injection
 
 This context is injected into every Go Reviewer agent dispatch.
+The reviewer performs BOTH spec compliance AND code quality review in a single pass.
+
+---
+
+## Review Procedure
+
+1. **Read task acceptance criteria** from `.tasks/task-{id}.yaml`
+2. **Read build results** from `.tasks/result-{id}-build.yaml`
+3. **Stage 1: Spec Compliance** - Check requirements, under/over-building
+4. **Stage 2: Code Quality** - Only if Stage 1 passes. Check patterns below.
+5. **Write results** to `.tasks/result-{id}-review.yaml`
+6. **Return only verdict** to orchestrator (2 lines max)
+
+### Spec Compliance Checks
+- Each acceptance criterion fully implemented and tested?
+- Under-building: missing or partial implementations? TODOs?
+- Over-building: code beyond spec? Extra features? Premature optimization?
+- Test coverage: each requirement has tests? Edge cases? Error paths?
 
 ---
 
@@ -445,72 +463,50 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 ## Output Format
 
-### Spec Compliance Review
+### File Output (write to `.tasks/result-{task.id}-review.yaml`)
 
 ```yaml
-review_type: spec_compliance
 task_id: {task.id}
-status: APPROVED|CHANGES_NEEDED
 
-criteria_assessment:
-  - criterion: "[criterion text]"
-    status: met|partial|missing
-    evidence: "[file:line or test name]"
-    notes: "[if not fully met]"
+spec_compliance:
+  criteria_assessment:
+    - criterion: "[criterion text]"
+      status: met|partial|missing
+      evidence: "[file:line or test name]"
+  under_building: {found: true|false, issues: [...]}
+  over_building: {found: true|false, issues: [...]}
 
-under_building:
-  found: true|false
-  issues: [...]
+code_quality:
+  findings:
+    critical:
+      - issue: "[description]"
+        location: "[file:line]"
+        mistake_ref: "[#number]"
+        category: "[error_handling|concurrency|resource_leak|nil_safety]"
+        fix: "[how to fix]"
+    major:
+      - issue: "[description]"
+        location: "[file:line]"
+        fix: "[how to fix]"
+    minor:
+      - issue: "[description]"
+        suggestion: "[improvement]"
 
-over_building:
-  found: true|false
-  issues: [...]
+  architecture:
+    compliant: true|false
+    violations: [...]
 
 verdict: APPROVED|CHANGES_NEEDED
 changes_required:
   - priority: 1
     description: "[what to fix]"
+    location: "[file:line]"
 ```
 
-### Code Quality Review
+### Return to Orchestrator (2 lines max)
 
-```yaml
-review_type: code_quality
-task_id: {task.id}
-status: APPROVED|CHANGES_NEEDED
-
-findings:
-  critical:
-    - issue: "[description]"
-      location: "[file:line]"
-      mistake_ref: "[#number]"
-      category: "[error_handling|concurrency|resource_leak|nil_safety]"
-      fix: "[how to fix]"
-  major:
-    - issue: "[description]"
-      location: "[file:line]"
-      fix: "[how to fix]"
-  minor:
-    - issue: "[description]"
-      suggestion: "[improvement]"
-
-ai_code_problems:
-  - pattern: "[which AI mistake pattern]"
-    location: "[file:line]"
-    fix: "[correct approach]"
-
-testing_issues:
-  - anti_pattern: "[which anti-pattern]"
-    location: "[test file:line]"
-    fix: "[how to improve]"
-
-architecture:
-  compliant: true|false
-  violations: [...]
-
+Write full results to the file above. Return ONLY this to the orchestrator:
+```
 verdict: APPROVED|CHANGES_NEEDED
-changes_required:
-  - priority: 1
-    description: "[what to fix]"
-    location: "[file:line]"
+issues: [count of changes_required]
 ```

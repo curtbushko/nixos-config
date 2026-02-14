@@ -37,8 +37,8 @@ The Zig Team skill implements features you define. You provide the WHAT (feature
 │                      TASK MANAGER (subagent)                     │
 │  - Explores codebase for patterns and conventions               │
 │  - Breaks down into 2-5 minute implementation tasks             │
-│  - Identifies which files/modules to create or modify           │
-│  - Determines task dependencies and execution order             │
+│  - Writes task specs to .tasks/ files                           │
+│  - Returns only task count to orchestrator                      │
 └─────────────────────────┬───────────────────────────────────────┘
                           │
                           ▼
@@ -49,28 +49,19 @@ The Zig Team skill implements features you define. You provide the WHAT (feature
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                    ZIG BUILDER (subagent)                         │
-│  - Reads: references/builder-context.md                          │
+│  - Reads: .tasks/task-{id}.yaml + builder-context.md             │
 │  - Follows TDD: RED -> GREEN -> REFACTOR                         │
-│  - Uses std.testing for tests                                    │
-│  - Proper error handling with error unions                       │
-│  - Explicit allocator management                                 │
-│  - Runs zig build, zig test                                      │
-│  - Commits with descriptive messages                             │
+│  - Writes results to .tasks/result-{id}-build.yaml               │
+│  - Returns only status + 1-line summary to orchestrator          │
 └─────────────────────────┬───────────────────────────────────────┘
                           │
                           ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                    ZIG REVIEWER (subagent)                        │
-│  - Reads: references/reviewer-context.md                         │
-│  Stage 1: Spec Compliance                                        │
-│  - Does implementation match acceptance criteria?               │
-│  - No under-building or over-building?                          │
-│                                                                 │
-│  Stage 2: Code Quality (only if Stage 1 passes)                 │
-│  - Zig idioms and best practices                                │
-│  - Memory safety and allocator usage                            │
-│  - Error handling patterns                                      │
-│  - Comptime usage                                               │
+│  - Reads: .tasks/task-{id}.yaml + result-{id}-build.yaml         │
+│  - Combined review: spec compliance THEN code quality            │
+│  - Writes results to .tasks/result-{id}-review.yaml              │
+│  - Returns only verdict + issue count to orchestrator            │
 └─────────────────────────┬───────────────────────────────────────┘
                           │
               ┌───────────┴───────────┐
@@ -83,9 +74,16 @@ The Zig Team skill implements features you define. You provide the WHAT (feature
                                       ▼
                               ┌───────────────┐
                               │  ZIG BUILDER  │
-                              │ (with feedback)│
+                              │ (reads review │
+                              │  from file)   │
                               └───────────────┘
 ```
+
+### Context-Saving Design
+
+All subagents communicate via `.tasks/` files. The orchestrator never reads
+source code or detailed results - it only tracks status and dispatches agents.
+This keeps the orchestrator's context lean across many tasks.
 
 ## Invocation
 
@@ -164,7 +162,7 @@ Each agent is a subagent dispatched via the Task tool. The orchestrator does NOT
 |-------|------|--------------|
 | **Task Manager** | Parses plan, explores codebase, creates task breakdown | (explores codebase directly) |
 | **Zig Builder** | Implements tasks following TDD, Zig best practices | `references/builder-context.md` |
-| **Zig Reviewer** | Two-stage review: spec compliance then code quality | `references/reviewer-context.md` |
+| **Zig Reviewer** | Combined review: spec compliance + code quality in one pass | `references/reviewer-context.md` |
 
 See `references/orchestration.md` for exact dispatch templates and the coordination loop.
 
@@ -172,12 +170,11 @@ See `references/orchestration.md` for exact dispatch templates and the coordinat
 
 ## Anti-Patterns
 
-- Orchestrator reading source code or reference files (subagents do this)
-- Running code quality review before spec compliance
-- Skipping either review stage
+- Orchestrator reading source code, result files, or reference files (subagents do this)
+- Orchestrator echoing or summarizing full subagent output (wastes context)
+- Inlining plan content into dispatch prompts (reference by file path instead)
 - Dispatching multiple builders in parallel (causes conflicts)
 - Proceeding with CHANGES_NEEDED status
-- Builder reading plan files instead of receiving full context
 - Ignoring memory safety issues
 - Marking task complete with failing tests
 

@@ -283,109 +283,39 @@ Results in 3 tasks:
 
 ## Builder-Reviewer Cycle Example
 
-### Builder Output (Task 3: Auth Middleware)
+### Builder Output
 
-```yaml
-task_id: 3
-task_name: "Implement auth middleware"
+Builder writes full results to `.tasks/result-3-build.yaml` and returns to orchestrator:
+```
 status: complete
-
-files_created:
-  - path: src/middleware/auth.js
-    purpose: JWT authentication middleware
-    lines: 52
-  - path: src/middleware/__tests__/auth.test.js
-    purpose: Middleware tests
-    lines: 95
-
-tests_added:
-  - name: "should attach user context for valid token"
-    file: src/middleware/__tests__/auth.test.js
-    covers: Valid token grants access
-  - name: "should return 401 for expired token"
-    file: src/middleware/__tests__/auth.test.js
-    covers: Expired token rejection
-  - name: "should return 401 for malformed token"
-    file: src/middleware/__tests__/auth.test.js
-    covers: Malformed token rejection
-  - name: "should return 401 for missing token"
-    file: src/middleware/__tests__/auth.test.js
-    covers: Missing token rejection
-  - name: "should skip auth for /health"
-    file: src/middleware/__tests__/auth.test.js
-    covers: Health check bypass
-
-validation:
-  test: pass
-  lint: pass
-
-commits:
-  - hash: a1b2c3d
-    message: "feat(auth): add JWT authentication middleware with tests"
-
-summary: Implemented JWT auth middleware with token validation, user context extraction, and health endpoint bypass.
+summary: Implemented JWT auth middleware with token validation and health bypass
 ```
 
-### Reviewer Output (Code Quality - CHANGES_NEEDED)
+### Reviewer Output
 
-```yaml
-review_type: code_quality
-task_id: 3
-status: CHANGES_NEEDED
-
-findings:
-  critical:
-    - issue: "JWT secret accessed directly from process.env"
-      location: "src/middleware/auth.js:5"
-      category: "security"
-      fix: "Import from centralized config module"
-  major:
-    - issue: "Error message leaks JWT library details"
-      location: "src/middleware/auth.js:22"
-      fix: "Return generic 'invalid token' message, log details server-side"
-  minor: []
-
-ai_code_problems:
-  - pattern: "Environment and Configuration"
-    location: "src/middleware/auth.js:5"
-    fix: "Use centralized config instead of process.env"
-
+Reviewer reads `.tasks/result-3-build.yaml`, reviews source files, writes full
+findings to `.tasks/result-3-review.yaml`, and returns to orchestrator:
+```
 verdict: CHANGES_NEEDED
-changes_required:
-  - priority: 1
-    description: "Use config module for JWT_SECRET"
-    location: "src/middleware/auth.js:5"
-  - priority: 2
-    description: "Don't leak JWT library errors to client"
-    location: "src/middleware/auth.js:22"
+issues: 2
 ```
 
 ### Builder Fix Cycle
 
-Builder receives feedback and fixes:
-
-```yaml
-task_id: 3
+Builder reads feedback from `.tasks/result-3-review.yaml`, fixes each issue,
+writes results to `.tasks/result-3-fix-1.yaml`, and returns:
+```
 status: complete
-
-fixes_applied:
-  - issue: "JWT secret from process.env"
-    location: "src/middleware/auth.js:5"
-    change: "Imported from config module"
-  - issue: "JWT library error leaked to client"
-    location: "src/middleware/auth.js:22"
-    change: "Return generic message, log details with logger"
-
-validation:
-  test: pass
-  lint: pass
-
-commits:
-  - hash: e4f5g6h
-    message: "fix(auth): use config module and sanitize error responses"
+fixes: 2
 ```
 
 Reviewer runs again -> APPROVED -> Task complete.
+
+### Key Point: File-Based Communication
+
+All detailed results live in `.tasks/result-*.yaml` files. The orchestrator
+only sees 2-line status summaries, preserving its context window for
+coordinating across multiple tasks.
 
 ---
 

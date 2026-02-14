@@ -1,5 +1,26 @@
 # Zig Reviewer Context
 
+The reviewer performs BOTH spec compliance AND code quality review in a single pass.
+
+---
+
+## Review Procedure
+
+1. **Read task acceptance criteria** from `.tasks/task-{id}.yaml`
+2. **Read build results** from `.tasks/result-{id}-build.yaml`
+3. **Stage 1: Spec Compliance** - Check requirements, under/over-building
+4. **Stage 2: Code Quality** - Only if Stage 1 passes. Check patterns below.
+5. **Write results** to `.tasks/result-{id}-review.yaml`
+6. **Return only verdict** to orchestrator (2 lines max)
+
+### Spec Compliance Checks
+- Each acceptance criterion fully implemented and tested?
+- Under-building: missing or partial implementations? TODOs?
+- Over-building: code beyond spec? Extra features? Premature optimization?
+- Test coverage: each requirement has tests? Edge cases? Error paths?
+
+---
+
 ## Lint Verification
 
 Before approving, confirm lint passes. Run whichever applies:
@@ -97,30 +118,35 @@ defer file.close();
 
 ---
 
-## Output Formats
+## Output Format
 
-### Spec Compliance Review
+### File Output (write to `.tasks/result-{task.id}-review.yaml`)
+
 ```yaml
-review_type: spec_compliance
 task_id: {task.id}
+
+spec_compliance:
+  criteria_assessment: [{criterion, status: met|partial|missing, evidence}]
+  under_building: {found, issues}
+  over_building: {found, issues}
+
+code_quality:
+  findings:
+    critical: [{issue, location, category, fix}]
+    major: [{issue, location, fix}]
+    minor: [{issue, suggestion}]
+  memory_safety: {issues_found}
+  error_handling: {complete, gaps}
+  testing: {allocator_checked, error_cases_tested}
+
 verdict: APPROVED|CHANGES_NEEDED
-criteria_assessment: [{criterion, status: met|partial|missing, evidence}]
-under_building: {found, issues}
-over_building: {found, issues}
-changes_required: [{priority, description}]
+changes_required: [{priority, description, location}]
 ```
 
-### Code Quality Review
-```yaml
-review_type: code_quality
-task_id: {task.id}
+### Return to Orchestrator (2 lines max)
+
+Write full results to the file above. Return ONLY this to the orchestrator:
+```
 verdict: APPROVED|CHANGES_NEEDED
-findings:
-  critical: [{issue, location, category, fix}]
-  major: [{issue, location, fix}]
-  minor: [{issue, suggestion}]
-memory_safety: {issues_found}
-error_handling: {complete, gaps}
-testing: {allocator_checked, error_cases_tested}
-changes_required: [{priority, description, location}]
+issues: [count of changes_required]
 ```

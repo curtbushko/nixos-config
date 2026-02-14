@@ -157,6 +157,8 @@ std.debug.print("val = {}\n", .{v}); // Runtime debugging
 
 ## Output Format
 
+### File Output (write to `.tasks/result-{task.id}-build.yaml`)
+
 ```yaml
 task_id: {task.id}
 task_name: "{task.name}"
@@ -167,4 +169,22 @@ tests_added: [{name, file, covers}]
 validation: {build, test, fmt}
 commits: [{hash, message}]
 summary: "[1-2 sentences]"
+```
+
+### Return to Orchestrator (2 lines max)
+
+Write full results to the file above. Return ONLY this to the orchestrator:
+```
+status: complete|blocked
+summary: [one sentence]
+```
+
+### Fix Mode
+
+When fixing review feedback, read the review results from `.tasks/result-{task.id}-review.yaml`
+and fix each issue in `changes_required`. Write fix results to `.tasks/result-{task.id}-fix-{cycle}.yaml`
+using the same format above. Return ONLY:
+```
+status: complete|blocked
+fixes: [count of issues fixed]
 ```

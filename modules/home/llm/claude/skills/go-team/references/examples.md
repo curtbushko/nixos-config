@@ -231,92 +231,36 @@ Results in 3 tasks:
 
 ## Builder-Reviewer Cycle Example
 
-### Builder Output (Task 3: Health Handler)
+### Builder Output
 
-```yaml
-task_id: 3
-task_name: "Implement health HTTP handler"
+Builder writes full results to `.tasks/result-3-build.yaml` and returns to orchestrator:
+```
 status: complete
-
-files_created:
-  - path: internal/adapters/handlers/http/health.go
-    purpose: Health check HTTP handler
-    lines: 45
-  - path: internal/adapters/handlers/http/health_test.go
-    purpose: Handler tests
-    lines: 78
-
-tests_added:
-  - name: TestHealthHandler_Healthy
-    file: internal/adapters/handlers/http/health_test.go
-    covers: Returns 200 when all checks pass
-  - name: TestHealthHandler_Unhealthy
-    file: internal/adapters/handlers/http/health_test.go
-    covers: Returns 503 when any check fails
-
-validation:
-  build: pass
-  test: pass
-  lint: pass
-  arch: pass
-
-commits:
-  - hash: a1b2c3d
-    message: "feat(health): add health check HTTP handler with tests"
-
-summary: Implemented health endpoint returning appropriate HTTP codes with JSON body.
+summary: Implemented health endpoint with HTTP codes and JSON body
 ```
 
-### Reviewer Output (Code Quality - CHANGES_NEEDED)
+### Reviewer Output
 
-```yaml
-review_type: code_quality
-task_id: 3
-status: CHANGES_NEEDED
-
-findings:
-  critical: []
-  major:
-    - issue: "Error from health check ignored"
-      location: "internal/adapters/handlers/http/health.go:32"
-      mistake_ref: "#53"
-      fix: "Capture error: `status, err := h.service.Check(ctx)`"
-  minor: []
-
-ai_code_problems:
-  - pattern: "Error Handling Issues"
-    location: "internal/adapters/handlers/http/health.go:32"
-    fix: "Check and handle the error from service.Check()"
-
+Reviewer reads `.tasks/result-3-build.yaml`, reviews source files, writes full
+findings to `.tasks/result-3-review.yaml`, and returns to orchestrator:
+```
 verdict: CHANGES_NEEDED
-changes_required:
-  - priority: 1
-    description: "Handle error from service.Check()"
-    location: "internal/adapters/handlers/http/health.go:32"
+issues: 1
 ```
 
 ### Builder Fix Cycle
 
-Builder receives feedback and fixes:
-
-```yaml
-task_id: 3
+Builder reads feedback from `.tasks/result-3-review.yaml`, fixes each issue,
+writes results to `.tasks/result-3-fix-1.yaml`, and returns:
+```
 status: complete
-
-fixes_applied:
-  - issue: "Error from health check ignored"
-    location: "internal/adapters/handlers/http/health.go:32"
-    change: "Added error handling for service.Check() call"
-
-validation:
-  build: pass
-  test: pass
-  lint: pass
-  arch: pass
-
-commits:
-  - hash: e4f5g6h
-    message: "fix(health): handle service check error"
+fixes: 1
 ```
 
-Reviewer runs again → APPROVED → Task complete.
+Reviewer runs again -> APPROVED -> Task complete.
+
+### Key Point: File-Based Communication
+
+All detailed results live in `.tasks/result-*.yaml` files. The orchestrator
+only sees 2-line status summaries, preserving its context window for
+coordinating across multiple tasks.

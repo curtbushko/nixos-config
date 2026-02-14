@@ -1,29 +1,47 @@
 # Zig Team Orchestration Procedure
 
-## ORCHESTRATOR RULES
+## ORCHESTRATOR RULES (CRITICAL - READ FIRST)
 
-**You are a COORDINATOR, not a worker.**
+**You are a COORDINATOR, not a worker. Your ONLY job is to dispatch subagents and track status.**
+
+### Context Budget Warning
+
+Your context window is finite. Every subagent return consumes context. You MUST:
+- Keep dispatches concise - reference files by path, don't inline content
+- Extract ONLY status/verdict from subagent returns - ignore everything else
+- Never read source code, task detail files, or result files
+- Never echo or summarize subagent output
 
 ### You MUST:
-- Read the plan file
+- Read the plan file (Step 1)
 - Dispatch subagents using the Task tool
-- Extract ONLY `status`, `verdict`, and `changes_required` from subagent output
-- Track task progress in `.tasks/status.yaml`
-- Optionally use TaskCreate/TaskUpdate for in-session UI visibility
-- Run final validation commands
+- Extract ONLY: `status` and `verdict` from subagent output (1-2 lines)
+- Track task progress via `.tasks/status.yaml`
+- Run final validation commands (Step 4)
 - Report summary to user
 
 ### You MUST NOT:
-- Read source code, `builder-context.md`, `reviewer-context.md`, or `.tasks/task-*.yaml`
+- Read source code files
+- Read `builder-context.md` or `reviewer-context.md`
+- Read `.tasks/task-*.yaml` or `.tasks/result-*.yaml` detail files
 - Write or edit any source code
 - Analyze code quality or debug test failures
-- Repeat or summarize full subagent output back into your context
+- Repeat or summarize subagent output
 
-### Context Preservation
-- Keep messages SHORT - only coordination status
-- When a subagent returns, extract ONLY: `status`, `verdict`, and `changes_required` list
-- Do NOT echo back full subagent output
-- Subagents are disposable - they get fresh context each dispatch
+---
+
+## Subagent Context Files
+
+Subagents read their own context. You do NOT read these:
+
+| Agent | Reads | Path |
+|-------|-------|------|
+| Zig Builder | Development standards | `~/.claude/skills/zig-team/references/builder-context.md` |
+| Zig Builder | Task details | `.tasks/task-{id}.yaml` |
+| Zig Reviewer | Review checklist | `~/.claude/skills/zig-team/references/reviewer-context.md` |
+| Zig Reviewer | Task details | `.tasks/task-{id}.yaml` |
+| Zig Reviewer | Build results | `.tasks/result-{id}-build.yaml` |
+| Task Manager | (explores codebase) | N/A |
 
 ---
 
@@ -37,8 +55,7 @@ PLAN_CONTENT = Read(PLAN_FILE)
 if PLAN_CONTENT is empty:
     error "Plan file not found or empty: {PLAN_FILE}"
 
-# On resume: read the Implementation Status checklist at the top of PLAN.md first.
-# This shows which scenarios are [x] done vs [ ] pending without re-reading code.
+# On resume: read Implementation Status checklist at top of PLAN.md.
 # Display completed/pending counts to user.
 
 if file_exists(".tasks/status.yaml"):
@@ -60,20 +77,17 @@ Task tool:
   prompt: |
     ## Task Manager: Break down feature into implementation tasks
 
-    ### Plan File: {PLAN_FILE}
-    ### Plan Contents
-    {PLAN_CONTENT}
-
     ### Instructions
-    1. Parse the Gherkin feature file (extract Feature, scenarios, background, notes)
-    2. Explore the codebase to find existing patterns, module structure, test helpers
-    3. Identify module organization (src/, build.zig, lib.zig/main.zig)
-    4. Break down into 2-5 minute tasks following TDD
-    5. Write output files (format below)
+    1. Read the plan file at: {PLAN_FILE}
+    2. Parse the Gherkin feature (extract Feature, scenarios, background, notes)
+    3. Explore the codebase to find existing patterns, module structure, test helpers
+    4. Identify module organization (src/, build.zig, lib.zig/main.zig)
+    5. Break down into 2-5 minute tasks following TDD
+    6. Write output files (format below)
 
     ### Output: Write these files
 
-    First, create the directory: `mkdir -p .tasks`
+    First: `mkdir -p .tasks`
 
     **`.tasks/status.yaml`** (coordination summary)
     ```yaml
@@ -92,6 +106,7 @@ Task tool:
     id: 1
     name: "[task name]"
     feature: "[feature name]"
+    plan_file: "{PLAN_FILE}"
     scenarios_covered: ["[Scenario name]"]
     files:
       create: [{path, purpose}]
@@ -109,30 +124,49 @@ Task tool:
         description: "[what to do]"
     ```
 
-    Return: `status: complete`, `tasks_created: N`, `execution_order: [...]`
+    **IMPORTANT**: Return ONLY this short confirmation (nothing else):
+    ```
+    status: complete
+    tasks_created: [count]
+    execution_order: [1, 2, ...]
+    ```
 ```
 
-Verify `.tasks/status.yaml` exists after dispatch. Optionally create TaskCreate entries for UI tracking.
+Verify `.tasks/status.yaml` exists after dispatch.
 
 ---
 
 ## Step 3: Execution Loop
 
 ```
-MAX_REVIEW_CYCLES = 3
+MAX_REVIEW_CYCLES = 2
 
 For each task (following execution_order, skip completed):
   Check dependencies are completed
   Set task status to in_progress in .tasks/status.yaml
 
-  3a: dispatch_builder(task)
-  3b: dispatch_spec_reviewer (loop up to MAX_REVIEW_CYCLES)
-      If CHANGES_NEEDED: dispatch_builder_fix, re-review
-  3c: dispatch_quality_reviewer (only if spec passed, same loop)
-      If CHANGES_NEEDED: dispatch_builder_fix, re-review
-  3d: Set task status to completed
+  # 3a: Build
+  dispatch_builder(task)
+  # Builder writes results to .tasks/result-{id}-build.yaml
+  # Builder returns only: "status: complete|blocked, summary: [1 line]"
+
+  # 3b: Combined Review (spec + quality in one pass)
+  for cycle in 1..MAX_REVIEW_CYCLES:
+    dispatch_reviewer(task)
+    # Reviewer writes results to .tasks/result-{id}-review.yaml
+    # Reviewer returns only: "verdict: APPROVED|CHANGES_NEEDED, issues: [count]"
+
+    if verdict == "APPROVED": break
+
+    dispatch_builder_fix(task, cycle)
+    # Builder reads feedback from .tasks/result-{id}-review.yaml
+    # Builder returns only: "status: complete|blocked, fixes: [count]"
+  else: escalate_to_user
+
+  # 3c: Complete
+  Set task status to completed
   # Update PLAN.md checklist: mark completed scenarios as [x]
-  For each scenario covered by this task (from .tasks/task-{id}.yaml scenarios_covered):
+  For each scenario covered by this task:
     Edit PLAN_FILE: change "- [ ] {scenario_name}" to "- [x] {scenario_name}"
 ```
 
@@ -149,80 +183,54 @@ Task tool:
   prompt: |
     ## Zig Builder: Task {task.id} - {task.name}
 
-    **Read your task details from:** `.tasks/task-{task.id}.yaml`
-    **Read your coding standards from:** `~/.claude/skills/zig-team/references/builder-context.md`
+    Read these files FIRST:
+    1. Your task spec: `.tasks/task-{task.id}.yaml`
+    2. Your coding standards: `~/.claude/skills/zig-team/references/builder-context.md`
 
     Follow ALL standards: TDD (RED/GREEN/REFACTOR), build gates
     (zig build, zig build test), Zig idioms, error unions, allocator management.
 
-    Return YAML:
-    ```yaml
-    task_id: {id}
-    status: complete|blocked|needs_clarification
-    files_created: [{path, purpose}]
-    files_modified: [{path, changes}]
-    tests_added: [{name, file, covers}]
-    validation: {build, test, fmt}
-    commits: [{hash, message}]
-    summary: "[1-2 sentences]"
+    Write your full results to: `.tasks/result-{task.id}-build.yaml`
+    (format defined in builder-context.md)
+
+    **IMPORTANT**: Return ONLY this to the orchestrator (2 lines max):
+    ```
+    status: complete|blocked
+    summary: [one sentence]
     ```
 ```
 
-### 3b: Spec Reviewer
-
-```
-Task tool:
-  subagent_type: "general-purpose"
-  description: "Review spec {task.id}"
-  prompt: |
-    ## Spec Compliance Review: Task {task.id} - {task.name}
-
-    **Read task acceptance criteria from:** `.tasks/task-{task.id}.yaml`
-    Builder output summary: {builder_output.summary}
-    Files changed: {builder_output.files_created + files_modified}
-
-    Check: 1) Requirements match 2) No under-building 3) No over-building 4) Test coverage
-    Read the source files and verify against acceptance criteria.
-
-    Return YAML:
-    ```yaml
-    review_type: spec_compliance
-    task_id: {id}
-    verdict: APPROVED|CHANGES_NEEDED
-    criteria_assessment: [{criterion, status, evidence}]
-    changes_required: [{priority, description, files}]
-    ```
-```
-
-### 3c: Quality Reviewer
+### 3b: Combined Review
 
 ```
 Task tool:
   subagent_type: "code-quality-reviewer"
-  description: "Review quality {task.id}"
+  description: "Review task {task.id}"
   prompt: |
-    ## Code Quality Review: Task {task.id} - {task.name}
+    ## Combined Review: Task {task.id} - {task.name}
 
-    Spec Review: APPROVED
-    Files to review: {file list from builder output}
+    Read these files FIRST:
+    1. Task acceptance criteria: `.tasks/task-{task.id}.yaml`
+    2. Build results: `.tasks/result-{task.id}-build.yaml`
+    3. Review standards: `~/.claude/skills/zig-team/references/reviewer-context.md`
 
-    **Read review standards from:** `~/.claude/skills/zig-team/references/reviewer-context.md`
+    Perform BOTH reviews in a single pass:
+    - Stage 1: Spec compliance (requirements met? under/over-building?)
+    - Stage 2: Code quality (only if Stage 1 passes)
 
-    Return YAML:
-    ```yaml
-    review_type: code_quality
-    task_id: {id}
+    Read the source files listed in the build results and review them.
+
+    Write your full results to: `.tasks/result-{task.id}-review.yaml`
+    (format defined in reviewer-context.md)
+
+    **IMPORTANT**: Return ONLY this to the orchestrator (2 lines max):
+    ```
     verdict: APPROVED|CHANGES_NEEDED
-    findings:
-      critical: [{issue, location, fix}]
-      major: [{issue, location, fix}]
-      minor: [{issue, suggestion}]
-    memory_safety: {issues_found}
-    changes_required: [{priority, description, location}]
+    issues: [count of changes_required]
     ```
 ```
 
-### 3d: Builder Fix
+### 3c: Builder Fix
 
 ```
 Task tool:
@@ -231,21 +239,21 @@ Task tool:
   prompt: |
     ## Fix Review Feedback: Task {task.id} - {task.name}
 
-    **Read task details from:** `.tasks/task-{task.id}.yaml`
-    **Read coding standards from:** `~/.claude/skills/zig-team/references/builder-context.md`
+    Read these files FIRST:
+    1. Task spec: `.tasks/task-{task.id}.yaml`
+    2. Review feedback: `.tasks/result-{task.id}-review.yaml`
+    3. Coding standards: `~/.claude/skills/zig-team/references/builder-context.md`
 
-    Changes required:
-    {review_result.changes_required}
+    Fix each issue listed in `changes_required` in priority order.
+    Run zig build && zig build test after each change. Commit fixes.
 
-    Fix each issue. Run zig build && zig build test. Commit fixes.
+    Write your fix results to: `.tasks/result-{task.id}-fix-{cycle}.yaml`
+    (same format as build results)
 
-    Return YAML:
-    ```yaml
-    task_id: {id}
+    **IMPORTANT**: Return ONLY this to the orchestrator (2 lines max):
+    ```
     status: complete|blocked
-    fixes_applied: [{issue, location, change}]
-    validation: {build, test, fmt}
-    commits: [{hash, message}]
+    fixes: [count of issues fixed]
     ```
 ```
 
@@ -264,5 +272,5 @@ Report: feature name, tasks completed, validation results, commits.
 - **Missing dependency**: Check `.tasks/status.yaml`, reorder if needed
 - **Unclear requirement**: AskUserQuestion with options
 - **Compile error**: Include error output in next builder dispatch
-- **Review cycles exceeded (3+)**: AskUserQuestion: skip / manual fix / abort
+- **Review cycles exceeded (2)**: AskUserQuestion: skip / manual fix / abort
 - **Stale .tasks/**: If task files reference nonexistent source, re-run Task Manager

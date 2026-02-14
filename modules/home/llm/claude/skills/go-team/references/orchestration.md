@@ -4,37 +4,37 @@
 
 **You are a COORDINATOR, not a worker. Your ONLY job is to dispatch subagents and track status.**
 
+### Context Budget Warning
+
+Your context window is finite. Every subagent return consumes context. You MUST:
+- Keep dispatches concise - reference files by path, don't inline content
+- Extract ONLY status/verdict from subagent returns - ignore everything else
+- Never read source code, task detail files, or result files
+- Never echo or summarize subagent output
+
 ### You MUST:
 - Read the plan file (Step 1)
 - Dispatch subagents using the Task tool
-- Extract status from subagent output (APPROVED / CHANGES_NEEDED / blocked / complete)
-- Track task progress in `.tasks/status.yaml` (persistent, file-based)
-- Optionally use TaskCreate / TaskUpdate for in-session UI visibility
+- Extract ONLY: `status` and `verdict` from subagent output (1-2 lines)
+- Track task progress via `.tasks/status.yaml`
 - Run final validation commands (Step 4)
 - Report summary to user
 
 ### You MUST NOT:
-- Read source code files (builders and reviewers do this)
-- Read `builder-context.md` or `reviewer-context.md` (subagents read these themselves)
-- Read `.tasks/task-*.yaml` detail files (builders and reviewers read these)
+- Read source code files
+- Read `builder-context.md`, `reviewer-context.md`, or `examples.md`
+- Read `.tasks/task-*.yaml` or `.tasks/result-*.yaml` detail files
 - Write or edit any source code
-- Analyze code quality or architecture (reviewers do this)
-- Debug test failures (builders do this)
-- Make implementation decisions (builders and task managers do this)
-- Repeat or summarize full subagent output back into your context
-
-### Context Preservation
-- Keep your messages SHORT - only coordination status updates
-- When a subagent returns, extract ONLY: `status`, `verdict`, and `changes_required` list
-- Do NOT echo back full subagent output
-- Do NOT read task detail files - only read `.tasks/status.yaml`
-- Subagents are disposable - they get fresh context each dispatch
+- Analyze code quality or architecture
+- Debug test failures
+- Make implementation decisions
+- Repeat or summarize subagent output
 
 ---
 
 ## Subagent Context Files
 
-Subagents read their own context files. You do NOT read these:
+Subagents read their own context. You do NOT read these:
 
 | Agent | Reads | Path |
 |-------|-------|------|
@@ -42,6 +42,7 @@ Subagents read their own context files. You do NOT read these:
 | Go Builder | Task details | `.tasks/task-{id}.yaml` |
 | Go Reviewer | Review checklist | `~/.claude/skills/go-team/references/reviewer-context.md` |
 | Go Reviewer | Task details | `.tasks/task-{id}.yaml` |
+| Go Reviewer | Build results | `.tasks/result-{id}-build.yaml` |
 | Task Manager | (explores codebase) | N/A |
 
 ---
@@ -56,8 +57,7 @@ PLAN_CONTENT = Read(PLAN_FILE)
 if PLAN_CONTENT is empty:
     error "Plan file not found or empty: {PLAN_FILE}"
 
-# On resume: read the Implementation Status checklist at the top of PLAN.md first.
-# This shows which scenarios are [x] done vs [ ] pending without re-reading code.
+# On resume: read Implementation Status checklist at top of PLAN.md.
 # Display completed/pending counts to user.
 
 # Check for existing task state
@@ -84,21 +84,18 @@ Task tool call:
   prompt: |
     ## Task Manager: Break down feature into implementation tasks
 
-    ### Plan File: {PLAN_FILE}
-    ### Plan Contents
-    {PLAN_CONTENT}
-
     ### Instructions
-    1. Parse the Gherkin feature file (extract Feature, scenarios, background, notes)
-    2. Explore the codebase to find existing patterns, architecture, test helpers
-    3. Identify which hexagonal architecture layers are affected
+    1. Read the plan file at: {PLAN_FILE}
+    2. Parse the Gherkin feature (extract Feature, scenarios, background, notes)
+    3. Explore the codebase to find existing patterns, architecture, test helpers
+    4. Identify which hexagonal architecture layers are affected
        (domain / ports / services / adapters)
-    4. Break down into 2-5 minute tasks following TDD
-    5. Write output files (format below)
+    5. Break down into 2-5 minute tasks following TDD
+    6. Write output files (format below)
 
     ### Output: Write these files
 
-    First, create the directory: `mkdir -p .tasks`
+    First: `mkdir -p .tasks`
 
     **File 1: `.tasks/status.yaml`** (coordination summary)
     ```yaml
@@ -116,11 +113,12 @@ Task tool call:
         deps: [1]
     ```
 
-    **File 2: `.tasks/task-{id}.yaml`** (one per task, full details)
+    **File 2: `.tasks/task-{id}.yaml`** (one per task, full details for builder/reviewer)
     ```yaml
     id: 1
     name: "[task name]"
     feature: "[feature name]"
+    plan_file: "{PLAN_FILE}"
     layer: "[domain|ports|services|adapters]"
     scenarios_covered:
       - "[Scenario name]"
@@ -145,8 +143,8 @@ Task tool call:
         description: "[what to do]"
     ```
 
-    After writing all files, return a short confirmation:
-    ```yaml
+    **IMPORTANT**: Return ONLY this short confirmation (nothing else):
+    ```
     status: complete
     tasks_created: [count]
     execution_order: [1, 2, ...]
@@ -160,22 +158,12 @@ Verify .tasks/status.yaml exists: Read(".tasks/status.yaml")
 Extract EXECUTION_ORDER and task count
 ```
 
-### 2.3 Create In-Session Tracking (Optional)
-
-```
-For each task in .tasks/status.yaml:
-  TaskCreate:
-    subject: "[{FEATURE}] Task {task.id}: {task.name}"
-    description: "Details: .tasks/task-{task.id}.yaml"
-    activeForm: "Implementing {task.name}"
-```
-
 ---
 
 ## Step 3: Execution Loop
 
 ```
-MAX_REVIEW_CYCLES = 3
+MAX_REVIEW_CYCLES = 2
 STATUS = Read(".tasks/status.yaml")
 
 For task in STATUS.tasks (following execution_order):
@@ -190,28 +178,27 @@ For task in STATUS.tasks (following execution_order):
   Edit .tasks/status.yaml: set task.status to "in_progress"
 
   # 3a: Build
-  builder_output = dispatch_builder(task)
-  if builder_output.status == "blocked": handle_blocker, retry once
+  dispatch_builder(task)
+  # Builder writes results to .tasks/result-{id}-build.yaml
+  # Builder returns only: "status: complete|blocked, summary: [1 line]"
 
-  # 3b: Spec Review (loop)
+  # 3b: Combined Review (spec + quality in one pass)
   for cycle in 1..MAX_REVIEW_CYCLES:
-    spec_result = dispatch_spec_reviewer(task, builder_output)
-    if spec_result.verdict == "APPROVED": break
-    builder_output = dispatch_builder_fix(task, spec_result.changes_required)
+    dispatch_reviewer(task)
+    # Reviewer writes results to .tasks/result-{id}-review.yaml
+    # Reviewer returns only: "verdict: APPROVED|CHANGES_NEEDED, issues: [count]"
+
+    if verdict == "APPROVED": break
+
+    dispatch_builder_fix(task, cycle)
+    # Builder reads feedback from .tasks/result-{id}-review.yaml
+    # Builder returns only: "status: complete|blocked, fixes: [count]"
   else: escalate_to_user
 
-  # 3c: Quality Review (only if spec passed, loop)
-  if spec_result.verdict == "APPROVED":
-    for cycle in 1..MAX_REVIEW_CYCLES:
-      quality_result = dispatch_quality_reviewer(task, builder_output)
-      if quality_result.verdict == "APPROVED": break
-      builder_output = dispatch_builder_fix(task, quality_result.changes_required)
-    else: escalate_to_user
-
-  # 3d: Complete
+  # 3c: Complete
   Edit .tasks/status.yaml: set task.status to "completed"
   # Update PLAN.md checklist: mark completed scenarios as [x]
-  For each scenario covered by this task (from .tasks/task-{id}.yaml scenarios_covered):
+  For each scenario covered by this task (from status.yaml task name):
     Edit PLAN_FILE: change "- [ ] {scenario_name}" to "- [x] {scenario_name}"
 ```
 
@@ -228,88 +215,54 @@ Task tool:
   prompt: |
     ## Go Builder: Task {task.id} - {task.name}
 
-    **Read your task details from:** `.tasks/task-{task.id}.yaml`
-    **Read your coding standards from:** `~/.claude/skills/go-team/references/builder-context.md`
+    Read these files FIRST:
+    1. Your task spec: `.tasks/task-{task.id}.yaml`
+    2. Your coding standards: `~/.claude/skills/go-team/references/builder-context.md`
 
     Follow ALL standards: TDD (RED/GREEN/REFACTOR), build gates
     (go build, go test, golangci-lint, go-arch-lint), hex architecture.
 
-    Return YAML:
-    ```yaml
-    task_id: {id}
-    status: complete|blocked|needs_clarification
-    files_created: [{path, purpose}]
-    files_modified: [{path, changes}]
-    tests_added: [{name, file, covers}]
-    validation: {build, test, lint, arch}
-    commits: [{hash, message}]
-    summary: "[1-2 sentences]"
+    Write your full results to: `.tasks/result-{task.id}-build.yaml`
+    (format defined in builder-context.md)
+
+    **IMPORTANT**: Return ONLY this to the orchestrator (2 lines max):
+    ```
+    status: complete|blocked
+    summary: [one sentence]
     ```
 ```
 
-### 3b: Spec Review Dispatch
-
-```
-Task tool:
-  subagent_type: "general-purpose"
-  description: "Review spec {task.id}"
-  prompt: |
-    ## Spec Compliance Review: Task {task.id} - {task.name}
-
-    **Read task acceptance criteria from:** `.tasks/task-{task.id}.yaml`
-    Builder output summary: {builder_output.summary}
-    Files changed: {builder_output.files_created + files_modified}
-
-    Review checklist:
-    1. Requirements match - each criterion fully implemented and tested?
-    2. Under-building - any missing or partial implementations? TODOs?
-    3. Over-building - code beyond spec? Extra features? Premature optimization?
-    4. Test coverage - each requirement has tests? Edge cases? Error paths?
-
-    Read the source files listed above and verify against the task's acceptance criteria.
-
-    Return YAML:
-    ```yaml
-    review_type: spec_compliance
-    task_id: {id}
-    verdict: APPROVED|CHANGES_NEEDED
-    criteria_assessment: [{criterion, status, evidence}]
-    changes_required: [{priority, description, files}]
-    ```
-```
-
-### 3c: Quality Review Dispatch
+### 3b: Combined Review Dispatch
 
 ```
 Task tool:
   subagent_type: "code-quality-reviewer"
-  description: "Review quality {task.id}"
+  description: "Review task {task.id}"
   prompt: |
-    ## Code Quality Review: Task {task.id} - {task.name}
+    ## Combined Review: Task {task.id} - {task.name}
 
-    Spec Review: APPROVED
-    Files to review: {file list from builder output}
+    Read these files FIRST:
+    1. Task acceptance criteria: `.tasks/task-{task.id}.yaml`
+    2. Build results: `.tasks/result-{task.id}-build.yaml`
+    3. Review standards: `~/.claude/skills/go-team/references/reviewer-context.md`
 
-    **MANDATORY**: Read the review standards at:
-    `~/.claude/skills/go-team/references/reviewer-context.md`
-    Follow ALL review standards including 100 Go Mistakes, hex architecture
-    compliance, error handling, concurrency safety, and testing quality.
+    Perform BOTH reviews in a single pass:
+    - Stage 1: Spec compliance (requirements met? under/over-building?)
+    - Stage 2: Code quality (only if Stage 1 passes)
 
-    Return YAML:
-    ```yaml
-    review_type: code_quality
-    task_id: {id}
+    Read the source files listed in the build results and review them.
+
+    Write your full results to: `.tasks/result-{task.id}-review.yaml`
+    (format defined in reviewer-context.md)
+
+    **IMPORTANT**: Return ONLY this to the orchestrator (2 lines max):
+    ```
     verdict: APPROVED|CHANGES_NEEDED
-    findings:
-      critical: [{issue, location, fix}]
-      major: [{issue, location, fix}]
-      minor: [{issue, suggestion}]
-    architecture: {compliant, violations}
-    changes_required: [{priority, description, location}]
+    issues: [count of changes_required]
     ```
 ```
 
-### 3d: Builder Fix Dispatch
+### 3c: Builder Fix Dispatch
 
 ```
 Task tool:
@@ -318,22 +271,22 @@ Task tool:
   prompt: |
     ## Fix Review Feedback: Task {task.id} - {task.name}
 
-    **Read task details from:** `.tasks/task-{task.id}.yaml`
-    **Read coding standards from:** `~/.claude/skills/go-team/references/builder-context.md`
+    Read these files FIRST:
+    1. Task spec: `.tasks/task-{task.id}.yaml`
+    2. Review feedback: `.tasks/result-{task.id}-review.yaml`
+    3. Coding standards: `~/.claude/skills/go-team/references/builder-context.md`
 
-    Changes required:
-    {review_result.changes_required}
+    Fix each issue listed in `changes_required` in priority order.
+    Run tests after each change. Ensure go build, go test, golangci-lint all pass.
+    Commit fixes.
 
-    Fix each issue in priority order. Run tests after each change.
-    Ensure go build, go test, golangci-lint all pass. Commit fixes.
+    Write your fix results to: `.tasks/result-{task.id}-fix-{cycle}.yaml`
+    (same format as build results)
 
-    Return YAML:
-    ```yaml
-    task_id: {id}
+    **IMPORTANT**: Return ONLY this to the orchestrator (2 lines max):
+    ```
     status: complete|blocked
-    fixes_applied: [{issue, location, change}]
-    validation: {build, test, lint, arch}
-    commits: [{hash, message}]
+    fixes: [count of issues fixed]
     ```
 ```
 
@@ -354,9 +307,8 @@ Report to user:
 ```
 ## Go Team Complete: {FEATURE}
 - Tasks completed: {count}
-- Task state: .tasks/status.yaml
 - Validation: build={result} test={result} lint={result} arch={result}
-- Commits: {list}
+- Task state: .tasks/status.yaml
 ```
 
 ---
@@ -366,5 +318,5 @@ Report to user:
 **Blocker: missing dependency** - Check `.tasks/status.yaml` for dep status, reorder if needed
 **Blocker: unclear requirement** - AskUserQuestion with options
 **Blocker: test failure** - Include error output in next builder dispatch
-**Review cycles exceeded (3+)** - AskUserQuestion: skip / manual fix / abort
+**Review cycles exceeded (2)** - AskUserQuestion: skip / manual fix / abort
 **Stale .tasks/ state** - If task files reference nonexistent source files, re-run Task Manager
