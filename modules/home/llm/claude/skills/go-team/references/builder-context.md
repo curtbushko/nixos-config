@@ -127,6 +127,59 @@ func TestFeature(t *testing.T) {
 }
 ```
 
+### Reader/Writer (io.Reader / io.Writer) — Preferred Pattern
+
+The `io.Reader` and `io.Writer` interfaces are the most important interfaces in Go. Nearly everything that deals with streams of bytes (files, network connections, buffers, compression, HTTP bodies) implements one or both. Their power comes from their simplicity: just one method each (`Read` and `Write`), which makes them endlessly composable.
+
+```go
+// Accept io.Reader/io.Writer to maximize composability
+func ProcessData(r io.Reader) ([]byte, error) {
+    return io.ReadAll(r)
+}
+
+// Works with files, buffers, HTTP bodies, compression, etc.
+f, _ := os.Open("data.txt")
+ProcessData(f)
+
+var buf bytes.Buffer
+ProcessData(&buf)
+
+ProcessData(resp.Body)
+```
+
+**Prefer `io.Reader`/`io.Writer` parameters over concrete types** (like `*os.File` or `*bytes.Buffer`) whenever you deal with byte streams. This makes your code testable, composable, and reusable.
+
+### Embedding for Composition (Decorator / Wrapper Pattern) — Preferred Pattern
+
+Go doesn't have inheritance. The stdlib relies heavily on struct embedding and wrapping to layer behavior. Examples: `bufio.Reader` wrapping an `io.Reader`, `io.LimitedReader`, `io.TeeReader`, `cipher.StreamReader`, `gzip.Reader`. Each takes a simpler type and adds functionality on top.
+
+```go
+// Wrap an io.Reader to add counting behavior
+type CountingReader struct {
+    io.Reader
+    BytesRead int64
+}
+
+func (cr *CountingReader) Read(p []byte) (int, error) {
+    n, err := cr.Reader.Read(p)
+    cr.BytesRead += int64(n)
+    return n, err
+}
+
+// Usage: layer behaviors via wrapping
+func NewCountingReader(r io.Reader) *CountingReader {
+    return &CountingReader{Reader: r}
+}
+
+// Compose decorators: counting + buffered + gzip
+raw, _ := os.Open("data.gz")
+counted := NewCountingReader(raw)
+buffered := bufio.NewReader(counted)
+gz, _ := gzip.NewReader(buffered)
+```
+
+**Prefer composition via embedding/wrapping over large interfaces.** When you need new behavior, wrap an existing small interface rather than expanding the interface.
+
 ### Domain Entity Example
 ```go
 // internal/core/domain/user.go

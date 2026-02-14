@@ -251,6 +251,55 @@ type Reader interface {
 
 ---
 
+## Preferred Coding Patterns (MUST CHECK)
+
+### Reader/Writer (io.Reader / io.Writer)
+
+The `io.Reader` and `io.Writer` interfaces are the most important interfaces in Go. Functions should accept these interfaces instead of concrete types whenever dealing with byte streams. This maximizes composability, testability, and reuse.
+
+**Check for:**
+- Functions accepting `*os.File` or `*bytes.Buffer` when `io.Reader`/`io.Writer` would work
+- Missed opportunities to use streaming (e.g., reading entire file into memory when a reader would suffice)
+- Not closing readers/writers properly when wrapping
+
+```go
+// BAD: Tied to concrete type
+func ProcessFile(f *os.File) error { ... }
+
+// GOOD: Accepts any reader
+func ProcessData(r io.Reader) error { ... }
+```
+
+### Embedding for Composition (Decorator / Wrapper Pattern)
+
+Go doesn't have inheritance. The stdlib relies heavily on struct embedding and wrapping to layer behavior. Examples: `bufio.Reader`, `io.LimitedReader`, `io.TeeReader`, `cipher.StreamReader`, `gzip.Reader`. Each wraps a simpler type and adds functionality.
+
+**Check for:**
+- Inheritance-like patterns (large structs doing too much) instead of wrapping
+- Expanding existing interfaces when a wrapper would be cleaner
+- Missing opportunities to compose behaviors via decorators
+
+```go
+// BAD: Expanding interface to add logging
+type Repository interface {
+    Find(id string) (Item, error)
+    FindWithLogging(id string) (Item, error)  // NO!
+}
+
+// GOOD: Wrap with a decorator
+type LoggingRepository struct {
+    ports.Repository
+    logger *slog.Logger
+}
+
+func (lr *LoggingRepository) Find(id string) (Item, error) {
+    lr.logger.Info("finding item", "id", id)
+    return lr.Repository.Find(id)
+}
+```
+
+---
+
 ## Testing Anti-Patterns
 
 ### Anti-Pattern 1: Testing Mock Behavior
