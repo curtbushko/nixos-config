@@ -35,9 +35,9 @@ This checklist is injected into the Go Reviewer agent templates.
 ### Architecture
 | Check | Pattern |
 |-------|---------|
-| Code in correct layer | domain/ports/services/adapters |
+| Code in correct layer | domain/ports/application/adapters |
 | Domain has no external imports | Only stdlib allowed |
-| Dependencies flow inward | handlers -> services -> domain |
+| Dependencies flow inward | adapters -> application -> ports -> domain |
 | Interfaces defined at consumer | Not at implementation |
 
 ### Interface Design
@@ -106,13 +106,13 @@ Error found?
   location: "internal/adapters/postgres/user.go:12"
   mistake_ref: "#6"
   severity: major
-  fix: "Move interface to internal/core/ports/repositories.go"
+  fix: "Move interface to internal/ports/repositories.go"
 ```
 
 ### Minor Finding
 ```yaml
 - issue: "Slice could be preallocated"
-  location: "internal/core/services/user.go:78"
+  location: "internal/application/user.go:78"
   mistake_ref: "#21"
   severity: minor
   suggestion: "Use make([]User, 0, len(ids)) to reduce allocations"

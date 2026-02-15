@@ -16,11 +16,11 @@ Before completing, ALL must pass:
 ```bash
 go build ./...
 go test ./...
-golangci-lint run
-go-arch-lint check  # if config exists
-make lint            # if Makefile exists
-task lint            # if Taskfile exists (fallback if no Makefile)
+make lint            # REQUIRED - error if Makefile not found
+go-arch-lint check   # if config exists
 ```
+
+**IMPORTANT**: Always use `make lint` for linting. If no Makefile exists, STOP and report an error. Do NOT run linting tools directly (e.g., `golangci-lint run`).
 
 ---
 
@@ -34,23 +34,22 @@ task lint            # if Taskfile exists (fallback if no Makefile)
 │  │  (HTTP/gRPC)│                         │ (DB/Cache)  │   │
 │  └──────┬──────┘                         └──────┬──────┘   │
 │         │         ┌───────────────┐             │           │
-│         └────────►│    PORTS      │◄────────────┘           │
-│                   │  (Interfaces) │                         │
+│         │         │  APPLICATION  │             │           │
+│         └────────►│  (Use Cases)  │◄────────────┘           │
 │                   └───────┬───────┘                         │
 │                   ┌───────▼───────┐                         │
-│                   │   SERVICES    │                         │
-│                   │ (Use Cases)   │                         │
+│                   │    PORTS      │                         │
+│                   │ (Interfaces)  │                         │
 │                   └───────┬───────┘                         │
 │                   ┌───────▼───────┐                         │
 │                   │    DOMAIN     │                         │
 │                   │  (Entities)   │                         │
 │                   └───────────────┘                         │
-│                      CORE (Inner)                           │
+│                       (Inner)                               │
 └─────────────────────────────────────────────────────────────┘
 
 Dependencies flow INWARD:
-  adapters/handlers -> core/services -> core/domain
-  adapters/repositories -> core/ports <- core/services
+  adapters -> application -> ports -> domain
 
 Domain layer has NO external dependencies
 ```
@@ -59,9 +58,9 @@ Domain layer has NO external dependencies
 
 | Layer | Path | Contains |
 |-------|------|----------|
-| Domain | `internal/core/domain/` | Entities, value objects, domain errors |
-| Ports | `internal/core/ports/` | Interface definitions |
-| Services | `internal/core/services/` | Business logic, use cases |
+| Domain | `internal/domain/` | Entities, value objects, domain errors |
+| Ports | `internal/ports/` | Interface definitions |
+| Application | `internal/application/` | Business logic, use cases |
 | Handlers | `internal/adapters/handlers/` | HTTP/gRPC entry points |
 | Repositories | `internal/adapters/repositories/` | Database implementations |
 
@@ -182,7 +181,7 @@ gz, _ := gzip.NewReader(buffered)
 
 ### Domain Entity Example
 ```go
-// internal/core/domain/user.go
+// internal/domain/user.go
 package domain
 
 import (
@@ -222,17 +221,17 @@ func (u *User) UpdateName(name string) {
 }
 ```
 
-### Service Example
+### Application Service Example
 ```go
-// internal/core/services/user_service.go
-package services
+// internal/application/user_service.go
+package application
 
 import (
     "context"
     "fmt"
 
-    "myapp/internal/core/domain"
-    "myapp/internal/core/ports"
+    "myapp/internal/domain"
+    "myapp/internal/ports"
 )
 
 type userService struct {

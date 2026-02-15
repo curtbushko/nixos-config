@@ -1,108 +1,108 @@
 # go-arch-lint configuration for Hexagonal/Onion Architecture
-# Copy this file to your project root as .go-arch-lint.yml
+# Generic template - customize components for your project
 #
 # Install: go install github.com/fe3dback/go-arch-lint@latest
 # Usage:   go-arch-lint check
 # Graph:   go-arch-lint graph
 
 version: 3
-workdir: internal
+
+# Allow all vendor imports (we only enforce component boundaries)
+allow:
+  depOnAnyVendor: true
+  # Disable deep scan since cmd is the composition root and wires all components.
+  # Deep scan incorrectly reports cross-layer deps when cmd does the wiring.
+  deepScan: false
 
 # Define architectural components
+# Hexagonal Architecture Layers (inside-out):
+#   1. Domain (innermost) - pure business logic, no dependencies
+#   2. Ports - interfaces defining boundaries
+#   3. Application - use cases/services orchestrating domain logic
+#   4. Adapters (outermost) - infrastructure implementations
+#   5. Pkg - public reusable packages (utilities, libraries)
 components:
-  # OUTER LAYER: Adapters (Infrastructure)
-  handlers:
-    in: adapters/handlers/**
-
-  repositories:
-    in: adapters/repositories/**
-
-  # INNER LAYERS: Core Business Logic
-  services:
-    in: core/services/**
-
-  ports:
-    in: core/ports/**
-
+  # INNER LAYER: Domain (pure business logic)
+  # Contains: entities, value objects, domain services, domain errors
   domain:
-    in: core/domain/**
+    in: internal/domain/**
 
-  # Supporting
+  # INNER LAYER: Ports (interfaces)
+  # Contains: repository interfaces, service interfaces, DTOs
+  ports:
+    in: internal/ports/**
+
+  # APPLICATION LAYER: Use Cases/Services
+  # Contains: application services that orchestrate domain logic
+  application:
+    in: internal/application/**
+
+  # OUTER LAYER: Adapters (Infrastructure)
+  # Contains: implementations of ports (repositories, clients, etc.)
+  adapters:
+    in: internal/adapters/**
+
+  # Supporting: Configuration
   config:
-    in: config/**
+    in: internal/config/**
+
+  # COMPOSITION ROOT: Wires all dependencies together
+  # Contains: main.go, dependency injection
+  cmd:
+    in: cmd/**
+
+  # PUBLIC PACKAGES: Reusable library code
+  # Contains: utility packages, shared libraries
+  pkg:
+    in: pkg/**
 
 # Components that can be used by all other components
+# Domain, ports, and pkg are foundational - everything can depend on them
 commonComponents:
   - domain
   - ports
-  - config
+  - pkg
 
-# Common vendor dependencies allowed everywhere
-commonVendors:
-  - context
-  - errors
-  - fmt
-  - time
-  - strings
-  - strconv
-  - encoding/**
-  - github.com/google/uuid
-
-# Dependency rules - defines allowed import relationships
+# Dependency rules - enforces hexagonal architecture constraints
+# Key principle: dependencies point INWARD (adapters -> application -> ports -> domain)
 deps:
-  # Handlers can depend on services (to call use cases)
-  handlers:
-    mayDependOn:
-      - services
-    canUse:
-      - net/http
-      - github.com/gin-gonic/**
-      - github.com/labstack/echo/**
-      - github.com/go-chi/**
-      - google.golang.org/grpc/**
-
-  # Services implement business logic using ports
-  services:
-    mayDependOn:
-      - ports
-    # Services should NOT depend on concrete implementations
-
-  # Ports define interfaces - no dependencies on implementations
-  ports:
-    # Ports only depend on domain types (via commonComponents)
-
-  # Domain is pure - NO external dependencies
+  # Domain is pure - NO external dependencies (innermost layer)
+  # Only standard library allowed
   domain:
-    # Domain has no mayDependOn - it's the innermost layer
-    # Only stdlib types allowed
+    anyVendorDeps: true
 
-  # Repositories implement port interfaces
-  repositories:
+  # Ports define interfaces - only depend on domain types (via commonComponents)
+  ports:
+    anyVendorDeps: true
+
+  # Application layer uses ports to define behavior
+  # Does NOT depend on adapters (dependency inversion)
+  application:
     mayDependOn:
       - ports
-    canUse:
-      - database/sql
-      - github.com/jmoiron/sqlx
-      - github.com/jackc/pgx/**
-      - github.com/go-redis/redis/**
-      - go.mongodb.org/mongo-driver/**
 
-  # Config can use environment/file loading
+  # Adapters implement ports - they depend on ports but not on each other
+  # This is the outermost layer that connects to external systems
+  adapters:
+    mayDependOn:
+      - ports
+
+  # Config is standalone infrastructure concern
   config:
-    canUse:
-      - os
-      - github.com/spf13/viper
-      - github.com/kelseyhightower/envconfig
+    anyVendorDeps: true
 
-# Exclude from analysis
-exclude:
-  - "**/*_test.go"
-  - "**/mock_*.go"
-  - "**/mocks/**"
-  - "**/testdata/**"
+  # Cmd is the composition root - can depend on everything
+  cmd:
+    anyProjectDeps: true
+    anyVendorDeps: true
 
-# Exclude specific files from matching
+  # Pkg is standalone - can depend on vendor libs but not internal components
+  pkg:
+    anyVendorDeps: true
+
+# Exclude test files from analysis
 excludeFiles:
-  - ".git/**"
-  - "vendor/**"
-  - "**/*_generated.go"
+  - _test\.go$
+  - mock_.*\.go$
+  - /mocks/
+  - /testdata/

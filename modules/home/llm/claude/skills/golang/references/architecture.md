@@ -15,26 +15,26 @@ Hexagonal Architecture (also called Ports and Adapters or Onion Architecture) se
 │  └──────┬──────┘                         └──────┬──────┘   │
 │         │                                       │           │
 │         │         ┌───────────────┐             │           │
-│         │         │    PORTS      │             │           │
-│         └────────►│  (Interfaces) │◄────────────┘           │
+│         │         │  APPLICATION  │             │           │
+│         └────────►│  (Use Cases)  │◄────────────┘           │
 │                   └───────┬───────┘                         │
 │                           │                                 │
 │                   ┌───────▼───────┐                         │
-│                   │   SERVICES    │                         │
-│                   │ (Use Cases)   │                         │
+│                   │    PORTS      │                         │
+│                   │ (Interfaces)  │                         │
 │                   └───────┬───────┘                         │
 │                           │                                 │
 │                   ┌───────▼───────┐                         │
 │                   │    DOMAIN     │                         │
 │                   │  (Entities)   │                         │
 │                   └───────────────┘                         │
-│                      CORE (Inner)                           │
+│                       (Inner)                               │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ## Layer Definitions
 
-### Domain Layer (`internal/core/domain/`)
+### Domain Layer (`internal/domain/`)
 
 The innermost layer containing business entities and rules.
 
@@ -52,7 +52,7 @@ The innermost layer containing business entities and rules.
 **Example:**
 
 ```go
-// internal/core/domain/user.go
+// internal/domain/user.go
 package domain
 
 import (
@@ -110,7 +110,7 @@ func contains(s, substr string) bool {
 }
 ```
 
-### Ports Layer (`internal/core/ports/`)
+### Ports Layer (`internal/ports/`)
 
 Interfaces that define contracts between layers.
 
@@ -127,13 +127,13 @@ Interfaces that define contracts between layers.
 **Example:**
 
 ```go
-// internal/core/ports/repositories.go
+// internal/ports/repositories.go
 package ports
 
 import (
     "context"
 
-    "myapp/internal/core/domain"
+    "myapp/internal/domain"
 )
 
 // UserRepository defines data access for users
@@ -153,13 +153,13 @@ type UnitOfWork interface {
 ```
 
 ```go
-// internal/core/ports/services.go
+// internal/ports/services.go
 package ports
 
 import (
     "context"
 
-    "myapp/internal/core/domain"
+    "myapp/internal/domain"
 )
 
 // UserService defines business operations
@@ -171,7 +171,7 @@ type UserService interface {
 }
 ```
 
-### Services Layer (`internal/core/services/`)
+### Application Layer (`internal/application/`)
 
 Application logic / use cases that orchestrate domain objects.
 
@@ -188,15 +188,15 @@ Application logic / use cases that orchestrate domain objects.
 **Example:**
 
 ```go
-// internal/core/services/user_service.go
-package services
+// internal/application/user_service.go
+package application
 
 import (
     "context"
     "fmt"
 
-    "myapp/internal/core/domain"
-    "myapp/internal/core/ports"
+    "myapp/internal/domain"
+    "myapp/internal/ports"
 )
 
 type userService struct {
@@ -282,8 +282,8 @@ import (
     "errors"
     "net/http"
 
-    "myapp/internal/core/domain"
-    "myapp/internal/core/ports"
+    "myapp/internal/domain"
+    "myapp/internal/ports"
 )
 
 type UserHandler struct {
@@ -359,8 +359,8 @@ import (
 
     "github.com/google/uuid"
 
-    "myapp/internal/core/domain"
-    "myapp/internal/core/ports"
+    "myapp/internal/domain"
+    "myapp/internal/ports"
 )
 
 type userRepository struct {
@@ -463,9 +463,9 @@ import (
 
     _ "github.com/lib/pq"
 
-    "myapp/internal/adapters/handlers/http"
+    httphandler "myapp/internal/adapters/handlers/http"
     "myapp/internal/adapters/repositories/postgres"
-    "myapp/internal/core/services"
+    "myapp/internal/application"
 )
 
 func main() {
@@ -478,8 +478,8 @@ func main() {
 
     // Wire dependencies (dependency injection)
     userRepo := postgres.NewUserRepository(db)
-    userService := services.NewUserService(userRepo)
-    userHandler := http.NewUserHandler(userService)
+    userService := application.NewUserService(userRepo)
+    userHandler := httphandler.NewUserHandler(userService)
 
     // Routes
     mux := http.NewServeMux()
@@ -494,20 +494,20 @@ func main() {
 
 ## Testing Strategy
 
-### Unit Tests (Domain & Services)
+### Unit Tests (Domain & Application)
 
 Test business logic in isolation.
 
 ```go
-// internal/core/services/user_service_test.go
-package services_test
+// internal/application/user_service_test.go
+package application_test
 
 import (
     "context"
     "testing"
 
-    "myapp/internal/core/domain"
-    "myapp/internal/core/services"
+    "myapp/internal/application"
+    "myapp/internal/domain"
 )
 
 type mockUserRepo struct {
@@ -546,7 +546,7 @@ func (m *mockUserRepo) Delete(ctx context.Context, id string) error {
 
 func TestUserService_CreateUser(t *testing.T) {
     repo := newMockUserRepo()
-    svc := services.NewUserService(repo)
+    svc := application.NewUserService(repo)
 
     user, err := svc.CreateUser(context.Background(), "test@example.com", "Test User")
     if err != nil {
@@ -560,7 +560,7 @@ func TestUserService_CreateUser(t *testing.T) {
 
 func TestUserService_CreateUser_DuplicateEmail(t *testing.T) {
     repo := newMockUserRepo()
-    svc := services.NewUserService(repo)
+    svc := application.NewUserService(repo)
 
     // Create first user
     _, err := svc.CreateUser(context.Background(), "test@example.com", "Test User")
@@ -594,7 +594,7 @@ import (
     _ "github.com/lib/pq"
 
     "myapp/internal/adapters/repositories/postgres"
-    "myapp/internal/core/domain"
+    "myapp/internal/domain"
 )
 
 func setupTestDB(t *testing.T) *sql.DB {

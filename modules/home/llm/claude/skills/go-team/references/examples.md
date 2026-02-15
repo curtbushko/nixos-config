@@ -27,7 +27,7 @@ Should integrate with existing HTTP handler chain.
 
 ## Notes
 
-- Use existing `internal/core/domain/user.go` for User type
+- Use existing `internal/domain/user.go` for User type
 - Token secret should come from config, not hardcoded
 - Consider using `github.com/golang-jwt/jwt/v5`
 ```
@@ -61,9 +61,9 @@ tasks:
     layer: domain
     files:
       create:
-        - path: internal/core/domain/auth.go
+        - path: internal/domain/auth.go
           purpose: Auth-related types and errors
-        - path: internal/core/domain/auth_test.go
+        - path: internal/domain/auth_test.go
           purpose: test file
     acceptance_criteria:
       - "Define TokenClaims type with UserID"
@@ -75,7 +75,7 @@ tasks:
     layer: ports
     files:
       create:
-        - path: internal/core/ports/auth.go
+        - path: internal/ports/auth.go
           purpose: TokenValidator interface
     acceptance_criteria:
       - "Define TokenValidator interface with Validate method"
@@ -83,12 +83,12 @@ tasks:
 
   - id: 3
     name: "Implement auth service"
-    layer: services
+    layer: application
     files:
       create:
-        - path: internal/core/services/auth.go
+        - path: internal/application/auth.go
           purpose: Auth service implementation
-        - path: internal/core/services/auth_test.go
+        - path: internal/application/auth_test.go
           purpose: test file
     acceptance_criteria:
       - "validate JWT signature"
@@ -224,7 +224,7 @@ Add /health endpoint that returns service status and dependency checks.
 
 Results in 3 tasks:
 1. Define health types (domain)
-2. Implement health service (services)
+2. Implement health service (application)
 3. Implement health HTTP handler (adapters)
 
 ---

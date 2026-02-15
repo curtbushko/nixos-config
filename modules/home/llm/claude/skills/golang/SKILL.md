@@ -17,7 +17,7 @@ You are an expert Go developer who follows Test-Driven Development (TDD) princip
 ### Architecture Enforcement (NON-NEGOTIABLE)
 - **All Go projects MUST follow Hexagonal/Onion Architecture**
 - Use `go-arch-lint` to enforce architectural boundaries
-- Dependencies flow INWARD: handlers -> services -> domain
+- Dependencies flow INWARD: adapters -> application -> ports -> domain
 - Domain layer has NO external dependencies
 - See [references/architecture.md](references/architecture.md) for detailed patterns
 
@@ -61,10 +61,18 @@ You are an expert Go developer who follows Test-Driven Development (TDD) princip
 
 ```
 project/
-├── cmd/                      # Application entry points
+├── cmd/                      # COMPOSITION ROOT: Wires all dependencies
 │   └── myapp/
-│       └── main.go           # Wires everything together
+│       └── main.go           # Dependency injection, bootstrap
 ├── internal/
+│   ├── domain/               # INNER LAYER: Pure business logic
+│   │   ├── user.go           # Entities, value objects
+│   │   └── errors.go         # Domain errors
+│   ├── ports/                # INNER LAYER: Interfaces (contracts)
+│   │   ├── repositories.go
+│   │   └── services.go
+│   ├── application/          # APPLICATION LAYER: Use cases
+│   │   └── user_service.go   # Orchestrates domain logic
 │   ├── adapters/             # OUTER LAYER: Infrastructure
 │   │   ├── handlers/         # HTTP/gRPC handlers (primary/driving)
 │   │   │   ├── http/
@@ -72,17 +80,8 @@ project/
 │   │   └── repositories/     # Database implementations (secondary/driven)
 │   │       ├── postgres/
 │   │       └── redis/
-│   ├── core/                 # INNER LAYERS: Business Logic
-│   │   ├── domain/           # Entities, value objects, domain errors
-│   │   │   ├── user.go
-│   │   │   └── errors.go
-│   │   ├── ports/            # Interfaces (contracts)
-│   │   │   ├── repositories.go
-│   │   │   └── services.go
-│   │   └── services/         # Use cases / application logic
-│   │       └── user_service.go
 │   └── config/               # Configuration loading
-├── pkg/                      # Public library code (reusable)
+├── pkg/                      # PUBLIC PACKAGES: Reusable library code
 ├── .go-arch-lint.yml         # Architecture enforcement rules
 ├── .golangci.yml             # Linting rules
 └── go.mod
@@ -92,20 +91,22 @@ project/
 
 | Layer | Location | Depends On | Description |
 |-------|----------|------------|-------------|
-| Domain | `internal/core/domain/` | Nothing | Entities, value objects, domain errors |
-| Ports | `internal/core/ports/` | Domain | Interfaces defining contracts |
-| Services | `internal/core/services/` | Domain, Ports | Business logic / use cases |
-| Adapters | `internal/adapters/` | Ports, Domain | Infrastructure implementations |
-| Main | `cmd/` | Everything | Dependency injection, wiring |
+| Domain | `internal/domain/` | Nothing | Entities, value objects, domain errors |
+| Ports | `internal/ports/` | Domain | Interfaces defining contracts |
+| Application | `internal/application/` | Ports | Use cases / business logic orchestration |
+| Adapters | `internal/adapters/` | Ports | Infrastructure implementations |
+| Config | `internal/config/` | Nothing | Configuration loading |
+| Pkg | `pkg/` | Vendor only | Reusable library code |
+| Cmd | `cmd/` | Everything | Composition root, dependency injection |
 
 ### Dependency Rules (ENFORCED BY go-arch-lint)
 ```
-handlers   -> services  (handlers call services)
-services   -> ports     (services use port interfaces)
-services   -> domain    (services use domain types)
-adapters   -> ports     (adapters implement ports)
-adapters   -> domain    (adapters use domain types)
-domain     -> (nothing) (domain is pure, no dependencies)
+adapters    -> ports       (adapters implement port interfaces)
+application -> ports       (application uses port interfaces)
+domain      -> (nothing)   (domain is pure, no dependencies)
+ports       -> domain      (ports reference domain types)
+pkg         -> (vendor)    (pkg only uses external libraries)
+cmd         -> (all)       (cmd wires everything together)
 ```
 
 **Package Design Principles:**
@@ -324,7 +325,7 @@ func ProcessConcurrently(items []Item, maxWorkers int) error {
 
 ### Before You Start Coding
 1. Understand the requirement clearly
-2. Identify which layer the code belongs to (domain/ports/services/adapters)
+2. Identify which layer the code belongs to (domain/ports/application/adapters)
 3. Identify which packages/interfaces will be affected
 4. Plan the test cases you'll need to write
 5. Consider the API design before implementation
