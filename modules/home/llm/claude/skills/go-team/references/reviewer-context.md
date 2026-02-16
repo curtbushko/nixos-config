@@ -24,11 +24,12 @@ The reviewer performs BOTH spec compliance AND code quality review in a single p
 
 ## Lint Verification
 
-Before approving, confirm lint passes. Run whichever applies:
+Before approving, confirm lint passes:
 ```bash
-make lint            # if Makefile exists
-task lint            # if Taskfile exists (fallback if no Makefile)
+make lint            # REQUIRED - error if Makefile not found
 ```
+
+**IMPORTANT**: Always use `make lint` for linting. If no Makefile exists, STOP and report an error requesting one be added. Do NOT run linting tools directly.
 
 ---
 

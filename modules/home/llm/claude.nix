@@ -175,7 +175,15 @@ in {
     };
   };
 
-    programs.zsh.shellAliases.yolo = "claude --dangerously-skip-permissions";
+    programs.zsh = {
+      sessionVariables = {
+        ANTHROPIC_MODEL = "claude-opus-4-5-20251101";
+      };
+      shellAliases = {
+        cld = "claude --model claude-opus-4-5-20251101";
+        yolo = "claude --model claude-opus-4-5-20251101 --dangerously-skip-permissions";
+      };
+    };
 
     # Deploy Claude Code global instructions (CLAUDE.md)
     home.file.".claude/CLAUDE.md".source = ./claude/CLAUDE.md;

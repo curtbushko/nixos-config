@@ -172,7 +172,6 @@ in {
          # 02/25/2025 - I do not think this is needed anymore because I no longer use mason
          #export NIX_LD=$(nix eval --extra-experimental-features nix-command --impure --raw --expr 'let pkgs = import <nixpkgs> {}; NIX_LD = pkgs.lib.fileContents "${pkgs.stdenv.cc}/nix-support/dynamic-linker"; in NIX_LD')
 
-
         if [[ "$CLAUDECODE" != "1" ]]; then
           eval "$(zoxide init --cmd cd zsh)"
 

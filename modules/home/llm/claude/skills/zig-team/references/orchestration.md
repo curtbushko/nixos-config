@@ -17,6 +17,7 @@ Your context window is finite. Every subagent return consumes context. You MUST:
 - Dispatch subagents using the Task tool
 - Extract ONLY: `status` and `verdict` from subagent output (1-2 lines)
 - Track task progress via `.tasks/status.yaml`
+- Update PLAN.md Implementation Status checklist when tasks complete (Step 3c)
 - Run final validation commands (Step 4)
 - Report summary to user
 
@@ -99,7 +100,12 @@ Task tool:
         name: "[task name]"
         status: pending
         deps: []
+        scenarios_covered:
+          - "[Scenario name from PLAN.md]"
     ```
+    NOTE: `scenarios_covered` MUST list the exact scenario names from PLAN.md's
+    `## Implementation Status` checklist. The orchestrator uses these to mark
+    scenarios as complete in PLAN.md when each task finishes.
 
     **`.tasks/task-{id}.yaml`** (one per task, full details)
     ```yaml
@@ -163,11 +169,16 @@ For each task (following execution_order, skip completed):
     # Builder returns only: "status: complete|blocked, fixes: [count]"
   else: escalate_to_user
 
-  # 3c: Complete
-  Set task status to completed
-  # Update PLAN.md checklist: mark completed scenarios as [x]
-  For each scenario covered by this task:
-    Edit PLAN_FILE: change "- [ ] {scenario_name}" to "- [x] {scenario_name}"
+  # 3c: Complete — update status AND PLAN.md
+  Edit .tasks/status.yaml: set task.status to "completed"
+
+  # MANDATORY: Update PLAN.md Implementation Status checklist
+  # Read task.scenarios_covered from .tasks/status.yaml for this task
+  For each scenario_name in task.scenarios_covered:
+    Use the Edit tool on PLAN_FILE:
+      old_string: "- [ ] {scenario_name}"
+      new_string: "- [x] {scenario_name}"
+  # This keeps PLAN.md as the single source of truth for progress
 ```
 
 ---
