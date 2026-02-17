@@ -21,14 +21,24 @@ in {
       settings = {
         add_newline = true;
         command_timeout = 2000;
-        right_format = "[ ](fg:${a_bg})$directory[](fg:${b_bg} bg:${b_bg})[](fg:${b_fg} bg:${b_bg})[▓▒░](${a_bg})";
+        right_format = "[ ](fg:${a_bg})\${custom.directory_centered}[](fg:${b_bg} bg:${b_bg})[](fg:${b_fg} bg:${b_bg})[▓▒░](${a_bg})";
         # The  is a mix of what section came first and after
         format = "[ ░▒▓](${a_bg})[](bg:${a_bg} fg:${a_fg})\${custom.hostname_fixed}[ ](bg:${b_bg} fg:${a_bg})\${custom.worktree}[](fg:${b_bg}
         bg:${c_bg})$git_branch$git_status[](fg:${c_bg})$character";
         directory = {
-          truncation_length = 2;
-          truncate_to_repo = false;
-          format = "[ $path ](fg:${a_fg} bg:${a_bg})";
+          disabled = true;
+        };
+        custom.directory_centered = {
+          command = ''
+            # Get path with home abbreviated and truncated to 2 components
+            full_path=$(pwd | sed "s|^$HOME|~|")
+            # Keep only last 2 path components
+            path=$(echo "$full_path" | rev | cut -d'/' -f1-2 | rev)
+            printf '\u200b%s\u200b' "$path"
+          '';
+          format = "[ $output ](fg:${a_fg} bg:${a_bg})";
+          when = "true";
+          style = "bg:${a_bg} fg:${a_fg}";
         };
         custom.hostname_fixed = {
           command = ''
@@ -44,11 +54,7 @@ in {
               steamdeck) icon=" "; name="steamdeck" ;;
               *)         icon="󰣘 "; name="$h" ;;
             esac
-            len=''${#name}
-            space=11
-            left=$(( (space - len) / 2 ))
-            right=$(( space - len - left ))
-            printf '%s%*s%s%*s' "$icon" "$left" "" "$name" "$right" ""
+            printf '%s\u200b%s\u200b' "$icon" "$name"
           '';
           format = "[ $output ]($style)";
           when = "true";
@@ -92,11 +98,7 @@ in {
               Videos)                icon=" "; name="Videos" ;;
             esac
 
-            len=''${#name}
-            space=11
-            left=$(( (space - len) / 2 ))
-            right=$(( space - len - left ))
-            printf '%s%*s%s%*s' "$icon" "$left" "" "$name" "$right" ""
+            printf '%s\u200b%s\u200b' "$icon" "$name"
           '';
           format = "[$output ]($style)";
           when = "true";
