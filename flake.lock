@@ -518,11 +518,11 @@
         "plugin-99": "plugin-99"
       },
       "locked": {
-        "lastModified": 1770930808,
-        "narHash": "sha256-F9PA+xgPcjsYOAz6K6v2lPPSNPc+/2ZThLwrh4iR2MQ=",
+        "lastModified": 1771335792,
+        "narHash": "sha256-kHqBn5B3VbOe0PORmrPctT4K3HKXWaTp2kxzEqT7h10=",
         "owner": "curtbushko",
         "repo": "neovim-flake",
-        "rev": "c11c236f00de3e1eca03c2808701dc4d80b8a60b",
+        "rev": "4e1ff68bcb8f3f17bb3e7a3d2e4622cc25f9402b",
         "type": "github"
       },
       "original": {
