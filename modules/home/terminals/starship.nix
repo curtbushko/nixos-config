@@ -100,7 +100,7 @@ in {
 
             printf '%s\u200b%s\u200b' "$icon" "$name"
           '';
-          format = "[$output ]($style)";
+          format = "[ $output ]($style)";
           when = "true";
           style = "fg:${b_fg} bg:${b_bg}";
         };
