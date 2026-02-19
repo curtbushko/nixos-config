@@ -41,6 +41,11 @@
   networking.networkmanager.enable = true; # Easiest to use and most distros use this by default.
   networking.interfaces.eno1.wakeOnLan.enable = true;
 
+  # Ensure WoL is enabled before suspend (NixOS wakeOnLan only sets it at boot)
+  powerManagement.powerDownCommands = ''
+    ${pkgs.ethtool}/bin/ethtool -s eno1 wol g
+  '';
+
   # Work around NetworkManager getting stuck waiting on tailscale0
   systemd.services.NetworkManager-wait-online = {
     serviceConfig = {

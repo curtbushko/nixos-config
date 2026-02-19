@@ -365,9 +365,9 @@
     def work2 [] { bash -c "$M1DDC display 2 set input 17" }
     def workall [] { bash -c "$M1DDC display 1 set input 27; $M1DDC display 2 set input 17" }
     def home [] { bash -c "$M1DDC set input 17" }
-    def pc [] { wakeonlan $env.GAMINGRIG_MAC_ADDRESS; sleep 1sec; bash -c "$M1DDC display 1 set input 15" }
-    def pc2 [] { wakeonlan $env.GAMINGRIG_MAC_ADDRESS; sleep 1sec; bash -c "$M1DDC display 2 set input 18" }
-    def pcall [] { wakeonlan $env.GAMINGRIG_MAC_ADDRESS; sleep 1sec; bash -c "$M1DDC display 2 set input 18; $M1DDC display 2 set input 15" }
+    def pc [] { wakeonlan -i 192.168.2.255 $env.GAMINGRIG_MAC_ADDRESS; sleep 1sec; bash -c "$M1DDC display 1 set input 15" }
+    def pc2 [] { wakeonlan -i 192.168.2.255 $env.GAMINGRIG_MAC_ADDRESS; sleep 1sec; bash -c "$M1DDC display 2 set input 18" }
+    def pcall [] { wakeonlan -i 192.168.2.255 $env.GAMINGRIG_MAC_ADDRESS; sleep 1sec; bash -c "$M1DDC display 2 set input 18; $M1DDC display 1 set input 15" }
   '';
 
   platformAliases = if isDarwin then darwinAliases else if isLinux then linuxAliases else "";

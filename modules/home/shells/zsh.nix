@@ -137,9 +137,9 @@ in {
           work2 = "$M1DDC display 2 set input 17";
           workall = "$M1DDC display 1 set input 27; $M1DDC display 2 set input 17";
           home = "$M1DDC set input 17";
-          pc = "wakeonlan $GAMINGRIG_MAC_ADDRESS; sleep 1; $M1DDC display 1 set input 15";
-          pc2 = "wakeonlan $GAMINGRIG_MAC_ADDRESS; sleep 1; $M1DDC display 2 set input 18";
-          pcall = "wakeonlan $GAMINGRIG_MAC_ADDRESS; sleep 1; $M1DDC display 2 set input 18; $M1DDC display 2 set input 15";
+          pc = "wakeonlan -i 192.168.2.255 $GAMINGRIG_MAC_ADDRESS; sleep 1; $M1DDC display 1 set input 15";
+          pc2 = "wakeonlan -i 192.168.2.255 $GAMINGRIG_MAC_ADDRESS; sleep 1; $M1DDC display 2 set input 18";
+          pcall = "wakeonlan -i 192.168.2.255 $GAMINGRIG_MAC_ADDRESS; sleep 1; $M1DDC display 2 set input 18; $M1DDC display 1 set input 15";
         };
       initContent = ''
          #if [ -f $GHOSTTY/zig-out/bin/ghostty ]; then
