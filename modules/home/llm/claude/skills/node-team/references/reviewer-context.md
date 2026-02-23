@@ -1,6 +1,5 @@
-# Node Reviewer Context Injection
+# Node Reviewer Context
 
-This context is injected into every Node Reviewer agent dispatch.
 The reviewer performs BOTH spec compliance AND code quality review in a single pass.
 
 ---
@@ -24,7 +23,7 @@ The reviewer performs BOTH spec compliance AND code quality review in a single p
 
 ## Lint Verification
 
-Before approving, confirm lint passes. Run whichever applies:
+Before approving, confirm lint passes:
 ```bash
 make lint            # if Makefile exists
 task lint            # if Taskfile exists (fallback if no Makefile)
@@ -34,333 +33,143 @@ task lint            # if Taskfile exists (fallback if no Makefile)
 
 ## Review Priority Order
 
-```
-CRITICAL (must fix before merge):
-├── Unhandled promise rejections
-├── Security vulnerabilities (injection, XSS)
-├── Resource leaks (unclosed connections, streams)
-└── Missing error handling in async code
-
-MAJOR (should fix):
-├── Architecture violations
-├── Async/await anti-patterns
-├── Testing quality
-└── Input validation gaps
-
-MINOR (consider):
-├── Naming conventions
-├── Performance optimization
-└── Code organization
-```
+- **CRITICAL** (must fix): Unhandled promise rejections, security vulnerabilities, resource leaks, missing error handling in async
+- **MAJOR** (should fix): Architecture violations, async/await anti-patterns, testing quality, input validation gaps
+- **MINOR** (consider): Naming conventions, performance optimization, code organization
 
 ---
 
-## AI-Generated Code Problems (MUST CHECK)
+## Critical Issues (MUST CHECK)
 
-AI code generators consistently make these mistakes. Check explicitly:
-
-### 1. Error Handling Issues (Critical)
+### Error Handling
+- **Empty catch**: `catch {}` or `catch (err) { console.log(err) }` - must handle or rethrow
+- **Throwing strings**: `throw 'error'` - no stack trace! Use `new Error()`
+- **Missing try/catch**: Async route handlers without error handling
+- **Missing next(error)**: Express middleware not propagating errors
 
 ```javascript
-// AI MISTAKE: Swallowing errors
-try {
-  await doWork();
-} catch (err) {
-  console.log(err);  // Logged but not handled!
-}
-
-// AI MISTAKE: Empty catch block
-try {
-  await riskyOperation();
-} catch {}  // Completely swallowed!
-
-// AI MISTAKE: Throwing strings
-throw 'something went wrong';  // No stack trace!
-
-// AI MISTAKE: Not propagating errors in middleware
-app.get('/users', async (req, res) => {
-  const users = await userService.list();  // Unhandled rejection!
-  res.json(users);
-});
+// BAD: Swallowed, logged-only, string throw
+try { await doWork(); } catch {}  // swallowed!
+catch (err) { console.log(err); }  // logged but not handled!
+throw 'something went wrong';      // no stack trace!
 ```
 
-**Check for:**
-- Empty `catch` blocks
-- `catch` that only logs but doesn't rethrow or handle
-- Missing `try/catch` in Express route handlers
-- Throwing strings or plain objects instead of Error instances
-- Missing `next(error)` in middleware
-
-### 2. Async/Await Pitfalls (Critical)
+### Async/Await Pitfalls
+- **Missing await**: `const user = userRepo.findById(id)` - returns Promise, not User
+- **Sequential when parallel**: Two independent awaits should be `Promise.all()`
+- **Await in loops**: `for (id of ids) { await getUser(id) }` - use `Promise.all(ids.map(...))`
+- **Floating promises**: Async call without await or .catch()
+- **Missing return await**: Loses stack trace context
 
 ```javascript
-// AI MISTAKE: Forgetting await
-async function getUser(id) {
-  const user = userRepository.findById(id);  // Missing await!
-  return user;  // Returns Promise, not User
-}
-
-// AI MISTAKE: Sequential when parallel possible
+// BAD: Missing await, sequential when parallel, await in loop
+const user = userRepo.findById(id);  // missing await!
 const users = await getUsers();
-const orders = await getOrders();
-// Should be: const [users, orders] = await Promise.all([getUsers(), getOrders()])
-
-// AI MISTAKE: await in loop (sequential instead of parallel)
-for (const id of ids) {
-  const user = await getUser(id);  // N sequential queries!
-  results.push(user);
-}
-// Should be: const results = await Promise.all(ids.map(getUser))
-
-// AI MISTAKE: Missing return await (loses stack trace)
-async function processOrder(id) {
-  return orderService.process(id);  // Missing await!
-}
+const orders = await getOrders();    // should be Promise.all!
+for (const id of ids) { await getUser(id); }  // N sequential queries!
 ```
 
-**Check for:**
-- Missing `await` on async calls
-- Sequential `await` that could be `Promise.all`
-- `await` inside loops
-- Missing `return await` (stack trace preservation)
-- Floating promises (async call without await or .catch)
-
-### 3. Security Vulnerabilities (Critical)
+### Security Vulnerabilities
+- **SQL injection**: String concatenation in queries
+- **XSS**: Unsanitized user input in HTML
+- **Hardcoded secrets**: API keys, passwords in code
+- **eval/Function**: With user input = RCE
+- **Missing rate limiting**: On auth endpoints
+- **Stack trace exposure**: In production error responses
 
 ```javascript
-// AI MISTAKE: SQL injection
+// BAD: SQL injection, XSS, hardcoded secret
 const query = `SELECT * FROM users WHERE id = '${userId}'`;  // INJECTION!
-
-// AI MISTAKE: XSS through template literals
-res.send(`<h1>Hello ${req.query.name}</h1>`);  // XSS!
-
-// AI MISTAKE: Exposing stack traces in production
-app.use((err, req, res, next) => {
-  res.status(500).json({ error: err.message, stack: err.stack });  // LEAK!
-});
-
-// AI MISTAKE: Hardcoded secrets
-const JWT_SECRET = 'my-secret-key';  // NEVER HARDCODE!
-
-// AI MISTAKE: No rate limiting on auth
-app.post('/login', loginHandler);  // No rate limit = brute force!
-
-// AI MISTAKE: Using eval or Function constructor
-const result = eval(userInput);  // REMOTE CODE EXECUTION!
+res.send(`<h1>Hello ${req.query.name}</h1>`);                // XSS!
+const JWT_SECRET = 'my-secret-key';                          // NEVER!
 ```
 
-**Check for:**
-- String concatenation in queries (SQL injection)
-- Unsanitized user input in HTML responses (XSS)
-- Stack traces exposed in production error responses
-- Hardcoded secrets, API keys, passwords
-- Missing rate limiting on authentication endpoints
-- `eval()`, `Function()`, `vm.runInNewContext()` with user input
-- Missing CORS configuration
-- Missing security headers (use helmet)
-
-### 4. Resource Leaks (Critical)
-
-```javascript
-// AI MISTAKE: Database connection not released
-const client = await pool.connect();
-const result = await client.query('SELECT...');
-// Missing: client.release() in finally block!
-
-// AI MISTAKE: Stream not properly closed on error
-const readStream = fs.createReadStream(file);
-readStream.pipe(writeStream);
-// Missing: error handler for readStream!
-
-// AI MISTAKE: Event listeners not cleaned up
-function setup() {
-  process.on('message', handler);
-  // Never removed - memory leak if called multiple times!
-}
-
-// AI MISTAKE: Timers not cleared
-const interval = setInterval(poll, 1000);
-// Missing: clearInterval on shutdown
-```
-
-**Check for:**
-- Database connections not released in `finally` blocks
+### Resource Leaks
+- DB connections not released in `finally` blocks
 - Streams without error handlers
 - Event listeners not removed on cleanup
 - `setInterval`/`setTimeout` not cleared
 - HTTP responses not ended
 
-### 5. Unhandled Promise Rejections (Critical)
-
 ```javascript
-// AI MISTAKE: Fire-and-forget async
-app.listen(3000, () => {
-  initializeDatabase();  // Unhandled if it rejects!
-});
-
-// AI MISTAKE: Missing error event on streams
-const stream = fs.createReadStream(path);
-stream.pipe(res);  // Error crashes process!
-
-// AI MISTAKE: Promise.all without error handling
-const results = await Promise.all(urls.map(fetch));
-// One failure rejects everything with no info about which!
+// BAD: Connection not released on error
+const client = await pool.connect();
+const result = await client.query('SELECT...');
+// Missing: finally { client.release() }
 ```
 
-**Check for:**
-- Async functions called without `await` or `.catch()`
-- Missing `'error'` event handlers on streams and emitters
+### Unhandled Promise Rejections
+- Async functions called without await or .catch()
+- Missing 'error' event handlers on streams/emitters
 - `Promise.all` without considering `Promise.allSettled`
-- Missing `process.on('unhandledRejection')` handler
-
-### 6. Type Coercion Issues (High)
-
-```javascript
-// AI MISTAKE: Loose equality
-if (userId == null) { }     // Matches both null and undefined
-if (count == 0) { }          // '0' == 0 is true!
-
-// AI MISTAKE: Truthy/falsy misuse
-if (user.age) { }            // 0 is falsy! Age 0 treated as missing
-if (user.name) { }           // '' is falsy! Empty string treated as missing
-
-// AI MISTAKE: parseInt without radix
-const port = parseInt(process.env.PORT);  // Missing radix!
-```
-
-**Check for:**
-- `==` instead of `===`
-- Truthy/falsy checks on numbers (0 is falsy)
-- Truthy/falsy checks on strings ('' is falsy)
-- `parseInt` without radix parameter
-- Implicit type coercion in comparisons
-
-### 7. Module and Import Issues (High)
-
-```javascript
-// AI MISTAKE: Side effects on import
-// db.js
-const db = connectToDatabase();  // Runs on import!
-export default db;
-
-// AI MISTAKE: Missing .js extension in ESM
-import { UserService } from './user.service';  // Needs .js!
-
-// AI MISTAKE: Mixing CJS and ESM
-const express = require('express');  // CJS in ESM project!
-```
-
-**Check for:**
-- Code that runs on import (side effects)
-- Missing `.js` extensions in ESM imports
-- Mixing `require()` and `import`
-- Circular dependencies
-
-### 8. Environment and Configuration (High)
-
-```javascript
-// AI MISTAKE: Direct process.env access everywhere
-function getPort() {
-  return process.env.PORT || 3000;  // Scattered env access!
-}
-
-// AI MISTAKE: No validation
-const dbUrl = process.env.DATABASE_URL;  // Could be undefined!
-
-// AI MISTAKE: .env in production
-require('dotenv').config();  // Not for production!
-```
-
-**Check for:**
-- Scattered `process.env` access (should be centralized)
-- Missing environment variable validation
-- Using dotenv in production
-- Default values hiding missing required config
-
-### 9. Callback and Event Patterns (Medium)
-
-```javascript
-// AI MISTAKE: Callback + Promise mixing
-function getData(callback) {
-  return new Promise((resolve) => {
-    const data = fetchData();
-    callback(data);    // Also calling callback!
-    resolve(data);     // AND resolving promise!
-  });
-}
-
-// AI MISTAKE: EventEmitter without error handler
-const emitter = new EventEmitter();
-emitter.emit('data', payload);
-// No 'error' event handler - unhandled errors crash process!
-```
-
-**Check for:**
-- Mixing callbacks and promises
-- EventEmitters without `'error'` handlers
-- Not using `{ captureRejections: true }` option
-- Missing `removeListener` / `off` for cleanup
-
-### 10. Testing Issues (Medium)
-
-```javascript
-// AI MISTAKE: Testing implementation details
-expect(mockFn).toHaveBeenCalledTimes(3);  // Brittle!
-
-// AI MISTAKE: No test isolation
-let sharedState = [];
-it('test 1', () => { sharedState.push('a'); });
-it('test 2', () => { expect(sharedState).toHaveLength(0); });  // FAILS!
-
-// AI MISTAKE: Testing async without await
-it('should create user', () => {  // Missing async!
-  expect(userService.createUser(data)).resolves.toBeDefined();  // Missing await!
-});
-
-// AI MISTAKE: Hardcoded test ports
-const server = app.listen(3000);  // Port conflict in parallel tests!
-```
-
-**Check for:**
-- Assertions on mock call counts (test implementation, not behavior)
-- Shared mutable state between tests
-- Missing `async`/`await` in test functions
-- Hardcoded ports (use `listen(0)`)
-- Missing cleanup in `afterEach`/`afterAll`
-- Tests that depend on execution order
 
 ---
 
-## Architecture Violations
+## Major Issues
 
-### Business Logic in Controllers
+### Architecture Violations
+- Business logic in controllers (validation, hashing should be in services)
+- Controllers querying DB directly (should go through service+repo)
+- Circular dependencies (A imports B, B imports A)
 
 ```javascript
-// VIOLATION: Logic in controller
-create = async (req, res, next) => {
-  if (!isValidEmail(req.body.email)) { }  // Should be in service or validation!
-  const hash = await bcrypt.hash(req.body.password, 12);  // Should be in service!
+// BAD: Logic in controller
+create = async (req, res) => {
+  if (!isValidEmail(req.body.email)) {}     // should be in service!
+  const hash = await bcrypt.hash(pass, 12); // should be in service!
 };
 ```
 
-### Direct Database Access in Controllers
+### Type Coercion Issues
+- `==` instead of `===`
+- Truthy/falsy checks on numbers (0 is falsy)
+- `parseInt` without radix parameter
 
-```javascript
-// VIOLATION: Controller queries DB directly
-create = async (req, res, next) => {
-  const user = await db.query('INSERT INTO users...');  // Should go through service+repo!
-};
-```
+### Module Issues
+- Side effects on import (code that runs when imported)
+- Missing `.js` extensions in ESM imports
+- Mixing `require()` and `import`
 
-### Circular Dependencies
+### Configuration Issues
+- Scattered `process.env` access (should be centralized)
+- Missing environment variable validation
+- Using dotenv in production
 
-```javascript
-// VIOLATION: A imports B, B imports A
-// user.service.js
-import { OrderService } from '../orders/order.service.js';
-// order.service.js
-import { UserService } from '../users/user.service.js';  // CIRCULAR!
-```
+---
+
+## Testing Issues
+
+- Testing mock call counts instead of actual behavior
+- Shared mutable state between tests
+- Missing `async`/`await` in test functions
+- Hardcoded ports (`listen(3000)` - use `listen(0)`)
+- Missing cleanup in `afterEach`/`afterAll`
+- Tests depending on execution order
+
+---
+
+## Quick Reference
+
+| Category | Check | Pattern |
+|----------|-------|---------|
+| Error | No empty catch | `catch (err) { /* handle */ }` |
+| Error | Throw Error instances | `throw new Error()` not strings |
+| Error | Async errors caught | try/catch in handlers, next(error) |
+| Security | No SQL injection | Parameterized queries only |
+| Security | No XSS | Sanitize user input |
+| Security | No hardcoded secrets | Use env vars |
+| Async | No missing await | All async calls awaited |
+| Async | No floating promises | Every Promise handled |
+| Async | Parallel when possible | `Promise.all()` |
+| Async | No await in loops | Use `Promise.all(items.map())` |
+| Resource | DB released | `finally { client.release() }` |
+| Resource | Streams handled | `stream.on('error', handler)` |
+| Resource | Timers cleared | clearInterval on shutdown |
+| Arch | Logic in services | Not in controllers |
+| Arch | No circular deps | One-way dependency flow |
+| Test | Test isolation | No shared mutable state |
+| Test | Async tests correct | async/await in test fns |
+| Test | Random ports | `listen(0)` not hardcoded |
 
 ---
 
@@ -372,37 +181,19 @@ import { UserService } from '../users/user.service.js';  // CIRCULAR!
 task_id: {task.id}
 
 spec_compliance:
-  criteria_assessment:
-    - criterion: "[criterion text]"
-      status: met|partial|missing
-      evidence: "[file:line or test name]"
-  under_building: {found: true|false, issues: [...]}
-  over_building: {found: true|false, issues: [...]}
+  criteria_assessment: [{criterion, status: met|partial|missing, evidence}]
+  under_building: {found, issues}
+  over_building: {found, issues}
 
 code_quality:
   findings:
-    critical:
-      - issue: "[description]"
-        location: "[file:line]"
-        category: "[error_handling|security|async|resource_leak]"
-        fix: "[how to fix]"
-    major:
-      - issue: "[description]"
-        location: "[file:line]"
-        fix: "[how to fix]"
-    minor:
-      - issue: "[description]"
-        suggestion: "[improvement]"
-
-  security:
-    issues_found: true|false
-    details: [...]
+    critical: [{issue, location, category, fix}]
+    major: [{issue, location, fix}]
+    minor: [{issue, suggestion}]
+  security: {issues_found, details}
 
 verdict: APPROVED|CHANGES_NEEDED
-changes_required:
-  - priority: 1
-    description: "[what to fix]"
-    location: "[file:line]"
+changes_required: [{priority, description, location}]
 ```
 
 ### Return to Orchestrator (2 lines max)
