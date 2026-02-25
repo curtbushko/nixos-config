@@ -11,6 +11,7 @@ in {
   imports = [
     ./cliphist.nix
     ./filebrowser.nix
+    ./rectangle.nix
     ./rofi.nix
     ./niri.nix
     ./swaybg.nix

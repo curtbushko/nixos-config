@@ -23,6 +23,7 @@
     terminals.enable = true;
     tools.enable = true;
     llm.enable = true;
+    wm.rectangle.enable = true;
     theme = {
       name = "gruvbox-material";
       wallpaper = "green-pasture.jpg";

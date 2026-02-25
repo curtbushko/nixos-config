@@ -21,6 +21,7 @@
     shells.enable = true;
     terminals.enable = true;
     tools.enable = true;
+    wm.rectangle.enable = true;
     theme = {
       name = "gruvbox-material";
       wallpaper = "cyberpunk_2077_phantom_liberty_katana.jpg";
