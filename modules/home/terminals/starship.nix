@@ -38,7 +38,7 @@ in {
               steamdeck) icon=" "; name="steamdeck" ;;
               *)         icon="󰣘 "; name="$h" ;;
             esac
-            printf '%s\u200b%s\u200b' "$icon" "$name"
+            printf '%s%s' "$icon" "$name"
           '';
           format = "[ $output ]($style)";
           when = "true";
@@ -82,7 +82,7 @@ in {
               Videos)                icon=" "; name="Videos" ;;
             esac
 
-            printf '%s\u200b%s\u200b' "$icon" "$name"
+            printf '%s%s' "$icon" "$name"
           '';
           format = "[ $output ]($style)";
           when = "true";
