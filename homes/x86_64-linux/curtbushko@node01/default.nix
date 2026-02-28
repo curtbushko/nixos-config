@@ -35,7 +35,7 @@
     };
     theme = {
       name = "rebel-scum";
-      wallpaper = "cyberpunk-tokyo.png";
+      wallpaper = "firewatch-green.jpg";
     };
   };
 

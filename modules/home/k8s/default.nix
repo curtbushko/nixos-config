@@ -38,8 +38,6 @@ in {
     # Install krew plugins
     home.activation.installKrewPlugins = config.lib.dag.entryAfter ["writeBoundary"] ''
       export PATH="${pkgs.kubectl}/bin:${pkgs.krew}/bin:${pkgs.git}/bin:''$PATH"
-      # Use system SSH to support macOS-specific options like UseKeychain
-      export GIT_SSH_COMMAND="/usr/bin/ssh"
 
       # Install ctx plugin (kubectx)
       if ! ${pkgs.krew}/bin/krew list 2>/dev/null | grep -q "^ctx$"; then

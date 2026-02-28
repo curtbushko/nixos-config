@@ -20,7 +20,9 @@
     services.cron.enable = true;
     services.k8s.server.enable = true;
     services.llm.enable = false;
-    services.minecraft.enable = false;
+    services.minecraft.dj-server.enable = false;
+    services.minecraft.homestead.enable = false;
+    services.vr.enable = false;
     services.wm.enable = false;
   };
 
