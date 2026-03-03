@@ -1,5 +1,36 @@
 {config, lib, pkgs, ...}: let
-  colors = lib.importJSON ./${config.curtbushko.theme.name}.json;
+  # Read colors from flair's style.json in ~/.config/flair/
+  # Flair generates base16 colors directly (base00-base0F)
+  # Note: Requires --impure flag for nix build/home-manager switch
+  flairStylePath = "${config.home.homeDirectory}/.config/flair/style.json";
+
+  # Default fallback theme (gruvbox-material) if flair style.json doesn't exist
+  defaultColors = {
+    base00 = "#1d2021";
+    base01 = "#282828";
+    base02 = "#3c3836";
+    base03 = "#504945";
+    base04 = "#bdae93";
+    base05 = "#d4be98";
+    base06 = "#ebdbb2";
+    base07 = "#fbf1c7";
+    base08 = "#ea6962";
+    base09 = "#e78a4e";
+    base0A = "#d8a657";
+    base0B = "#a9b665";
+    base0C = "#89b482";
+    base0D = "#7daea3";
+    base0E = "#d3869b";
+    base0F = "#bd6f3e";
+  };
+
+  # Use flair colors if available, otherwise fall back to default
+  colors = if builtins.pathExists flairStylePath
+           then builtins.fromJSON (builtins.readFile flairStylePath)
+           else defaultColors;
+
+  # Strip leading '#' from hex colors for stylix (it expects "1a1b26" not "#1a1b26")
+  stripHash = color: lib.removePrefix "#" color;
 
   # Wallpaper SHA256 hashes
   wallpaperHashes = {
@@ -54,23 +85,24 @@ in {
     #image = ./wallpapers/3440x1440/cyberpunk-city-future-digital-art-rq.jpg;
     image = wallpaper;
     polarity = "dark";
+    # Flair provides base16 colors with '#' prefix, stylix needs them without
     base16Scheme = {
-      base00 = colors.bg_dark;
-      base01 = colors.bg;
-      base02 = colors.dark3;
-      base03 = colors.fg_gutter;
-      base04 = colors.dark5;
-      base05 = colors.fg;
-      base06 = colors.fg_dark;
-      base07 = colors.fg_sidebar;
-      base08 = colors.red;
-      base09 = colors.orange;
-      base0A = colors.yellow;
-      base0B = colors.green1;
-      base0C = colors.blue5;
-      base0D = colors.blue;
-      base0E = colors.magenta;
-      base0F = colors.green;
+      base00 = stripHash colors.base00;
+      base01 = stripHash colors.base01;
+      base02 = stripHash colors.base02;
+      base03 = stripHash colors.base03;
+      base04 = stripHash colors.base04;
+      base05 = stripHash colors.base05;
+      base06 = stripHash colors.base06;
+      base07 = stripHash colors.base07;
+      base08 = stripHash colors.base08;
+      base09 = stripHash colors.base09;
+      base0A = stripHash colors.base0A;
+      base0B = stripHash colors.base0B;
+      base0C = stripHash colors.base0C;
+      base0D = stripHash colors.base0D;
+      base0E = stripHash colors.base0E;
+      base0F = stripHash colors.base0F;
     };
     fonts = {
       serif = {
@@ -134,12 +166,4 @@ in {
     gruvbox-plus-icons # Main icon theme
   ];
 
-  # Export theme files to $XDG_CONFIG_HOME/themes for use by other programs
-  xdg.configFile = {
-    "themes/andromeda.json".source = ./andromeda.json;
-    "themes/everforest.json".source = ./everforest.json;
-    "themes/gruvbox-material.json".source = ./gruvbox-material.json;
-    "themes/rebel-scum.json".source = ./rebel-scum.json;
-    "themes/tokyo-night-neon.json".source = ./tokyo-night-neon.json;
-  };
 }

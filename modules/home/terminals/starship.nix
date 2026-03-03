@@ -5,13 +5,31 @@
 }: let
   inherit (lib) mkIf;
   cfg = config.curtbushko.terminals;
-  colors = lib.importJSON ../../home/styles/${config.curtbushko.theme.name}.json;
-  a_bg = colors.statusline_a_bg;
-  a_fg = colors.statusline_a_fg;
-  b_bg = colors.statusline_b_bg;
-  b_fg = colors.statusline_b_fg;
-  c_bg = colors.statusline_c_bg;
-  c_fg = colors.statusline_c_fg;
+
+  # Read colors from flair's style.json in ~/.config/flair/
+  # Note: Requires --impure flag for nix build/home-manager switch
+  flairStylePath = "${config.home.homeDirectory}/.config/flair/style.json";
+
+  # Default fallback colors if flair style.json doesn't exist
+  defaultColors = {
+    "statusline-a-bg" = "#1d2021";
+    "statusline-a-fg" = "#d4be98";
+    "statusline-b-bg" = "#282828";
+    "statusline-b-fg" = "#d4be98";
+    "statusline-c-bg" = "#3c3836";
+    "statusline-c-fg" = "#a9b665";
+  };
+
+  colors = if builtins.pathExists flairStylePath
+           then builtins.fromJSON (builtins.readFile flairStylePath)
+           else defaultColors;
+
+  a_bg = colors."statusline-a-bg";
+  a_fg = colors."statusline-a-fg";
+  b_bg = colors."statusline-b-bg";
+  b_fg = colors."statusline-b-fg";
+  c_bg = colors."statusline-c-bg";
+  c_fg = colors."statusline-c-fg";
 in {
   config = mkIf cfg.enable {
     programs.starship = {

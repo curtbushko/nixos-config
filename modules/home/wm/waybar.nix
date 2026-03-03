@@ -250,9 +250,30 @@ in {
       ];
 
       style = let
-        colors = lib.importJSON ../../home/styles/${config.curtbushko.theme.name}.json;
+        # Read colors from flair's style.json in ~/.config/flair/
+        # Note: Requires --impure flag for nix build/home-manager switch
+        flairStylePath = "${config.home.homeDirectory}/.config/flair/style.json";
+
+        # Default fallback colors if flair style.json doesn't exist
+        defaultColors = {
+          "statusline-a-bg" = "#1d2021";
+          "statusline-a-fg" = "#d4be98";
+          "statusline-b-bg" = "#282828";
+          "statusline-b-fg" = "#d4be98";
+          "statusline-c-bg" = "#3c3836";
+          "statusline-c-fg" = "#a9b665";
+          "text-primary" = "#d4be98";
+          "surface-bg" = "#1d2021";
+          "git-added" = "#a9b665";
+          "status-warning" = "#d8a657";
+          "git-deleted" = "#ea6962";
+        };
+
+        colors = if builtins.pathExists flairStylePath
+                 then builtins.fromJSON (builtins.readFile flairStylePath)
+                 else defaultColors;
       in
-        with colors; ''
+        ''
           /*
               ┏┓┓ ┏┳┓  ┏┓┏┓┓ ┏┓┳┓┏┓
               ┃┃┃┃┃┃┃  ┃ ┃┃┃ ┃┃┣┫┗┓
@@ -263,33 +284,33 @@ in {
             [1][2][3]       [3][2][1]  which maps to:
             [network][workspace][audio]   [resources][temperature][system]
           */
-          @define-color section_1_fg ${colors.statusline_a_fg};
-          @define-color section_1_bg ${colors.statusline_a_bg};
+          @define-color section_1_fg ${colors."statusline-a-fg"};
+          @define-color section_1_bg ${colors."statusline-a-bg"};
 
-          @define-color section_2_fg ${colors.statusline_b_fg};
-          @define-color section_2_bg ${colors.statusline_b_bg};
+          @define-color section_2_fg ${colors."statusline-b-fg"};
+          @define-color section_2_bg ${colors."statusline-b-bg"};
 
-          @define-color section_3_fg ${colors.statusline_c_fg};
-          @define-color section_3_bg ${colors.statusline_c_bg};
+          @define-color section_3_fg ${colors."statusline-c-fg"};
+          @define-color section_3_bg ${colors."statusline-c-bg"};
 
           @define-color cursor #afbbe5;
 
-          @define-color foreground ${colors.fg};
+          @define-color foreground ${colors."text-primary"};
 
-          @define-color background ${colors.bg};
+          @define-color background ${colors."surface-bg"};
 
           /* workspace text colors */
-          @define-color active_fg  ${colors.statusline_b_fg};
-          @define-color in_use_fg  ${colors.statusline_b_fg};
+          @define-color active_fg  ${colors."statusline-b-fg"};
+          @define-color in_use_fg  ${colors."statusline-b-fg"};
 
           /* updates-widget icon+text colors */
-          @define-color updates_green ${colors.green};
-          @define-color updates_yellow ${colors.yellow};
-          @define-color updates_red ${colors.red};
+          @define-color updates_green ${colors."git-added"};
+          @define-color updates_yellow ${colors."status-warning"};
+          @define-color updates_red ${colors."git-deleted"};
           /* tokyo-night colors
-          updates_green = "${colors.green}";
-          updates_yellow = "${colors.yellow}";
-          updates_red = "${colors.red}";
+          updates_green = "${colors."git-added"}";
+          updates_yellow = "${colors."status-warning"}";
+          updates_red = "${colors."git-deleted"}";
           */
 
           /*

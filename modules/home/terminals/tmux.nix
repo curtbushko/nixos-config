@@ -6,7 +6,21 @@
 }: let
   inherit (lib) mkIf;
   cfg = config.curtbushko.terminals;
-  colors = lib.importJSON ../../home/styles/${config.curtbushko.theme.name}.json;
+
+  # Read colors from flair's style.json in ~/.config/flair/
+  # Note: Requires --impure flag for nix build/home-manager switch
+  flairStylePath = "${config.home.homeDirectory}/.config/flair/style.json";
+
+  # Default fallback colors if flair style.json doesn't exist
+  defaultColors = {
+    "terminal-cyan" = "#89b482";
+    "surface-bg-overlay" = "#282828";
+    "terminal-blue" = "#7daea3";
+  };
+
+  colors = if builtins.pathExists flairStylePath
+           then builtins.fromJSON (builtins.readFile flairStylePath)
+           else defaultColors;
 in {
   config = mkIf cfg.enable {
     stylix.targets.tmux.enable = true;
@@ -31,10 +45,10 @@ in {
       sensibleOnTop = false;
       disableConfirmationPrompt = true;
       extraConfig = let
-        active = "${colors.teal}";
+        active = "${colors."terminal-cyan"}";
         inactive = "#6C7086";
-        background = "${colors.bg_dark}";
-        foreground = "${colors.blue0}";
+        background = "${colors."surface-bg-overlay"}";
+        foreground = "${colors."terminal-blue"}";
       in ''
         # fix tmux not showing italics in neovim
         # to test, do: echo -e "\e[3mThis text should be italic\e[0m"

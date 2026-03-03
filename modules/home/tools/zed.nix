@@ -8,7 +8,67 @@ let
   inherit (lib) mkIf;
   cfg = config.curtbushko.tools;
   isLinux = pkgs.stdenv.isLinux;
-  colors = lib.importJSON ../styles/${config.curtbushko.theme.name}.json;
+
+  # Read colors from flair's style.json in ~/.config/flair/
+  # Note: Requires --impure flag for nix build/home-manager switch
+  flairStylePath = "${config.home.homeDirectory}/.config/flair/style.json";
+
+  # Default fallback colors if flair style.json doesn't exist (gruvbox-material)
+  defaultColors = {
+    "surface-bg" = "#1d2021";
+    "surface-bg-overlay" = "#282828";
+    "surface-bg-popup" = "#3c3836";
+    "surface-bg-highlight" = "#3c3836";
+    "surface-bg-selection" = "#504945";
+    "surface-bg-search" = "#504945";
+    "text-primary" = "#d4be98";
+    "text-secondary" = "#ddc7a1";
+    "syntax-comment" = "#928374";
+    "syntax-constant" = "#e78a4e";
+    "syntax-constructor" = "#d8a657";
+    "syntax-function" = "#7daea3";
+    "syntax-keyword" = "#ea6962";
+    "syntax-number" = "#d3869b";
+    "syntax-operator" = "#d4be98";
+    "syntax-property" = "#7daea3";
+    "syntax-string" = "#a9b665";
+    "syntax-escape" = "#e78a4e";
+    "syntax-regexp" = "#e78a4e";
+    "syntax-tag" = "#ea6962";
+    "syntax-type" = "#d8a657";
+    "syntax-variable" = "#d4be98";
+    "syntax-parameter" = "#d3869b";
+    "terminal-black" = "#1d2021";
+    "terminal-brblack" = "#928374";
+    "terminal-red" = "#ea6962";
+    "terminal-brred" = "#ea6962";
+    "terminal-green" = "#a9b665";
+    "terminal-brgreen" = "#a9b665";
+    "terminal-yellow" = "#d8a657";
+    "terminal-bryellow" = "#d8a657";
+    "terminal-blue" = "#7daea3";
+    "terminal-brblue" = "#7daea3";
+    "terminal-magenta" = "#d3869b";
+    "terminal-brmagenta" = "#d3869b";
+    "terminal-cyan" = "#89b482";
+    "terminal-brcyan" = "#89b482";
+    "terminal-white" = "#d4be98";
+    "terminal-brwhite" = "#d4be98";
+    "markup-link" = "#7daea3";
+    "markup-heading" = "#d8a657";
+    "markup-list-bullet" = "#ea6962";
+    "git-added" = "#a9b665";
+    "git-deleted" = "#ea6962";
+    "base00" = "#1d2021";
+    "base02" = "#3c3836";
+    "base03" = "#504945";
+    "base09" = "#e78a4e";
+    "base0E" = "#d3869b";
+  };
+
+  colors = if builtins.pathExists flairStylePath
+           then builtins.fromJSON (builtins.readFile flairStylePath)
+           else defaultColors;
 in
 {
   config = mkIf cfg.enable {
@@ -753,310 +813,310 @@ in
             name = "Stylix Dark";
             appearance = "dark";
             style = {
-              background = colors.bg;
-              border = colors.bg_dark;
-              "border.variant" = colors.bg_float;
-              "border.focused" = colors.blue;
-              "border.selected" = colors.blue;
-              "border.transparent" = colors.bg;
-              "border.disabled" = colors.dark3;
-              elevated_surface.background = colors.bg_dark;
-              surface.background = colors.bg;
-              "element.background" = colors.bg_dark;
-              "element.hover" = colors.bg_highlight;
-              "element.active" = colors.bg_visual;
-              "element.selected" = colors.bg_visual;
-              "element.disabled" = colors.dark3;
-              "drop_target.background" = colors.bg_highlight;
+              background = colors."surface-bg";
+              border = colors."surface-bg-overlay";
+              "border.variant" = colors."surface-bg-popup";
+              "border.focused" = colors."terminal-blue";
+              "border.selected" = colors."terminal-blue";
+              "border.transparent" = colors."surface-bg";
+              "border.disabled" = colors.base02;
+              elevated_surface.background = colors."surface-bg-overlay";
+              surface.background = colors."surface-bg";
+              "element.background" = colors."surface-bg-overlay";
+              "element.hover" = colors."surface-bg-highlight";
+              "element.active" = colors."surface-bg-selection";
+              "element.selected" = colors."surface-bg-selection";
+              "element.disabled" = colors.base02;
+              "drop_target.background" = colors."surface-bg-highlight";
               ghost_element.background = "transparent";
-              "ghost_element.hover" = colors.bg_highlight;
-              "ghost_element.active" = colors.bg_visual;
-              "ghost_element.selected" = colors.bg_visual;
-              "ghost_element.disabled" = colors.dark3;
-              "text" = colors.fg;
-              "text.muted" = colors.comment;
-              "text.placeholder" = colors.dark5;
-              "text.disabled" = colors.dark5;
-              "text.accent" = colors.blue;
-              "icon" = colors.fg;
-              "icon.muted" = colors.comment;
-              "icon.disabled" = colors.dark5;
-              "icon.placeholder" = colors.dark5;
-              "icon.accent" = colors.blue;
-              "status_bar.background" = colors.bg_dark;
-              "title_bar.background" = colors.bg_dark;
-              "title_bar.inactive_background" = colors.bg;
-              "toolbar.background" = colors.bg;
-              "tab_bar.background" = colors.bg_dark;
-              "tab.inactive_background" = colors.bg_dark;
-              "tab.active_background" = colors.bg;
-              "search.match_background" = colors.bg_search;
+              "ghost_element.hover" = colors."surface-bg-highlight";
+              "ghost_element.active" = colors."surface-bg-selection";
+              "ghost_element.selected" = colors."surface-bg-selection";
+              "ghost_element.disabled" = colors.base02;
+              "text" = colors."text-primary";
+              "text.muted" = colors."syntax-comment";
+              "text.placeholder" = colors.base03;
+              "text.disabled" = colors.base03;
+              "text.accent" = colors."terminal-blue";
+              "icon" = colors."text-primary";
+              "icon.muted" = colors."syntax-comment";
+              "icon.disabled" = colors.base03;
+              "icon.placeholder" = colors.base03;
+              "icon.accent" = colors."terminal-blue";
+              "status_bar.background" = colors."surface-bg-overlay";
+              "title_bar.background" = colors."surface-bg-overlay";
+              "title_bar.inactive_background" = colors."surface-bg";
+              "toolbar.background" = colors."surface-bg";
+              "tab_bar.background" = colors."surface-bg-overlay";
+              "tab.inactive_background" = colors."surface-bg-overlay";
+              "tab.active_background" = colors."surface-bg";
+              "search.match_background" = colors."surface-bg-search";
               # Panel background same as editor for unified look
-              "panel.background" = colors.bg;
-              "panel.focused_border" = colors.blue;
-              pane.focused_border = colors.blue;
-              "scrollbar.thumb.background" = colors.dark3;
-              "scrollbar.thumb.hover_background" = colors.dark5;
-              "scrollbar.thumb.border" = colors.dark3;
-              "scrollbar.track.background" = colors.bg;
-              "scrollbar.track.border" = colors.bg;
-              "editor.foreground" = colors.fg;
-              "editor.background" = colors.bg;
-              "editor.gutter.background" = colors.bg;
-              "editor.subheader.background" = colors.bg_dark;
-              "editor.active_line.background" = colors.bg_highlight;
-              "editor.highlighted_line.background" = colors.bg_visual;
-              "editor.line_number" = colors.dark5;
-              "editor.active_line_number" = colors.fg;
-              "editor.invisible" = colors.dark3;
-              "editor.wrap_guide" = colors.dark3;
-              "editor.active_wrap_guide" = colors.dark5;
-              "editor.document_highlight.read_background" = colors.bg_visual;
-              "editor.document_highlight.write_background" = colors.bg_visual;
-              "terminal.background" = colors.bg;
-              "terminal.foreground" = colors.fg;
-              "terminal.bright_foreground" = colors.fg_dark;
-              "terminal.dim_foreground" = colors.comment;
-              "terminal.ansi.black" = colors.black;
-              "terminal.ansi.bright_black" = colors.dark5;
-              "terminal.ansi.red" = colors.red;
-              "terminal.ansi.bright_red" = colors.red1;
-              "terminal.ansi.green" = colors.green;
-              "terminal.ansi.bright_green" = colors.green1;
-              "terminal.ansi.yellow" = colors.yellow;
-              "terminal.ansi.bright_yellow" = colors.warning;
-              "terminal.ansi.blue" = colors.blue;
-              "terminal.ansi.bright_blue" = colors.blue1;
-              "terminal.ansi.magenta" = colors.magenta;
-              "terminal.ansi.bright_magenta" = colors.magenta2;
-              "terminal.ansi.cyan" = colors.cyan;
-              "terminal.ansi.bright_cyan" = colors.teal;
-              "terminal.ansi.white" = colors.fg;
-              "terminal.ansi.bright_white" = colors.fg_dark;
-              link_text.underline = colors.blue;
-              conflict = colors.orange;
-              "conflict.background" = colors.bg;
-              "conflict.border" = colors.orange;
-              created = colors.green;
-              "created.background" = colors.bg;
-              "created.border" = colors.green;
-              deleted = colors.red;
-              "deleted.background" = colors.bg;
-              "deleted.border" = colors.red;
-              error = colors.red;
-              "error.background" = colors.bg;
-              "error.border" = colors.red;
-              hidden = colors.dark5;
-              "hidden.background" = colors.bg;
-              "hidden.border" = colors.dark3;
-              hint = colors.orange;
-              "hint.background" = colors.bg;
-              "hint.border" = colors.orange;
-              ignored = colors.dark5;
-              "ignored.background" = colors.bg;
-              "ignored.border" = colors.dark3;
-              info = colors.blue;
-              "info.background" = colors.bg;
-              "info.border" = colors.blue;
-              modified = colors.yellow;
-              "modified.background" = colors.bg;
-              "modified.border" = colors.yellow;
-              predictive = colors.comment;
-              "predictive.background" = colors.bg;
-              "predictive.border" = colors.comment;
-              renamed = colors.cyan;
-              "renamed.background" = colors.bg;
-              "renamed.border" = colors.cyan;
-              success = colors.green;
-              "success.background" = colors.bg;
-              "success.border" = colors.green;
-              unreachable = colors.dark5;
-              "unreachable.background" = colors.bg;
-              "unreachable.border" = colors.dark3;
-              warning = colors.yellow;
-              "warning.background" = colors.bg;
-              "warning.border" = colors.yellow;
+              "panel.background" = colors."surface-bg";
+              "panel.focused_border" = colors."terminal-blue";
+              pane.focused_border = colors."terminal-blue";
+              "scrollbar.thumb.background" = colors.base02;
+              "scrollbar.thumb.hover_background" = colors.base03;
+              "scrollbar.thumb.border" = colors.base02;
+              "scrollbar.track.background" = colors."surface-bg";
+              "scrollbar.track.border" = colors."surface-bg";
+              "editor.foreground" = colors."text-primary";
+              "editor.background" = colors."surface-bg";
+              "editor.gutter.background" = colors."surface-bg";
+              "editor.subheader.background" = colors."surface-bg-overlay";
+              "editor.active_line.background" = colors."surface-bg-highlight";
+              "editor.highlighted_line.background" = colors."surface-bg-selection";
+              "editor.line_number" = colors.base03;
+              "editor.active_line_number" = colors."text-primary";
+              "editor.invisible" = colors.base02;
+              "editor.wrap_guide" = colors.base02;
+              "editor.active_wrap_guide" = colors.base03;
+              "editor.document_highlight.read_background" = colors."surface-bg-selection";
+              "editor.document_highlight.write_background" = colors."surface-bg-selection";
+              "terminal.background" = colors."surface-bg";
+              "terminal.foreground" = colors."text-primary";
+              "terminal.bright_foreground" = colors."text-secondary";
+              "terminal.dim_foreground" = colors."syntax-comment";
+              "terminal.ansi.black" = colors."terminal-black";
+              "terminal.ansi.bright_black" = colors."terminal-brblack";
+              "terminal.ansi.red" = colors."terminal-red";
+              "terminal.ansi.bright_red" = colors."terminal-brred";
+              "terminal.ansi.green" = colors."terminal-green";
+              "terminal.ansi.bright_green" = colors."terminal-brgreen";
+              "terminal.ansi.yellow" = colors."terminal-yellow";
+              "terminal.ansi.bright_yellow" = colors."terminal-bryellow";
+              "terminal.ansi.blue" = colors."terminal-blue";
+              "terminal.ansi.bright_blue" = colors."terminal-brblue";
+              "terminal.ansi.magenta" = colors."terminal-magenta";
+              "terminal.ansi.bright_magenta" = colors."terminal-brmagenta";
+              "terminal.ansi.cyan" = colors."terminal-cyan";
+              "terminal.ansi.bright_cyan" = colors."terminal-brcyan";
+              "terminal.ansi.white" = colors."terminal-white";
+              "terminal.ansi.bright_white" = colors."terminal-brwhite";
+              link_text.underline = colors."terminal-blue";
+              conflict = colors.base09;
+              "conflict.background" = colors."surface-bg";
+              "conflict.border" = colors.base09;
+              created = colors."terminal-green";
+              "created.background" = colors."surface-bg";
+              "created.border" = colors."terminal-green";
+              deleted = colors."terminal-red";
+              "deleted.background" = colors."surface-bg";
+              "deleted.border" = colors."terminal-red";
+              error = colors."terminal-red";
+              "error.background" = colors."surface-bg";
+              "error.border" = colors."terminal-red";
+              hidden = colors.base03;
+              "hidden.background" = colors."surface-bg";
+              "hidden.border" = colors.base02;
+              hint = colors.base09;
+              "hint.background" = colors."surface-bg";
+              "hint.border" = colors.base09;
+              ignored = colors.base03;
+              "ignored.background" = colors."surface-bg";
+              "ignored.border" = colors.base02;
+              info = colors."terminal-blue";
+              "info.background" = colors."surface-bg";
+              "info.border" = colors."terminal-blue";
+              modified = colors."terminal-yellow";
+              "modified.background" = colors."surface-bg";
+              "modified.border" = colors."terminal-yellow";
+              predictive = colors."syntax-comment";
+              "predictive.background" = colors."surface-bg";
+              "predictive.border" = colors."syntax-comment";
+              renamed = colors."terminal-cyan";
+              "renamed.background" = colors."surface-bg";
+              "renamed.border" = colors."terminal-cyan";
+              success = colors."terminal-green";
+              "success.background" = colors."surface-bg";
+              "success.border" = colors."terminal-green";
+              unreachable = colors.base03;
+              "unreachable.background" = colors."surface-bg";
+              "unreachable.border" = colors.base02;
+              warning = colors."terminal-yellow";
+              "warning.background" = colors."surface-bg";
+              "warning.border" = colors."terminal-yellow";
               players = [
                 {
-                  cursor = colors.blue;
-                  background = colors.blue;
-                  selection = colors.bg_visual;
+                  cursor = colors."terminal-blue";
+                  background = colors."terminal-blue";
+                  selection = colors."surface-bg-selection";
                 }
                 {
-                  cursor = colors.green;
-                  background = colors.green;
-                  selection = colors.bg_visual;
+                  cursor = colors."terminal-green";
+                  background = colors."terminal-green";
+                  selection = colors."surface-bg-selection";
                 }
                 {
-                  cursor = colors.magenta;
-                  background = colors.magenta;
-                  selection = colors.bg_visual;
+                  cursor = colors."terminal-magenta";
+                  background = colors."terminal-magenta";
+                  selection = colors."surface-bg-selection";
                 }
                 {
-                  cursor = colors.orange;
-                  background = colors.orange;
-                  selection = colors.bg_visual;
+                  cursor = colors.base09;
+                  background = colors.base09;
+                  selection = colors."surface-bg-selection";
                 }
                 {
-                  cursor = colors.cyan;
-                  background = colors.cyan;
-                  selection = colors.bg_visual;
+                  cursor = colors."terminal-cyan";
+                  background = colors."terminal-cyan";
+                  selection = colors."surface-bg-selection";
                 }
                 {
-                  cursor = colors.yellow;
-                  background = colors.yellow;
-                  selection = colors.bg_visual;
+                  cursor = colors."terminal-yellow";
+                  background = colors."terminal-yellow";
+                  selection = colors."surface-bg-selection";
                 }
                 {
-                  cursor = colors.red;
-                  background = colors.red;
-                  selection = colors.bg_visual;
+                  cursor = colors."terminal-red";
+                  background = colors."terminal-red";
+                  selection = colors."surface-bg-selection";
                 }
                 {
-                  cursor = colors.purple;
-                  background = colors.purple;
-                  selection = colors.bg_visual;
+                  cursor = colors.base0E;
+                  background = colors.base0E;
+                  selection = colors."surface-bg-selection";
                 }
               ];
               syntax = {
                 attribute = {
-                  color = colors.cyan;
+                  color = colors."terminal-cyan";
                 };
                 boolean = {
-                  color = colors.orange;
+                  color = colors.base09;
                 };
                 comment = {
-                  color = colors.comment;
+                  color = colors."syntax-comment";
                   font_style = "italic";
                 };
                 "comment.doc" = {
-                  color = colors.comment;
+                  color = colors."syntax-comment";
                   font_style = "italic";
                 };
                 constant = {
-                  color = colors.orange;
+                  color = colors."syntax-constant";
                 };
                 constructor = {
-                  color = colors.yellow;
+                  color = colors."syntax-constructor";
                 };
                 embedded = {
-                  color = colors.fg;
+                  color = colors."text-primary";
                 };
                 emphasis = {
-                  color = colors.red;
+                  color = colors."terminal-red";
                   font_style = "italic";
                 };
                 "emphasis.strong" = {
-                  color = colors.red;
+                  color = colors."terminal-red";
                   font_weight = 700;
                 };
                 enum = {
-                  color = colors.yellow;
+                  color = colors."syntax-type";
                 };
                 function = {
-                  color = colors.green;
+                  color = colors."syntax-function";
                 };
                 "function.builtin" = {
-                  color = colors.green;
+                  color = colors."syntax-function";
                 };
                 "function.definition" = {
-                  color = colors.green;
+                  color = colors."syntax-function";
                 };
                 "function.method" = {
-                  color = colors.green;
+                  color = colors."syntax-function";
                 };
                 "function.special.definition" = {
-                  color = colors.yellow;
+                  color = colors."syntax-type";
                 };
                 hint = {
-                  color = colors.comment;
+                  color = colors."syntax-comment";
                   font_weight = 700;
                 };
                 keyword = {
-                  color = colors.red;
+                  color = colors."syntax-keyword";
                 };
                 label = {
-                  color = colors.cyan;
+                  color = colors."terminal-cyan";
                 };
                 link_text = {
-                  color = colors.cyan;
+                  color = colors."markup-link";
                 };
                 link_uri = {
-                  color = colors.blue;
+                  color = colors."terminal-blue";
                 };
                 number = {
-                  color = colors.purple;
+                  color = colors."syntax-number";
                 };
                 operator = {
-                  color = colors.orange;
+                  color = colors."syntax-operator";
                 };
                 predictive = {
-                  color = colors.comment;
+                  color = colors."syntax-comment";
                   font_style = "italic";
                 };
                 preproc = {
-                  color = colors.cyan;
+                  color = colors."terminal-cyan";
                 };
                 primary = {
-                  color = colors.fg;
+                  color = colors."text-primary";
                 };
                 property = {
-                  color = colors.blue;
+                  color = colors."syntax-property";
                 };
                 punctuation = {
-                  color = colors.fg;
+                  color = colors."text-primary";
                 };
                 "punctuation.bracket" = {
-                  color = colors.fg;
+                  color = colors."text-primary";
                 };
                 "punctuation.delimiter" = {
-                  color = colors.fg;
+                  color = colors."text-primary";
                 };
                 "punctuation.list_marker" = {
-                  color = colors.orange;
+                  color = colors."markup-list-bullet";
                 };
                 "punctuation.special" = {
-                  color = colors.cyan;
+                  color = colors."terminal-cyan";
                 };
                 string = {
-                  color = colors.green;
+                  color = colors."syntax-string";
                 };
                 "string.escape" = {
-                  color = colors.orange;
+                  color = colors."syntax-escape";
                 };
                 "string.regex" = {
-                  color = colors.orange;
+                  color = colors."syntax-regexp";
                 };
                 "string.special" = {
-                  color = colors.orange;
+                  color = colors.base09;
                 };
                 "string.special.symbol" = {
-                  color = colors.cyan;
+                  color = colors."terminal-cyan";
                 };
                 tag = {
-                  color = colors.red;
+                  color = colors."syntax-tag";
                 };
                 "text.literal" = {
-                  color = colors.green;
+                  color = colors."syntax-string";
                 };
                 title = {
-                  color = colors.yellow;
+                  color = colors."markup-heading";
                   font_weight = 700;
                 };
                 type = {
-                  color = colors.yellow;
+                  color = colors."syntax-type";
                 };
                 "type.builtin" = {
-                  color = colors.yellow;
+                  color = colors."syntax-type";
                 };
                 variable = {
-                  color = colors.fg;
+                  color = colors."syntax-variable";
                 };
                 "variable.special" = {
-                  color = colors.orange;
+                  color = colors."syntax-parameter";
                 };
                 variant = {
-                  color = colors.cyan;
+                  color = colors."terminal-cyan";
                 };
               };
             };

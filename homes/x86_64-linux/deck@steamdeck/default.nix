@@ -34,10 +34,8 @@
       niri.enable = false;
       rofi.enable = false;
     };
-    theme = {
-      name = "gruvbox-material";
-      wallpaper = "cyberpunk-three.png";
-    };
+    # Theme colors managed by flair: run `flair select <theme>`
+    theme.wallpaper = "cyberpunk-three.png";
   };
 
   #---------------------------------------------------------------------

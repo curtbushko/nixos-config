@@ -37,10 +37,8 @@
       niri.enable = true;
       rofi.enable = false;
     };
-    theme = {
-      name = "gruvbox-material";
-      wallpaper = "firewatch-green.jpg";
-    };
+    # Theme colors managed by flair: run `flair select <theme>`
+    theme.wallpaper = "firewatch-green.jpg";
 
   };
 

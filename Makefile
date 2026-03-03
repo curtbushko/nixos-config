@@ -38,14 +38,14 @@ endif
 switch: ## Build and switch your nix config.
 	@echo "$(DATELOG) Building nix config for $(HOST)"
 ifneq (,$(findstring $(HOST),$(DARWIN_HOSTS)))
-	nix --extra-experimental-features 'nix-command flakes' build ".#darwinConfigurations.${HOST}.system" --show-trace
-	sudo ./result/sw/bin/darwin-rebuild switch --flake "$$(pwd)#${HOST}"
+	nix --extra-experimental-features 'nix-command flakes' build ".#darwinConfigurations.${HOST}.system" --show-trace --impure
+	sudo ./result/sw/bin/darwin-rebuild switch --flake "$$(pwd)#${HOST}" --impure
 else ifneq (,$(findstring $(HOST),$(NIXOS_HOSTS)))
-	sudo NIXPKGS_ALLOW_UNSUPPORTED_ARCH=1 nixos-rebuild switch --flake ".#${HOST}"
+	sudo NIXPKGS_ALLOW_UNSUPPORTED_ARCH=1 nixos-rebuild switch --flake ".#${HOST}" --impure
 else ifneq (,$(findstring $(HOST),$(HOME_MANAGER_HOSTS)))
 	@echo "$(DATELOG) Using home-manager for ${NIXUSER}@${HOST}"
 	@rm -f ~/.*.backup ~/.config/**/*.backup || true
-	nix --extra-experimental-features 'nix-command flakes' run nixpkgs#home-manager -- switch --flake ".#${NIXUSER}@${HOST}" -b backup
+	nix --extra-experimental-features 'nix-command flakes' run nixpkgs#home-manager -- switch --flake ".#${NIXUSER}@${HOST}" -b backup --impure
 else
 	@echo "$(DATELOG) ERROR: Unknown host '$(HOST)'. Please add it to DARWIN_HOSTS, NIXOS_HOSTS, or HOME_MANAGER_HOSTS in the Makefile."
 	@exit 1
@@ -57,7 +57,7 @@ dry-build: ## Build and switch your nix config.
 ifneq (,$(findstring $(HOST),$(DARWIN_HOSTS)))
 	@echo "$(DATELOG) Dry build not supported for Darwin hosts"
 else ifneq (,$(findstring $(HOST),$(NIXOS_HOSTS)))
-	sudo NIXPKGS_ALLOW_UNSUPPORTED_ARCH=1 nixos-rebuild dry-build --flake ".#${HOST}" -vvv 2>&1 | grep 'evaluating file'
+	sudo NIXPKGS_ALLOW_UNSUPPORTED_ARCH=1 nixos-rebuild dry-build --flake ".#${HOST}" --impure -vvv 2>&1 | grep 'evaluating file'
 else ifneq (,$(findstring $(HOST),$(HOME_MANAGER_HOSTS)))
 	@echo "$(DATELOG) Dry build not applicable for home-manager hosts"
 else
@@ -69,13 +69,13 @@ endif
 test: ## Test your nix config.
 	@echo "$(DATELOG) Testing nix config"
 ifneq (,$(findstring $(HOST),$(DARWIN_HOSTS)))
-	nix --extra-experimental-features 'nix-command flakes' build ".#darwinConfigurations.${HOST}.system" --show-trace
-	./result/sw/bin/darwin-rebuild test --flake "$$(pwd)#${HOST}"
+	nix --extra-experimental-features 'nix-command flakes' build ".#darwinConfigurations.${HOST}.system" --show-trace --impure
+	./result/sw/bin/darwin-rebuild test --flake "$$(pwd)#${HOST}" --impure
 else ifneq (,$(findstring $(HOST),$(NIXOS_HOSTS)))
-	sudo NIXPKGS_ALLOW_UNSUPPORTED_ARCH=1 nixos-rebuild test --flake ".#${HOST}"
+	sudo NIXPKGS_ALLOW_UNSUPPORTED_ARCH=1 nixos-rebuild test --flake ".#${HOST}" --impure
 else ifneq (,$(findstring $(HOST),$(HOME_MANAGER_HOSTS)))
 	@echo "$(DATELOG) Testing home-manager config for ${NIXUSER}@${HOST}"
-	nix --extra-experimental-features 'nix-command flakes' run nixpkgs#home-manager -- build --flake ".#${NIXUSER}@${HOST}"
+	nix --extra-experimental-features 'nix-command flakes' run nixpkgs#home-manager -- build --flake ".#${NIXUSER}@${HOST}" --impure
 else
 	@echo "$(DATELOG) ERROR: Unknown host '$(HOST)'. Please add it to DARWIN_HOSTS, NIXOS_HOSTS, or HOME_MANAGER_HOSTS in the Makefile."
 	@exit 1

@@ -76,11 +76,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1771452362,
-        "narHash": "sha256-EeXsFYu4jgk7EVrfYHw/bg9d17X5CAbCx98x5yYgnn8=",
+        "lastModified": 1772252645,
+        "narHash": "sha256-SVP3BYv/tY19P7mh0aG2Pgq4M/CynQEnV4y+57Ed91g=",
         "owner": "sadjow",
         "repo": "claude-code-nix",
-        "rev": "c4f00ef61954f46944680f358af60e97006ee754",
+        "rev": "42c9207e79f1e6b8b95b54a64c10452275717466",
         "type": "github"
       },
       "original": {
@@ -145,6 +145,27 @@
         "owner": "rafaelmardojai",
         "repo": "firefox-gnome-theme",
         "type": "github"
+      }
+    },
+    "flair": {
+      "inputs": {
+        "golang-shared-configs": "golang-shared-configs",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1772467426,
+        "narHash": "sha256-YA7GMzIQjz0FxTa4jJfS4CrK/kvHZY2ZReMGIYKfF7s=",
+        "ref": "refs/heads/main",
+        "rev": "9bee757249f0305ca699995d1c3ab0e7224a7672",
+        "revCount": 30,
+        "type": "git",
+        "url": "ssh://git@github.com/curtbushko/flair"
+      },
+      "original": {
+        "type": "git",
+        "url": "ssh://git@github.com/curtbushko/flair"
       }
     },
     "flake-compat": {
@@ -408,7 +429,7 @@
         "flake-compat": "flake-compat",
         "flake-utils": "flake-utils_2",
         "home-manager": "home-manager",
-        "nixpkgs": "nixpkgs",
+        "nixpkgs": "nixpkgs_2",
         "zig": "zig",
         "zon2nix": "zon2nix"
       },
@@ -443,6 +464,24 @@
         "ref": "gnome-49",
         "repo": "gnome-shell",
         "type": "gitlab"
+      }
+    },
+    "golang-shared-configs": {
+      "inputs": {
+        "nixpkgs": "nixpkgs"
+      },
+      "locked": {
+        "lastModified": 1771253838,
+        "narHash": "sha256-wGne6cvlZH2xO8b2KmnlYnMJjPfe3kLW1xoe4twlAks=",
+        "owner": "curtbushko",
+        "repo": "golang-shared-configs",
+        "rev": "dbe10447a6932dbdead5a8b28dbcf9f58ad9f6ea",
+        "type": "github"
+      },
+      "original": {
+        "owner": "curtbushko",
+        "repo": "golang-shared-configs",
+        "type": "github"
       }
     },
     "home-manager": {
@@ -518,11 +557,11 @@
         "plugin-99": "plugin-99"
       },
       "locked": {
-        "lastModified": 1771335792,
-        "narHash": "sha256-kHqBn5B3VbOe0PORmrPctT4K3HKXWaTp2kxzEqT7h10=",
+        "lastModified": 1772501991,
+        "narHash": "sha256-I/WboxS7hT2yYk8CDEol6sWSl4HEFsWfnfwmPn3u5wE=",
         "owner": "curtbushko",
         "repo": "neovim-flake",
-        "rev": "4e1ff68bcb8f3f17bb3e7a3d2e4622cc25f9402b",
+        "rev": "87c7a21dfc76319fdf80ca6291de37d178586f9e",
         "type": "github"
       },
       "original": {
@@ -630,15 +669,18 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1770537093,
-        "narHash": "sha256-XV30uo8tXuxdzuV8l3sojmlPRLd/8tpMsOp4lNzLGUo=",
-        "rev": "fef9403a3e4d31b0a23f0bacebbec52c248fbb51",
-        "type": "tarball",
-        "url": "https://releases.nixos.org/nixpkgs/nixpkgs-26.05pre942631.fef9403a3e4d/nixexprs.tar.xz"
+        "lastModified": 1770169770,
+        "narHash": "sha256-awR8qIwJxJJiOmcEGgP2KUqYmHG4v/z8XpL9z8FnT1A=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "aa290c9891fa4ebe88f8889e59633d20cc06a5f2",
+        "type": "github"
       },
       "original": {
-        "type": "tarball",
-        "url": "https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.xz"
+        "owner": "NixOS",
+        "ref": "nixpkgs-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
       }
     },
     "nixpkgs-lib": {
@@ -674,6 +716,19 @@
     },
     "nixpkgs_2": {
       "locked": {
+        "lastModified": 1770537093,
+        "narHash": "sha256-XV30uo8tXuxdzuV8l3sojmlPRLd/8tpMsOp4lNzLGUo=",
+        "rev": "fef9403a3e4d31b0a23f0bacebbec52c248fbb51",
+        "type": "tarball",
+        "url": "https://releases.nixos.org/nixpkgs/nixpkgs-26.05pre942631.fef9403a3e4d/nixexprs.tar.xz"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://channels.nixos.org/nixpkgs-unstable/nixexprs.tar.xz"
+      }
+    },
+    "nixpkgs_3": {
+      "locked": {
         "lastModified": 1767364772,
         "narHash": "sha256-fFUnEYMla8b7UKjijLnMe+oVFOz6HjijGGNS1l7dYaQ=",
         "owner": "nixos",
@@ -688,7 +743,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_3": {
+    "nixpkgs_4": {
       "locked": {
         "lastModified": 1767364772,
         "narHash": "sha256-fFUnEYMla8b7UKjijLnMe+oVFOz6HjijGGNS1l7dYaQ=",
@@ -704,7 +759,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_4": {
+    "nixpkgs_5": {
       "locked": {
         "lastModified": 1766651565,
         "narHash": "sha256-QEhk0eXgyIqTpJ/ehZKg9IKS7EtlWxF3N7DXy42zPfU=",
@@ -720,7 +775,7 @@
         "type": "github"
       }
     },
-    "nixpkgs_5": {
+    "nixpkgs_6": {
       "locked": {
         "lastModified": 1708161998,
         "narHash": "sha256-6KnemmUorCvlcAvGziFosAVkrlWZGIc6UNT9GUYr0jQ=",
@@ -805,12 +860,13 @@
         "claude-code": "claude-code",
         "darwin": "darwin",
         "firefox-addons": "firefox-addons",
+        "flair": "flair",
         "ghostty": "ghostty",
         "home-manager": "home-manager_2",
         "minecraft-servers": "minecraft-servers",
         "neovim": "neovim",
         "niri": "niri",
-        "nixpkgs": "nixpkgs_2",
+        "nixpkgs": "nixpkgs_3",
         "snowfall-lib": "snowfall-lib",
         "sops-nix": "sops-nix",
         "stevenblack-hosts": "stevenblack-hosts",
@@ -843,7 +899,7 @@
     },
     "sops-nix": {
       "inputs": {
-        "nixpkgs": "nixpkgs_3"
+        "nixpkgs": "nixpkgs_4"
       },
       "locked": {
         "lastModified": 1767499857,
@@ -888,7 +944,7 @@
         "firefox-gnome-theme": "firefox-gnome-theme",
         "flake-parts": "flake-parts_4",
         "gnome-shell": "gnome-shell",
-        "nixpkgs": "nixpkgs_4",
+        "nixpkgs": "nixpkgs_5",
         "nur": "nur",
         "systems": "systems_6",
         "tinted-foot": "tinted-foot",
@@ -1199,7 +1255,7 @@
       "inputs": {
         "flake-compat": "flake-compat_3",
         "flake-utils": "flake-utils_5",
-        "nixpkgs": "nixpkgs_5"
+        "nixpkgs": "nixpkgs_6"
       },
       "locked": {
         "lastModified": 1767487353,

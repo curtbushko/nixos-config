@@ -33,10 +33,8 @@
       niri.enable = false;
       rofi.enable = false;
     };
-    theme = {
-      name = "rebel-scum";
-      wallpaper = "firewatch-green.jpg";
-    };
+    # Theme colors managed by flair: run `flair select <theme>`
+    theme.wallpaper = "firewatch-green.jpg";
   };
 
   #---------------------------------------------------------------------

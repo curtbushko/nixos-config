@@ -7,7 +7,20 @@
 }: let
   inherit (lib) types mkOption mkIf;
   cfg = config.curtbushko.wm.niri;
-  colors = lib.importJSON ../styles/${config.curtbushko.theme.name}.json;
+
+  # Read colors from flair's style.json in ~/.config/flair/
+  # Note: Requires --impure flag for nix build/home-manager switch
+  flairStylePath = "${config.home.homeDirectory}/.config/flair/style.json";
+
+  # Default fallback colors if flair style.json doesn't exist
+  defaultColors = {
+    "statusline-a-bg" = "#7daea3";
+    "statusline-b-bg" = "#3c3836";
+  };
+
+  colors = if builtins.pathExists flairStylePath
+           then builtins.fromJSON (builtins.readFile flairStylePath)
+           else defaultColors;
 
   # Wallpaper SHA256 hashes
   wallpaperHashes = {
@@ -138,8 +151,8 @@ in {
           border = {
             enable = true;
             width = 1;
-            active.color = "${colors.statusline_a_bg}";
-            inactive.color = "${colors.statusline_b_bg}";
+            active.color = "${colors."statusline-a-bg"}";
+            inactive.color = "${colors."statusline-b-bg"}";
           };
           shadow = {
             enable = true;
