@@ -108,6 +108,10 @@ update-minecraft: ## Update minecraft-servers flake
 update-vicinae: ## Update vicinae flake
 	nix flake update vicinae
 
+.PHONY: update-worktrunk
+update-worktrunk: ## Update worktrunk flake
+	nix flake update worktrunk
+
 .PHONY: repair
 repair: ## Use this when you start getting weird 'file not found' errors from nix-store.
 	sudo nix-store --repair --verify --check-contents

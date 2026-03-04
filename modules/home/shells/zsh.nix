@@ -215,6 +215,11 @@ in {
 
          # Add $HOME/bin to PATH
          export PATH=$PATH:$HOME/bin:$HOME/go/bin:$HOME/.local/bin
+
+         # worktrunk shell integration
+         if command -v wt >/dev/null 2>&1; then
+           eval "$(command wt config shell init zsh)"
+         fi
       '';
     };
     programs.zsh.oh-my-zsh = {

@@ -1,5 +1,6 @@
 {
   config,
+  inputs,
   lib,
   pkgs,
   ...
@@ -22,6 +23,7 @@ in {
       pkgs.gh
       pkgs.lazygit
       pkgs.git-lfs
+      inputs.worktrunk.packages.${pkgs.stdenv.hostPlatform.system}.default
     ];
 
     programs.git = {
