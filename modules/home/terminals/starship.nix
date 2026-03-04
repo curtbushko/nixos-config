@@ -40,8 +40,7 @@ in {
         add_newline = true;
         command_timeout = 2000;
         # The  is a mix of what section came first and after
-        format = "[ ░▒▓](${a_bg})[](bg:${a_bg} fg:${a_fg})\${custom.hostname_fixed}[ ](bg:${b_bg} fg:${a_bg})\${custom.worktree}[](fg:${b_bg}
-        bg:${c_bg})$git_branch$git_status[](fg:${c_bg})$character";
+        format = "[ ░▒▓](${a_bg})[](bg:${a_bg} fg:${a_fg})\${custom.hostname_fixed}[ ](bg:${b_bg} fg:${a_bg})\${custom.worktree}[](fg:${b_bg} bg:${c_bg})$git_branch$git_status[](fg:${c_bg})$character";
         custom.hostname_fixed = {
           command = ''
             h=$(hostname)

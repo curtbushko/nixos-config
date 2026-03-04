@@ -155,17 +155,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1772467426,
-        "narHash": "sha256-YA7GMzIQjz0FxTa4jJfS4CrK/kvHZY2ZReMGIYKfF7s=",
-        "ref": "refs/heads/main",
-        "rev": "9bee757249f0305ca699995d1c3ab0e7224a7672",
-        "revCount": 30,
-        "type": "git",
-        "url": "ssh://git@github.com/curtbushko/flair"
+        "lastModified": 1772502062,
+        "narHash": "sha256-PRJLjfmwMW4qlCMpoQDHe+DkP+S/31b9Tlxf6YW2cF0=",
+        "owner": "curtbushko",
+        "repo": "flair",
+        "rev": "9f7619fcec70124b91bdf225359c76a02bcfaf24",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "ssh://git@github.com/curtbushko/flair"
+        "owner": "curtbushko",
+        "repo": "flair",
+        "type": "github"
       }
     },
     "flake-compat": {

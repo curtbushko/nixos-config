@@ -256,7 +256,7 @@ Task tool:
     3. Coding standards: `~/.claude/skills/zig-team/references/builder-context.md`
 
     Fix each issue listed in `changes_required` in priority order.
-    Run zig build && zig build test after each change. Commit fixes.
+    Run zig build && zig build test -j1 after each change. Commit fixes.
 
     Write your fix results to: `.tasks/result-{task.id}-fix-{cycle}.yaml`
     (same format as build results)
@@ -272,7 +272,7 @@ Task tool:
 
 ## Step 4: Final Validation
 
-Run via Bash: `zig build && zig build test && zig fmt --check src/`
+Run via Bash: `zig build && zig build test -j1 && zig fmt --check src/`
 
 Report: feature name, tasks completed, validation results, commits.
 

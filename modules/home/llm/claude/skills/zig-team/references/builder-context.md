@@ -11,7 +11,7 @@
 ALL must pass before completing:
 ```bash
 zig build
-zig build test
+zig build test -j1     # limit parallelism to avoid OOM
 zig fmt --check src/   # if project uses it
 make lint              # if Makefile exists
 task lint              # if Taskfile exists (fallback if no Makefile)
