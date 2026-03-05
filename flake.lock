@@ -1269,11 +1269,11 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1772651451,
-        "narHash": "sha256-MAS5izBl3wjhgyXnux+l8H8vE9PxPHwTmrgJ7nppxho=",
+        "lastModified": 1772740047,
+        "narHash": "sha256-aq5pFHwBrz3Q3Ux4n9P3ynHZ/I1qzKFrXbrP5wwSZUg=",
         "owner": "max-sixty",
         "repo": "worktrunk",
-        "rev": "0f317c79db7daf0b8017dd702f97ec194c299e8f",
+        "rev": "966651385a5b896ac705bdd863cfafc9158d3f2d",
         "type": "github"
       },
       "original": {

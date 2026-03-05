@@ -23,7 +23,6 @@ in {
       pkgs.gh
       pkgs.lazygit
       pkgs.git-lfs
-      inputs.worktrunk.packages.${pkgs.stdenv.hostPlatform.system}.default
     ];
 
     programs.git = {
@@ -93,5 +92,13 @@ in {
         whitespace-error-style = "22 reverse";
       };
     };
+
+    programs.worktrunk = {
+      enable = true;
+    };
   };
+  imports = [
+    inputs.worktrunk.homeModules.default
+  ];
+
 }
