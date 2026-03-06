@@ -17,6 +17,7 @@ in {
     ./swaybg.nix
     ./swayidle.nix
     ./vicinae.nix
+    ./wallpaper-darwin.nix
     ./waybar.nix
   ];
 

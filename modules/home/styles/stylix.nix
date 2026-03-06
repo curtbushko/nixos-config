@@ -36,7 +36,7 @@
   wallpaperHashes = {
     "firewatch-green.jpg" = "sha256-ILiIAcw9JMHsRNT63TnR3kn1O4IwEliJtb2FwdIQUEM=";
     "cyberpunk-tokyo.png" = lib.fakeHash;
-    "cyberpunk_2077_phantom_liberty_katana.jpg" = lib.fakeHash;
+    "cyberpunk_2077_phantom_liberty_katana.jpg" = "sha256-j4lo10bA9IT/qVE6LrFXbT6Gc85LYcS9xvMeeoEjq3U=";
     "green-pasture.jpg" = lib.fakeHash;
     "cyberpunk-three.png" = "sha256-9SOiWOXP8Ys/eO0C1KoqKt2pO37qv6gDtkmBwNB/0n0=";
   };
