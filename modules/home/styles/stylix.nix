@@ -34,11 +34,29 @@
 
   # Wallpaper SHA256 hashes
   wallpaperHashes = {
-    "firewatch-green.jpg" = "sha256-ILiIAcw9JMHsRNT63TnR3kn1O4IwEliJtb2FwdIQUEM=";
-    "cyberpunk-tokyo.png" = lib.fakeHash;
-    "cyberpunk_2077_phantom_liberty_katana.jpg" = "sha256-j4lo10bA9IT/qVE6LrFXbT6Gc85LYcS9xvMeeoEjq3U=";
-    "green-pasture.jpg" = lib.fakeHash;
+    "alone-cyberpunk-morning-4k-xi.jpg" = "sha256-zITr4RYr637YrnPq+crzjiW3DKs890oQBGJyV/7UahE=";
+    "cyber-futuristic-city-fantasy-art-4k-da.jpg" = "sha256-Qcqo6bVCAGOLifWs4sZo4sT1BXgMeNjThd+U9Fb65q0=";
+    "cyberpunk-2077-phantom-liberty-t7.jpg" = "sha256-tgs1ggqJiC7XjPI3hjoBPuWmxj2ZOQhcJ1GTtP8DJgs=";
+    "cyberpunk-city-future-digital-art-rq.jpg" = "sha256-KpiuK1txsP14r0WdkWcRkTYOdU1c7FMeBO6Veci3nV8=";
+    "cyberpunk-city-night-view-4k.jpg" = "sha256-eZYu08R2Mqj8tYYAC5B6l7gj8VbrMA8t2V2MGzCDV00=";
+    "cyberpunk-street-neon-abstract-triangle-art-5k.jpg" = "sha256-waUn2CKr5abvkb2EJqhoiFuzWr/apbxa9YFdqoSDIXQ=";
     "cyberpunk-three.png" = "sha256-9SOiWOXP8Ys/eO0C1KoqKt2pO37qv6gDtkmBwNB/0n0=";
+    "cyberpunk-tokyo.png" = "sha256-EF0HC5xMSzfumSsgyCaR7qYvT18eQQQMoG4BhZfrrq0=";
+    "cyberpunk-two.png" = "sha256-qPA9pua8SI8yN0UYZFN6zEID7UlJNg9kqKl5498kW1w=";
+    "cyberpunk_2077_phantom_liberty_katana.jpg" = "sha256-j4lo10bA9IT/qVE6LrFXbT6Gc85LYcS9xvMeeoEjq3U=";
+    "exploring_new_worlds.jpg" = "sha256-AUEsll/1ukR/CgAE09no9KPSNLmXN8jCaWJBEe3l6XY=";
+    "firewatch-blue.png" = "sha256-le8ue1DIBQToLBgXgX+72LKC3wWzNqWFYClIACYpsoY=";
+    "firewatch-green.jpg" = "sha256-ILiIAcw9JMHsRNT63TnR3kn1O4IwEliJtb2FwdIQUEM=";
+    "firewatch-mountain.jpeg" = "sha256-aybcH2pZDgvvZ2pIQiI/gpwc9t9OUaCjBHecJ4Xzsdw=";
+    "firewatch.png" = "sha256-yQSLWwX/fYpd8B9RwrLqX0DCxpeLKWmGLjOQ2PlDOyA=";
+    "green-pasture.jpg" = "sha256-fZXr148Y6LtvzbyuT1JiWsWtwOH0r1AUiZhX78Sd54Y=";
+    "my-city-gx.jpg" = "sha256-TKU4weRUuP+ZYSVmmBCRotB3PWp5grU2lvGV1Uallxs=";
+    "nebula.jpeg" = "sha256-S2X51R4dTBKCtlMvvNrA+bFqMA8h75g+N9GeoQe9gRY=";
+    "neofusion.jpeg" = "sha256-dzcg5kjEdLJ8W0GQETzf+66jcZzwC3Q3URBYe2ftXHk=";
+    "nightsky.jpeg" = "sha256-InV8IrD+1q5DN8S7/SXZZslTmCSQ/kLvxcURc3AWpCA=";
+    "redplanet.png" = "sha256-hMc7W2iJ0FL8Pv21B/1X8Y7Gxe+DpCQF0LhqXnUaagw=";
+    "space-cloud.jpg" = "sha256-heFPWu3dT4eH9qgObLtP4t8sZFZ+I+/B5ia2pmgkIlg=";
+    "tree.png" = "sha256-Ym0n19JAYvJGFypOJStEffQYkaNG+2MnPaioKaDnsyA=";
   };
 
   wallpaper = pkgs.fetchurl {
