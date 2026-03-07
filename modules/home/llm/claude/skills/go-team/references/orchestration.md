@@ -40,10 +40,10 @@ Subagents read their own context. You do NOT read these:
 | Agent | Reads | Path |
 |-------|-------|------|
 | Go Builder | Development standards | `~/.claude/skills/go-team/references/builder-context.md` |
-| Go Builder | Task details | `.tasks/task-{id}.yaml` |
+| Go Builder | Task details | `.tasks/task-{task.id}.yaml` |
 | Go Reviewer | Review checklist | `~/.claude/skills/go-team/references/reviewer-context.md` |
-| Go Reviewer | Task details | `.tasks/task-{id}.yaml` |
-| Go Reviewer | Build results | `.tasks/result-{id}-build.yaml` |
+| Go Reviewer | Task details | `.tasks/task-{task.id}.yaml` |
+| Go Reviewer | Build results | `.tasks/result-{task.id}-build.yaml` |
 | Task Manager | (explores codebase) | N/A |
 
 ---
@@ -90,7 +90,7 @@ Task tool call:
     2. Parse the Gherkin feature (extract Feature, scenarios, background, notes)
     3. Explore the codebase to find existing patterns, architecture, test helpers
     4. Identify which hexagonal architecture layers are affected
-       (domain / ports / services / adapters)
+       (domain / ports / application / adapters)
     5. Break down into 2-5 minute tasks following TDD
     6. Write output files (format below)
 
@@ -121,13 +121,13 @@ Task tool call:
     `## Implementation Status` checklist. The orchestrator uses these to mark
     scenarios as complete in PLAN.md when each task finishes.
 
-    **File 2: `.tasks/task-{id}.yaml`** (one per task, full details for builder/reviewer)
+    **File 2: `.tasks/task-{task.id}.yaml`** (one per task, full details for builder/reviewer)
     ```yaml
     id: 1
     name: "[task name]"
     feature: "[feature name]"
     plan_file: "{PLAN_FILE}"
-    layer: "[domain|ports|services|adapters]"
+    layer: "[domain|ports|application|adapters]"
     scenarios_covered:
       - "[Scenario name]"
     files:
@@ -153,7 +153,7 @@ Task tool call:
 
     **IMPORTANT**: Return ONLY this short confirmation (nothing else):
     ```
-    status: complete
+    status: completed
     tasks_created: [count]
     execution_order: [1, 2, ...]
     ```
@@ -187,20 +187,20 @@ For task in STATUS.tasks (following execution_order):
 
   # 3a: Build
   dispatch_builder(task)
-  # Builder writes results to .tasks/result-{id}-build.yaml
-  # Builder returns only: "status: complete|blocked, summary: [1 line]"
+  # Builder writes results to .tasks/result-{task.id}-build.yaml
+  # Builder returns only: "status: completed|blocked, summary: [1 line]"
 
   # 3b: Combined Review (spec + quality in one pass)
   for cycle in 1..MAX_REVIEW_CYCLES:
     dispatch_reviewer(task)
-    # Reviewer writes results to .tasks/result-{id}-review.yaml
+    # Reviewer writes results to .tasks/result-{task.id}-review.yaml
     # Reviewer returns only: "verdict: APPROVED|CHANGES_NEEDED, issues: [count]"
 
     if verdict == "APPROVED": break
 
     dispatch_builder_fix(task, cycle)
-    # Builder reads feedback from .tasks/result-{id}-review.yaml
-    # Builder returns only: "status: complete|blocked, fixes: [count]"
+    # Builder reads feedback from .tasks/result-{task.id}-review.yaml
+    # Builder returns only: "status: completed|blocked, fixes: [count]"
   else: escalate_to_user
 
   # 3c: Complete — update status AND PLAN.md
@@ -233,14 +233,14 @@ Task tool:
     2. Your coding standards: `~/.claude/skills/go-team/references/builder-context.md`
 
     Follow ALL standards: TDD (RED/GREEN/REFACTOR), build gates
-    (go build, go test, golangci-lint, go-arch-lint), hex architecture.
+    (make build, make test, make lint, go-arch-lint), hex architecture.
 
     Write your full results to: `.tasks/result-{task.id}-build.yaml`
     (format defined in builder-context.md)
 
     **IMPORTANT**: Return ONLY this to the orchestrator (2 lines max):
     ```
-    status: complete|blocked
+    status: completed|blocked
     summary: [one sentence]
     ```
 ```
@@ -290,7 +290,7 @@ Task tool:
     3. Coding standards: `~/.claude/skills/go-team/references/builder-context.md`
 
     Fix each issue listed in `changes_required` in priority order.
-    Run tests after each change. Ensure go build, go test, golangci-lint all pass.
+    Run tests after each change. Ensure make build, make test, make lint all pass.
     Commit fixes.
 
     Write your fix results to: `.tasks/result-{task.id}-fix-{cycle}.yaml`
@@ -298,7 +298,7 @@ Task tool:
 
     **IMPORTANT**: Return ONLY this to the orchestrator (2 lines max):
     ```
-    status: complete|blocked
+    status: completed|blocked
     fixes: [count of issues fixed]
     ```
 ```
@@ -310,9 +310,9 @@ Task tool:
 After all tasks complete, run (as the orchestrator, via Bash):
 
 ```
-go build ./...
-go test ./... -race
-golangci-lint run
+make build
+make test
+make lint
 go-arch-lint check  # if config exists
 ```
 

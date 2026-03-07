@@ -14,13 +14,15 @@ This context is injected into every Go Builder agent dispatch.
 
 Before completing, ALL must pass:
 ```bash
-go build ./...
-go test ./...
+make build           # REQUIRED - error if Makefile not found
+make test            # REQUIRED - error if Makefile not found
 make lint            # REQUIRED - error if Makefile not found
 go-arch-lint check   # if config exists
 ```
 
-**IMPORTANT**: Always use `make lint` for linting. If no Makefile exists, STOP and report an error. Do NOT run linting tools directly (e.g., `golangci-lint run`).
+**IMPORTANT**: Always use Makefile targets (`make build`, `make test`, `make lint`). If no Makefile exists, STOP and report an error. Do NOT run Go tools directly (e.g., `go build`, `go test`, `golangci-lint run`).
+
+**DO NOT MODIFY** linting configuration files (`.golangci.yml`, `.go-arch-lint.yml`, `.go-ai-lint.yml`). These are project-level standards and must not be changed to fix lint errors. Fix the code, not the rules.
 
 ---
 
@@ -367,7 +369,7 @@ IF depends on side effects:
 ```yaml
 task_id: {task.id}
 task_name: "{task.name}"
-status: complete|blocked|needs_clarification
+status: completed|blocked|needs_clarification
 
 files_created:
   - path: [path]
@@ -397,7 +399,7 @@ summary: [1-2 sentences]
 
 Write full results to the file above. Return ONLY this to the orchestrator:
 ```
-status: complete|blocked
+status: completed|blocked
 summary: [one sentence]
 ```
 
@@ -407,6 +409,6 @@ When fixing review feedback, read the review results from `.tasks/result-{task.i
 and fix each issue in `changes_required`. Write fix results to `.tasks/result-{task.id}-fix-{cycle}.yaml`
 using the same format above. Return ONLY:
 ```
-status: complete|blocked
+status: completed|blocked
 fixes: [count of issues fixed]
 ```

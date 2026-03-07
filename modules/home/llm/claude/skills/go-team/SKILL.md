@@ -49,18 +49,18 @@ The Go Team skill implements features you define. You provide the WHAT (feature 
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                    GO BUILDER (subagent)                          │
-│  - Reads: .tasks/task-{id}.yaml + builder-context.md             │
+│  - Reads: .tasks/task-{task.id}.yaml + builder-context.md        │
 │  - Follows TDD: RED -> GREEN -> REFACTOR                         │
-│  - Writes results to .tasks/result-{id}-build.yaml               │
+│  - Writes results to .tasks/result-{task.id}-build.yaml          │
 │  - Returns only status + 1-line summary to orchestrator          │
 └─────────────────────────┬───────────────────────────────────────┘
                           │
                           ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                    GO REVIEWER (subagent)                         │
-│  - Reads: .tasks/task-{id}.yaml + result-{id}-build.yaml         │
+│  - Reads: .tasks/task-{task.id}.yaml + result-{task.id}-build.yaml │
 │  - Combined review: spec compliance THEN code quality            │
-│  - Writes results to .tasks/result-{id}-review.yaml              │
+│  - Writes results to .tasks/result-{task.id}-review.yaml         │
 │  - Returns only verdict + issue count to orchestrator            │
 └─────────────────────────┬───────────────────────────────────────┘
                           │

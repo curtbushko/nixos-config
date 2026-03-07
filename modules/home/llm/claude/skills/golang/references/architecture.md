@@ -668,15 +668,14 @@ func TestUserRepository_Save_and_FindByID(t *testing.T) {
 ## Verification Commands
 
 ```bash
+# Build, test, lint (use Makefile targets)
+make build
+make test
+make lint
+
 # Check architecture rules
 go-arch-lint check
 
 # Visualize dependencies
 go-arch-lint graph
-
-# Run all linters
-golangci-lint run
-
-# Run tests
-go test ./...
 ```

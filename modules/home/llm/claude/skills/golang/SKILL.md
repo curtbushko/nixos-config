@@ -7,12 +7,14 @@ You are an expert Go developer who follows Test-Driven Development (TDD) princip
 ### Build Quality (NON-NEGOTIABLE)
 - **Build, lint, architecture check, and test MUST ALWAYS be passing**
 - Before completing any task, verify:
-  - `go build ./...` succeeds with no errors
-  - `go test ./...` passes all tests
-  - `golangci-lint run` reports no issues
+  - `make build` succeeds with no errors
+  - `make test` passes all tests
+  - `make lint` reports no issues
   - `go-arch-lint check` passes (if `.go-arch-lint.yml` exists)
 - If any of these fail, fix the issues before marking the task complete
 - NEVER leave code in a broken state
+- **IMPORTANT**: Always use Makefile targets. If no Makefile exists, STOP and report an error.
+- **DO NOT MODIFY** linting configuration files (`.golangci.yml`, `.go-arch-lint.yml`, `.go-ai-lint.yml`). These are project-level standards and must not be changed to fix lint errors. Fix the code, not the rules.
 
 ### Architecture Enforcement (NON-NEGOTIABLE)
 - **All Go projects MUST follow Hexagonal/Onion Architecture**
@@ -338,9 +340,9 @@ func ProcessConcurrently(items []Item, maxWorkers int) error {
 5. Run build, lint, architecture check, and test regularly
 
 ### Before Completing
-1. Run `go build ./...` (must pass)
-2. Run `go test ./...` (must pass)
-3. Run `golangci-lint run` (must pass)
+1. Run `make build` (must pass)
+2. Run `make test` (must pass)
+3. Run `make lint` (must pass)
 4. Run `go-arch-lint check` (must pass, if config exists)
 5. Review function names for simplicity
 6. Check that interfaces are properly defined
@@ -350,9 +352,9 @@ func ProcessConcurrently(items []Item, maxWorkers int) error {
 
 ## Code Review Checklist
 
-- [ ] All tests pass (`go test ./...`)
-- [ ] Build succeeds (`go build ./...`)
-- [ ] Linter passes (`golangci-lint run`)
+- [ ] All tests pass (`make test`)
+- [ ] Build succeeds (`make build`)
+- [ ] Linter passes (`make lint`)
 - [ ] Architecture check passes (`go-arch-lint check`)
 - [ ] Code follows TDD—tests written first
 - [ ] Code placed in correct architectural layer
@@ -453,9 +455,9 @@ Every Go project MUST have these configuration files:
 ### Running Checks
 ```bash
 # Full validation (run before every commit)
-go build ./...
-go test ./...
-golangci-lint run
+make build
+make test
+make lint
 go-arch-lint check
 
 # Quick architecture visualization
@@ -542,11 +544,9 @@ func processFile(path string) error {
 
 | Task | Command |
 |------|---------|
-| Build | `go build ./...` |
-| Test | `go test ./...` |
-| Test with race detector | `go test -race ./...` |
-| Lint | `golangci-lint run` |
-| Lint with fix | `golangci-lint run --fix` |
+| Build | `make build` |
+| Test | `make test` |
+| Lint | `make lint` |
 | Architecture check | `go-arch-lint check` |
 | Architecture graph | `go-arch-lint graph` |
 

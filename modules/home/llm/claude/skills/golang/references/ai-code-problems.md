@@ -623,14 +623,10 @@ set -euo pipefail
 
 echo "Running Go quality checks..."
 
-# Build
-go build ./...
-
-# Test with race detector
-go test -race ./...
-
-# Lint
-golangci-lint run
+# Use Makefile targets (required)
+make build
+make test
+make lint
 
 # Architecture
 if [[ -f .go-arch-lint.yml ]]; then

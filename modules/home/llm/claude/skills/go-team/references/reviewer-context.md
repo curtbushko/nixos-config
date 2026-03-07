@@ -6,11 +6,11 @@ The reviewer performs BOTH spec compliance AND code quality review in a single p
 
 ## Review Procedure
 
-1. **Read task acceptance criteria** from `.tasks/task-{id}.yaml`
-2. **Read build results** from `.tasks/result-{id}-build.yaml`
+1. **Read task acceptance criteria** from `.tasks/task-{task.id}.yaml`
+2. **Read build results** from `.tasks/result-{task.id}-build.yaml`
 3. **Stage 1: Spec Compliance** - Check requirements, under/over-building
 4. **Stage 2: Code Quality** - Only if Stage 1 passes. Check patterns below.
-5. **Write results** to `.tasks/result-{id}-review.yaml`
+5. **Write results** to `.tasks/result-{task.id}-review.yaml`
 6. **Return only verdict** to orchestrator (2 lines max)
 
 ### Spec Compliance Checks
@@ -29,6 +29,8 @@ make lint            # REQUIRED - error if Makefile not found
 ```
 
 **IMPORTANT**: Always use `make lint` for linting. If no Makefile exists, STOP and report an error requesting one be added.
+
+**DO NOT MODIFY** linting configuration files (`.golangci.yml`, `.go-arch-lint.yml`, `.go-ai-lint.yml`). These are project-level standards. If code fails lint, fix the code, not the rules.
 
 ---
 

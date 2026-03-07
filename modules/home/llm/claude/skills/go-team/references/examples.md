@@ -235,7 +235,7 @@ Results in 3 tasks:
 
 Builder writes full results to `.tasks/result-3-build.yaml` and returns to orchestrator:
 ```
-status: complete
+status: completed
 summary: Implemented health endpoint with HTTP codes and JSON body
 ```
 
@@ -253,7 +253,7 @@ issues: 1
 Builder reads feedback from `.tasks/result-3-review.yaml`, fixes each issue,
 writes results to `.tasks/result-3-fix-1.yaml`, and returns:
 ```
-status: complete
+status: completed
 fixes: 1
 ```
 
