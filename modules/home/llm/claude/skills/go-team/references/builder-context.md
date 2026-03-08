@@ -22,7 +22,9 @@ go-arch-lint check   # if config exists
 
 **IMPORTANT**: Always use Makefile targets (`make build`, `make test`, `make lint`). If no Makefile exists, STOP and report an error. Do NOT run Go tools directly (e.g., `go build`, `go test`, `golangci-lint run`).
 
-**DO NOT MODIFY** linting configuration files (`.golangci.yml`, `.go-arch-lint.yml`, `.go-ai-lint.yml`). These are project-level standards and must not be changed to fix lint errors. Fix the code, not the rules.
+**DO NOT MODIFY** linting configuration files (`.golangci.yml`, `.go-arch-lint.yml`, `.go-ai-lint.yml`, `Taskfile.yml`). These are project-level standards and must not be changed to fix lint errors. Fix the code, not the rules.
+
+**NEVER disable linting globally** - Do not remove, comment out, or disable lint rules in config files. Per-function exceptions (e.g., `//nolint:rulename` directives) are acceptable when truly necessary, but global changes affect the entire codebase.
 
 ---
 

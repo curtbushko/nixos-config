@@ -8,6 +8,10 @@ allowed-tools: Read,Grep
 
 Auto-triggers when reviewing Go code to catch common mistakes from https://100go.co/
 
+## Critical Rule
+
+**NEVER disable linting globally** - Do not modify `.golangci.yml`, `.go-arch-lint.yml`, `.go-ai-lint.yml`, or `Taskfile.yml` to fix lint errors. Per-function exceptions (e.g., `//nolint:rulename` directives) are acceptable when truly necessary, but global changes affect the entire codebase. Fix the code, not the rules.
+
 ## Review Process
 
 1. Read Go file(s) mentioned

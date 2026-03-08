@@ -30,7 +30,9 @@ make lint            # REQUIRED - error if Makefile not found
 
 **IMPORTANT**: Always use `make lint` for linting. If no Makefile exists, STOP and report an error requesting one be added.
 
-**DO NOT MODIFY** linting configuration files (`.golangci.yml`, `.go-arch-lint.yml`, `.go-ai-lint.yml`). These are project-level standards. If code fails lint, fix the code, not the rules.
+**DO NOT MODIFY** linting configuration files (`.golangci.yml`, `.go-arch-lint.yml`, `.go-ai-lint.yml`, `Taskfile.yml`). These are project-level standards. If code fails lint, fix the code, not the rules.
+
+**NEVER disable linting globally** - Do not remove, comment out, or disable lint rules in config files. Per-function exceptions (e.g., `//nolint:rulename` directives) are acceptable when truly necessary, but global changes affect the entire codebase.
 
 ---
 
