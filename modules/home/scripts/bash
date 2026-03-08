@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+# Claude Code bash wrapper - routes supported commands through structured-cli
+# for JSON output, skips commands where JSON is larger than raw output,
+# and logs unsupported commands for future additions
+
+if [ -n "$CLAUDECODE" ] && [ "$1" = "-c" ]; then
+  cmd=$(echo "$2" | awk '{print $1}')
+  subcmd=$(echo "$2" | awk '{print $2}')
+
+  # Skip commands where JSON is larger than raw output
+  if [ "$cmd" = "git" ] && [ "$subcmd" = "diff" ]; then
+    exec @bash@/bin/bash "$@"
+  fi
+  if [ "$cmd" = "ls" ]; then
+    exec @bash@/bin/bash "$@"
+  fi
+
+  case "$cmd" in
+    # Commands supported by structured-cli
+    git|go|make|docker|cat|head|tail|wc|du|df|find|grep|rg|fd|\
+    npm|yarn|pnpm|node|cargo|rustc|pip|python|uv|\
+    kubectl|helm|curl|wget|tar|zip|unzip|ps|top|kill|\
+    env|printenv|pwd|mkdir|rm|cp|mv|touch|chmod|chown|\
+    sed|awk|sort|uniq|cut|tr|ssh|scp|rsync)
+      exec @bash@/bin/bash -c "@structuredCli@/bin/structured-cli $2 --json"
+      ;;
+    *)
+      # Log unsupported commands for future structured-cli additions
+      echo "$(date -Iseconds) $2" >> /tmp/claude-unsupported-commands.log
+      exec @bash@/bin/bash "$@"
+      ;;
+  esac
+else
+  exec @bash@/bin/bash "$@"
+fi
