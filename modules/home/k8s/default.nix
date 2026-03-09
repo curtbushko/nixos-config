@@ -28,6 +28,7 @@ in {
       pkgs.kubebuilder
       pkgs.kubectl
       pkgs.krew
+      pkgs.kustomize
     ];
 
     # Add krew bin directory to PATH
