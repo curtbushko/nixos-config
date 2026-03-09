@@ -1,16 +1,16 @@
-#!@bash@/bin/bash
+#!@zsh@/bin/zsh
 
-# Claude Code bash wrapper - routes supported commands through structured-cli
-# for JSON output. Falls back to regular bash for unsupported commands.
+# Claude Code zsh wrapper - routes supported commands through structured-cli
+# for JSON output. Falls back to regular zsh for unsupported commands.
 
 STRUCTURED_CLI="@structuredCli@/bin/structured-cli"
 
 # Early exit for non-CLAUDECODE or non -c invocations
 if [[ -z "$CLAUDECODE" ]] || [[ "$1" != "-c" ]]; then
-  exec @bash@/bin/bash "$@"
+  exec @zsh@/bin/zsh "$@"
 fi
 
-# Claude Code may use: bash -c -l "command" (3 args) or bash -c "command" (2 args)
+# Claude Code uses: zsh -c -l "command" (3 args) or zsh -c "command" (2 args)
 if [[ "$2" = "-l" ]] && [[ $# -ge 3 ]]; then
   LOGIN_FLAG="-l"
   COMMAND_ARG="$3"
@@ -19,7 +19,7 @@ else
   COMMAND_ARG="$2"
 fi
 
-[[ -z "$COMMAND_ARG" ]] && exec @bash@/bin/bash "$@"
+[[ -z "$COMMAND_ARG" ]] && exec @zsh@/bin/zsh "$@"
 
 # Check if a command should use structured-cli
 is_supported_cmd() {
@@ -82,8 +82,10 @@ process_commands() {
   result="${result//; /${RS}SEMI${RS}}"
 
   # Split on markers and process each part
+  local -a parts
+  parts=("${(@ps:$RS:)result}")
   local output=""
-  IFS="$RS" read -ra parts <<< "$result"
+
   for part in "${parts[@]}"; do
     case "$part" in
       AND) output+=" && " ;;
@@ -114,15 +116,15 @@ if [[ "$cmd" == *"eval '"* ]]; then
 
   final_cmd="${prefix}${processed_cmd}${suffix}"
   if [[ -n "$LOGIN_FLAG" ]]; then
-    exec @bash@/bin/bash "$LOGIN_FLAG" -c "$final_cmd"
+    exec @zsh@/bin/zsh "$LOGIN_FLAG" -c "$final_cmd"
   else
-    exec @bash@/bin/bash -c "$final_cmd"
+    exec @zsh@/bin/zsh -c "$final_cmd"
   fi
 else
   processed_cmd=$(process_commands "$cmd")
   if [[ -n "$LOGIN_FLAG" ]]; then
-    exec @bash@/bin/bash "$LOGIN_FLAG" -c "$processed_cmd"
+    exec @zsh@/bin/zsh "$LOGIN_FLAG" -c "$processed_cmd"
   else
-    exec @bash@/bin/bash -c "$processed_cmd"
+    exec @zsh@/bin/zsh -c "$processed_cmd"
   fi
 fi

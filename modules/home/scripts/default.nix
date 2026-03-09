@@ -12,8 +12,8 @@
     src = pkgs.fetchFromGitHub {
       owner = "curtbushko";
       repo = "structured-cli";
-      rev = "b980e4757bb6eec1543459c3f2002adf97c2bb5a";
-      sha256 = "sha256-ce6J9H53t4x27qZ2HuiFN70tDBs6DHWytSuuMWZZB9M=";
+      rev = "c237407b690b3b217e2d225d09c636b503bc59f9";
+      sha256 = "sha256-Ok5TB50Jpl1uTDPFHpQXWLuCE5Ek0M9EMuiFDu6UiZk=";
     };
     vendorHash = "sha256-S1IFzhYzxWzXGI/kbkHTkBxcVlxIP0uII8TwCMhMzC4=";
     doCheck = false;
@@ -21,6 +21,7 @@
 
   # Bash wrapper for Claude Code - substitutes @placeholders@ with Nix paths
   # Uses hiPrio to shadow bash-interactive in the profile
+  # NOTE: Shebang uses @bash@ placeholder to avoid infinite loop (env bash would find wrapper)
   bash = lib.hiPrio (pkgs.runCommand "bash" {
     src = ./bash;
     inherit structuredCli;
@@ -30,6 +31,20 @@
       --replace-fail "@bash@" "${pkgs.bash}" \
       --replace-fail "@structuredCli@" "${structuredCli}"
     chmod +x $out/bin/bash
+  '');
+
+  # Zsh wrapper for Claude Code - substitutes @placeholders@ with Nix paths
+  # Uses hiPrio to shadow zsh in the profile
+  # NOTE: Shebang uses @zsh@ placeholder to avoid infinite loop (env zsh would find wrapper)
+  zsh = lib.hiPrio (pkgs.runCommand "zsh" {
+    src = ./zsh;
+    inherit structuredCli;
+  } ''
+    mkdir -p $out/bin
+    substitute $src $out/bin/zsh \
+      --replace-fail "@zsh@" "${pkgs.zsh}" \
+      --replace-fail "@structuredCli@" "${structuredCli}"
+    chmod +x $out/bin/zsh
   '');
 
   aocgen = pkgs.writeScriptBin "aocgen" (builtins.readFile ./aocgen);
@@ -89,6 +104,7 @@ in {
     [
       aocgen
       bash
+      zsh
       build-ghostty
       containerwatcher
       context

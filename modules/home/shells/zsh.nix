@@ -142,6 +142,9 @@ in {
           pcall = "wakeonlan -i 192.168.2.255 $GAMINGRIG_MAC_ADDRESS; sleep 1; $M1DDC display 2 set input 18; $M1DDC display 1 set input 15";
         };
       initContent = ''
+         # Override SHELL to use the wrapper from user profile (for Claude Code structured output)
+         export SHELL="/etc/profiles/per-user/${config.home.username}/bin/zsh"
+
          #if [ -f $GHOSTTY/zig-out/bin/ghostty ]; then
          #  mkdir -p $HOME/.local/bin
         #  ln -s $GHOSTTY/zig-out/bin/ghostty $HOME/.local/bin/ghostty
