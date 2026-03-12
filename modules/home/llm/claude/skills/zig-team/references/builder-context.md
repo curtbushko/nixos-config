@@ -6,6 +6,12 @@
 2. GREEN: Write MINIMAL code to pass
 3. REFACTOR: Clean up while green
 
+## File Creation Rules
+
+**NEVER create .gitkeep files.** Git tracks files, not directories. If a directory needs to exist, it will be created when you add files to it. Empty directories are not needed and .gitkeep files just add clutter.
+
+---
+
 ## Build Quality Gates
 
 ALL must pass before completing:

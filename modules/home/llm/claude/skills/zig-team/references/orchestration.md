@@ -28,6 +28,7 @@ Your context window is finite. Every subagent return consumes context. You MUST:
 - Write or edit any source code
 - Analyze code quality or debug test failures
 - Repeat or summarize subagent output
+- Use `rm` to delete `.tasks/` files (move to `.tasks/completed/` instead)
 
 ---
 
@@ -89,6 +90,8 @@ Task tool:
     ### Output: Write these files
 
     First: `mkdir -p .tasks`
+
+    **IMPORTANT: NEVER create .gitkeep files.** Git tracks files, not directories.
 
     **`.tasks/status.yaml`** (coordination summary)
     ```yaml
@@ -273,6 +276,16 @@ Task tool:
 ## Step 4: Final Validation
 
 Run via Bash: `zig build && zig build test -j1 && zig fmt --check src/`
+
+Archive completed task files (only if ALL tasks have status: completed):
+```
+# Verify all tasks completed before archiving
+if all tasks in .tasks/status.yaml have status: "completed":
+    mkdir -p .tasks/completed
+    mv .tasks/task-*.yaml .tasks/completed/
+    mv .tasks/result-*.yaml .tasks/completed/
+# Do NOT archive if any task is pending, in_progress, or blocked
+```
 
 Report: feature name, tasks completed, validation results, commits.
 
