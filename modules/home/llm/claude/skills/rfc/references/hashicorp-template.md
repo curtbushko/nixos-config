@@ -102,11 +102,10 @@ Copy and fill in the sections below:
 
 [High-level architecture diagram or description]
 
-```
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│  Component  │────▶│  Component  │────▶│  Component  │
-│      A      │     │      B      │     │      C      │
-└─────────────┘     └─────────────┘     └─────────────┘
+```mermaid
+flowchart LR
+    A["Component A"] --> B["Component B"]
+    B --> C["Component C"]
 ```
 
 ### Component Changes

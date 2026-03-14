@@ -6,30 +6,62 @@ This document defines the mandatory architectural patterns for all Go projects.
 
 Hexagonal Architecture (also called Ports and Adapters or Onion Architecture) separates business logic from infrastructure concerns through clear boundaries and dependency inversion.
 
+```mermaid
+graph TB
+    subgraph OUTER["ADAPTERS (Outer Layer)"]
+        HANDLERS["Handlers<br/>(HTTP/gRPC)"]
+        REPOS["Repositories<br/>(DB/Cache)"]
+    end
+
+    subgraph MIDDLE["APPLICATION LAYER"]
+        APP["Use Cases"]
+    end
+
+    subgraph INNER["INNER LAYER"]
+        PORTS["PORTS<br/>(Interfaces)"]
+        DOMAIN["DOMAIN<br/>(Entities)"]
+    end
+
+    HANDLERS --> APP
+    REPOS --> APP
+    APP --> PORTS
+    PORTS --> DOMAIN
+
+    style DOMAIN fill:#e8f5e9
+    style PORTS fill:#c8e6c9
+    style APP fill:#a5d6a7
+    style HANDLERS fill:#81c784
+    style REPOS fill:#81c784
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                     ADAPTERS (Outer)                        │
-│  ┌─────────────┐                         ┌─────────────┐   │
-│  │  Handlers   │                         │ Repositories│   │
-│  │  (HTTP/gRPC)│                         │ (DB/Cache)  │   │
-│  └──────┬──────┘                         └──────┬──────┘   │
-│         │                                       │           │
-│         │         ┌───────────────┐             │           │
-│         │         │  APPLICATION  │             │           │
-│         └────────►│  (Use Cases)  │◄────────────┘           │
-│                   └───────┬───────┘                         │
-│                           │                                 │
-│                   ┌───────▼───────┐                         │
-│                   │    PORTS      │                         │
-│                   │ (Interfaces)  │                         │
-│                   └───────┬───────┘                         │
-│                           │                                 │
-│                   ┌───────▼───────┐                         │
-│                   │    DOMAIN     │                         │
-│                   │  (Entities)   │                         │
-│                   └───────────────┘                         │
-│                       (Inner)                               │
-└─────────────────────────────────────────────────────────────┘
+
+**Key principle**: Dependencies flow INWARD. Domain has no external dependencies.
+
+## Project Structure
+
+```
+project/
+├── cmd/                          # Composition root
+│   └── myapp/
+│       ├── main.go               # Entry point, wiring
+│       └── root.go               # Cobra root command (if CLI)
+├── internal/
+│   ├── domain/                   # INNER: Pure business logic
+│   │   ├── entities.go           # Business objects
+│   │   └── errors.go             # Domain errors
+│   ├── ports/                    # INNER: Interface contracts
+│   │   ├── repositories.go
+│   │   └── services.go
+│   ├── application/              # APPLICATION: Use cases
+│   │   └── services.go
+│   └── adapters/                 # OUTER: Infrastructure
+│       ├── handlers/             # HTTP/gRPC (primary/driving)
+│       └── repositories/         # Database (secondary/driven)
+├── pkg/                          # Reusable library code
+├── api/                          # API definitions (proto, OpenAPI)
+├── .go-arch-lint.yml             # Architecture enforcement
+├── .golangci.yml                 # Linting rules
+├── Makefile                      # Build targets (required)
+└── go.mod
 ```
 
 ## Layer Definitions
@@ -448,7 +480,7 @@ func (r *userRepository) Delete(ctx context.Context, id string) error {
 
 ### Main / Wiring (`cmd/`)
 
-Dependency injection and application bootstrap.
+Dependency injection and application bootstrap. Uses Cobra/Viper for CLI.
 
 **Example:**
 
@@ -457,26 +489,59 @@ Dependency injection and application bootstrap.
 package main
 
 import (
-    "database/sql"
-    "log"
-    "net/http"
+    "os"
 
-    _ "github.com/lib/pq"
-
-    httphandler "myapp/internal/adapters/handlers/http"
-    "myapp/internal/adapters/repositories/postgres"
-    "myapp/internal/application"
+    "github.com/spf13/cobra"
+    "github.com/spf13/viper"
 )
 
 func main() {
-    // Infrastructure
-    db, err := sql.Open("postgres", "postgres://localhost/myapp?sslmode=disable")
+    if err := rootCmd.Execute(); err != nil {
+        os.Exit(1)
+    }
+}
+
+// cmd/myapp/root.go
+var rootCmd = &cobra.Command{
+    Use:   "myapp",
+    Short: "My application",
+}
+
+func init() {
+    cobra.OnInitialize(initConfig)
+    rootCmd.PersistentFlags().String("config", "", "config file")
+    viper.BindPFlag("config", rootCmd.PersistentFlags().Lookup("config"))
+}
+
+func initConfig() {
+    if cfgFile := viper.GetString("config"); cfgFile != "" {
+        viper.SetConfigFile(cfgFile)
+    }
+    viper.AutomaticEnv()
+    viper.ReadInConfig()
+}
+
+// cmd/myapp/serve.go
+var serveCmd = &cobra.Command{
+    Use:   "serve",
+    Short: "Start the server",
+    RunE:  runServe,
+}
+
+func init() {
+    serveCmd.Flags().Int("port", 8080, "server port")
+    viper.BindPFlag("port", serveCmd.Flags().Lookup("port"))
+    rootCmd.AddCommand(serveCmd)
+}
+
+func runServe(cmd *cobra.Command, args []string) error {
+    // Wire dependencies
+    db, err := sql.Open("postgres", viper.GetString("database_url"))
     if err != nil {
-        log.Fatal(err)
+        return err
     }
     defer db.Close()
 
-    // Wire dependencies (dependency injection)
     userRepo := postgres.NewUserRepository(db)
     userService := application.NewUserService(userRepo)
     userHandler := httphandler.NewUserHandler(userService)
@@ -487,16 +552,26 @@ func main() {
     mux.HandleFunc("GET /users/{id}", userHandler.GetUser)
 
     // Start server
-    log.Println("Server starting on :8080")
-    log.Fatal(http.ListenAndServe(":8080", mux))
+    addr := fmt.Sprintf(":%d", viper.GetInt("port"))
+    return http.ListenAndServe(addr, mux)
 }
 ```
+
+## Dependency Rules
+
+| Layer | Can Import | Cannot Import |
+|-------|------------|---------------|
+| Domain | (nothing external) | adapters, application, ports |
+| Ports | domain | adapters, application |
+| Application | domain, ports | adapters |
+| Adapters | domain, ports | application (usually) |
+| Cmd | everything | - |
 
 ## Testing Strategy
 
 ### Unit Tests (Domain & Application)
 
-Test business logic in isolation.
+Test business logic in isolation using testify.
 
 ```go
 // internal/application/user_service_test.go
@@ -505,6 +580,9 @@ package application_test
 import (
     "context"
     "testing"
+
+    "github.com/stretchr/testify/assert"
+    "github.com/stretchr/testify/require"
 
     "myapp/internal/application"
     "myapp/internal/domain"
@@ -549,13 +627,9 @@ func TestUserService_CreateUser(t *testing.T) {
     svc := application.NewUserService(repo)
 
     user, err := svc.CreateUser(context.Background(), "test@example.com", "Test User")
-    if err != nil {
-        t.Fatalf("unexpected error: %v", err)
-    }
 
-    if user.Email != "test@example.com" {
-        t.Errorf("expected email test@example.com, got %s", user.Email)
-    }
+    require.NoError(t, err)
+    assert.Equal(t, "test@example.com", user.Email)
 }
 
 func TestUserService_CreateUser_DuplicateEmail(t *testing.T) {
@@ -564,15 +638,11 @@ func TestUserService_CreateUser_DuplicateEmail(t *testing.T) {
 
     // Create first user
     _, err := svc.CreateUser(context.Background(), "test@example.com", "Test User")
-    if err != nil {
-        t.Fatalf("unexpected error: %v", err)
-    }
+    require.NoError(t, err)
 
     // Try to create duplicate
     _, err = svc.CreateUser(context.Background(), "test@example.com", "Another User")
-    if err != domain.ErrDuplicateEmail {
-        t.Errorf("expected ErrDuplicateEmail, got %v", err)
-    }
+    assert.ErrorIs(t, err, domain.ErrDuplicateEmail)
 }
 ```
 
@@ -582,7 +652,7 @@ Test infrastructure code with real dependencies.
 
 ```go
 // internal/adapters/repositories/postgres/user_repository_test.go
-// +build integration
+//go:build integration
 
 package postgres_test
 
@@ -592,6 +662,8 @@ import (
     "testing"
 
     _ "github.com/lib/pq"
+    "github.com/stretchr/testify/assert"
+    "github.com/stretchr/testify/require"
 
     "myapp/internal/adapters/repositories/postgres"
     "myapp/internal/domain"
@@ -599,9 +671,7 @@ import (
 
 func setupTestDB(t *testing.T) *sql.DB {
     db, err := sql.Open("postgres", "postgres://localhost/myapp_test?sslmode=disable")
-    if err != nil {
-        t.Fatalf("failed to connect to test database: %v", err)
-    }
+    require.NoError(t, err, "failed to connect to test database")
     return db
 }
 
@@ -611,22 +681,16 @@ func TestUserRepository_Save_and_FindByID(t *testing.T) {
 
     repo := postgres.NewUserRepository(db)
 
-    user, _ := domain.NewUser("test@example.com", "Test User")
+    user, err := domain.NewUser("test@example.com", "Test User")
+    require.NoError(t, err)
     user.ID = "test-id-123"
 
-    err := repo.Save(context.Background(), user)
-    if err != nil {
-        t.Fatalf("failed to save user: %v", err)
-    }
+    err = repo.Save(context.Background(), user)
+    require.NoError(t, err)
 
     found, err := repo.FindByID(context.Background(), "test-id-123")
-    if err != nil {
-        t.Fatalf("failed to find user: %v", err)
-    }
-
-    if found.Email != user.Email {
-        t.Errorf("expected email %s, got %s", user.Email, found.Email)
-    }
+    require.NoError(t, err)
+    assert.Equal(t, user.Email, found.Email)
 }
 ```
 
@@ -668,7 +732,7 @@ func TestUserRepository_Save_and_FindByID(t *testing.T) {
 ## Verification Commands
 
 ```bash
-# Build, test, lint (use Makefile targets)
+# Use Makefile targets (required)
 make build
 make test
 make lint

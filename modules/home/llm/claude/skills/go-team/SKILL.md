@@ -24,59 +24,30 @@ arguments:
 
 The Go Team skill implements features you define. You provide the WHAT (feature spec), it handles the HOW (implementation).
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        PLAN.md (you write this)                 │
-│  - Feature name and description                                 │
-│  - Acceptance criteria                                          │
-│  - Any notes or constraints                                     │
-└─────────────────────────┬───────────────────────────────────────┘
-                          │
-                          ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                      TASK MANAGER (subagent)                     │
-│  - Explores codebase for patterns and conventions               │
-│  - Breaks down into 2-5 minute implementation tasks             │
-│  - Writes task specs to .tasks/ files                           │
-│  - Returns only task count to orchestrator                      │
-└─────────────────────────┬───────────────────────────────────────┘
-                          │
-                          ▼
-        ┌─────────────────────────────────────┐
-        │  For each task (in dependency order) │
-        └─────────────────────┬───────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                    GO BUILDER (subagent)                          │
-│  - Reads: .tasks/task-{task.id}.yaml + builder-context.md        │
-│  - Follows TDD: RED -> GREEN -> REFACTOR                         │
-│  - Writes results to .tasks/result-{task.id}-build.yaml          │
-│  - Returns only status + 1-line summary to orchestrator          │
-└─────────────────────────┬───────────────────────────────────────┘
-                          │
-                          ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                    GO REVIEWER (subagent)                         │
-│  - Reads: .tasks/task-{task.id}.yaml + result-{task.id}-build.yaml │
-│  - Combined review: spec compliance THEN code quality            │
-│  - Writes results to .tasks/result-{task.id}-review.yaml         │
-│  - Returns only verdict + issue count to orchestrator            │
-└─────────────────────────┬───────────────────────────────────────┘
-                          │
-              ┌───────────┴───────────┐
-              ▼                       ▼
-        ┌──────────┐           ┌─────────────┐
-        │ APPROVED │           │ CHANGES     │
-        │ Next task│           │ NEEDED      │
-        └──────────┘           └──────┬──────┘
-                                      │
-                                      ▼
-                              ┌───────────────┐
-                              │  GO BUILDER   │
-                              │ (reads review │
-                              │  from file)   │
-                              └───────────────┘
+```mermaid
+flowchart TD
+    PLAN["PLAN.md (you write this)<br/>- Feature name and description<br/>- Acceptance criteria<br/>- Any notes or constraints"]
+
+    TASK_MGR["TASK MANAGER (subagent)<br/>- Explores codebase for patterns<br/>- Breaks into 2-5 min tasks<br/>- Writes to .tasks/ files<br/>- Returns task count only"]
+
+    LOOP{{"For each task<br/>(dependency order)"}}
+
+    BUILDER["GO BUILDER (subagent)<br/>- Reads: task spec + builder-context.md<br/>- Follows TDD: RED → GREEN → REFACTOR<br/>- Writes to result-build.yaml<br/>- Returns status + 1-line summary"]
+
+    REVIEWER["GO REVIEWER (subagent)<br/>- Reads: task spec + build results<br/>- Reviews: spec compliance THEN quality<br/>- Writes to result-review.yaml<br/>- Returns verdict + issue count"]
+
+    APPROVED["APPROVED<br/>Next task"]
+    CHANGES["CHANGES<br/>NEEDED"]
+    FIX["GO BUILDER<br/>(reads review<br/>from file)"]
+
+    PLAN --> TASK_MGR
+    TASK_MGR --> LOOP
+    LOOP --> BUILDER
+    BUILDER --> REVIEWER
+    REVIEWER --> APPROVED
+    REVIEWER --> CHANGES
+    CHANGES --> FIX
+    FIX --> REVIEWER
 ```
 
 ### Context-Saving Design

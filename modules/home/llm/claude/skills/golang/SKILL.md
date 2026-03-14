@@ -24,6 +24,15 @@ You are an expert Go developer who follows Test-Driven Development (TDD) princip
 - Domain layer has NO external dependencies
 - See [references/architecture.md](references/architecture.md) for detailed patterns
 
+### CLI Framework (NON-NEGOTIABLE)
+- **All service CLI entry points MUST use Cobra and Viper**
+- Use [spf13/cobra](https://github.com/spf13/cobra) for command-line interface structure
+- Use [spf13/viper](https://github.com/spf13/viper) for configuration management
+- Cobra provides: subcommands, flags, help generation, shell completion
+- Viper provides: config files, environment variables, flag binding, defaults
+- Place root command in `cmd/<app>/root.go`, subcommands in separate files
+- Bind Viper to Cobra flags for unified config: `viper.BindPFlag("key", cmd.Flags().Lookup("flag"))`
+
 ### Output and Documentation Standards
 - **NEVER use emojis in code, comments, documentation, or any output**
 - Keep all communication professional and text-based
@@ -32,6 +41,30 @@ You are an expert Go developer who follows Test-Driven Development (TDD) princip
 
 ### File Creation Standards
 - **NEVER create .gitkeep files** - Git tracks files, not directories. If a directory needs to exist, it will be created when you add files to it. Empty directories are not needed and .gitkeep files add unnecessary clutter.
+
+### Testing Framework (NON-NEGOTIABLE)
+- **All tests MUST use [testify](https://github.com/stretchr/testify) for assertions and mocking**
+- Use `assert` for non-fatal assertions, `require` for fatal assertions
+- Use `mock` package for mock generation and verification
+- Use `suite` package for test suites when appropriate
+- **Exception**: Kubernetes e2e tests may use the Kubernetes e2e testing framework
+
+```go
+import (
+    "testing"
+    "github.com/stretchr/testify/assert"
+    "github.com/stretchr/testify/require"
+)
+
+func TestExample(t *testing.T) {
+    // require stops test on failure
+    require.NotNil(t, result, "result should not be nil")
+
+    // assert continues test on failure
+    assert.Equal(t, expected, actual, "values should match")
+    assert.NoError(t, err, "operation should succeed")
+}
+```
 
 ### Test-Driven Development (TDD)
 **ALWAYS follow the TDD cycle when implementing new functionality:**
@@ -372,6 +405,8 @@ func ProcessConcurrently(items []Item, maxWorkers int) error {
 - [ ] No exported names in `internal/` packages
 - [ ] Documentation comments for exported symbols
 - [ ] No emojis in any code, comments, or documentation
+- [ ] CLI entry points use Cobra and Viper
+- [ ] Tests use testify for assertions (except k8s e2e tests)
 
 ## Common Patterns
 
@@ -394,8 +429,14 @@ func Upload(data []byte, opts ...Option) error {
 }
 ```
 
-### Table-Driven Tests
+### Table-Driven Tests (with testify)
 ```go
+import (
+    "testing"
+    "github.com/stretchr/testify/assert"
+    "github.com/stretchr/testify/require"
+)
+
 func TestProcess(t *testing.T) {
     tests := []struct {
         name    string
@@ -410,13 +451,12 @@ func TestProcess(t *testing.T) {
     for _, tt := range tests {
         t.Run(tt.name, func(t *testing.T) {
             got, err := Process(tt.input)
-            if (err != nil) != tt.wantErr {
-                t.Errorf("Process() error = %v, wantErr %v", err, tt.wantErr)
+            if tt.wantErr {
+                require.Error(t, err)
                 return
             }
-            if !reflect.DeepEqual(got, tt.want) {
-                t.Errorf("Process() = %v, want %v", got, tt.want)
-            }
+            require.NoError(t, err)
+            assert.Equal(t, tt.want, got)
         })
     }
 }
@@ -440,6 +480,61 @@ func (m *MockUploader) Upload(ctx context.Context, data []byte) error {
 }
 ```
 
+### Cobra + Viper CLI Pattern
+```go
+// cmd/myapp/root.go
+package main
+
+import (
+    "fmt"
+    "os"
+
+    "github.com/spf13/cobra"
+    "github.com/spf13/viper"
+)
+
+var cfgFile string
+
+var rootCmd = &cobra.Command{
+    Use:   "myapp",
+    Short: "My application description",
+    PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+        return initConfig()
+    },
+}
+
+func init() {
+    rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default $HOME/.myapp.yaml)")
+    rootCmd.PersistentFlags().String("log-level", "info", "log level (debug, info, warn, error)")
+    viper.BindPFlag("log-level", rootCmd.PersistentFlags().Lookup("log-level"))
+}
+
+func initConfig() error {
+    if cfgFile != "" {
+        viper.SetConfigFile(cfgFile)
+    } else {
+        home, err := os.UserHomeDir()
+        if err != nil {
+            return err
+        }
+        viper.AddConfigPath(home)
+        viper.SetConfigName(".myapp")
+    }
+    viper.SetEnvPrefix("MYAPP")
+    viper.AutomaticEnv()
+    if err := viper.ReadInConfig(); err == nil {
+        fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+    }
+    return nil
+}
+
+func main() {
+    if err := rootCmd.Execute(); err != nil {
+        os.Exit(1)
+    }
+}
+```
+
 ## Linting and Architecture Enforcement
 
 ### Required Tools
@@ -454,7 +549,7 @@ go install github.com/fe3dback/go-arch-lint@latest
 ### Configuration Files
 Every Go project MUST have these configuration files:
 - `.golangci.yml` - See [references/golangci.yml](references/golangci.yml)
-- `.go-arch-lint.yml` - See [references/go-arch-lint.yml](references/go-arch-lint.yml)
+- `.go-arch-lint.yml` - Project-specific architecture rules
 
 ### Running Checks
 ```bash
@@ -554,12 +649,37 @@ func processFile(path string) error {
 | Architecture check | `go-arch-lint check` |
 | Architecture graph | `go-arch-lint graph` |
 
+## Portable Cloud Components (Go Cloud SDK)
+
+Follow [Go Cloud SDK](https://gocloud.dev/) patterns for cloud-agnostic, reusable components:
+
+- **URL-based construction**: `blob.OpenBucket(ctx, "s3://bucket")` or `"file:///tmp/local"`
+- **Portable interfaces**: Define interfaces that work across AWS, GCP, Azure, and local
+- **Local development**: Always support file/memory backends for testing
+- **Configuration-driven**: Provider selected by URL at runtime, not compile time
+
+```go
+// Application code is provider-agnostic
+func NewService(ctx context.Context, storageURL string) (*Service, error) {
+    bucket, err := blob.OpenBucket(ctx, storageURL)
+    if err != nil {
+        return nil, err
+    }
+    return &Service{storage: bucket}, nil
+}
+```
+
 ## Additional Resources
 
 - Architecture patterns: [references/architecture.md](references/architecture.md)
+- TDD workflow: [references/tdd-workflow.md](references/tdd-workflow.md)
+- Code patterns: [references/code-patterns.md](references/code-patterns.md)
+- BDD/Gherkin specifications: [references/bdd-gherkin.md](references/bdd-gherkin.md)
+- Protobuf guidelines: [references/protobuf.md](references/protobuf.md)
+- Go Cloud SDK patterns: [references/go-cloud-sdk.md](references/go-cloud-sdk.md)
+- AI code problems: [references/ai-code-problems.md](references/ai-code-problems.md)
 - golangci-lint config: [references/golangci.yml](references/golangci.yml)
-- go-arch-lint config: [references/go-arch-lint.yml](references/go-arch-lint.yml)
 
 ---
 
-**Remember**: Write tests first, follow hexagonal architecture, keep domain pure, use interfaces for dependencies, ensure build/lint/arch-check/test always pass, and never use emojis!
+**Remember**: Write tests first with testify, follow hexagonal architecture, keep domain pure, use interfaces for dependencies, use Cobra/Viper for CLI entry points, use Go Cloud SDK for portable cloud components, ensure build/lint/arch-check/test always pass, and never use emojis!

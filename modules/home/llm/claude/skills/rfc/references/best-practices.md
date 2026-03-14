@@ -154,16 +154,21 @@ func GetUser(ctx context.Context, id string) (*User, error)
 
 ### Lifecycle
 
-```
-┌─────────┐    ┌───────────┐    ┌──────────┐    ┌─────────────┐
-│   WIP   │───▶│ In-Review │───▶│ Approved │───▶│ Implemented │
-└─────────┘    └───────────┘    └──────────┘    └─────────────┘
-     │              │                                   │
-     │              │                                   │
-     ▼              ▼                                   ▼
-┌─────────┐    ┌───────────┐                    ┌───────────┐
-│Abandoned│    │  Obsolete │                    │  Obsolete │
-└─────────┘    └───────────┘                    └───────────┘
+```mermaid
+flowchart LR
+    WIP["WIP"] --> REVIEW["In-Review"]
+    REVIEW --> APPROVED["Approved"]
+    APPROVED --> IMPL["Implemented"]
+
+    WIP --> ABANDONED["Abandoned"]
+    REVIEW --> OBSOLETE1["Obsolete"]
+    IMPL --> OBSOLETE2["Obsolete"]
+
+    style APPROVED fill:#c8e6c9
+    style IMPL fill:#a5d6a7
+    style ABANDONED fill:#ffcdd2
+    style OBSOLETE1 fill:#ffcdd2
+    style OBSOLETE2 fill:#ffcdd2
 ```
 
 ### Review Process

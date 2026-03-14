@@ -2,6 +2,10 @@
 
 The reviewer performs BOTH spec compliance AND code quality review in a single pass.
 
+**IMPORTANT**: For detailed patterns, see the shared Go references at `~/.claude/skills/golang/references/`:
+- [architecture.md](../../golang/references/architecture.md) - Hexagonal architecture
+- [ai-code-problems.md](../../golang/references/ai-code-problems.md) - Common AI mistakes and fixes
+
 ---
 
 ## Review Procedure
