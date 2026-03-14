@@ -29,10 +29,10 @@ The reviewer performs BOTH spec compliance AND code quality review in a single p
 
 Before approving, confirm lint passes:
 ```bash
-make lint            # REQUIRED - error if Makefile not found
+task lint            # REQUIRED - error if Taskfile not found
 ```
 
-**IMPORTANT**: Always use `make lint` for linting. If no Makefile exists, STOP and report an error requesting one be added.
+**IMPORTANT**: Always use `task lint` for linting. If no Taskfile exists, STOP and report an error requesting one be added.
 
 **DO NOT MODIFY** linting configuration files (`.golangci.yml`, `.go-arch-lint.yml`, `.go-ai-lint.yml`, `Taskfile.yml`). These are project-level standards. If code fails lint, fix the code, not the rules.
 

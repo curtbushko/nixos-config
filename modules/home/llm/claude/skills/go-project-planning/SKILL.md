@@ -64,7 +64,7 @@ project/
 ├── api/                          # API definitions (proto, OpenAPI)
 ├── .go-arch-lint.yml             # Architecture enforcement
 ├── .golangci.yml                 # Linting rules
-├── Makefile                      # Build targets (required)
+├── Taskfile.yml                  # Build targets (required)
 └── go.mod
 ```
 
@@ -126,14 +126,14 @@ See [tdd-workflow.md](../golang/references/tdd-workflow.md) for the complete wor
 Before completing any task:
 
 ```bash
-make build           # REQUIRED - must pass
-make test            # REQUIRED - must pass
-make lint            # REQUIRED - must pass
+task build           # REQUIRED - must pass
+task test            # REQUIRED - must pass
+task lint            # REQUIRED - must pass
 go-arch-lint check   # if .go-arch-lint.yml exists
 ```
 
 **IMPORTANT**:
-- Always use Makefile targets
+- Always use Taskfile targets
 - NEVER modify linting configuration files
 - Fix the code, not the rules
 

@@ -623,10 +623,10 @@ set -euo pipefail
 
 echo "Running Go quality checks..."
 
-# Use Makefile targets (required)
-make build
-make test
-make lint
+# Use Taskfile targets (required)
+task build
+task test
+task lint
 
 # Architecture
 if [[ -f .go-arch-lint.yml ]]; then

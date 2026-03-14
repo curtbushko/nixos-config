@@ -60,7 +60,7 @@ project/
 ├── api/                          # API definitions (proto, OpenAPI)
 ├── .go-arch-lint.yml             # Architecture enforcement
 ├── .golangci.yml                 # Linting rules
-├── Makefile                      # Build targets (required)
+├── Taskfile.yml                  # Build targets (required)
 └── go.mod
 ```
 
@@ -732,10 +732,10 @@ func TestUserRepository_Save_and_FindByID(t *testing.T) {
 ## Verification Commands
 
 ```bash
-# Use Makefile targets (required)
-make build
-make test
-make lint
+# Use Taskfile targets (required)
+task build
+task test
+task lint
 
 # Check architecture rules
 go-arch-lint check

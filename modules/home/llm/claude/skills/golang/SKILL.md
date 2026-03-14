@@ -7,13 +7,13 @@ You are an expert Go developer who follows Test-Driven Development (TDD) princip
 ### Build Quality (NON-NEGOTIABLE)
 - **Build, lint, architecture check, and test MUST ALWAYS be passing**
 - Before completing any task, verify:
-  - `make build` succeeds with no errors
-  - `make test` passes all tests
-  - `make lint` reports no issues
+  - `task build` succeeds with no errors
+  - `task test` passes all tests
+  - `task lint` reports no issues
   - `go-arch-lint check` passes (if `.go-arch-lint.yml` exists)
 - If any of these fail, fix the issues before marking the task complete
 - NEVER leave code in a broken state
-- **IMPORTANT**: Always use Makefile targets. If no Makefile exists, STOP and report an error.
+- **IMPORTANT**: Always use Taskfile targets. If no Taskfile exists, STOP and report an error.
 - **DO NOT MODIFY** linting configuration files (`.golangci.yml`, `.go-arch-lint.yml`, `.go-ai-lint.yml`, `Taskfile.yml`). These are project-level standards and must not be changed to fix lint errors. Fix the code, not the rules.
 - **NEVER disable linting globally** - Do not remove, comment out, or disable lint rules in config files. Per-function exceptions (e.g., `//nolint:rulename` directives) are acceptable when truly necessary, but global changes affect the entire codebase.
 
@@ -377,9 +377,9 @@ func ProcessConcurrently(items []Item, maxWorkers int) error {
 5. Run build, lint, architecture check, and test regularly
 
 ### Before Completing
-1. Run `make build` (must pass)
-2. Run `make test` (must pass)
-3. Run `make lint` (must pass)
+1. Run `task build` (must pass)
+2. Run `task test` (must pass)
+3. Run `task lint` (must pass)
 4. Run `go-arch-lint check` (must pass, if config exists)
 5. Review function names for simplicity
 6. Check that interfaces are properly defined
@@ -389,9 +389,9 @@ func ProcessConcurrently(items []Item, maxWorkers int) error {
 
 ## Code Review Checklist
 
-- [ ] All tests pass (`make test`)
-- [ ] Build succeeds (`make build`)
-- [ ] Linter passes (`make lint`)
+- [ ] All tests pass (`task test`)
+- [ ] Build succeeds (`task build`)
+- [ ] Linter passes (`task lint`)
 - [ ] Architecture check passes (`go-arch-lint check`)
 - [ ] Code follows TDD—tests written first
 - [ ] Code placed in correct architectural layer
@@ -554,9 +554,9 @@ Every Go project MUST have these configuration files:
 ### Running Checks
 ```bash
 # Full validation (run before every commit)
-make build
-make test
-make lint
+task build
+task test
+task lint
 go-arch-lint check
 
 # Quick architecture visualization
@@ -643,9 +643,9 @@ func processFile(path string) error {
 
 | Task | Command |
 |------|---------|
-| Build | `make build` |
-| Test | `make test` |
-| Lint | `make lint` |
+| Build | `task build` |
+| Test | `task test` |
+| Lint | `task lint` |
 | Architecture check | `go-arch-lint check` |
 | Architecture graph | `go-arch-lint graph` |
 
@@ -674,6 +674,7 @@ func NewService(ctx context.Context, storageURL string) (*Service, error) {
 - Architecture patterns: [references/architecture.md](references/architecture.md)
 - TDD workflow: [references/tdd-workflow.md](references/tdd-workflow.md)
 - Code patterns: [references/code-patterns.md](references/code-patterns.md)
+- API resilience (retries, backoff, jitter, rate limiting): [references/api-resilience.md](references/api-resilience.md)
 - BDD/Gherkin specifications: [references/bdd-gherkin.md](references/bdd-gherkin.md)
 - Protobuf guidelines: [references/protobuf.md](references/protobuf.md)
 - Go Cloud SDK patterns: [references/go-cloud-sdk.md](references/go-cloud-sdk.md)

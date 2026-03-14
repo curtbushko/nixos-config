@@ -376,9 +376,9 @@ Before considering any task complete:
 
 ```bash
 # All must pass
-make build
-make test
-make lint
+task build
+task test
+task lint
 go-arch-lint check   # if config exists
 ```
 

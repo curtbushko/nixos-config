@@ -55,13 +55,13 @@ func TestExample(t *testing.T) {
 
 Before completing, ALL must pass:
 ```bash
-make build           # REQUIRED - error if Makefile not found
-make test            # REQUIRED - error if Makefile not found
-make lint            # REQUIRED - error if Makefile not found
+task build           # REQUIRED - error if Taskfile not found
+task test            # REQUIRED - error if Taskfile not found
+task lint            # REQUIRED - error if Taskfile not found
 go-arch-lint check   # if config exists
 ```
 
-**IMPORTANT**: Always use Makefile targets. If no Makefile exists, STOP and report an error.
+**IMPORTANT**: Always use Taskfile targets. If no Taskfile exists, STOP and report an error.
 
 **DO NOT MODIFY** linting configuration files. Fix the code, not the rules.
 
