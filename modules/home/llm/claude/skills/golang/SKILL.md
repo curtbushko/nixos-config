@@ -669,6 +669,353 @@ func NewService(ctx context.Context, storageURL string) (*Service, error) {
 }
 ```
 
+## Contract Testing (NON-NEGOTIABLE for Ports)
+
+**Hexagonal architecture protects dependency direction, but NOT adapter implementation bugs.**
+
+Ports (interfaces) define contracts. Any implementation must handle edge cases identically. Contract tests enforce this.
+
+### The Problem
+
+```go
+// Port looks clean
+type CardRepository interface {
+    Create(ctx context.Context, card *domain.Card) error
+}
+
+// But adapter has hidden bug
+func (r *PostgresCardRepository) Create(ctx context.Context, card *domain.Card) error {
+    _, err := r.db.ExecContext(ctx, query,
+        pq.Array(card.Tags),  // PANIC if Tags is nil
+    )
+}
+```
+
+Hexagonal architecture doesn't prevent this. Contract tests do.
+
+### Contract Test Pattern
+
+```go
+// internal/ports/card_repository_contract.go
+
+// RunCardRepositoryContract tests any CardRepository implementation.
+// All implementations (postgres, mock, in-memory) MUST pass these tests.
+func RunCardRepositoryContract(t *testing.T, repo CardRepository, cleanup func()) {
+    t.Helper()
+
+    t.Run("Create_NilTags", func(t *testing.T) {
+        if cleanup != nil {
+            t.Cleanup(cleanup)
+        }
+        card := &domain.Card{
+            ID:    uuid.New(),
+            Tags:  nil,  // Edge case: nil not empty slice
+            Front: "test",
+            Back:  "test",
+        }
+        err := repo.Create(context.Background(), card)
+        require.NoError(t, err, "nil tags must be handled")
+    })
+
+    t.Run("Create_NilCard", func(t *testing.T) {
+        err := repo.Create(context.Background(), nil)
+        require.ErrorIs(t, err, domain.ErrInvalidInput)
+    })
+
+    t.Run("Get_NotFound", func(t *testing.T) {
+        _, err := repo.Get(context.Background(), uuid.New())
+        require.ErrorIs(t, err, domain.ErrCardNotFound)
+    })
+}
+```
+
+### Running Contracts Against Implementations
+
+```go
+// internal/adapters/repositories/postgres/contract_test.go
+//go:build integration
+
+func TestPostgresCardRepository_Contract(t *testing.T) {
+    db := setupTestDB(t)
+    repo := NewCardRepository(db)
+    ports.RunCardRepositoryContract(t, repo, func() {
+        db.Exec("TRUNCATE cards CASCADE")
+    })
+}
+```
+
+```go
+// internal/mocks/card_repository_contract_test.go
+// No build tag - runs as unit test
+
+func TestMockCardRepository_Contract(t *testing.T) {
+    repo := NewMockCardRepository()
+    ports.RunCardRepositoryContract(t, repo, nil)
+}
+```
+
+### Required Edge Cases for All Repository Contracts
+
+| Input | Required Behavior |
+|-------|-------------------|
+| `nil` slice fields | Treat as empty, never panic |
+| `nil` entity pointer | Return `ErrInvalidInput` |
+| Zero/nil UUID | Return `ErrInvalidInput` |
+| Entity not found | Return typed error (`ErrCardNotFound`) |
+| Duplicate key | Return typed error (`ErrDuplicateKey`) |
+| Context cancelled | Return `ctx.Err()` or wrapped error |
+
+### Document Contracts in Port Interfaces
+
+```go
+type CardRepository interface {
+    // Create persists a new card.
+    //
+    // Contract:
+    //   - Returns ErrInvalidInput if card is nil or has zero ID
+    //   - Nil Tags treated as empty slice (never panics)
+    //   - Returns ErrDuplicateKey if ID already exists
+    Create(ctx context.Context, card *domain.Card) error
+
+    // Get retrieves a card by ID.
+    //
+    // Contract:
+    //   - Returns ErrCardNotFound if card does not exist
+    //   - Returns ErrInvalidInput if id is zero UUID
+    Get(ctx context.Context, id uuid.UUID) (*domain.Card, error)
+}
+```
+
+### When to Write Contract Tests
+
+| Port Type | Multiple Implementations? | Contract Value |
+|-----------|--------------------------|----------------|
+| Repositories | Yes (postgres, mock, in-memory) | **HIGH - Required** |
+| External Services (FSRS, notifications) | Possibly | **MEDIUM - Recommended** |
+| Services (CardService) | Rarely | LOW - Test directly |
+| gRPC Handlers | No | LOW - Proto is the contract |
+
+## Domain Invariants via Types (RECOMMENDED)
+
+**Make invalid states unrepresentable at compile time, not runtime.**
+
+Instead of scattering nil checks everywhere, use value objects that enforce validity at construction.
+
+### The Problem
+
+```go
+// This allows invalid states
+type Card struct {
+    Tags []string  // Can be nil - causes bugs in adapters
+}
+
+// Nil checks scattered everywhere
+func (r *Repo) Create(card *Card) error {
+    tags := card.Tags
+    if tags == nil {
+        tags = []string{}  // Easy to forget
+    }
+}
+```
+
+### The Solution: Value Objects
+
+```go
+// internal/domain/tags.go
+
+// Tags is a value object that guarantees non-nil slice.
+type Tags struct {
+    values []string  // Always initialized
+}
+
+// NewTags creates Tags from a slice. Nil input becomes empty slice.
+func NewTags(t []string) Tags {
+    if t == nil {
+        return Tags{values: []string{}}
+    }
+    return Tags{values: t}
+}
+
+// Values returns the underlying slice (never nil).
+func (t Tags) Values() []string {
+    return t.values
+}
+
+// Contains checks if tag exists (case-insensitive).
+func (t Tags) Contains(tag string) bool {
+    for _, v := range t.values {
+        if strings.EqualFold(v, tag) {
+            return true
+        }
+    }
+    return false
+}
+
+// Add returns new Tags with additional tag.
+func (t Tags) Add(tag string) Tags {
+    return Tags{values: append(t.values, tag)}
+}
+```
+
+### Type-Safe IDs
+
+```go
+// internal/domain/ids.go
+
+// CardID is a type-safe wrapper for card identifiers.
+type CardID struct {
+    value uuid.UUID
+}
+
+func NewCardID() CardID {
+    return CardID{value: uuid.New()}
+}
+
+func ParseCardID(s string) (CardID, error) {
+    id, err := uuid.Parse(s)
+    if err != nil {
+        return CardID{}, fmt.Errorf("invalid card ID: %w", err)
+    }
+    if id == uuid.Nil {
+        return CardID{}, errors.New("card ID cannot be zero")
+    }
+    return CardID{value: id}, nil
+}
+
+func (id CardID) String() string { return id.value.String() }
+func (id CardID) UUID() uuid.UUID { return id.value }
+func (id CardID) IsZero() bool { return id.value == uuid.Nil }
+
+// DeckID is distinct from CardID - compiler prevents mixing
+type DeckID struct {
+    value uuid.UUID
+}
+```
+
+### Constrained Numeric Types
+
+```go
+// internal/domain/retention.go
+
+// Retention represents a retention rate in range [0.0, 1.0].
+type Retention struct {
+    value float64
+}
+
+func NewRetention(r float64) (Retention, error) {
+    if r < 0.0 || r > 1.0 {
+        return Retention{}, fmt.Errorf("retention must be in [0, 1], got %f", r)
+    }
+    return Retention{value: r}, nil
+}
+
+func MustRetention(r float64) Retention {
+    ret, err := NewRetention(r)
+    if err != nil {
+        panic(err)  // Only use in tests/init
+    }
+    return ret
+}
+
+func (r Retention) Float64() float64 { return r.value }
+```
+
+### Required Non-Empty Strings
+
+```go
+// internal/domain/text.go
+
+// NonEmptyString guarantees a non-empty, trimmed string.
+type NonEmptyString struct {
+    value string
+}
+
+func NewNonEmptyString(s string) (NonEmptyString, error) {
+    trimmed := strings.TrimSpace(s)
+    if trimmed == "" {
+        return NonEmptyString{}, errors.New("string cannot be empty")
+    }
+    return NonEmptyString{value: trimmed}, nil
+}
+
+func (s NonEmptyString) String() string { return s.value }
+```
+
+### Updated Domain Entity
+
+```go
+// internal/domain/card.go
+
+type Card struct {
+    ID         CardID         // Not uuid.UUID - type safe
+    DeckID     DeckID         // Cannot accidentally use CardID here
+    Front      NonEmptyString // Cannot be empty
+    Back       NonEmptyString // Cannot be empty
+    Tags       Tags           // Cannot be nil
+    Retention  Retention      // Always valid range
+}
+
+// NewCard constructs a valid Card or returns error.
+func NewCard(deckID DeckID, front, back string, tags []string) (*Card, error) {
+    frontText, err := NewNonEmptyString(front)
+    if err != nil {
+        return nil, fmt.Errorf("front: %w", err)
+    }
+    backText, err := NewNonEmptyString(back)
+    if err != nil {
+        return nil, fmt.Errorf("back: %w", err)
+    }
+    return &Card{
+        ID:     NewCardID(),
+        DeckID: deckID,
+        Front:  frontText,
+        Back:   backText,
+        Tags:   NewTags(tags),
+    }, nil
+}
+```
+
+### Repository Mapper Layer
+
+```go
+// internal/adapters/repositories/postgres/mappers.go
+
+// ToDBTags converts domain Tags to database array.
+func ToDBTags(tags domain.Tags) pq.StringArray {
+    return pq.StringArray(tags.Values())  // Always safe - never nil
+}
+
+// FromDBTags converts database array to domain Tags.
+func FromDBTags(arr pq.StringArray) domain.Tags {
+    return domain.NewTags([]string(arr))
+}
+
+// ToDBCardID converts domain CardID to database UUID.
+func ToDBCardID(id domain.CardID) uuid.UUID {
+    return id.UUID()
+}
+```
+
+### Migration Strategy
+
+| Phase | Scope | Risk | Effort |
+|-------|-------|------|--------|
+| 1 | `Tags` value object | Low | Small |
+| 2 | Typed IDs (`CardID`, `DeckID`) | Medium | Medium |
+| 3 | `NonEmptyString` for required fields | Medium | Medium |
+| 4 | Numeric constraints (`Retention`, `Interval`) | Low | Small |
+
+Start with `Tags` since that's the most common source of nil-related bugs.
+
+### Benefits Summary
+
+| Approach | When Bug is Caught | Effort to Fix |
+|----------|-------------------|---------------|
+| No protection | Production (panic) | High |
+| Runtime checks (scattered) | Test (if lucky) | Medium |
+| Contract tests | Test (guaranteed) | Low |
+| Value objects | **Compile time** | **None** |
+
 ## Additional Resources
 
 - Architecture patterns: [references/architecture.md](references/architecture.md)
@@ -680,7 +1027,8 @@ func NewService(ctx context.Context, storageURL string) (*Service, error) {
 - Go Cloud SDK patterns: [references/go-cloud-sdk.md](references/go-cloud-sdk.md)
 - AI code problems: [references/ai-code-problems.md](references/ai-code-problems.md)
 - golangci-lint config: [references/golangci.yml](references/golangci.yml)
+- Contract testing: [references/contract-testing.md](references/contract-testing.md)
 
 ---
 
-**Remember**: Write tests first with testify, follow hexagonal architecture, keep domain pure, use interfaces for dependencies, use Cobra/Viper for CLI entry points, use Go Cloud SDK for portable cloud components, ensure build/lint/arch-check/test always pass, and never use emojis!
+**Remember**: Write tests first with testify, follow hexagonal architecture, keep domain pure, use interfaces for dependencies, use contract tests for ports, use value objects for invariants, use Cobra/Viper for CLI entry points, use Go Cloud SDK for portable cloud components, ensure build/lint/arch-check/test always pass, and never use emojis!
