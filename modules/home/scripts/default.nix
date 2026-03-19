@@ -103,7 +103,7 @@ in {
   home.packages =
     [
       aocgen
-      bash
+      # bash  # structured-cli wrapper disabled
       zsh
       build-ghostty
       containerwatcher

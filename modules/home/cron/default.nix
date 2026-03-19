@@ -21,6 +21,16 @@ in {
         - nix-store-gc: Run garbage collection on the nix store
       '';
     };
+    claudeGreeting = {
+      enable = mkOption {
+        type = types.bool;
+        default = false;
+        description = ''
+          Whether to enable Claude greeting prompts.
+          Runs 'claude -p "good morning"' at 6AM, 11AM, 4PM, and 9PM.
+        '';
+      };
+    };
   };
 
   config = mkIf cfg.enable {
@@ -55,7 +65,20 @@ in {
           ExecStart = "${pkgs.nix}/bin/nix-store --gc";
         };
       };
-    };
+    } // (lib.optionalAttrs cfg.claudeGreeting.enable {
+      claude-morning-greeting = {
+        Unit = {
+          Description = "Claude greeting";
+        };
+        Service = {
+          Type = "oneshot";
+          ExecStart = "${pkgs.writeShellScript "claude-greeting" ''
+            export PATH="$HOME/.nix-profile/bin:$PATH"
+            claude -p "good morning"
+          ''}";
+        };
+      };
+    });
 
     systemd.user.timers = mkIf isLinux {
       auto-nix-collect-garbage = {
@@ -96,7 +119,20 @@ in {
           WantedBy = ["timers.target"];
         };
       };
-    };
+    } // (lib.optionalAttrs cfg.claudeGreeting.enable {
+      claude-morning-greeting = {
+        Unit = {
+          Description = "Timer for claude greeting";
+        };
+        Timer = {
+          OnCalendar = ["06:00" "11:00" "16:00" "21:00"];
+          Persistent = true;
+        };
+        Install = {
+          WantedBy = ["timers.target"];
+        };
+      };
+    });
 
     # macOS: launchd agents
     launchd.agents = mkIf isDarwin {

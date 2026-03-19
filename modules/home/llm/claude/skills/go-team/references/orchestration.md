@@ -30,7 +30,7 @@ Your context window is finite. Every subagent return consumes context. You MUST:
 - Debug test failures
 - Make implementation decisions
 - Repeat or summarize subagent output
-- Use `rm` to delete `.tasks/` files (move to `.tasks/completed/` instead)
+- Use `rm` to delete files (move to `.trash/` instead)
 
 ---
 
@@ -323,9 +323,13 @@ Archive completed task files (only if ALL tasks have status: completed):
 ```
 # Verify all tasks completed before archiving
 if all tasks in .tasks/status.yaml have status: "completed":
-    mkdir -p .tasks/completed
-    mv .tasks/task-*.yaml .tasks/completed/
-    mv .tasks/result-*.yaml .tasks/completed/
+    mkdir -p .trash
+    # Ensure .trash is in .gitignore
+    if ! grep -q "^\.trash/$" .gitignore 2>/dev/null; then
+        echo ".trash/" >> .gitignore
+    fi
+    mv .tasks/task-*.yaml .trash/
+    mv .tasks/result-*.yaml .trash/
 # Do NOT archive if any task is pending, in_progress, or blocked
 ```
 

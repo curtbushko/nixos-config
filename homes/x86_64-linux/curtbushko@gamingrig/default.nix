@@ -18,6 +18,10 @@
   #---------------------------------------------------------------------
   curtbushko = {
     browsers.enable = true;
+    cron = {
+      enable = true;
+      claudeGreeting.enable = true;
+    };
     gamedev = {
       enable = true;
       waveform.enable = true;

@@ -6,9 +6,17 @@
 2. GREEN: Write MINIMAL code to pass
 3. REFACTOR: Clean up while green
 
-## File Creation Rules
+## File Rules
 
 **NEVER create .gitkeep files.** Git tracks files, not directories. If a directory needs to exist, it will be created when you add files to it. Empty directories are not needed and .gitkeep files just add clutter.
+
+**NEVER use `rm` to delete files.** Instead, move files to `.trash/`:
+```bash
+mkdir -p .trash
+# Ensure .trash is in .gitignore
+grep -q "^\.trash/$" .gitignore 2>/dev/null || echo ".trash/" >> .gitignore
+mv <file> .trash/
+```
 
 ---
 

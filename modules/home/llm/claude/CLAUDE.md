@@ -99,6 +99,26 @@ Before considering any task complete:
 3. **Lint clean**: No linting errors or warnings
 4. **Coverage maintained**: Test coverage should not decrease
 
+## File Handling (CRITICAL)
+
+**NEVER use `rm` to delete files.** Move files to `.trash/` instead:
+```bash
+mkdir -p .trash
+grep -q "^\.trash/$" .gitignore 2>/dev/null || echo ".trash/" >> .gitignore
+mv <file> .trash/
+```
+
+This applies to ALL files including:
+- Task files (`.tasks/*.yaml`)
+- Result files (`.tasks/result-*.yaml`)
+- Status files (`.tasks/status.yaml`)
+- Code files (`.go`, `.ts`, `.js`, `.zig`, etc.)
+- Temporary files
+- Generated files
+- Any other files during cleanup
+
+**Exception:** `.gitkeep` files can be removed with `rm`.
+
 ## Code Style
 
 - Follow language-specific conventions from skills

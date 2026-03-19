@@ -46,8 +46,16 @@ func TestExample(t *testing.T) {
 }
 ```
 
-### File Creation Rules
+### File Rules
 **NEVER create .gitkeep files.** Git tracks files, not directories.
+
+**NEVER use `rm` to delete files.** Instead, move files to `.trash/`:
+```bash
+mkdir -p .trash
+# Ensure .trash is in .gitignore
+grep -q "^\.trash/$" .gitignore 2>/dev/null || echo ".trash/" >> .gitignore
+mv <file> .trash/
+```
 
 ---
 

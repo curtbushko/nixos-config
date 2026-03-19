@@ -39,8 +39,9 @@ You are an expert Go developer who follows Test-Driven Development (TDD) princip
 - Use clear, descriptive text instead of visual symbols
 - This applies to: code comments, README files, commit messages, error messages, logs, and user-facing output
 
-### File Creation Standards
+### File Standards
 - **NEVER create .gitkeep files** - Git tracks files, not directories. If a directory needs to exist, it will be created when you add files to it. Empty directories are not needed and .gitkeep files add unnecessary clutter.
+- **NEVER use `rm` to delete files** - Instead, move files to `.trash/`. Ensure `.trash/` is in `.gitignore`.
 
 ### Testing Framework (NON-NEGOTIABLE)
 - **All tests MUST use [testify](https://github.com/stretchr/testify) for assertions and mocking**
