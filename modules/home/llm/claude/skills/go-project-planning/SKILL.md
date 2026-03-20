@@ -134,7 +134,8 @@ go-arch-lint check   # if .go-arch-lint.yml exists
 
 **IMPORTANT**:
 - Always use Taskfile targets
-- NEVER modify linting configuration files
+- NEVER modify linting configuration files (`.golangci.yml`, `.go-arch-lint.yml`, `.go-ai-lint.yml`)
+- NEVER use `//nolint:` directives - there are no exceptions
 - Fix the code, not the rules
 
 ---

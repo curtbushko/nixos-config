@@ -8,9 +8,26 @@ This skill provides comprehensive guidelines for creating high-quality, maintain
 - **ALWAYS** use `set -euo pipefail` for error handling (unless specific behavior requires otherwise)
 - **ALWAYS** quote variables to prevent word splitting: `"$variable"` not `$variable`
 - **ALWAYS** check if a command exists before using it with `command -v`
+- **ALWAYS** run `shellcheck` and `shfmt` before completing any script
 - **NEVER** use `eval` unless absolutely necessary and after careful security review
 - **NEVER** parse `ls` output - use globs or `find` instead
 - **NO EMOJIS** in scripts or comments
+
+## Quality Gates (NON-NEGOTIABLE)
+
+Before completing any bash script, ALL must pass:
+
+```bash
+shellcheck script.sh    # REQUIRED - must pass with no errors or warnings
+shfmt -d script.sh      # REQUIRED - must have no diff (properly formatted)
+```
+
+To auto-format a script:
+```bash
+shfmt -w script.sh
+```
+
+**IMPORTANT**: Fix all shellcheck errors and warnings. Do not use `# shellcheck disable=` directives unless absolutely necessary and justified.
 
 ## Script Structure
 
@@ -25,9 +42,11 @@ This skill provides comprehensive guidelines for creating high-quality, maintain
 
 set -euo pipefail
 
-# Configuration
-readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly SCRIPT_NAME="$(basename "${BASH_SOURCE[0]}")"
+# Configuration - declare and assign separately to avoid SC2155
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly SCRIPT_DIR
+SCRIPT_NAME="$(basename "${BASH_SOURCE[0]}")"
+readonly SCRIPT_NAME
 
 # Color codes for output (optional)
 readonly RED='\033[0;31m'
@@ -410,23 +429,39 @@ main "$@"
 
 ## Testing and Validation
 
-### ShellCheck
+### ShellCheck (REQUIRED)
 
-Always run shellcheck on scripts:
+Always run shellcheck on scripts - all errors and warnings must be fixed:
 
 ```bash
 shellcheck script.sh
 ```
 
-Common shellcheck directives:
-```bash
-# Disable specific warning
-# shellcheck disable=SC2034
-unused_var="value"
+**Common issues and fixes:**
 
-# Disable for whole file
-# shellcheck disable=SC1091
-source /path/to/file
+| Error | Fix |
+|-------|-----|
+| SC2155 | Declare and assign separately: `VAR=$(cmd)` then `readonly VAR` |
+| SC2086 | Quote the variable: `"$var"` not `$var` |
+| SC2046 | Quote command substitution: `"$(cmd)"` not `$(cmd)` |
+| SC2164 | Add `|| exit` after cd: `cd "$dir" || exit 1` |
+| SC2071 | Use `-lt`/`-gt` for numbers: `[[ $a -lt $b ]]` not `[[ $a < $b ]]` |
+
+**Avoid using disable directives** - fix the underlying issue instead.
+
+### shfmt (REQUIRED)
+
+Always format scripts with shfmt:
+
+```bash
+# Check formatting (shows diff if not formatted)
+shfmt -d script.sh
+
+# Auto-format in place
+shfmt -w script.sh
+
+# Format with specific options (default is tabs)
+shfmt -i 4 -w script.sh  # Use 4 spaces instead of tabs
 ```
 
 ### BATS (Bash Automated Testing System)
@@ -457,14 +492,15 @@ Example test file (test.bats):
 - [ ] All edge cases handled (empty input, missing files, etc.)
 - [ ] Error messages are clear and helpful
 - [ ] Exit codes are appropriate (0 for success, non-zero for errors)
-- [ ] No shellcheck warnings
+- [ ] `shellcheck` passes with no errors or warnings
+- [ ] `shfmt -d` shows no diff
 - [ ] Variables are properly quoted
 - [ ] Cleanup happens on exit (no temp files left behind)
 - [ ] Script is idempotent when possible
 
 ## Code Review Checklist
 
-- [ ] Shebang present and correct
+- [ ] Shebang present and correct (`#!/usr/bin/env bash`)
 - [ ] `set -euo pipefail` used (or justified exception)
 - [ ] All variables quoted properly
 - [ ] No parsing of `ls` output
@@ -478,7 +514,8 @@ Example test file (test.bats):
 - [ ] Array usage for lists of items
 - [ ] `[[ ]]` used instead of `[ ]`
 - [ ] No security vulnerabilities (command injection, etc.)
-- [ ] Shellcheck passes with no warnings
+- [ ] `shellcheck` passes with no errors or warnings
+- [ ] `shfmt -d` shows no diff (properly formatted)
 
 ## Common Anti-Patterns to Avoid
 

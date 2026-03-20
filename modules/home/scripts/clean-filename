@@ -1,0 +1,231 @@
+#!/usr/bin/env bash
+
+# Script: clean-filename
+# Description: Cleans filenames by removing special characters, lowercasing, and replacing spaces with dashes
+# Usage: clean-filename <file> [file2 ...]
+
+set -euo pipefail
+
+SCRIPT_NAME="$(basename "${BASH_SOURCE[0]}")"
+readonly SCRIPT_NAME
+
+readonly RED='\033[0;31m'
+readonly GREEN='\033[0;32m'
+readonly YELLOW='\033[1;33m'
+readonly NC='\033[0m'
+
+usage() {
+	cat <<EOF
+Usage: ${SCRIPT_NAME} <file> [file2 ...]
+
+Cleans filenames by:
+  1. Transliterating accented characters (cafe instead of cafe)
+  2. Replacing smart quotes and fancy punctuation with ASCII equivalents
+  3. Removing special characters: []()| &:;^%\$#@!*_=+'"\`~{}<>?,\\
+  4. Lowercasing all characters
+  5. Replacing spaces with dashes
+  6. Collapsing multiple dashes to single dash
+
+OPTIONS:
+    -h, --help      Show this help message
+    -n, --dry-run   Show what would be renamed without doing it
+
+EXAMPLES:
+    ${SCRIPT_NAME} "My File [2024].txt"
+    # Result: my-file-2024.txt
+
+    ${SCRIPT_NAME} "Report (Final) & Notes.pdf"
+    # Result: report-final-notes.pdf
+
+    ${SCRIPT_NAME} "Cafe Resume.pdf"
+    # Result: cafe-resume.pdf
+
+    ${SCRIPT_NAME} -n *.txt
+    # Dry run on all txt files
+EOF
+}
+
+log_info() {
+	echo -e "${GREEN}[INFO]${NC} $*" >&2
+}
+
+log_warn() {
+	echo -e "${YELLOW}[WARN]${NC} $*" >&2
+}
+
+log_error() {
+	echo -e "${RED}[ERROR]${NC} $*" >&2
+}
+
+transliterate() {
+	local input="$1"
+
+	# Try iconv for accent transliteration
+	if command -v iconv &>/dev/null; then
+		input="$(printf '%s' "$input" | iconv -f UTF-8 -t ASCII//TRANSLIT 2>/dev/null || printf '%s' "$input")"
+	fi
+
+	printf '%s' "$input"
+}
+
+normalize_punctuation() {
+	local input="$1"
+
+	# Use sed for reliable unicode replacement
+	input="$(
+		printf '%s' "$input" | sed \
+			-e 's/[""]/"/g' \
+			-e "s/['']/'/g" \
+			-e 's/[—–]/-/g' \
+			-e 's/…//g' \
+			-e 's/[«»‹›]//g' \
+			-e 's/[•·]//g'
+	)"
+
+	printf '%s' "$input"
+}
+
+sanitize_filename() {
+	local filename="$1"
+	local dir
+	local base
+	local ext=""
+
+	dir="$(dirname "$filename")"
+	base="$(basename "$filename")"
+
+	# Extract extension if present
+	if [[ "$base" == *.* ]]; then
+		ext=".${base##*.}"
+		base="${base%.*}"
+	fi
+
+	# Transliterate accented characters (cafe -> cafe)
+	base="$(transliterate "$base")"
+
+	# Normalize fancy punctuation
+	base="$(normalize_punctuation "$base")"
+
+	# Remove special characters:
+	# Original: []()| &:;^%$#@!*_=+
+	# Added: '"` ~{}<>?,\
+	base="${base//[\[\]()|\&:;\^\%\$\#\@\!\*\_\=\+\'\"]/}"
+	base="${base//\`/}"
+	base="${base//\~/}"
+	base="${base//\{/}"
+	base="${base//\}/}"
+	base="${base//</}"
+	base="${base//>/}"
+	base="${base//\?/}"
+	base="${base//,/}"
+	base="${base//\\/}"
+
+	# Replace spaces with dashes
+	base="${base// /-}"
+
+	# Lowercase
+	base="${base,,}"
+
+	# Remove multiple consecutive dashes
+	while [[ "$base" == *--* ]]; do
+		base="${base//--/-}"
+	done
+
+	# Remove leading/trailing dashes
+	base="${base#-}"
+	base="${base%-}"
+
+	# Lowercase extension too
+	ext="${ext,,}"
+
+	# Apply same sanitization to extension (without the dot)
+	if [[ -n "$ext" ]]; then
+		local ext_clean="${ext#.}"
+		ext_clean="$(transliterate "$ext_clean")"
+		ext_clean="${ext_clean//[^a-z0-9]/}"
+		ext=".${ext_clean}"
+	fi
+
+	if [[ "$dir" == "." ]]; then
+		printf '%s%s' "$base" "$ext"
+	else
+		printf '%s/%s%s' "$dir" "$base" "$ext"
+	fi
+}
+
+rename_file() {
+	local file="$1"
+	local dry_run="$2"
+	local new_name
+
+	if [[ ! -e "$file" ]]; then
+		log_error "File not found: $file"
+		return 1
+	fi
+
+	new_name="$(sanitize_filename "$file")"
+
+	if [[ "$file" == "$new_name" ]]; then
+		log_info "No change needed: $file"
+		return 0
+	fi
+
+	if [[ -e "$new_name" ]]; then
+		log_error "Target already exists: $new_name"
+		return 1
+	fi
+
+	if [[ "$dry_run" == "true" ]]; then
+		log_info "[DRY RUN] $file -> $new_name"
+	else
+		mv "$file" "$new_name"
+		log_info "$file -> $new_name"
+	fi
+}
+
+main() {
+	local dry_run="false"
+	local files=()
+
+	while [[ $# -gt 0 ]]; do
+		case $1 in
+		-h | --help)
+			usage
+			exit 0
+			;;
+		-n | --dry-run)
+			dry_run="true"
+			shift
+			;;
+		-*)
+			log_error "Unknown option: $1"
+			usage
+			exit 1
+			;;
+		*)
+			files+=("$1")
+			shift
+			;;
+		esac
+	done
+
+	if [[ ${#files[@]} -eq 0 ]]; then
+		log_error "No files specified"
+		usage
+		exit 1
+	fi
+
+	local failed=0
+	for file in "${files[@]}"; do
+		if ! rename_file "$file" "$dry_run"; then
+			((failed++)) || true
+		fi
+	done
+
+	if [[ $failed -gt 0 ]]; then
+		log_warn "$failed file(s) failed to rename"
+		exit 1
+	fi
+}
+
+main "$@"

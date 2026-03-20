@@ -18,8 +18,9 @@ Your context window is finite. Every subagent return consumes context. You MUST:
 - Extract ONLY: `status` and `verdict` from subagent output (1-2 lines)
 - Track task progress via `.tasks/status.yaml`
 - Update PLAN.md Implementation Status checklist when tasks complete (Step 3c)
-- Run final validation commands (Step 4)
 - Report summary to user
+
+**NOTE**: Builders and reviewers run validation commands (`task build`, `task test`, `task lint`). The orchestrator does NOT run these - it only tracks status.
 
 ### You MUST NOT:
 - Read source code files
@@ -236,7 +237,7 @@ Task tool:
     2. Your coding standards: `~/.claude/skills/go-team/references/builder-context.md`
 
     Follow ALL standards: TDD (RED/GREEN/REFACTOR), build gates
-    (make build, make test, make lint, go-arch-lint), hex architecture.
+    (task build, task test, task lint, go-arch-lint check), hex architecture.
 
     Write your full results to: `.tasks/result-{task.id}-build.yaml`
     (format defined in builder-context.md)
@@ -252,7 +253,7 @@ Task tool:
 
 ```
 Task tool:
-  subagent_type: "code-quality-reviewer"
+  subagent_type: "go-code-review"
   description: "Review task {task.id}"
   prompt: |
     ## Combined Review: Task {task.id} - {task.name}
@@ -293,7 +294,7 @@ Task tool:
     3. Coding standards: `~/.claude/skills/go-team/references/builder-context.md`
 
     Fix each issue listed in `changes_required` in priority order.
-    Run tests after each change. Ensure make build, make test, make lint all pass.
+    Run tests after each change. Ensure task build, task test, task lint all pass.
     Commit fixes.
 
     Write your fix results to: `.tasks/result-{task.id}-fix-{cycle}.yaml`
@@ -308,18 +309,11 @@ Task tool:
 
 ---
 
-## Step 4: Final Validation
+## Step 4: Completion
 
-After all tasks complete, run (as the orchestrator, via Bash):
+**NOTE**: The orchestrator does NOT run validation commands. Builders and reviewers are responsible for ensuring `task build`, `task test`, and `task lint` pass before marking their work complete.
 
-```
-make build
-make test
-make lint
-go-arch-lint check  # if config exists
-```
-
-Archive completed task files (only if ALL tasks have status: completed):
+After all tasks complete, archive completed task files (only if ALL tasks have status: completed):
 ```
 # Verify all tasks completed before archiving
 if all tasks in .tasks/status.yaml have status: "completed":
@@ -337,7 +331,6 @@ Report to user:
 ```
 ## Go Team Complete: {FEATURE}
 - Tasks completed: {count}
-- Validation: build={result} test={result} lint={result} arch={result}
 - Task state: .tasks/status.yaml
 ```
 

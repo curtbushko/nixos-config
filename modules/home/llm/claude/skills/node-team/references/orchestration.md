@@ -18,8 +18,9 @@ Your context window is finite. Every subagent return consumes context. You MUST:
 - Extract ONLY: `status` and `verdict` from subagent output (1-2 lines)
 - Track task progress via `.tasks/status.yaml`
 - Update PLAN.md Implementation Status checklist when tasks complete (Step 3c)
-- Run final validation commands (Step 4)
 - Report summary to user
+
+**NOTE**: Builders and reviewers run validation commands. The orchestrator does NOT run these - it only tracks status.
 
 ### You MUST NOT:
 - Read source code files
@@ -308,16 +309,11 @@ Task tool:
 
 ---
 
-## Step 4: Final Validation
+## Step 4: Completion
 
-After all tasks complete, run (as the orchestrator, via Bash):
+**NOTE**: The orchestrator does NOT run validation commands. Builders and reviewers are responsible for ensuring tests and lint pass before marking their work complete.
 
-```
-npm test
-npm run lint
-```
-
-Archive completed task files (only if ALL tasks have status: completed):
+After all tasks complete, archive completed task files (only if ALL tasks have status: completed):
 ```
 # Verify all tasks completed before archiving
 if all tasks in .tasks/status.yaml have status: "completed":
@@ -335,7 +331,6 @@ Report to user:
 ```
 ## Node Team Complete: {FEATURE}
 - Tasks completed: {count}
-- Validation: test={result} lint={result}
 - Task state: .tasks/status.yaml
 ```
 

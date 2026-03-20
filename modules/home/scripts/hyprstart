@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 export WLR_NO_HARDWARE_CURSORS=1
 # Set wlroots renderer to Vulkan to avoid flickering
 export WLR_RENDERER=vulkan

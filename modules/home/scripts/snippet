@@ -10,9 +10,7 @@ DATE=$(date +'%Y-%m-%d')
 TIME=$(date +'%H:%M')
 
 echo "Creating new snippet: $SNIPPET_FILENAME with title: $TITLE"
-cat "$SNIPPET_TEMPLATE" \
-| sed "s^{{title}}^${TITLE}^g" \
-| sed "s^{{date}}^${DATE}^g" \
-| sed "s^{{time}}^${TIME}^g" > "$SNIPPET_FILENAME"
-
-
+cat "$SNIPPET_TEMPLATE" |
+	sed "s^{{title}}^${TITLE}^g" |
+	sed "s^{{date}}^${DATE}^g" |
+	sed "s^{{time}}^${TIME}^g" >"$SNIPPET_FILENAME"

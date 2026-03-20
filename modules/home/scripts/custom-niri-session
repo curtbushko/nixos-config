@@ -2,15 +2,15 @@
 echo "Running niri."
 
 if systemctl --user -q is-active niri.service; then
-  echo "A niri session is already running."
-  exit 1
+	echo "A niri session is already running."
+	exit 1
 fi
 
 systemctl --user reset-failed
 
 if hash dbus-update-activation-environment 2>/dev/null; then
-  dbus-update-activation-environment --systemd PATH
-  dbus-update-activation-environment --all
+	dbus-update-activation-environment --systemd PATH
+	dbus-update-activation-environment --all
 fi
 
 systemctl --user --wait start niri.service

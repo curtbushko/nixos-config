@@ -2,17 +2,17 @@
 
 # Check if a project name was provided
 if [ -z "$1" ]; then
-    echo "Error: missing directory name"
-    exit 1
+	echo "Error: missing directory name"
+	exit 1
 fi
 
 # Check if a module name was provided
 if [ -z "$2" ]; then
-    echo "Error: missing module name"
-    exit 1
+	echo "Error: missing module name"
+	exit 1
 fi
 
-DASHLESS=$(echo $2 | tr -d '-')
+DASHLESS=$(echo "$2" | tr -d '-')
 
 # Create a new directory for the project
 mkdir "$1"
@@ -66,7 +66,7 @@ func Test_Run(t *testing.T) {
 }
 EOF
 # Initialize go mod with the provided project name
-cd "$1"
+cd "$1" || exit 1
 go mod init "${DASHLESS}"
 
 # Install the testify package for testing

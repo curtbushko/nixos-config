@@ -10,7 +10,7 @@ DATE=$(date +'%Y-%m-%d')
 TIME=$(date +'%H:%M')
 
 echo "Creating new note: $REVIEW_FILENAME with title: $TITLE"
-cat $REVIEW_TEMPLATE \
-| sed "s^{{title}}^${TITLE}^g" \
-| sed "s^{{date}}^${DATE}^g" \
-| sed "s^{{time}}^${TIME}^g" > $REVIEW_FILENAME
+cat $REVIEW_TEMPLATE |
+	sed "s^{{title}}^${TITLE}^g" |
+	sed "s^{{date}}^${DATE}^g" |
+	sed "s^{{time}}^${TIME}^g" >$REVIEW_FILENAME

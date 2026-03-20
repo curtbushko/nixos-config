@@ -71,7 +71,9 @@ go-arch-lint check   # if config exists
 
 **IMPORTANT**: Always use Taskfile targets. If no Taskfile exists, STOP and report an error.
 
-**DO NOT MODIFY** linting configuration files. Fix the code, not the rules.
+**DO NOT MODIFY** linting configuration files (`.golangci.yml`, `.go-arch-lint.yml`, `.go-ai-lint.yml`).
+**NEVER use `//nolint:` directives** - there are no exceptions.
+Fix the code, not the rules.
 
 ---
 

@@ -14,7 +14,7 @@ _wt-switch() {
 
 	)
 	if [ "${WT}" != "" ]; then
-		cd $WT
+		cd "$WT" || return 1
 	fi
 }
 

@@ -2,8 +2,6 @@
 
 KB=$HOME/workspace/github.com/curtbushko/kb
 NOTE_TEMPLATE=$KB/templates/new_note.md
-MONTHLY_TEMPLATE=$KB/templates/monthly.md
-YEARLY_TEMPLATE=$KB/templates/yearly.md
 NOTE_FILENAME=$KB/$(date +'%Y%m%d-%H%M%S').md
 
 TITLE="${1:-no title}"
@@ -11,9 +9,7 @@ DATE=$(date +'%Y-%m-%d')
 TIME=$(date +'%H:%M')
 
 echo "Creating new note: $NOTE_FILENAME with title: $TITLE"
-cat $NOTE_TEMPLATE \
-| sed "s^{{title}}^${TITLE}^g" \
-| sed "s^{{date}}^${DATE}^g" \
-| sed "s^{{time}}^${TIME}^g" > $NOTE_FILENAME
-
-
+cat "$NOTE_TEMPLATE" |
+	sed "s^{{title}}^${TITLE}^g" |
+	sed "s^{{date}}^${DATE}^g" |
+	sed "s^{{time}}^${TIME}^g" >"$NOTE_FILENAME"

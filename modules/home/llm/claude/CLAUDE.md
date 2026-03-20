@@ -9,8 +9,8 @@
 3. **Follow skill guidelines**: All instructions in skill files are MANDATORY, not suggestions
 
 ### Skill Priority Order
-1. Language-specific skills (e.g., `golang/`, `node-team/`)
-2. Framework-specific skills
+1. Project-specific skills (e.g., project CLAUDE.md, local skills)
+2. Language-specific skills (e.g., `golang/`, `node-team/`)
 3. General development skills (e.g., `bash/`)
 
 ## TDD (Test-Driven Development) - MANDATORY
@@ -21,56 +21,14 @@
 
 ### The 6-Step TDD Workflow
 
-**Use TodoWrite to track these steps for EVERY feature/bugfix:**
+For the complete workflow, see `~/.claude/skills/golang/references/tdd-workflow.md`. The summary:
 
-#### 1. INVESTIGATE
-- Understand the requirement thoroughly
-- Review existing code and related modules
-- Identify dependencies and potential side effects
-- Document acceptance criteria
-
-#### 2. REPRODUCE (bugs) / PLAN (features)
-- For bugs: Create a minimal reproduction case
-- For features: Design the interface/API BEFORE implementation
-- Identify edge cases and error scenarios
-- Plan test scenarios
-
-#### 3. TEST (RED)
-- Write failing tests FIRST
-- Structure tests using AAA pattern (Arrange, Act, Assert)
-- Include positive and negative test cases
-- Test edge cases and error handling
-- **RUN TESTS - confirm they FAIL**
-
-#### 4. FIX / IMPLEMENT (GREEN)
-- Write MINIMAL code to pass the test
-- Follow SOLID principles
-- Keep functions small and focused
-- **RUN TESTS - confirm they PASS**
-
-#### 5. VALIDATE
-- Run ALL tests to ensure no regressions
-- Check code coverage
-- Run linter
-- Review error handling
-
-#### 6. FINALIZE (REFACTOR)
-- Refactor for clarity and maintainability
-- Remove dead code and console.logs
-- **RUN TESTS - ensure still green**
-
-### TodoWrite Template
-
-```
-1. [ ] INVESTIGATE: Understand [feature/bug] requirements
-2. [ ] PLAN: Design interface and identify test cases
-3. [ ] TEST: Write failing test for [specific behavior]
-4. [ ] RUN: Confirm test fails (RED)
-5. [ ] IMPLEMENT: Write minimum code for [specific behavior]
-6. [ ] RUN: Confirm test passes (GREEN)
-7. [ ] VALIDATE: Run all tests, check coverage
-8. [ ] REFACTOR: Clean up if needed
-```
+1. **INVESTIGATE** - Understand requirements, review existing code
+2. **PLAN** (features) / **REPRODUCE** (bugs) - Design API, identify test cases
+3. **TEST (RED)** - Write failing tests FIRST, confirm they FAIL
+4. **IMPLEMENT (GREEN)** - Write MINIMAL code to pass, confirm they PASS
+5. **VALIDATE** - Run ALL tests, lint, check coverage
+6. **REFACTOR** - Clean up while keeping tests green
 
 ### Before Writing Code, Ask Yourself
 
@@ -117,7 +75,7 @@ This applies to ALL files including:
 - Generated files
 - Any other files during cleanup
 
-**Exception:** `.gitkeep` files can be removed with `rm`.
+**NO EXCEPTIONS.** Never use `rm` for any file. Never create `.gitkeep` files.
 
 ## Code Style
 
@@ -132,6 +90,8 @@ If multiple skills apply and have conflicting guidance:
 1. Project-specific skills take precedence
 2. Language-specific skills come second
 3. General skills are fallback
+
+This is the SAME order as Skill Priority Order above - be consistent.
 
 ## Acknowledgment
 

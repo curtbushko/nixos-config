@@ -7,9 +7,9 @@ set -euo pipefail
 
 # Check if SLACK_TOKEN is set
 if [ -z "${SLACK_TOKEN:-}" ]; then
-    echo "Error: SLACK_TOKEN environment variable is not set"
-    echo "Please set it with: export SLACK_TOKEN='xoxb-your-token'"
-    exit 1
+	echo "Error: SLACK_TOKEN environment variable is not set"
+	echo "Please set it with: export SLACK_TOKEN='xoxb-your-token'"
+	exit 1
 fi
 
 # Generate filename with current date
@@ -24,27 +24,27 @@ TEMP_FILE=$(mktemp)
 CURSOR=""
 
 while true; do
-    if [ -z "$CURSOR" ]; then
-        RESPONSE=$(curl -s -X GET "https://slack.com/api/users.list" \
-            -H "Authorization: Bearer ${SLACK_TOKEN}")
-    else
-        RESPONSE=$(curl -s -X GET "https://slack.com/api/users.list?cursor=${CURSOR}" \
-            -H "Authorization: Bearer ${SLACK_TOKEN}")
-    fi
+	if [ -z "$CURSOR" ]; then
+		RESPONSE=$(curl -s -X GET "https://slack.com/api/users.list" \
+			-H "Authorization: Bearer ${SLACK_TOKEN}")
+	else
+		RESPONSE=$(curl -s -X GET "https://slack.com/api/users.list?cursor=${CURSOR}" \
+			-H "Authorization: Bearer ${SLACK_TOKEN}")
+	fi
 
-    # Extract users from this page
-    echo "$RESPONSE" | jq -r '.members[] | select(.deleted == false and .is_bot == false) | "\(.profile.email // "N/A")\t\(.real_name)"' >> "$TEMP_FILE"
+	# Extract users from this page
+	echo "$RESPONSE" | jq -r '.members[] | select(.deleted == false and .is_bot == false) | "\(.profile.email // "N/A")\t\(.real_name)"' >>"$TEMP_FILE"
 
-    # Get next cursor
-    CURSOR=$(echo "$RESPONSE" | jq -r '.response_metadata.next_cursor // empty')
+	# Get next cursor
+	CURSOR=$(echo "$RESPONSE" | jq -r '.response_metadata.next_cursor // empty')
 
-    # Break if no more pages
-    [ -z "$CURSOR" ] && break
+	# Break if no more pages
+	[ -z "$CURSOR" ] && break
 done
 
 # Sort and save to final file
-sort "$TEMP_FILE" > "${FILENAME}"
+sort "$TEMP_FILE" >"${FILENAME}"
 rm "$TEMP_FILE"
 
 echo "User list saved to: ${FILENAME}"
-echo "Total users: $(wc -l < "${FILENAME}")"
+echo "Total users: $(wc -l <"${FILENAME}")"

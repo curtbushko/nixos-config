@@ -17,32 +17,32 @@ MONTHLY_FILENAME=$DAILY_DIR/$YYYY$MM.md
 YEARLY_FILENAME=$DAILY_DIR/$YYYY.md
 
 echo "Creating daily file: $DAILY_FILENAME"
-cat $DAILY_TEMPLATE \
-| sed "s^{{date:MMMM}}^${MMMM}^g" \
-| sed "s^{{date:MM}}^${MM}^g" \
-| sed "s^{{date:DD}}^${DD}^g" \
-| sed "s^{{date:YYYY}}^${YYYY}^g" \
-| sed "s^{{date}}^${DATE}^g" \
-| sed "s^{{time}}^${TIME}^g" > $DAILY_FILENAME
+cat "$DAILY_TEMPLATE" |
+	sed "s^{{date:MMMM}}^${MMMM}^g" |
+	sed "s^{{date:MM}}^${MM}^g" |
+	sed "s^{{date:DD}}^${DD}^g" |
+	sed "s^{{date:YYYY}}^${YYYY}^g" |
+	sed "s^{{date}}^${DATE}^g" |
+	sed "s^{{time}}^${TIME}^g" >"$DAILY_FILENAME"
 
-if test ! -f $MONTHLY_FILENAME; then
-    echo "Creating monthly file: $MONTHLY_FILENAME"
-    cat $MONTHLY_TEMPLATE \
-    | sed "s^{{date:MMMM}}^${MMMM}^g" \
-    | sed "s^{{date:MM}}^${MM}^g" \
-    | sed "s^{{date:DD}}^${DD}^g" \
-    | sed "s^{{date:YYYY}}^${YYYY}^g" \
-    | sed "s^{{date}}^${DATE}^g" \
-    | sed "s^{{time}}^${TIME}^g" > $MONTHLY_FILENAME
+if test ! -f "$MONTHLY_FILENAME"; then
+	echo "Creating monthly file: $MONTHLY_FILENAME"
+	cat "$MONTHLY_TEMPLATE" |
+		sed "s^{{date:MMMM}}^${MMMM}^g" |
+		sed "s^{{date:MM}}^${MM}^g" |
+		sed "s^{{date:DD}}^${DD}^g" |
+		sed "s^{{date:YYYY}}^${YYYY}^g" |
+		sed "s^{{date}}^${DATE}^g" |
+		sed "s^{{time}}^${TIME}^g" >"$MONTHLY_FILENAME"
 fi
 
-if test ! -f $YEARLY_FILENAME; then
-    echo "Creating yearly file: $YEARLY_FILENAME"
-    cat $YEARLY_TEMPLATE \
-    | sed "s^{{date:MMMM}}^${MMMM}^g" \
-    | sed "s^{{date:MM}}^${MM}^g" \
-    | sed "s^{{date:DD}}^${DD}^g" \
-    | sed "s^{{date:YYYY}}^${YYYY}^g" \
-    | sed "s^{{date}}^${DATE}^g" \
-    | sed "s^{{time}}^${TIME}^g" > $YEARLY_FILENAME
+if test ! -f "$YEARLY_FILENAME"; then
+	echo "Creating yearly file: $YEARLY_FILENAME"
+	cat "$YEARLY_TEMPLATE" |
+		sed "s^{{date:MMMM}}^${MMMM}^g" |
+		sed "s^{{date:MM}}^${MM}^g" |
+		sed "s^{{date:DD}}^${DD}^g" |
+		sed "s^{{date:YYYY}}^${YYYY}^g" |
+		sed "s^{{date}}^${DATE}^g" |
+		sed "s^{{time}}^${TIME}^g" >"$YEARLY_FILENAME"
 fi

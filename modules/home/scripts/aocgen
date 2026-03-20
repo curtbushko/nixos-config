@@ -89,7 +89,7 @@ cat >"$1/large.input" <<EOF
 EOF
 
 # Initialize go mod with the provided project name
-cd "$1"
+cd "$1" || exit 1
 go mod init "$2"
 
 # Install the testify package for testing

@@ -54,6 +54,8 @@ in {
         pkgs.nodejs_22
         pkgs.presenterm
         pkgs.ripgrep
+        pkgs.shellcheck
+        pkgs.shfmt
         pkgs.stylua
         pkgs.sshuttle
         pkgs.go-task

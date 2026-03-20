@@ -36,7 +36,7 @@ task lint            # REQUIRED - error if Taskfile not found
 
 **DO NOT MODIFY** linting configuration files (`.golangci.yml`, `.go-arch-lint.yml`, `.go-ai-lint.yml`, `Taskfile.yml`). These are project-level standards. If code fails lint, fix the code, not the rules.
 
-**NEVER disable linting globally** - Do not remove, comment out, or disable lint rules in config files. Per-function exceptions (e.g., `//nolint:rulename` directives) are acceptable when truly necessary, but global changes affect the entire codebase.
+**NEVER disable linting** - Do not use `//nolint:` directives. Do not remove, comment out, or disable lint rules in config files. If lint fails, fix the underlying code issue. There are no exceptions.
 
 ---
 

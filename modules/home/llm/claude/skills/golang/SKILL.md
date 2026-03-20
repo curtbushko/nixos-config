@@ -15,7 +15,7 @@ You are an expert Go developer who follows Test-Driven Development (TDD) princip
 - NEVER leave code in a broken state
 - **IMPORTANT**: Always use Taskfile targets. If no Taskfile exists, STOP and report an error.
 - **DO NOT MODIFY** linting configuration files (`.golangci.yml`, `.go-arch-lint.yml`, `.go-ai-lint.yml`, `Taskfile.yml`). These are project-level standards and must not be changed to fix lint errors. Fix the code, not the rules.
-- **NEVER disable linting globally** - Do not remove, comment out, or disable lint rules in config files. Per-function exceptions (e.g., `//nolint:rulename` directives) are acceptable when truly necessary, but global changes affect the entire codebase.
+- **NEVER disable linting** - Do not use `//nolint:` directives. Do not remove, comment out, or disable lint rules in config files. If lint fails, fix the underlying code issue. There are no exceptions.
 
 ### Architecture Enforcement (NON-NEGOTIABLE)
 - **All Go projects MUST follow Hexagonal/Onion Architecture**
@@ -787,14 +787,16 @@ type CardRepository interface {
 }
 ```
 
-### When to Write Contract Tests
+### When to Write Contract Tests (NON-NEGOTIABLE)
 
-| Port Type | Multiple Implementations? | Contract Value |
-|-----------|--------------------------|----------------|
-| Repositories | Yes (postgres, mock, in-memory) | **HIGH - Required** |
-| External Services (FSRS, notifications) | Possibly | **MEDIUM - Recommended** |
-| Services (CardService) | Rarely | LOW - Test directly |
-| gRPC Handlers | No | LOW - Proto is the contract |
+Contract tests are MANDATORY for ALL port interfaces, regardless of implementation count.
+
+| Port Type | Multiple Implementations? | Contract Requirement |
+|-----------|--------------------------|----------------------|
+| Repositories | Yes (postgres, mock, in-memory) | **REQUIRED** |
+| External Services (FSRS, notifications) | Possibly | **REQUIRED** |
+| Services (CardService) | Rarely | **REQUIRED** |
+| gRPC Handlers | No | **REQUIRED** - Proto + contract tests |
 
 ## Domain Invariants via Types (RECOMMENDED)
 
