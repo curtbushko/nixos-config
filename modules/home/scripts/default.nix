@@ -50,6 +50,7 @@
   aocgen = pkgs.writeScriptBin "aocgen" (builtins.readFile ./aocgen);
   auto-sleep = pkgs.writeScriptBin "auto-sleep" (builtins.readFile ./auto-sleep);
   build-ghostty = pkgs.writeScriptBin "build-ghostty" (builtins.readFile ./build-ghostty);
+  clean-filename = pkgs.writeScriptBin "clean-filename" (builtins.readFile ./clean-filename);
   containerwatcher = pkgs.writeScriptBin "containerwatcher" (builtins.readFile ./containerwatcher);
   context = pkgs.writeScriptBin "context" (builtins.readFile ./context);
   custom-niri-session = pkgs.writeScriptBin "custom-niri-session" (builtins.readFile ./custom-niri-session);
@@ -106,6 +107,7 @@ in {
       # bash  # structured-cli wrapper disabled
       zsh
       build-ghostty
+      clean-filename
       containerwatcher
       context
       custom-niri-session

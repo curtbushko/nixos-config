@@ -178,7 +178,6 @@ in {
           "Bash(golangci-lint run)"
           "Bash(go-arch-lint check)"
           "Bash(go-ai-lint ./...)"
-          "Bash(rm:*.gitkeep)"
         ];
         deny = [ ];
         ask = [

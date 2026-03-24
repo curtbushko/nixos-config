@@ -35,104 +35,110 @@ in {
 
   config = mkIf cfg.enable {
     # Linux: systemd user services and timers
-    systemd.user.services = mkIf isLinux {
-      auto-nix-collect-garbage = {
-        Unit = {
-          Description = "Nix garbage collection - delete store paths older than 7 days";
+    systemd.user.services = mkIf isLinux (lib.mkMerge [
+      {
+        auto-nix-collect-garbage = {
+          Unit = {
+            Description = "Nix garbage collection - delete store paths older than 7 days";
+          };
+          Service = {
+            Type = "oneshot";
+            ExecStart = "${pkgs.nix}/bin/nix-collect-garbage --delete-older-than 7d";
+          };
         };
-        Service = {
-          Type = "oneshot";
-          ExecStart = "${pkgs.nix}/bin/nix-collect-garbage --delete-older-than 7d";
-        };
-      };
 
-      auto-nix-delete-generations = {
-        Unit = {
-          Description = "Nix delete generations - keep only the most recent 3 generations";
+        auto-nix-delete-generations = {
+          Unit = {
+            Description = "Nix delete generations - keep only the most recent 3 generations";
+          };
+          Service = {
+            Type = "oneshot";
+            ExecStart = "${pkgs.nix}/bin/nix-env --delete-generations +3";
+          };
         };
-        Service = {
-          Type = "oneshot";
-          ExecStart = "${pkgs.nix}/bin/nix-env --delete-generations +3";
-        };
-      };
 
-      auto-nix-store-gc = {
-        Unit = {
-          Description = "Nix store garbage collection";
+        auto-nix-store-gc = {
+          Unit = {
+            Description = "Nix store garbage collection";
+          };
+          Service = {
+            Type = "oneshot";
+            ExecStart = "${pkgs.nix}/bin/nix-store --gc";
+          };
         };
-        Service = {
-          Type = "oneshot";
-          ExecStart = "${pkgs.nix}/bin/nix-store --gc";
+      }
+      (mkIf cfg.claudeGreeting.enable {
+        claude-morning-greeting = {
+          Unit = {
+            Description = "Claude greeting";
+          };
+          Service = {
+            Type = "oneshot";
+            ExecStart = "${pkgs.writeShellScript "claude-greeting" ''
+              export PATH="$HOME/.nix-profile/bin:$PATH"
+              claude -p "good morning"
+            ''}";
+          };
         };
-      };
-    } // (lib.optionalAttrs cfg.claudeGreeting.enable {
-      claude-morning-greeting = {
-        Unit = {
-          Description = "Claude greeting";
-        };
-        Service = {
-          Type = "oneshot";
-          ExecStart = "${pkgs.writeShellScript "claude-greeting" ''
-            export PATH="$HOME/.nix-profile/bin:$PATH"
-            claude -p "good morning"
-          ''}";
-        };
-      };
-    });
+      })
+    ]);
 
-    systemd.user.timers = mkIf isLinux {
-      auto-nix-collect-garbage = {
-        Unit = {
-          Description = "Timer for nix garbage collection";
+    systemd.user.timers = mkIf isLinux (lib.mkMerge [
+      {
+        auto-nix-collect-garbage = {
+          Unit = {
+            Description = "Timer for nix garbage collection";
+          };
+          Timer = {
+            OnCalendar = "02:00";
+            Persistent = true;
+          };
+          Install = {
+            WantedBy = ["timers.target"];
+          };
         };
-        Timer = {
-          OnCalendar = "02:00";
-          Persistent = true;
-        };
-        Install = {
-          WantedBy = ["timers.target"];
-        };
-      };
 
-      auto-nix-delete-generations = {
-        Unit = {
-          Description = "Timer for nix delete generations";
+        auto-nix-delete-generations = {
+          Unit = {
+            Description = "Timer for nix delete generations";
+          };
+          Timer = {
+            OnCalendar = "02:00";
+            Persistent = true;
+          };
+          Install = {
+            WantedBy = ["timers.target"];
+          };
         };
-        Timer = {
-          OnCalendar = "02:00";
-          Persistent = true;
-        };
-        Install = {
-          WantedBy = ["timers.target"];
-        };
-      };
 
-      auto-nix-store-gc = {
-        Unit = {
-          Description = "Timer for nix store garbage collection";
+        auto-nix-store-gc = {
+          Unit = {
+            Description = "Timer for nix store garbage collection";
+          };
+          Timer = {
+            OnCalendar = "02:00";
+            Persistent = true;
+          };
+          Install = {
+            WantedBy = ["timers.target"];
+          };
         };
-        Timer = {
-          OnCalendar = "02:00";
-          Persistent = true;
+      }
+      (mkIf cfg.claudeGreeting.enable {
+        claude-morning-greeting = {
+          Unit = {
+            Description = "Timer for claude greeting";
+          };
+          Timer = {
+            OnCalendar = ["06:00" "11:00" "16:00" "21:00"];
+            Persistent = true;
+          };
+          Install = {
+            WantedBy = ["timers.target"];
+          };
         };
-        Install = {
-          WantedBy = ["timers.target"];
-        };
-      };
-    } // (lib.optionalAttrs cfg.claudeGreeting.enable {
-      claude-morning-greeting = {
-        Unit = {
-          Description = "Timer for claude greeting";
-        };
-        Timer = {
-          OnCalendar = ["06:00" "11:00" "16:00" "21:00"];
-          Persistent = true;
-        };
-        Install = {
-          WantedBy = ["timers.target"];
-        };
-      };
-    });
+      })
+    ]);
 
     # macOS: launchd agents
     launchd.agents = mkIf isDarwin {
