@@ -23,6 +23,7 @@ in {
       [
         pkgs.llama-cpp
         pkgs.claude-code-acp
+        pkgs.rtk
       ];
   };
 
