@@ -5,48 +5,6 @@
 }: let
   isLinux = pkgs.stdenv.isLinux;
 
-  # Build structured-cli from source for Claude Code bash wrapper
-  structuredCli = pkgs.buildGoModule {
-    pname = "structured-cli";
-    version = "0.1.0";
-    src = pkgs.fetchFromGitHub {
-      owner = "curtbushko";
-      repo = "structured-cli";
-      rev = "c237407b690b3b217e2d225d09c636b503bc59f9";
-      sha256 = "sha256-Ok5TB50Jpl1uTDPFHpQXWLuCE5Ek0M9EMuiFDu6UiZk=";
-    };
-    vendorHash = "sha256-S1IFzhYzxWzXGI/kbkHTkBxcVlxIP0uII8TwCMhMzC4=";
-    doCheck = false;
-  };
-
-  # Bash wrapper for Claude Code - substitutes @placeholders@ with Nix paths
-  # Uses hiPrio to shadow bash-interactive in the profile
-  # NOTE: Shebang uses @bash@ placeholder to avoid infinite loop (env bash would find wrapper)
-  bash = lib.hiPrio (pkgs.runCommand "bash" {
-    src = ./bash;
-    inherit structuredCli;
-  } ''
-    mkdir -p $out/bin
-    substitute $src $out/bin/bash \
-      --replace-fail "@bash@" "${pkgs.bash}" \
-      --replace-fail "@structuredCli@" "${structuredCli}"
-    chmod +x $out/bin/bash
-  '');
-
-  # Zsh wrapper for Claude Code - substitutes @placeholders@ with Nix paths
-  # Uses hiPrio to shadow zsh in the profile
-  # NOTE: Shebang uses @zsh@ placeholder to avoid infinite loop (env zsh would find wrapper)
-  zsh = lib.hiPrio (pkgs.runCommand "zsh" {
-    src = ./zsh;
-    inherit structuredCli;
-  } ''
-    mkdir -p $out/bin
-    substitute $src $out/bin/zsh \
-      --replace-fail "@zsh@" "${pkgs.zsh}" \
-      --replace-fail "@structuredCli@" "${structuredCli}"
-    chmod +x $out/bin/zsh
-  '');
-
   aocgen = pkgs.writeScriptBin "aocgen" (builtins.readFile ./aocgen);
   auto-sleep = pkgs.writeScriptBin "auto-sleep" (builtins.readFile ./auto-sleep);
   build-ghostty = pkgs.writeScriptBin "build-ghostty" (builtins.readFile ./build-ghostty);
@@ -104,8 +62,6 @@ in {
   home.packages =
     [
       aocgen
-      # bash  # structured-cli wrapper disabled
-      zsh
       build-ghostty
       clean-filename
       containerwatcher
