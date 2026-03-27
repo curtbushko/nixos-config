@@ -40,6 +40,17 @@ in {
     settings = {
       includeCoAuthoredBy = false;
       hooks = {
+        PreToolUse = [
+          {
+            matcher = "Bash";
+            hooks = [
+              {
+                type = "command";
+                command = "$HOME/.claude/hooks/rtk-rewrite.sh";
+              }
+            ];
+          }
+        ];
         SessionStart = [
           {
             matcher = "startup|resume|clear|compact";
@@ -218,6 +229,13 @@ in {
     # Claude Code validation scripts
     home.file.".claude/scripts" = {
       source = ./claude/scripts;
+      recursive = true;
+      executable = true;
+    };
+
+    # Claude Code hooks (rtk rewrite, etc.)
+    home.file.".claude/hooks" = {
+      source = ./claude/hooks;
       recursive = true;
       executable = true;
     };

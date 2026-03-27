@@ -25,6 +25,9 @@ in {
         pkgs.claude-code-acp
         pkgs.rtk
       ];
+
+    # RTK config
+    xdg.configFile."rtk/config.toml".source = ./rtk-config.toml;
   };
 
   imports = [
