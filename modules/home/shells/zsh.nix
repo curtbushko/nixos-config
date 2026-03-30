@@ -67,7 +67,6 @@ in {
           ghostty-linux-debug = "zig build -Dstatic=true";
           gs = "git status";
           pr = "gh pr view --web";
-          hg = "history |grep $1";
           gaa = "git add -A";
           gp = "echo 'Pulling... ' && git pull";
           gP = "echo 'Pushing...' && git push --set-upstream origin \"$(git branch --show-current)\"";
@@ -225,6 +224,11 @@ in {
          # worktrunk shell integration
          if command -v wt >/dev/null 2>&1; then
            eval "$(command wt config shell init zsh)"
+         fi
+
+         # television shell integration
+         if command -v tv >/dev/null 2>&1; then
+           eval "$(tv init zsh)"
          fi
       '';
     };

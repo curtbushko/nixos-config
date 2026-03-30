@@ -357,12 +357,7 @@ in {
           "Mod+Ctrl+Up".action =actions.move-window-up;
           "Mod+Ctrl+Right".action = actions.move-column-right;
           "Mod+Ctrl+H".action = actions.move-column-left;
-          "Mod+Ctrl+J".action = actions.move-column-to-monitor-down;
-          "Mod+Ctrl+K".action = actions.move-column-to-monitor-up;
           "Mod+Ctrl+L".action = actions.move-column-right;
-  
-          "Ctrl+J".action = actions.focus-workspace-down;
-          "Ctrl+K".action = actions.focus-workspace-up;
 
           "Mod+Shift+Minus".action = actions.set-window-width "-10%";
           "Mod+Shift+Equal".action = actions.set-window-width "+10%";

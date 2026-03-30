@@ -15,6 +15,7 @@ in {
     ./direnv.nix
     ./exercism.nix
     ./mpv.nix
+    ./television
     ./yazi.nix
     ./zed.nix
   ];
