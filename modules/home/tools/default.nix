@@ -13,6 +13,7 @@ in {
     ./atuin.nix
     ./bat.nix
     ./direnv.nix
+    ./exercism.nix
     ./mpv.nix
     ./yazi.nix
     ./zed.nix
