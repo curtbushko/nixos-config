@@ -21,7 +21,6 @@ in {
     ./k8s-services.nix
     ./man-pages.nix
     ./history-grep.nix
-    ./tldr.nix
   ];
 
   config = mkIf cfg.enable {
