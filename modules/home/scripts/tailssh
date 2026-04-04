@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# Error if running inside tmux (fzf preview issues)
+if [ -n "$TMUX" ]; then
+	echo "Error: tailssh cannot run inside a tmux session" >&2
+	exit 1
+fi
+
 function logger() {
 	local TYPE=$1
 	shift
