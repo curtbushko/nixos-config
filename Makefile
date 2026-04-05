@@ -82,7 +82,7 @@ else
 endif
 
 .PHONY: update-all
-update-all: update update-ghostty update-neovim update-minecraft update-vicinae ## Update all packages
+update-all: update update-llm-agents update-ghostty update-neovim update-minecraft update-vicinae ## Update all packages
 
 .PHONY: update-flake
 update-flake: ## Update nix packages
@@ -96,13 +96,17 @@ update-claude-code: ## Update the claude-code flake
 update-ghostty: ## Update the ghostty flake
 	nix flake update ghostty
 
-.PHONY: update-neovim
-update-neovim: ## Update the neovim flake
-	nix flake update neovim
+.PHONY: update-llm-agents
+update-llm-agents: ## Update the llm-agents flake
+	nix flake update llm-agents
 
 .PHONY: update-minecraft
 update-minecraft: ## Update minecraft-servers flake
-	nix flake update minecraft-servers 
+	nix flake update minecraft-servers
+
+.PHONY: update-neovim
+update-neovim: ## Update the neovim flake
+	nix flake update neovim
 
 .PHONY: update-vicinae
 update-vicinae: ## Update vicinae flake

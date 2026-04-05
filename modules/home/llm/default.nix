@@ -3,6 +3,7 @@
   inputs,
   lib,
   pkgs,
+  system,
   ...
 }: let
   inherit (lib) types mkOption mkIf;
@@ -19,12 +20,11 @@ in {
   };
 
   config = mkIf cfg.enable {
-    home.packages =
-      [
+    home.packages = [
         pkgs.llama-cpp
-        pkgs.claude-code-acp
-        pkgs.rtk
-      ];
+        inputs.llm-agents.packages.${system}.rtk
+        inputs.llm-agents.packages.${system}.ccusage
+    ];
 
     # RTK config
     xdg.configFile."rtk/config.toml".source = ./rtk-config.toml;

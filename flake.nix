@@ -31,6 +31,10 @@
       url = "github:ghostty-org/ghostty";
     };
 
+    llm-agents = {
+      url = "github:numtide/llm-agents.nix";
+    };
+
     minecraft-servers = {
       url = "github:curtbushko/minecraft-servers";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -75,12 +79,7 @@
       url = "github:max-sixty/worktrunk";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    rtk-nix = {
-      url = "github:hypervideo/rtk-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
+ 
     zig.url = "github:mitchellh/zig-overlay";
   };
 
@@ -115,7 +114,6 @@
 
       overlays = with inputs; [
         zig.overlays.default
-        rtk-nix.overlays.default
       ];
 
       systems.modules.darwin = with inputs; [
