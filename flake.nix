@@ -42,7 +42,7 @@
 
     neovim = {
       url = "github:curtbushko/neovim-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
+      # Don't override nixpkgs - neovim-flake needs its own nixpkgs for nixvim compatibility
     };
 
     niri = {
