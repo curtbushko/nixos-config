@@ -13,11 +13,11 @@ Your context window is finite. Every subagent return consumes context. You MUST:
 - Never echo or summarize subagent output
 
 ### You MUST:
-- Read the plan file (Step 1)
+- Read `.plans/index.yaml` for status overview (Step 1)
 - Dispatch subagents using the Task tool
 - Extract ONLY: `status` and `verdict` from subagent output (1-2 lines)
 - Track task progress via `.tasks/status.yaml`
-- Update PLAN.md Implementation Status checklist when tasks complete (Step 3c)
+- Update `.plans/` files when tasks complete (Step 3c)
 - Report summary to user
 
 **NOTE**: Builders and reviewers run validation commands. The orchestrator does NOT run these - it only tracks status.
@@ -26,6 +26,7 @@ Your context window is finite. Every subagent return consumes context. You MUST:
 - Read source code files
 - Read `builder-context.md`, `reviewer-context.md`, or `examples.md`
 - Read `.tasks/task-*.yaml` or `.tasks/result-*.yaml` detail files
+- Read `.plans/phase-*.md` files (Task Manager reads these)
 - Write or edit any source code
 - Analyze code quality or architecture
 - Debug test failures
@@ -46,55 +47,81 @@ Subagents read their own context. You do NOT read these:
 | Node Reviewer | Review checklist | `~/.claude/skills/node-team/references/reviewer-context.md` |
 | Node Reviewer | Task details | `.tasks/task-{id}.yaml` |
 | Node Reviewer | Build results | `.tasks/result-{id}-build.yaml` |
-| Task Manager | (explores codebase) | N/A |
+| Task Manager | Phase details | `.plans/phase-*.md` |
 
 ---
 
-## Step 1: Read Plan and Check State
+## Step 1: Read Plan Index and Check State
 
 ```
-PLAN_FILE = args.plan or "PLAN.md"
 SPECIFIC_TASK = args.task or null
-PLAN_CONTENT = Read(PLAN_FILE)
+SPECIFIC_PHASE = args.phase or null
 
-if PLAN_CONTENT is empty:
-    error "Plan file not found or empty: {PLAN_FILE}"
+# Read the lean index file (orchestrator's view of the plan)
+if not file_exists(".plans/index.yaml"):
+    error "No plan found. Run /planner first to create .plans/"
 
-# On resume: read Implementation Status checklist at top of PLAN.md.
-# Display completed/pending counts to user.
+INDEX = Read(".plans/index.yaml")
+
+# Determine which phase to work on
+if SPECIFIC_PHASE is set:
+    PHASE = INDEX.phases[SPECIFIC_PHASE]
+else:
+    PHASE = INDEX.phases[INDEX.current_phase]
+
+if PHASE.status == "completed":
+    # Auto-advance to next pending phase
+    PHASE = first phase where status != "completed"
+    if no such phase: report "All phases complete" and exit
+
+# Display status to user (from index.yaml only)
+Display:
+  Project: {INDEX.project}
+  Current Phase: {PHASE.id} - {PHASE.name} [{PHASE.status}] {PHASE.progress}
 
 # Check for existing task state
 if file_exists(".tasks/status.yaml"):
     STATUS = Read(".tasks/status.yaml")
-    if SPECIFIC_TASK is set:
-        Skip to Step 3 (execute only that task)
-    if STATUS has pending tasks:
-        Skip to Step 3 (resume from where we left off)
+    # Verify it's for the current phase
+    if STATUS.phase_id == PHASE.id:
+        if SPECIFIC_TASK is set:
+            Skip to Step 3 (execute only that task)
+        if STATUS has pending tasks:
+            Skip to Step 3 (resume from where we left off)
+    else:
+        # Different phase - archive old tasks and start fresh
+        Archive .tasks/*.yaml to .trash/
 ```
 
 ---
 
 ## Step 2: Task Manager Dispatch
 
-**Skip if:** `.tasks/status.yaml` exists with pending tasks, or `SPECIFIC_TASK` is set
+**Skip if:** `.tasks/status.yaml` exists for current phase with pending tasks, or `SPECIFIC_TASK` is set
 
 ### 2.1 Dispatch
 
 ```
 Task tool call:
+  model: "sonnet"
   subagent_type: "general-purpose"
-  description: "Plan {feature}"
+  description: "Plan phase {PHASE.id}"
   prompt: |
-    ## Task Manager: Break down feature into implementation tasks
+    ## Task Manager: Break down phase into implementation tasks
 
     ### Instructions
-    1. Read the plan file at: {PLAN_FILE}
-    2. Parse the Gherkin feature (extract Feature, scenarios, background, notes)
+    1. Read the phase file at: `.plans/{PHASE.file}`
+    2. Parse the task checklist (extract all `- [ ]` items)
     3. Explore the codebase to find existing patterns, architecture, test helpers
     4. Identify which components/layers are affected
        (components / middleware / config / errors / utils)
     5. Break down into 2-5 minute tasks following TDD
     6. Write output files (format below)
+
+    ### Context
+    - Project: {INDEX.project}
+    - Phase: {PHASE.id} - {PHASE.name}
+    - Phase file: `.plans/{PHASE.file}`
 
     ### Output: Write these files
 
@@ -104,36 +131,39 @@ Task tool call:
 
     **File 1: `.tasks/status.yaml`** (coordination summary)
     ```yaml
-    feature: "[feature name]"
-    plan: "{PLAN_FILE}"
+    project: "{INDEX.project}"
+    phase_id: {PHASE.id}
+    phase_name: "{PHASE.name}"
+    phase_file: "{PHASE.file}"
     execution_order: [1, 2, 3]
     tasks:
       - id: 1
         name: "[task name]"
         status: pending
         deps: []
-        scenarios_covered:
-          - "[Scenario name from PLAN.md]"
+        plan_tasks:
+          - "[exact task text from phase file]"
       - id: 2
         name: "[task name]"
         status: pending
         deps: [1]
-        scenarios_covered:
-          - "[Scenario name from PLAN.md]"
+        plan_tasks:
+          - "[exact task text from phase file]"
     ```
-    NOTE: `scenarios_covered` MUST list the exact scenario names from PLAN.md's
-    `## Implementation Status` checklist. The orchestrator uses these to mark
-    scenarios as complete in PLAN.md when each task finishes.
+    NOTE: `plan_tasks` MUST list the exact task text from the phase file's
+    checklist. The orchestrator uses these to mark tasks complete in the
+    phase file when each task finishes.
 
     **File 2: `.tasks/task-{id}.yaml`** (one per task, full details for builder/reviewer)
     ```yaml
     id: 1
     name: "[task name]"
-    feature: "[feature name]"
-    plan_file: "{PLAN_FILE}"
+    project: "{INDEX.project}"
+    phase_id: {PHASE.id}
+    phase_file: "{PHASE.file}"
     component: "[component name]"
-    scenarios_covered:
-      - "[Scenario name]"
+    plan_tasks:
+      - "[exact task text]"
     files:
       create:
         - path: "[file path]"
@@ -142,13 +172,12 @@ Task tool call:
         - path: "[file path]"
           changes: "[what to change]"
     test_cases:
-      - scenario: "[name]"
-        test_name: "should [behavior]"
+      - name: "should [behavior]"
         given_setup: "[setup]"
         when_action: "[action]"
         then_assert: "[assertions]"
     acceptance_criteria:
-      - "[criterion from scenarios]"
+      - "[criterion from plan tasks]"
     tdd_steps:
       - step: "[red|green|refactor]"
         file: "[file path]"
@@ -207,16 +236,27 @@ For task in STATUS.tasks (following execution_order):
     # Builder returns only: "status: complete|blocked, fixes: [count]"
   else: escalate_to_user
 
-  # 3c: Complete — update status AND PLAN.md
+  # 3c: Complete — update .tasks/ AND .plans/
   Edit .tasks/status.yaml: set task.status to "completed"
 
-  # MANDATORY: Update PLAN.md Implementation Status checklist
-  # Read task.scenarios_covered from .tasks/status.yaml for this task
-  For each scenario_name in task.scenarios_covered:
-    Use the Edit tool on PLAN_FILE:
-      old_string: "- [ ] {scenario_name}"
-      new_string: "- [x] {scenario_name}"
-  # This keeps PLAN.md as the single source of truth for progress
+  # MANDATORY: Update phase file checklist
+  # Read task.plan_tasks from .tasks/status.yaml for this task
+  PHASE_FILE = ".plans/{STATUS.phase_file}"
+  For each plan_task in task.plan_tasks:
+    Use the Edit tool on PHASE_FILE:
+      old_string: "- [ ] {plan_task}"
+      new_string: "- [x] {plan_task}"
+
+  # MANDATORY: Update index.yaml progress
+  # Count completed/total from phase file or calculate from status.yaml
+  completed_count = count of tasks with status "completed" in .tasks/status.yaml
+  total_count = total tasks in .tasks/status.yaml
+  
+  # Update progress in index.yaml
+  Edit .plans/index.yaml:
+    Update phase {STATUS.phase_id} progress to "{completed_count}/{total_count}"
+    If all tasks complete, set status to "completed"
+    If first task just completed, set status to "in_progress"
 ```
 
 ---
@@ -227,6 +267,7 @@ For task in STATUS.tasks (following execution_order):
 
 ```
 Task tool:
+  model: "opus"
   subagent_type: "general-purpose"
   description: "Build task {task.id}"
   prompt: |
@@ -253,6 +294,7 @@ Task tool:
 
 ```
 Task tool:
+  model: "opus"
   subagent_type: "code-quality-reviewer"
   description: "Review task {task.id}"
   prompt: |
@@ -283,6 +325,7 @@ Task tool:
 
 ```
 Task tool:
+  model: "opus"
   subagent_type: "general-purpose"
   description: "Fix task {task.id}"
   prompt: |
@@ -309,29 +352,41 @@ Task tool:
 
 ---
 
-## Step 4: Completion
+## Step 4: Phase/Project Completion
 
 **NOTE**: The orchestrator does NOT run validation commands. Builders and reviewers are responsible for ensuring tests and lint pass before marking their work complete.
 
-After all tasks complete, archive completed task files (only if ALL tasks have status: completed):
+After all tasks in the phase complete:
+
 ```
-# Verify all tasks completed before archiving
-if all tasks in .tasks/status.yaml have status: "completed":
-    mkdir -p .trash
-    # Ensure .trash is in .gitignore
-    if ! grep -q "^\.trash/$" .gitignore 2>/dev/null; then
-        echo ".trash/" >> .gitignore
-    fi
-    mv .tasks/task-*.yaml .trash/
-    mv .tasks/result-*.yaml .trash/
-# Do NOT archive if any task is pending, in_progress, or blocked
+# Archive completed task files
+mkdir -p .trash
+# Ensure .trash is in .gitignore
+if ! grep -q "^\.trash/$" .gitignore 2>/dev/null; then
+    echo ".trash/" >> .gitignore
+fi
+mv .tasks/task-*.yaml .trash/
+mv .tasks/result-*.yaml .trash/
+# Keep .tasks/status.yaml for history
+
+# Update index.yaml
+Edit .plans/index.yaml:
+  - Set phase {PHASE.id} status to "completed"
+  - Increment current_phase to next pending phase (if any)
+
+# Check if all phases complete
+if all phases in index.yaml have status "completed":
+    Report: "Project {INDEX.project} complete!"
+else:
+    Report: "Phase {PHASE.id} complete. Next: Phase {next_phase.id} - {next_phase.name}"
 ```
 
 Report to user:
 ```
-## Node Team Complete: {FEATURE}
+## Node Team Complete: Phase {PHASE.id} - {PHASE.name}
 - Tasks completed: {count}
-- Task state: .tasks/status.yaml
+- Phase status: completed
+- Next phase: {next_phase.name} (or "None - project complete")
 ```
 
 ---
@@ -343,3 +398,4 @@ Report to user:
 **Blocker: test failure** - Include error output in next builder dispatch
 **Review cycles exceeded (2)** - AskUserQuestion: skip / manual fix / abort
 **Stale .tasks/ state** - If task files reference nonexistent source files, re-run Task Manager
+**No .plans/ found** - Direct user to run `/planner` first

@@ -206,11 +206,16 @@ in {
 
     programs.zsh = {
       sessionVariables = {
-        ANTHROPIC_MODEL = "claude-opus-4-5-20251101";
+        ANTHROPIC_MODEL = "claude-sonnet-4-5-20250929";
+        ANTHROPIC_DEFAULT_OPUS_MODEL = "claude-opus-4-5-20251101";
+        ANTHROPIC_DEFAULT_SONNET_MODEL = "claude-sonnet-4-5-20250929";
+        ANTHROPIC_DEFAULT_HAIKU_MODEL = "claude-haiku-4-5-20251001";
+        CLAUDE_CODE_EFFORT_LEVEL = "high";
+        CLAUDE_CODE_AUTO_COMPACT_WINDOW = "400000";
       };
       shellAliases = {
-        cld = "claude --model claude-opus-4-5-20251101";
-        yolo = "claude --model claude-opus-4-5-20251101 --dangerously-skip-permissions";
+        cld = "claude --model claude-sonnet-4-5-20250929";
+        yolo = "claude --model claude-sonnet-4-5-20250929 --dangerously-skip-permissions";
       };
     };
 

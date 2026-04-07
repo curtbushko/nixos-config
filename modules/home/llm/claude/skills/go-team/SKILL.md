@@ -1,10 +1,10 @@
 ---
 name: go-team
-description: Implements features defined in a plan file. Reads feature spec from PLAN.md, breaks down into implementation tasks, then executes Builder -> Reviewer for each task.
+description: Implements phases defined in .plans/ directory. Reads current phase from index.yaml, breaks down into tasks, then executes Builder -> Reviewer for each task.
 arguments:
-  - name: plan
-    description: Path to the plan file containing feature specification
-    default: "PLAN.md"
+  - name: phase
+    description: Specific phase number to implement (optional, uses current_phase from index.yaml if not specified)
+    required: false
   - name: task
     description: Specific task number to implement (optional, implements all if not specified)
     required: false
@@ -22,13 +22,13 @@ arguments:
 
 ## Overview
 
-The Go Team skill implements features you define. You provide the WHAT (feature spec), it handles the HOW (implementation).
+The Go Team skill implements features you define. You provide the WHAT (plan phases), it handles the HOW (implementation).
 
 ```mermaid
 flowchart TD
-    PLAN["PLAN.md (you write this)<br/>- Feature name and description<br/>- Acceptance criteria<br/>- Any notes or constraints"]
+    PLANS[".plans/ (you create with /planner)<br/>- index.yaml (status overview)<br/>- phase-*.md (task checklists)"]
 
-    TASK_MGR["TASK MANAGER (subagent)<br/>- Explores codebase for patterns<br/>- Breaks into 2-5 min tasks<br/>- Writes to .tasks/ files<br/>- Returns task count only"]
+    TASK_MGR["TASK MANAGER (subagent)<br/>- Reads phase-*.md file<br/>- Breaks into 2-5 min tasks<br/>- Writes to .tasks/ files<br/>- Returns task count only"]
 
     LOOP{{"For each task<br/>(dependency order)"}}
 
@@ -40,7 +40,7 @@ flowchart TD
     CHANGES["CHANGES<br/>NEEDED"]
     FIX["GO BUILDER<br/>(reads review<br/>from file)"]
 
-    PLAN --> TASK_MGR
+    PLANS --> TASK_MGR
     TASK_MGR --> LOOP
     LOOP --> BUILDER
     BUILDER --> REVIEWER
@@ -52,76 +52,95 @@ flowchart TD
 
 ### Context-Saving Design
 
-All subagents communicate via `.tasks/` files. The orchestrator never reads
-source code or detailed results - it only tracks status and dispatches agents.
-This keeps the orchestrator's context lean across many tasks.
+All subagents communicate via `.tasks/` files. The orchestrator only reads
+`.plans/index.yaml` for status - never source code or detailed results.
+This keeps the orchestrator's context lean across many tasks and phases.
 
 ## Invocation
 
 ```bash
-# Use default PLAN.md in current directory
+# Work on current phase (from index.yaml)
 /go-team
 
-# Specify a different plan file
-/go-team plan="docs/features/user-auth.md"
+# Work on a specific phase
+/go-team phase=2
 
 # Implement only a specific task (after initial planning)
 /go-team task=3
 ```
 
+### Running the Orchestrator on Sonnet (Recommended)
+
+The orchestrator only reads status files and dispatches subagents - it doesn't write code.
+Run your session on Sonnet to save costs while subagents use Opus for implementation:
+
+```bash
+claude --model sonnet
+> /go-team
+```
+
+**Model assignments:**
+- Orchestrator: Sonnet (session model)
+- Task Manager: Sonnet
+- Builder: Opus
+- Reviewer: Opus
+
 ## Arguments
 
 | Argument | Default | Description |
 |----------|---------|-------------|
-| `plan` | `PLAN.md` | Path to the plan file containing feature specification |
+| `phase` | (current) | Specific phase number from `.plans/index.yaml` |
 | `task` | (all) | Specific task number to implement (optional) |
 
 ---
 
-## Plan File Format (PLAN.md) - BDD/Gherkin
+## Plan Structure (.plans/)
 
-The plan file uses **BDD (Behavior-Driven Development)** format with Gherkin syntax.
-This provides executable specifications that map directly to tests.
+Plans are created with `/planner` and stored in `.plans/`:
 
-```gherkin
-Feature: [Short descriptive name]
-  As a [role/persona]
-  I want [capability]
-  So that [benefit]
-
-  Background:
-    Given [common precondition for all scenarios]
-
-  Scenario: [Specific behavior being tested]
-    Given [initial context/state]
-    And [additional context]
-    When [action taken]
-    And [additional action]
-    Then [expected outcome]
-    And [additional outcome]
-
-  Scenario: [Another behavior]
-    Given [context]
-    When [action]
-    Then [outcome]
-
-  # Optional: Notes section for implementation hints
-  # Note: Use existing domain types from internal/domain/
-  # Note: Token secret should come from config
+```
+.plans/
+├── index.yaml              # Lean status (orchestrator reads ONLY this)
+├── phase-01-project-setup.md
+├── phase-02-core-domain.md
+└── ...
 ```
 
-### Gherkin Keywords
+### index.yaml (Orchestrator reads this)
 
-| Keyword | Purpose |
-|---------|---------|
-| `Feature:` | High-level description of the capability |
-| `As a / I want / So that` | User story format (optional but recommended) |
-| `Background:` | Steps run before each scenario |
-| `Scenario:` | Specific testable behavior |
-| `Given` | Precondition/initial state |
-| `When` | Action being performed |
-| `Then` | Expected outcome |
-| `And` / `But` | Additional steps (continues previous keyword type) |
+```yaml
+project: "my-project"
+current_phase: 2
+phases:
+  - id: 1
+    name: "Project Setup"
+    file: "phase-01-project-setup.md"
+    status: completed
+    progress: "4/4"
+  - id: 2
+    name: "Core Domain & Ports"
+    file: "phase-02-core-domain.md"
+    status: in_progress
+    progress: "3/8"
+```
+
+### phase-*.md (Task Manager reads these)
+
+```markdown
+# Phase 2: Core Domain & Ports
+
+## Tasks
+
+- [x] Define `domain/command.go` (Command, CommandSpec types)
+- [x] Define `domain/result.go` (ParseResult type)
+- [ ] Define `ports/runner.go` (CommandRunner interface)
+- [ ] Add unit tests for domain types
+
+## Notes
+
+- Follow hexagonal architecture
+- Domain types should have no external dependencies
+```
 
 ---
 
@@ -131,7 +150,7 @@ Each agent is a subagent dispatched via the Task tool. The orchestrator does NOT
 
 | Agent | Role | Context File |
 |-------|------|--------------|
-| **Task Manager** | Parses plan, explores codebase, creates task breakdown | (explores codebase directly) |
+| **Task Manager** | Parses phase file, explores codebase, creates task breakdown | `.plans/phase-*.md` |
 | **Go Builder** | Implements tasks following TDD, hex architecture | `references/builder-context.md` |
 | **Go Reviewer** | Combined review: spec compliance + code quality in one pass | `references/reviewer-context.md` |
 
@@ -142,6 +161,7 @@ See `references/orchestration.md` for exact dispatch templates and the coordinat
 ## Anti-Patterns
 
 - Orchestrator reading source code, result files, or reference files (subagents do this)
+- Orchestrator reading `.plans/phase-*.md` files (Task Manager does this)
 - Orchestrator echoing or summarizing full subagent output (wastes context)
 - Inlining plan content into dispatch prompts (reference by file path instead)
 - Dispatching multiple builders in parallel (causes conflicts)
@@ -153,5 +173,5 @@ See `references/orchestration.md` for exact dispatch templates and the coordinat
 
 ## Integration with Other Skills
 
-- **planner**: Can be used to create the initial plan that Task Manager refines
+- **planner**: Use `/planner` to create the `.plans/` structure before running `/go-team`
 - **go-code-review**: Go Team follows a similar review pattern
