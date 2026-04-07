@@ -10,6 +10,7 @@ in {
   config = mkIf cfg.enable {
     home.packages = [
       pkgs.fd
+      pkgs.coreutils # provides ls
     ];
 
     xdg.configFile."television/cable/dirs.toml".text = ''
@@ -19,10 +20,10 @@ in {
       requirements = ["fd"]
 
       [source]
-      command = ["fd -t d . ~", "fd -t d --hidden . ~"]
+      command = ["${pkgs.fd}/bin/fd -t d . ~", "${pkgs.fd}/bin/fd -t d --hidden . ~"]
 
       [preview]
-      command = "ls -la --color=always '{}'"
+      command = "${pkgs.coreutils}/bin/ls -la --color=always '{}'"
     '';
   };
 }

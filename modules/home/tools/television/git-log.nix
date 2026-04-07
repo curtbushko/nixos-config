@@ -10,6 +10,7 @@ in {
   config = mkIf cfg.enable {
     home.packages = [
       pkgs.git
+      pkgs.coreutils # provides head
     ];
     xdg.configFile."television/cable/git-log.toml".text = ''
       [metadata]
@@ -18,12 +19,12 @@ in {
       requirements = ["git"]
 
       [source]
-      command = "git log --graph --pretty=format:'%C(yellow)%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --color=always"
+      command = "${pkgs.git}/bin/git log --graph --pretty=format:'%C(yellow)%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --color=always"
       output = "{strip_ansi|split: :1}"
       ansi = true
 
       [preview]
-      command = "git show -p --stat --pretty=fuller --color=always '{strip_ansi|split: :1}' | head -n 1000"
+      command = "${pkgs.git}/bin/git show -p --stat --pretty=fuller --color=always '{strip_ansi|split: :1}' | ${pkgs.coreutils}/bin/head -n 1000"
     '';
   };
 }

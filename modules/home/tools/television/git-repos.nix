@@ -11,6 +11,8 @@ in {
     home.packages = [
       pkgs.fd
       pkgs.git
+      pkgs.coreutils # provides dirname
+      pkgs.gnused # provides sed
     ];
     xdg.configFile."television/cable/git-repos.toml".text = ''
       [metadata]
@@ -21,11 +23,11 @@ in {
       """
 
       [source]
-      command = "cd ~/workspace && fd -g .git -HL -t d -d 10 --prune . --exec dirname '{}' | sed 's|^\\./||'"
+      command = "cd ~/workspace && ${pkgs.fd}/bin/fd -g .git -HL -t d -d 10 --prune . --exec ${pkgs.coreutils}/bin/dirname '{}' | ${pkgs.gnused}/bin/sed 's|^\\./||'"
       display = "{}"
 
       [preview]
-      command = "cd ~/workspace/'{}'; git log -n 200 --pretty=medium --all --graph --color"
+      command = "cd ~/workspace/'{}'; ${pkgs.git}/bin/git log -n 200 --pretty=medium --all --graph --color"
 
       [keybindings]
       ctrl-e = "actions:open-in-nvim"

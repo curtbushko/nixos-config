@@ -27,16 +27,16 @@ in {
       [source]
       command = [
         """
-        kubectl get services -o go-template --template '{{range .items}}{{.metadata.namespace}} {{.metadata.name}}{{"\\n"}}{{end}}'
+        ${pkgs.kubectl}/bin/kubectl get services -o go-template --template '{{range .items}}{{.metadata.namespace}} {{.metadata.name}}{{"\\n"}}{{end}}'
         """,
         """
-        kubectl get services -o go-template --template '{{range .items}}{{.metadata.namespace}} {{.metadata.name}}{{"\\n"}}{{end}}' --all-namespaces
+        ${pkgs.kubectl}/bin/kubectl get services -o go-template --template '{{range .items}}{{.metadata.namespace}} {{.metadata.name}}{{"\\n"}}{{end}}' --all-namespaces
         """,
       ]
       output = "{1}"
 
       [preview]
-      command = "kubectl describe -n {0} services/{1}"
+      command = "${pkgs.kubectl}/bin/kubectl describe -n {0} services/{1}"
 
       [ui.preview_panel]
       size = 60
@@ -46,7 +46,7 @@ in {
 
       [actions.delete]
       description = "Delete the selected Service"
-      command = "kubectl delete -n {0} services/{1}"
+      command = "${pkgs.kubectl}/bin/kubectl delete -n {0} services/{1}"
       mode = "execute"
     '';
   };

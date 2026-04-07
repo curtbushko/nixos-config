@@ -10,6 +10,7 @@ in {
   config = mkIf cfg.enable {
     home.packages = [
       pkgs.fd
+      pkgs.bat
     ];
     xdg.configFile."television/cable/files.toml".text = ''
       [metadata]
@@ -18,10 +19,10 @@ in {
       requirements = ["fd", "bat"]
 
       [source]
-      command = ["fd -t f", "fd -t f -H"]
+      command = ["${pkgs.fd}/bin/fd -t f", "${pkgs.fd}/bin/fd -t f -H"]
 
       [preview]
-      command = "bat -n --color=always '{}'"
+      command = "${pkgs.bat}/bin/bat -n --color=always '{}'"
       env = { BAT_THEME = "ansi" }
 
       [keybindings]

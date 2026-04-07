@@ -18,12 +18,12 @@ in {
       requirements = ["git"]
 
       [source]
-      command = "git reflog --decorate --color=always"
+      command = "${pkgs.git}/bin/git reflog --decorate --color=always"
       output = "{0|strip_ansi}"
       ansi = true
 
       [preview]
-      command = "git show -p --stat --pretty=fuller --color=always '{0|strip_ansi}'"
+      command = "${pkgs.git}/bin/git show -p --stat --pretty=fuller --color=always '{0|strip_ansi}'"
     '';
   };
 }

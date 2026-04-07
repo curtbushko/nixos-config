@@ -18,10 +18,10 @@ in {
       requirements = ["git"]
 
       [source]
-      command = "git diff --name-only HEAD"
+      command = "${pkgs.git}/bin/git diff --name-only HEAD"
 
       [preview]
-      command = "git diff HEAD --color=always -- '{}'"
+      command = "${pkgs.git}/bin/git diff HEAD --color=always -- '{}'"
     '';
   };
 }

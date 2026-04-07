@@ -18,11 +18,11 @@ in {
       requirements = ["git"]
 
       [source]
-      command = "git --no-pager branch --all --format=\"%(refname:short)\""
+      command = "${pkgs.git}/bin/git --no-pager branch --all --format=\"%(refname:short)\""
       output = "{split: :0}"
 
       [preview]
-      command = "git show -p --stat --pretty=fuller --color=always '{0}'"
+      command = "${pkgs.git}/bin/git show -p --stat --pretty=fuller --color=always '{0}'"
     '';
   };
 }

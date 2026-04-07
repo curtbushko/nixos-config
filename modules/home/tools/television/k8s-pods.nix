@@ -29,16 +29,16 @@ in {
       [source]
       command = [
         """
-        kubectl get pods -o go-template --template '{{range .items}}{{.metadata.namespace}} {{.metadata.name}}{{"\\n"}}{{end}}'
+        ${pkgs.kubectl}/bin/kubectl get pods -o go-template --template '{{range .items}}{{.metadata.namespace}} {{.metadata.name}}{{"\\n"}}{{end}}'
         """,
         """
-        kubectl get pods -o go-template --template '{{range .items}}{{.metadata.namespace}} {{.metadata.name}}{{"\\n"}}{{end}}' --all-namespaces
+        ${pkgs.kubectl}/bin/kubectl get pods -o go-template --template '{{range .items}}{{.metadata.namespace}} {{.metadata.name}}{{"\\n"}}{{end}}' --all-namespaces
         """,
       ]
       output = "{1}"
 
       [preview]
-      command = "kubectl describe -n {0} pods/{1}"
+      command = "${pkgs.kubectl}/bin/kubectl describe -n {0} pods/{1}"
 
       [ui.preview_panel]
       size = 60
@@ -50,17 +50,17 @@ in {
 
       [actions.exec]
       description = "Execute shell inside the selected Pod"
-      command = "kubectl exec -i -t -n {0} pods/{1} -- /bin/sh"
+      command = "${pkgs.kubectl}/bin/kubectl exec -i -t -n {0} pods/{1} -- /bin/sh"
       mode = "execute"
 
       [actions.delete]
       description = "Delete the selected Pod"
-      command = "kubectl delete -n {0} pods/{1}"
+      command = "${pkgs.kubectl}/bin/kubectl delete -n {0} pods/{1}"
       mode = "execute"
 
       [actions.logs]
       description = "Follow logs of the selected Pod"
-      command = "kubectl logs -f -n {0} pods/{1}"
+      command = "${pkgs.kubectl}/bin/kubectl logs -f -n {0} pods/{1}"
       mode = "execute"
     '';
   };
