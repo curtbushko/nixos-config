@@ -35,6 +35,9 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  # Enable cross-compilation for aarch64-linux (used to build VMs for Apple Silicon)
+  boot.binfmt.emulatedSystems = ["aarch64-linux"];
+
   networking.hostName = "gamingrig"; # Define your hostname.
   # Pick only one of the below networking options.
   #networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.

@@ -116,6 +116,34 @@ update-vicinae: ## Update vicinae flake
 update-worktrunk: ## Update worktrunk flake
 	nix flake update worktrunk
 
+# VM build settings
+GAMINGRIG_REMOTE_PATH ?= ~/workspace/github.com/curtbushko/nixos-config
+VM_DEST_DIR ?= ~/VMs/gamingrig-vm
+
+.PHONY: build-vm
+build-vm: ## Build aarch64-linux VM for Apple Silicon (run on gamingrig)
+	@echo "$(DATELOG) Building aarch64-linux VM (gamingrig-vm)"
+ifneq (,$(findstring $(HOST),gamingrig))
+	nix build ".#nixosConfigurations.gamingrig-vm.config.system.build.vm" --show-trace
+	@echo "$(DATELOG) VM built successfully. Run with: ./result/bin/run-gamingrig-vm-vm"
+else
+	@echo "$(DATELOG) ERROR: This target must be run on gamingrig (requires binfmt for aarch64)"
+	@exit 1
+endif
+
+.PHONY: copy-vm
+copy-vm: ## Copy built VM from gamingrig to Mac (run on Mac)
+	@echo "$(DATELOG) Copying VM from $(GAMINGRIG_TAILNET_ID) to $(VM_DEST_DIR)"
+ifneq (,$(findstring $(HOST),$(DARWIN_HOSTS)))
+	mkdir -p $(VM_DEST_DIR)
+	rsync -avz --progress $(GAMINGRIG_TAILNET_ID):$(GAMINGRIG_REMOTE_PATH)/result/ $(VM_DEST_DIR)/
+	@echo "$(DATELOG) VM copied to $(VM_DEST_DIR)"
+	@echo "$(DATELOG) Run with: $(VM_DEST_DIR)/bin/run-gamingrig-vm-vm"
+else
+	@echo "$(DATELOG) ERROR: This target should be run on a Darwin host"
+	@exit 1
+endif
+
 .PHONY: repair
 repair: ## Use this when you start getting weird 'file not found' errors from nix-store.
 	sudo nix-store --repair --verify --check-contents
