@@ -82,8 +82,8 @@ claude --model sonnet
 **Model assignments:**
 - Orchestrator: Sonnet (session model)
 - Task Manager: Sonnet
-- Builder: Opus
-- Reviewer: Opus
+- Builder: "claude-opus-4-5-20251101"
+- Reviewer: "claude-opus-4-5-20251101"
 
 ## Arguments
 

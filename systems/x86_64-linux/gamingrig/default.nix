@@ -317,6 +317,9 @@
     '';
   };
 
+  # Enable PAM for Tailscale SSH remote logins
+  security.pam.services.remote = {};
+
   users = {
     groups = {
       nm-openconnect = {};

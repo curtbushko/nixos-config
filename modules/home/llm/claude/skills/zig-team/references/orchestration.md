@@ -236,7 +236,7 @@ For each task (following execution_order, skip completed):
 
 ```
 Task tool:
-  model: "opus"
+  model: "claude-opus-4-5-20251101"
   subagent_type: "general-purpose"
   description: "Build task {task.id}"
   prompt: |
@@ -263,7 +263,7 @@ Task tool:
 
 ```
 Task tool:
-  model: "opus"
+  model: "claude-opus-4-5-20251101"
   subagent_type: "code-quality-reviewer"
   description: "Review task {task.id}"
   prompt: |
@@ -294,7 +294,7 @@ Task tool:
 
 ```
 Task tool:
-  model: "opus"
+  model: "claude-opus-4-5-20251101"
   subagent_type: "general-purpose"
   description: "Fix task {task.id}"
   prompt: |

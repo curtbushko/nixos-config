@@ -1,0 +1,130 @@
+#!@zsh@/bin/zsh
+
+# Claude Code zsh wrapper - routes supported commands through structured-cli
+# for JSON output. Falls back to regular zsh for unsupported commands.
+
+STRUCTURED_CLI="@structuredCli@/bin/structured-cli"
+
+# Early exit for non-CLAUDECODE or non -c invocations
+if [[ -z "$CLAUDECODE" ]] || [[ "$1" != "-c" ]]; then
+  exec @zsh@/bin/zsh "$@"
+fi
+
+# Claude Code uses: zsh -c -l "command" (3 args) or zsh -c "command" (2 args)
+if [[ "$2" = "-l" ]] && [[ $# -ge 3 ]]; then
+  LOGIN_FLAG="-l"
+  COMMAND_ARG="$3"
+else
+  LOGIN_FLAG=""
+  COMMAND_ARG="$2"
+fi
+
+[[ -z "$COMMAND_ARG" ]] && exec @zsh@/bin/zsh "$@"
+
+# Check if a command should use structured-cli
+is_supported_cmd() {
+  local cmd="$1"
+  local first_word="${cmd%% *}"
+
+  # Skip commands where JSON is larger than raw output
+  [[ "$first_word" = "ls" ]] && return 1
+  [[ "$first_word" = "git" ]] && [[ "$cmd" == *"diff"* ]] && return 1
+
+  case "$first_word" in
+    git|go|make|docker|cat|head|tail|wc|du|df|find|grep|rg|fd|\
+    npm|yarn|pnpm|node|cargo|rustc|pip|python|uv|\
+    kubectl|helm|curl|wget|tar|zip|unzip|ps|top|kill|\
+    env|printenv|pwd|mkdir|rm|cp|mv|touch|chmod|chown|\
+    sed|awk|sort|uniq|cut|tr|ssh|scp|rsync)
+      return 0 ;;
+    *)
+      return 1 ;;
+  esac
+}
+
+# Wrap supported commands with structured-cli
+wrap_command() {
+  local cmd="$1"
+  cmd="${cmd## }"
+  cmd="${cmd%% }"
+  if is_supported_cmd "$cmd"; then
+    echo "$STRUCTURED_CLI $cmd --json"
+  else
+    echo "$cmd"
+  fi
+}
+
+# Process a command string, wrapping each supported command
+process_commands() {
+  local input="$1"
+
+  [[ -z "$input" ]] && { echo "$input"; return; }
+
+  # Skip if contains pipes, subshells, or redirects
+  if [[ "$input" == *'|'* ]] || [[ "$input" == *'$('* ]] || [[ "$input" == *'>'* ]] || [[ "$input" == *'<'* ]]; then
+    echo "$input"
+    return
+  fi
+
+  # Skip if no command separators present
+  if [[ "$input" != *'&&'* ]] && [[ "$input" != *'||'* ]] && [[ "$input" != *';'* ]]; then
+    wrap_command "$input"
+    return
+  fi
+
+  # Use portable marker (ASCII record separator)
+  local RS=$'\x1e'
+  local result="$input"
+
+  # Replace operators with markers
+  result="${result// && /${RS}AND${RS}}"
+  result="${result// || /${RS}OR${RS}}"
+  result="${result//; /${RS}SEMI${RS}}"
+
+  # Split on markers and process each part
+  local -a parts
+  parts=("${(@ps:$RS:)result}")
+  local output=""
+
+  for part in "${parts[@]}"; do
+    case "$part" in
+      AND) output+=" && " ;;
+      OR) output+=" || " ;;
+      SEMI) output+=" ; " ;;
+      "") ;;
+      *) output+="$(wrap_command "$part")" ;;
+    esac
+  done
+
+  echo "$output"
+}
+
+# Main logic
+cmd="$COMMAND_ARG"
+
+# Claude Code wraps commands like: source ... && eval 'actual_command' < /dev/null && pwd ...
+if [[ "$cmd" == *"eval '"* ]]; then
+  prefix="${cmd%%eval \'*}"
+  actual_cmd="${cmd#*eval \'}"
+  actual_cmd="${actual_cmd%%\'*}"
+  suffix="${cmd#*eval \'$actual_cmd\'}"
+
+  processed_cmd=$(process_commands "$actual_cmd")
+
+  suffix="${suffix//\\</<}"
+  suffix="${suffix//\\>/>}"
+
+  final_cmd="${prefix}${processed_cmd}${suffix}"
+  if [[ -n "$LOGIN_FLAG" ]]; then
+    exec @zsh@/bin/zsh "$LOGIN_FLAG" -c "$final_cmd"
+  else
+    exec @zsh@/bin/zsh -c "$final_cmd"
+  fi
+else
+  processed_cmd=$(process_commands "$cmd")
+  if [[ -n "$LOGIN_FLAG" ]]; then
+    exec @zsh@/bin/zsh "$LOGIN_FLAG" -c "$processed_cmd"
+  else
+    exec @zsh@/bin/zsh -c "$processed_cmd"
+  fi
+fi

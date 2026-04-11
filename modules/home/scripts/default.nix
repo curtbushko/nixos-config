@@ -33,6 +33,20 @@
     chmod +x $out/bin/bash
   '');
 
+  # Zsh wrapper for Claude Code - substitutes @placeholders@ with Nix paths
+  # Uses hiPrio to shadow zsh in the profile
+  # NOTE: Shebang uses @zsh@ placeholder to avoid infinite loop (env zsh would find wrapper)
+  zsh = lib.hiPrio (pkgs.runCommand "zsh" {
+    src = ./zsh;
+    inherit structuredCli;
+  } ''
+    mkdir -p $out/bin
+    substitute $src $out/bin/zsh \
+      --replace-fail "@zsh@" "${pkgs.zsh}" \
+      --replace-fail "@structuredCli@" "${structuredCli}"
+    chmod +x $out/bin/zsh
+  '');
+
   aocgen = pkgs.writeScriptBin "aocgen" (builtins.readFile ./aocgen);
   auto-sleep = pkgs.writeScriptBin "auto-sleep" (builtins.readFile ./auto-sleep);
   build-ghostty = pkgs.writeScriptBin "build-ghostty" (builtins.readFile ./build-ghostty);
@@ -91,6 +105,7 @@ in {
     [
       aocgen
       bash
+      zsh
       build-ghostty
       clean-filename
       containerwatcher
