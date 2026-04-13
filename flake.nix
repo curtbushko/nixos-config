@@ -8,7 +8,7 @@
     };
 
     claude-code = {
-      url = "github:sadjow/claude-code-nix";
+      url = "github:sadjow/claude-code-nix/f4f8d6e7cc59e34e5a85550f017ead83ab925b22";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

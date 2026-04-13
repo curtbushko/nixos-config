@@ -40,31 +40,9 @@ in {
     settings = {
       includeCoAuthoredBy = false;
       hooks = {
-        PreToolUse = [
-          {
-            matcher = "Bash";
-            hooks = [
-              {
-                type = "command";
-                command = "$HOME/.claude/hooks/rtk-rewrite.sh";
-              }
-            ];
-          }
-        ];
         SessionStart = [
           {
-            matcher = "startup|resume|clear|compact";
             hooks = [
-              {
-                type = "command";
-                timeout = 10;
-                command = ''
-                  # Ensure Go config files exist in curtbushko repos
-                  if [ -x "$HOME/.claude/scripts/ensure-go-configs.sh" ]; then
-                    "$HOME/.claude/scripts/ensure-go-configs.sh" "$(pwd)"
-                  fi
-                '';
-              }
               {
                 type = "command";
                 timeout = 10;
@@ -212,10 +190,14 @@ in {
         ANTHROPIC_DEFAULT_HAIKU_MODEL = "claude-haiku-4-5-20251001";
         CLAUDE_CODE_EFFORT_LEVEL = "high";
         CLAUDE_CODE_AUTO_COMPACT_WINDOW = "400000";
+        CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING = "1";
+        CLAUDE_CODE_MAX_OUTPUT_TOKENS = "64000";
+        MAX_THINKING_TOKENS = "31999";
+        DISABLE_AUTOUPDATER = "1";
       };
       shellAliases = {
-        cld = "claude --model claude-sonnet-4-5-20250929";
-        yolo = "claude --model claude-sonnet-4-5-20250929 --dangerously-skip-permissions";
+        cld = "TMUX= claude --model claude-sonnet-4-5-20250929";
+        yolo = "TMUX= claude --model claude-sonnet-4-5-20250929 --dangerously-skip-permissions";
       };
     };
 

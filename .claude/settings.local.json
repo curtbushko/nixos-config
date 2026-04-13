@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bash:*)",
+      "Bash(/Users/curtbushko/.claude/scripts/session-start.sh:*)",
+      "Bash(env)",
+      "Bash(~/.claude/scripts/session-start.sh)",
+      "Bash(gh api:*)"
+    ]
+  }
+}
