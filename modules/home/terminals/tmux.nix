@@ -126,8 +126,8 @@ in {
         set -g status-right-style 'fg=${inactive},bg=${background}'
         set -g status-bg '${background}'
         set -g status-fg '${inactive}'
-        set -g pane-border-style 'bg=${background},fg=${inactive}'
-        set -g pane-active-border-style 'bg=${background},fg=${active},bold'
+        set -g pane-border-style 'fg=${inactive}'
+        set -g pane-active-border-style 'fg=${active},bold'
         set -g display-panes-colour '${inactive}'
         set -g display-panes-active-colour '${active}'
         # Window status styling to match zellij
