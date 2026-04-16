@@ -12,10 +12,10 @@
     src = pkgs.fetchFromGitHub {
       owner = "curtbushko";
       repo = "structured-cli";
-      rev = "c237407b690b3b217e2d225d09c636b503bc59f9";
-      sha256 = "sha256-Ok5TB50Jpl1uTDPFHpQXWLuCE5Ek0M9EMuiFDu6UiZk=";
+      rev = "ff05f6e5c5161157f36ce52cabd5fef2bb7a94e5";
+      sha256 = "sha256-KY+3rCflQ29OBFGMbBabjm9PRpFvcSSeRbBNqX3+DQk=";
     };
-    vendorHash = "sha256-S1IFzhYzxWzXGI/kbkHTkBxcVlxIP0uII8TwCMhMzC4=";
+    vendorHash = "sha256-G6es2KHZgp3EJQFGESwT7iuKE+mdbD+LX0I5S1f5fF4=";
     doCheck = false;
   };
 
