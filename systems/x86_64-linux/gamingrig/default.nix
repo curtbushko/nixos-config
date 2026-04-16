@@ -107,6 +107,19 @@
 
   security.rtkit.enable = true;
 
+  # Allow users in wheel group to suspend/hibernate without authentication
+  security.polkit.extraConfig = ''
+    polkit.addRule(function(action, subject) {
+        if ((action.id == "org.freedesktop.login1.suspend" ||
+             action.id == "org.freedesktop.login1.suspend-multiple-sessions" ||
+             action.id == "org.freedesktop.login1.hibernate" ||
+             action.id == "org.freedesktop.login1.hibernate-multiple-sessions") &&
+            subject.isInGroup("wheel")) {
+            return polkit.Result.YES;
+        }
+    });
+  '';
+
   # Enable bluetoolth
   hardware.bluetooth = {
     enable = true;
