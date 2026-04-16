@@ -7,6 +7,37 @@
 }: let
   inherit (lib) types mkOption mkIf;
   cfg = config.curtbushko.git;
+
+  # Build sem from source - semantic version control tool
+  sem = pkgs.rustPlatform.buildRustPackage rec {
+    pname = "sem";
+    version = "0.3.21";
+    src = pkgs.fetchFromGitHub {
+      owner = "ataraxy-labs";
+      repo = "sem";
+      rev = "v${version}";
+      sha256 = "sha256-FG1WK225RqA0WT71a1/TpsGa8v2bFkMzPL82zUqa3L8=";
+    };
+
+    # The Cargo workspace is in the crates/ subdirectory
+    sourceRoot = "source/crates";
+
+    cargoHash = "sha256-woog5FhtGGsB+70Q1VzYC/xu9YSL/JVp1vUrla/6JO8=";
+
+    nativeBuildInputs = with pkgs; [ pkg-config ];
+    buildInputs = with pkgs; [ openssl ];
+
+    # Build only the CLI package
+    cargoBuildFlags = [ "--package" "sem-cli" ];
+    cargoTestFlags = [ "--package" "sem-cli" ];
+
+    meta = with lib; {
+      description = "Semantic version control tool that works on top of Git";
+      homepage = "https://github.com/ataraxy-labs/sem";
+      license = licenses.asl20;
+      maintainers = [];
+    };
+  };
 in {
   options.curtbushko.git = {
     enable = mkOption {
@@ -23,6 +54,7 @@ in {
       pkgs.gh
       pkgs.lazygit
       pkgs.git-lfs
+      sem
     ];
 
     programs.git = {
