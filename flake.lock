@@ -707,11 +707,11 @@
         "plugin-99": "plugin-99"
       },
       "locked": {
-        "lastModified": 1775672738,
-        "narHash": "sha256-O7/ZSTf6Vr0dq9esy0Kn4lzRu7CBaXVwpCOr96oiCKU=",
+        "lastModified": 1776352586,
+        "narHash": "sha256-8DaLDabhpO4snVQViL6JGQ7XyFGVAWIRO2pUavSpdB0=",
         "owner": "curtbushko",
         "repo": "neovim-flake",
-        "rev": "bb22567065d07ec2f7f0e5e3fc2d2e787182ed81",
+        "rev": "a464bf8e4858808782bb8015539fab1d2a6c4d83",
         "type": "github"
       },
       "original": {
