@@ -335,7 +335,7 @@ in {
           "Mod+Return".action.spawn = "ghostty";
           "Mod+T".action.spawn = "ghostty";
           "Mod+Space".action.spawn = ["vicinae" "vicinae://toggle"]; # fuzzel
-          "Mod+V".action.spawn = ["vicinae" "vicinae://extensions/vicinae/clipboard/history"];
+          "Mod+Shift+V".action.spawn = ["vicinae" "vicinae://extensions/vicinae/clipboard/history"]; # Changed from Mod+V to avoid paste conflict
           "Mod+Tab".action = actions.toggle-overview;
 
           "Mod+Shift+Slash".action = actions.show-hotkey-overlay;
