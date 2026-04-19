@@ -133,35 +133,35 @@ in {
           "ui.key.accelKey" = 91;
           # BOOKMARKS
           "browser.bookmarks.addedImportButton" = false;
-          # GFX
+          # GFX (Memory-conservative settings)
           "gfx.canvas.accelerated" = true;
-          "gfx.canvas.accelerated.cache-items" = 4096;
-          "gfx.canvas.accelerated.cache-size" = 512;
-          "gfx.content.skia-font-cache-size" = 20;
+          "gfx.canvas.accelerated.cache-items" = 2048; # Reduced from 4096
+          "gfx.canvas.accelerated.cache-size" = 256; # Reduced from 512
+          "gfx.content.skia-font-cache-size" = 10; # Reduced from 20
           "gfx.webrender.enabled" = true;
           "gfx.x11-egl.force-enabled" = true;
           # DISK
           "browser.cache.jsbc_compression_level" = 3;
-          # MEDIA
+          # MEDIA (Memory-conservative settings)
           "media.av1.enabled" = true;
-          "media.cache_readahead_limit" = 7200;
-          "media.cache_resume_treshold" = 3600;
+          "media.cache_readahead_limit" = 30; # Reduced from 7200 (2hrs to 30s)
+          "media.cache_resume_treshold" = 15; # Reduced from 3600
           "media.ffmpeg.vaapi.enabled" = true;
           "media.hardware-video-decoding.force-enabled" = true;
           "media.rdd-ffmpeg.enabled" = true;
-          "media.memory_cache_max_size" = 65536;
-          # IMAGE CACHE
-          "image.mem.decode_bytes_at_a_time" = 32768;
-          # NETWORK
-          "network.buffer.cache.size" = 262144;
-          "network.buffer.cache.count" = 128;
-          "network.http.max-connections" = 1800;
-          "network.http.max-persistent-connections-per-server" = 10;
-          "network.http.max-urgent-start-excessive-connections-per-host" = 5;
+          "media.memory_cache_max_size" = 8192; # Reduced from 65536 (64MB to 8MB)
+          # IMAGE CACHE (Memory-conservative settings)
+          "image.mem.decode_bytes_at_a_time" = 16384; # Reduced from 32768
+          # NETWORK (Memory-conservative settings)
+          "network.buffer.cache.size" = 65536; # Reduced from 262144 (256KB to 64KB)
+          "network.buffer.cache.count" = 64; # Reduced from 128
+          "network.http.max-connections" = 900; # Reduced from 1800 (back to default)
+          "network.http.max-persistent-connections-per-server" = 6; # Reduced from 10
+          "network.http.max-urgent-start-excessive-connections-per-host" = 3; # Reduced from 5
           "network.http.pacing.requests.enabled" = false;
-          "network.dnsCacheExpiration" = 3600;
-          "network.dns.max_high_priority_threads" = 8;
-          "network.ssl_tokens_cache_capacity" = 10240;
+          "network.dnsCacheExpiration" = 1800; # Reduced from 3600 (60min to 30min)
+          "network.dns.max_high_priority_threads" = 4; # Reduced from 8
+          "network.ssl_tokens_cache_capacity" = 2048; # Reduced from 10240
           # SPECULATIVE LOADING
           "network.dns.disablePrefetch" = true;
           "network.prefetch-next" = false;
@@ -192,9 +192,21 @@ in {
           "security.ssl.treat_unsafe_negotiation_as_broken" = true;
           "browser.xul.error_pages.expert_bad_cert" = true;
           "security.tls.enable_0rtt_data" = false;
-          # DISK AVOIDANCE
+          # MEMORY MANAGEMENT
           "browser.privatebrowsing.forceMediaMemoryCache" = true;
-          "browser.sessionstore.interval" = 60000;
+          "browser.sessionstore.interval" = 30000; # Save every 30s (was 60s)
+          "browser.cache.memory.capacity" = 51200; # Limit disk cache to 50MB
+          "browser.cache.memory.max_entry_size" = 5120; # Max 5MB per cache entry
+          # Unload tabs from memory when inactive
+          "browser.tabs.unloadOnLowMemory" = true;
+          "browser.low_commit_space_threshold_mb" = 1024; # Start unloading at 1GB free
+          # SHUTDOWN & CRASH HANDLING
+          "browser.sessionstore.resume_from_crash" = true; # Restore after crash
+          "browser.sessionstore.max_tabs_undo" = 10; # Limit undo tab history
+          "browser.sessionstore.max_windows_undo" = 3; # Limit undo window history
+          "toolkit.shutdown.fastShutdownStage" = 3; # Faster shutdown
+          # Disable extension storage IDB (can cause crashes on exit)
+          "extensions.webextensions.ExtensionStorageIDB.enabled" = false;
           # SHUTDOWN & SANITIZING
           "privacy.history.custom" = true;
           # SEARCH / URL BAR

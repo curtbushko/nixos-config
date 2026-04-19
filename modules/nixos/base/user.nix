@@ -40,6 +40,7 @@
       connect-timeout = 5;
       stalled-download-timeout = 30;
       download-attempts = 3;
+      download-buffer-size = 256;  # Default is 64 MiB
 
       # Binary caches
       trusted-public-keys = [

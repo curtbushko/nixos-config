@@ -48,6 +48,7 @@ in {
         pkgs.gum
         pkgs.htop
         pkgs.jq
+        pkgs.lima
         pkgs.lsd
         pkgs.mutagen
         pkgs.mermaid-cli

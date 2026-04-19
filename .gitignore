@@ -2,3 +2,5 @@
 result
 *.swp
 .trash/
+outdir/
+.claude/

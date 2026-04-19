@@ -43,7 +43,7 @@ in {
         ExecReload = "/bin/kill -HUP $MAINPID";
         Restart = "always";
         RestartSec = 60;
-        KillMode = "process";
+        KillMode = "mixed";
       };
       Install = {
         WantedBy = ["graphical-session.target"];
