@@ -1,0 +1,8 @@
+# Worktrunk user configuration
+
+# Worktree path - creates worktrees as siblings of .bare
+worktree-path = "{{ repo_path }}/../{{ branch }}"
+
+# Custom aliases - available globally
+[aliases]
+add = "wt switch --create {{ args }}"

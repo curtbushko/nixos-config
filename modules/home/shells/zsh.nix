@@ -109,7 +109,7 @@ in {
           zdel = "zellij delete-session coding --force";
           ztitle = "zellij action rename-tab";
           zkill = "zellij kill-session coding";
-          tg = "timber-git";
+          tg = "wt";
           tattach = "tmux attach -t home";
           tkill = "tmuxinator stop home && tmux kill-server";
           tux = "tmuxinator start home";
@@ -220,11 +220,6 @@ in {
 
          # Add $HOME/bin to PATH
          export PATH=$PATH:$HOME/bin:$HOME/go/bin:$HOME/.local/bin
-
-         # worktrunk shell integration
-         if command -v wt >/dev/null 2>&1; then
-           eval "$(command wt config shell init zsh)"
-         fi
 
          # television shell integration
          if command -v tv >/dev/null 2>&1; then

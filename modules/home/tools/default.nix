@@ -1,5 +1,6 @@
 {
   config,
+  inputs,
   lib,
   pkgs,
   ...
@@ -10,12 +11,14 @@
   isLinux = pkgs.stdenv.isLinux;
 in {
   imports = [
+    inputs.worktrunk.homeModules.default
     ./atuin.nix
     ./bat.nix
     ./direnv.nix
     ./exercism.nix
     ./mpv.nix
     ./television
+    ./worktrunk
     ./yazi.nix
     ./zed.nix
   ];

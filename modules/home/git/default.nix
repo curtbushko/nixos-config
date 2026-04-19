@@ -1,6 +1,5 @@
 {
   config,
-  inputs,
   lib,
   pkgs,
   ...
@@ -149,12 +148,6 @@ in {
       };
     };
 
-    programs.worktrunk = {
-      enable = true;
-    };
   };
-  imports = [
-    inputs.worktrunk.homeModules.default
-  ];
 
 }
