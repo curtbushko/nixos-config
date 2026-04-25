@@ -34,6 +34,7 @@
     # Darwin only
     pkgs.cachix
     inputs.neovim.packages.${pkgs.stdenv.hostPlatform.system}.default
+    pkgs.obsidian
   ];
 
   #---------------------------------------------------------------------

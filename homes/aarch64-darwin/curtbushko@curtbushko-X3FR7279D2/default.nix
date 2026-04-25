@@ -44,6 +44,7 @@
     pkgs.terraform
     pkgs.kubernetes-helm
     pkgs.awscli2
+    pkgs.obsidian
   ];
 
   #---------------------------------------------------------------------

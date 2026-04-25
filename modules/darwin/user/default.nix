@@ -6,9 +6,9 @@
   homebrew = {
     enable = true;
     onActivation = {
-      autoUpdate = true;
+      autoUpdate = false; # Don't auto-update on rebuild
       cleanup = "zap";
-      upgrade = true;
+      upgrade = false; # Don't auto-upgrade
     };
     brews = [];
     taps = [];
@@ -16,7 +16,6 @@
       #"discord"
       "firefox"
       "obs"
-      "obsidian"
       "rectangle"
       "slack"
       "vlc"
