@@ -24,7 +24,6 @@
       "notunes"
       "podman-desktop"
       "openvpn-connect"
-      "zed@preview"
     ];
   };
 

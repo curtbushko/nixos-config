@@ -20,7 +20,6 @@ in {
     ./television
     ./worktrunk
     ./yazi.nix
-    ./zed.nix
   ];
   options.curtbushko.tools = {
     enable = mkOption {
