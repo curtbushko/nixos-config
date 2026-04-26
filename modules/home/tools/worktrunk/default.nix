@@ -76,7 +76,13 @@
       DEFAULT_BRANCH=$(git ls-remote --symref origin HEAD | grep '^ref:' | sed 's@^ref: refs/heads/@@;s@[[:space:]].*@@')
     fi
 
-    git worktree add "$DEFAULT_BRANCH"
+    # Create worktree with local branch tracking remote
+    git worktree add -B "$DEFAULT_BRANCH" "$DEFAULT_BRANCH" "origin/$DEFAULT_BRANCH"
+
+    # Ensure tracking is set up properly
+    cd "$DEFAULT_BRANCH"
+    git branch --set-upstream-to="origin/$DEFAULT_BRANCH" "$DEFAULT_BRANCH"
+    cd ..
 
     echo ""
     echo "Repository cloned successfully!"
