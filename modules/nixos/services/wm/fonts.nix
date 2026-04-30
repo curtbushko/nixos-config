@@ -13,12 +13,14 @@ in {
     };
 
     fonts.packages = with pkgs; [
+      curtbushko.iosevka-ss09
       fira-code
       font-awesome_5
       jetbrains-mono
       intel-one-mono
       nerd-fonts.symbols-only # symbols icon only
       nerd-fonts.fira-code
+      nerd-fonts.iosevka
       nerd-fonts.jetbrains-mono
       noto-fonts
       noto-fonts-color-emoji

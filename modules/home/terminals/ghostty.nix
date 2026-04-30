@@ -38,13 +38,12 @@ in {
       in ''
         auto-update = off
         font-size = 10
-        font-family = Intel One Mono
-        font-style = medium
-        font-feature = "ss01"
+        font-family = Iosevka SS09
+        font-style = regular
         #adjust-cell-width = 1%
         #adjust-cell-height = 1%
-        background-opacity = .95
-        background-blur-radius = 20
+        background-opacity = 1.0
+        background-blur-radius = 0
         macos-non-native-fullscreen = visible-menu
         macos-option-as-alt = left
         macos-titlebar-style = hidden

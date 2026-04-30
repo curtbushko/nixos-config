@@ -84,6 +84,25 @@ This applies to ALL files including:
 - Keep functions small and focused
 - Prefer explicit over implicit
 
+## Scripting Language Policy (CRITICAL)
+
+**NEVER use Python for scripting tools or automation tasks.**
+
+Instead, you MUST:
+1. **Use bash/shell scripts** for all automation and scripting tasks
+2. **Leverage CLI tools** (awk, sed, jq, curl, etc.) to accomplish what Python libraries would do
+3. **Compose Unix tools** with pipes and process substitution
+
+This applies to:
+- Build scripts and automation
+- Data processing and transformation
+- File manipulation
+- API interactions
+- System administration tasks
+- Any other scripting needs
+
+**NO EXCEPTIONS.** If a task seems to require Python, find the appropriate CLI tool or bash solution instead.
+
 ## When Skills Conflict
 
 If multiple skills apply and have conflicting guidance:

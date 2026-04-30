@@ -17,6 +17,7 @@ in {
     ./direnv.nix
     ./exercism.nix
     ./mpv.nix
+    ./notesmd-cli.nix
     ./television
     ./worktrunk
     ./yazi.nix
@@ -52,8 +53,9 @@ in {
         pkgs.jq
         pkgs.lima
         pkgs.lsd
-        pkgs.mutagen
         pkgs.mermaid-cli
+        pkgs.miller
+        pkgs.mutagen
         pkgs.nil # language server
         pkgs.nixd #language server for nix
         pkgs.nodejs_22

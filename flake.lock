@@ -704,14 +704,15 @@
         "neovim-nightly-overlay": "neovim-nightly-overlay",
         "nixpkgs": "nixpkgs_4",
         "nixvim": "nixvim",
-        "plugin-99": "plugin-99"
+        "plugin-99": "plugin-99",
+        "plugin-wayfinder": "plugin-wayfinder"
       },
       "locked": {
-        "lastModified": 1776352586,
-        "narHash": "sha256-8DaLDabhpO4snVQViL6JGQ7XyFGVAWIRO2pUavSpdB0=",
+        "lastModified": 1777522712,
+        "narHash": "sha256-wZEpQ2SzJ3cvzAfGAH0c6TnroB2yQnpryTl+61S1oAY=",
         "owner": "curtbushko",
         "repo": "neovim-flake",
-        "rev": "a464bf8e4858808782bb8015539fab1d2a6c4d83",
+        "rev": "aaccc2ad1b90c060a9a938612ca875f2161a24dd",
         "type": "github"
       },
       "original": {
@@ -1034,6 +1035,22 @@
       "original": {
         "owner": "ThePrimeagen",
         "repo": "99",
+        "type": "github"
+      }
+    },
+    "plugin-wayfinder": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1777501924,
+        "narHash": "sha256-sfENsrfSks2M59mHiGeyI0DID523fk0nXu7YN7ABAJs=",
+        "owner": "error311",
+        "repo": "wayfinder.nvim",
+        "rev": "2f96f63868ef0ae98f2c08ef7ca78d0096deb89b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "error311",
+        "repo": "wayfinder.nvim",
         "type": "github"
       }
     },

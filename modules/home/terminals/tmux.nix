@@ -46,8 +46,8 @@ in {
       disableConfirmationPrompt = true;
       extraConfig = let
         active = "${colors."terminal-cyan"}";
-        inactive = "#6C7086";
-        background = "${colors."surface-bg-overlay"}";
+        inactive = "${colors."text-muted"}";
+        background = "${colors."surface-bg-darkest"}";
         foreground = "${colors."terminal-blue"}";
       in ''
         # fix tmux not showing italics in neovim
