@@ -30,6 +30,21 @@ is_supported_cmd() {
   [[ "$first_word" = "ls" ]] && return 1
   [[ "$first_word" = "git" ]] && [[ "$cmd" == *"diff"* ]] && return 1
 
+  # Skip git write operations - structured-cli is for parsing output, not executing writes
+  [[ "$first_word" = "git" ]] && [[ "$cmd" == *"commit"* ]] && return 1
+  [[ "$first_word" = "git" ]] && [[ "$cmd" == *"push"* ]] && return 1
+  [[ "$first_word" = "git" ]] && [[ "$cmd" == *"pull"* ]] && return 1
+  [[ "$first_word" = "git" ]] && [[ "$cmd" == *"add"* ]] && return 1
+  [[ "$first_word" = "git" ]] && [[ "$cmd" == *"rm"* ]] && return 1
+  [[ "$first_word" = "git" ]] && [[ "$cmd" == *"mv"* ]] && return 1
+  [[ "$first_word" = "git" ]] && [[ "$cmd" == *"reset"* ]] && return 1
+  [[ "$first_word" = "git" ]] && [[ "$cmd" == *"rebase"* ]] && return 1
+  [[ "$first_word" = "git" ]] && [[ "$cmd" == *"merge"* ]] && return 1
+  [[ "$first_word" = "git" ]] && [[ "$cmd" == *"cherry-pick"* ]] && return 1
+  [[ "$first_word" = "git" ]] && [[ "$cmd" == *"revert"* ]] && return 1
+  [[ "$first_word" = "git" ]] && [[ "$cmd" == *"tag"* ]] && return 1
+  [[ "$first_word" = "git" ]] && [[ "$cmd" == *"stash"* ]] && return 1
+
   case "$first_word" in
     git|go|make|docker|cat|head|tail|wc|du|df|find|grep|rg|fd|\
     npm|yarn|pnpm|node|cargo|rustc|pip|python|uv|\
