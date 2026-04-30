@@ -39,7 +39,8 @@ in {
         auto-update = off
         font-size = 10
         font-family = Iosevka SS09
-        font-style = regular
+        font-style = medium
+        font-feature = "ss01"
         #adjust-cell-width = 1%
         #adjust-cell-height = 1%
         background-opacity = 1.0
