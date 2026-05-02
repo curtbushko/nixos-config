@@ -708,11 +708,11 @@
         "plugin-wayfinder": "plugin-wayfinder"
       },
       "locked": {
-        "lastModified": 1777522712,
-        "narHash": "sha256-wZEpQ2SzJ3cvzAfGAH0c6TnroB2yQnpryTl+61S1oAY=",
+        "lastModified": 1777734225,
+        "narHash": "sha256-cCoTAJDR4jgR9etlKzdvEMql+vczvflVee4Mje29Ly0=",
         "owner": "curtbushko",
         "repo": "neovim-flake",
-        "rev": "aaccc2ad1b90c060a9a938612ca875f2161a24dd",
+        "rev": "7e7891035e8c9f2c9e41655aa606586dbddfabc8",
         "type": "github"
       },
       "original": {

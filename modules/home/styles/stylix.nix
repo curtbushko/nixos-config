@@ -124,18 +124,18 @@ in {
     };
     fonts = {
       serif = {
-        package = pkgs.fira-code;
-        name = "Fira Code";
+        package = pkgs.noto-fonts;
+        name = "Noto Serif";
       };
 
       sansSerif = {
-        package = pkgs.fira-code;
-        name = "Fira Code";
+        package = pkgs.noto-fonts;
+        name = "Noto Sans";
       };
 
       monospace = {
-        package = pkgs.fira-code;
-        name = "Fira Code";
+        package = pkgs.nerd-fonts.jetbrains-mono;
+        name = "JetBrainsMono Nerd Font";
       };
 
       emoji = {

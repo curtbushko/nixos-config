@@ -13,7 +13,6 @@ in {
     };
 
     fonts.packages = with pkgs; [
-      curtbushko.iosevka-ss09
       fira-code
       font-awesome_5
       jetbrains-mono
@@ -22,6 +21,7 @@ in {
       nerd-fonts.fira-code
       nerd-fonts.iosevka
       nerd-fonts.jetbrains-mono
+      nerd-fonts.sauce-code-pro
       noto-fonts
       noto-fonts-color-emoji
       powerline-fonts
@@ -42,14 +42,10 @@ in {
         lcdfilter = "default";
       };
       defaultFonts = {
-        monospace = ["FiraCode Nerd Font Mono" "Noto Mono"];
-        #monospace = ["JetbrainsMono Nerd Font Mono" "Noto Mono"];
-        sansSerif = ["FiraCode Nerd Font Mono" "Noto Mono"];
-        #sansSerif = ["JetbrainsMono Nerd Font Mono" "Noto Mono"];
-        serif = ["FiraCode Nerd Font Mono" "Noto Mono"];
-        #serif = ["JetbrainsMono Nerd Font Mono" "Noto Mono"];
+        monospace = ["JetBrainsMono Nerd Font Mono" "Noto Mono"];
+        sansSerif = ["Noto Sans" "JetBrainsMono Nerd Font Mono"];
+        serif = ["Noto Serif" "Noto Sans"];
         emoji = ["Noto Color Emoji"];
-        #emoji = ["Noto Color Emoji"];
       };
     };
   };

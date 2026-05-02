@@ -38,7 +38,7 @@ in {
       in ''
         auto-update = off
         font-size = 10
-        font-family = Iosevka SS09
+        font-family = JetBrainsMono Nerd Font
         font-style = medium
         font-feature = "ss01"
         #adjust-cell-width = 1%

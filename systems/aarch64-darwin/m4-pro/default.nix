@@ -128,7 +128,6 @@
 
   # Fonts
   fonts.packages = with pkgs; [
-    curtbushko.iosevka-ss09
     fira-code
     font-awesome_5
     jetbrains-mono
@@ -137,6 +136,7 @@
     nerd-fonts.fira-code
     nerd-fonts.iosevka
     nerd-fonts.jetbrains-mono
+    nerd-fonts.sauce-code-pro
     noto-fonts
     noto-fonts-color-emoji
     powerline-fonts
