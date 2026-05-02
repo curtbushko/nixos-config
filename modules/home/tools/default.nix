@@ -43,7 +43,6 @@ in {
         pkgs.btop
         pkgs.difftastic
         pkgs.curl
-        pkgs.d2
         pkgs.eza
         pkgs.fd
         pkgs.fzf
@@ -83,6 +82,7 @@ in {
       ])
       ++ (lib.optionals isLinux [
         #pkgs.rofi-firefox-wrapper
+        pkgs.d2
         pkgs.ddcutil
         pkgs.zathura
         pkgs.lsof
