@@ -295,7 +295,7 @@ Task tool:
 ```
 Task tool:
   model: "claude-opus-4-5-20251101"
-  subagent_type: "go-code-review"
+  subagent_type: "code-quality-reviewer"
   description: "Review task {task.id}"
   prompt: |
     ## Combined Review: Task {task.id} - {task.name}

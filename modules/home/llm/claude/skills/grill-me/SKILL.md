@@ -32,6 +32,8 @@ Start by mapping the major decision points in the plan:
 
 ### 2. Walk Each Branch Systematically
 
+**IMPORTANT: Ask ONE question at a time.** Wait for the user's response before proceeding to the next question. This prevents overwhelming the user and ensures each decision is fully explored before moving on.
+
 For each decision point:
 
 1. **Ask the hard question**
