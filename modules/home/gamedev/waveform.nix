@@ -43,13 +43,13 @@
       fontconfig
       libGL
       libglvnd
-      xorg.libX11
-      xorg.libXext
-      xorg.libXinerama
-      xorg.libXrandr
-      xorg.libXcursor
-      xorg.libXrender
-      xorg.libXcomposite
+      libx11
+      libxext
+      libxinerama
+      libxrandr
+      libxcursor
+      libxrender
+      libxcomposite
 
       # Other dependencies
       curl

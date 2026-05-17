@@ -60,9 +60,11 @@
   # use avahi for mDNS
   services.resolved = {
     enable = true;
-    extraConfig = ''
-      MulticastDNS=off
-    '';
+    settings = {
+      Resolve = {
+        MulticastDNS = "off";
+      };
+    };
   };
   services.avahi.enable = true;
 
@@ -85,12 +87,14 @@
   services.journald.extraConfig = "MaxRetentionSec=14day";
 
   # Setup auto suspend of gamingrig
-  systemd.sleep.extraConfig = ''
-    AllowSuspend=yes
-    AllowHibernation=no
-    AllowHybridSleep=no
-    AllowSuspendThenHibernate=yes
-  '';
+  systemd.sleep.settings = {
+    Sleep = {
+      AllowSuspend = "yes";
+      AllowHibernation = "no";
+      AllowHybridSleep = "no";
+      AllowSuspendThenHibernate = "yes";
+    };
+  };
 
   # Set your time zone.
   time.timeZone = "America/Toronto";
@@ -177,7 +181,7 @@
     # )
     libnotify # notifications too.
     tailscale
-    neofetch
+    fastfetch
 
     hyprland
     niri
@@ -188,7 +192,8 @@
     # Gaming
     steam-run
     vulkan-tools
-    lutris
+    # May 17th, 2026 - turning off because it is failing to compile
+    #lutris
     protonup-qt
     #sunshine
   ];
@@ -201,25 +206,25 @@
     stdenv.cc.cc.lib
 
     # from https://github.com/NixOS/nixpkgs/blob/nixos-23.05/pkgs/games/steam/fhsenv.nix#L72-L79
-    xorg.libXcomposite
-    xorg.libXtst
-    xorg.libXrandr
-    xorg.libXext
-    xorg.libX11
-    xorg.libXfixes
+    libxcomposite
+    libxtst
+    libxrandr
+    libxext
+    libx11
+    libxfixes
     libGL
     libva
 
     # from https://github.com/NixOS/nixpkgs/blob/nixos-23.05/pkgs/games/steam/fhsenv.nix#L124-L136
     fontconfig
     freetype
-    xorg.libXt
-    xorg.libXmu
+    libxt
+    libxmu
     libogg
     libvorbis
     SDL
     SDL2_image
-    glew110
+    glew_1_10
     libdrm
     libidn
     tbb

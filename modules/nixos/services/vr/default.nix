@@ -22,17 +22,15 @@ in {
     # should allow scripts that use /bin/bash to work
     services.envfs.enable = true;
 
-    environment.systemPackages = with pkgs; [
+    environment.systemPackages = (with pkgs; [
+      android-tools
       dbus
       libcap
       libdrm
       openvr
       openssl
       udev
-      python312
-      python312Packages.pycairo
       gobject-introspection
-      python312Packages.pygobject3
       mesa
       monado-vulkan-layers
       usbutils
@@ -42,13 +40,15 @@ in {
       protontricks
       flatpak
       winetricks
-      wineWowPackages.stable
-      wineWowPackages.waylandFull
+      wineWow64Packages.stable
+      wineWow64Packages.waylandFull
       freetype
       steamtinkerlaunch
-      nexusmods-app-unfree
       cemu
-    ];
+      python3
+      python3Packages.pycairo
+      python3Packages.pygobject3
+    ]);
 
     programs.steam = {
       enable = true;
@@ -78,7 +78,6 @@ in {
     # Configure WiVRn
     services.wivrn = {
       enable = true;
-      defaultRuntime = true;
       openFirewall = true;
       autoStart = true;
     };
@@ -108,9 +107,6 @@ in {
       capabilities = "cap_sys_nice+ep";
       source = "/home/curtbushko/.local/share/Steam/steamapps/common/SteamVR/bin/vrstartup.sh";
     };
-
-    # Something is turning this on
-    programs.adb.enable = true;
 
     # create a wireless access point
     services.create_ap = {

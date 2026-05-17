@@ -18,7 +18,8 @@ in {
   };
   config = mkIf cfg.enable {
     home.packages = [
-      pkgs.wasistlos
+      # pkgs.wasistlos removed - package was unmaintained and archived upstream
+      # Consider using pkgs.karere if needed
       pkgs.whatsapp-emoji-font
     ];
   };

@@ -45,7 +45,7 @@ in {
         lxqt.pavucontrol-qt
 
         eww
-        swww
+        awww
         swappy # snapshot tool
 
         mako
