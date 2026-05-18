@@ -424,6 +424,85 @@ linters-settings:
 
 ---
 
+### 11. Interface Naming - "Interface" Suffix (High)
+
+**Problem**: AI adds redundant "Interface" suffix to interface type names.
+
+```go
+// BAD: AI adds "Interface" suffix (not idiomatic Go)
+type UserRepositoryInterface interface {
+    FindByID(ctx context.Context, id string) (*User, error)
+    Save(ctx context.Context, user *User) error
+}
+
+type CardServiceInterface interface {
+    CreateCard(ctx context.Context, card *Card) error
+}
+
+// Also BAD: "I" prefix (C# style)
+type IUserRepository interface {
+    FindByID(ctx context.Context, id string) (*User, error)
+}
+
+// GOOD: Simple, descriptive names without suffix
+type UserRepository interface {
+    FindByID(ctx context.Context, id string) (*User, error)
+    Save(ctx context.Context, user *User) error
+}
+
+type CardService interface {
+    CreateCard(ctx context.Context, card *Card) error
+}
+```
+
+**Why it matters**:
+- Go interfaces are already types - the "Interface" suffix is redundant
+- Violates Go naming conventions (see Effective Go)
+- Makes code verbose and harder to read
+- The type system already distinguishes interfaces from concrete types
+
+**Correct naming patterns**:
+```go
+// Single-method interfaces: use -er suffix
+type Reader interface {
+    Read(p []byte) (n int, err error)
+}
+
+type Uploader interface {
+    Upload(ctx context.Context, data []byte) error
+}
+
+// Multi-method interfaces: descriptive name (no suffix)
+type UserRepository interface {
+    FindByID(ctx context.Context, id string) (*User, error)
+    Save(ctx context.Context, user *User) error
+}
+
+type HTTPServer interface {
+    Start() error
+    Stop() error
+}
+```
+
+**Enforcement**:
+- `revive` with `var-naming` rule catches some cases
+- Manual code review (no automated linter specifically for this yet)
+- Project-level naming guidelines in CLAUDE.md
+
+**golangci-lint config**:
+```yaml
+linters:
+  enable:
+    - revive
+
+linters-settings:
+  revive:
+    rules:
+      - name: var-naming
+```
+
+---
+
 ## Comprehensive Linter Configuration
 
 Based on this research, here is an enhanced `.golangci.yml` that catches AI-generated code issues:
@@ -930,6 +1009,44 @@ func (u *User) Email() string { return u.email }
 
 // Setters DO use Set prefix
 func (u *User) SetName(name string) { u.name = name }
+```
+
+---
+
+### Interface Naming - "Interface" Suffix (AIL051)
+
+**Problem**: `interface type should not have Interface suffix`
+
+**Why it matters**: Go interfaces are types - the suffix is redundant and violates Go naming conventions.
+
+**WRONG fixes**:
+- Renaming to `IUserRepository` (C# style prefix)
+- Keeping suffix but abbreviating (`UserRepoInterface`)
+
+**CORRECT fix**: Remove suffix completely
+```go
+// Before (wrong)
+type UserRepositoryInterface interface {
+    FindByID(ctx context.Context, id string) (*User, error)
+}
+
+type ICardService interface {
+    CreateCard(ctx context.Context, card *Card) error
+}
+
+// After (correct)
+type UserRepository interface {
+    FindByID(ctx context.Context, id string) (*User, error)
+}
+
+type CardService interface {
+    CreateCard(ctx context.Context, card *Card) error
+}
+
+// For single-method interfaces, use -er suffix
+type Uploader interface {
+    Upload(ctx context.Context, data []byte) error
+}
 ```
 
 ---

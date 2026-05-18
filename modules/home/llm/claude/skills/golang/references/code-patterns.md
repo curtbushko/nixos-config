@@ -418,6 +418,7 @@ func TestRepository(t *testing.T) {
 | `defer in loop` | Remove defer | Extract to helper function |
 | `error ignored` | Add `_ = err` | Handle or wrap and return |
 | `GetX() naming` | Rename to `GetterX()` | Rename to `X()` (drop Get) |
+| `Interface suffix` | Rename to `IRepository` | Rename to `Repository` (drop suffix) |
 | `nil map write` | Remove the write | Initialize with `make()` |
 | `context.TODO()` | Use Background() everywhere | Accept ctx as parameter |
 | `goroutine no cancel` | Add `return` | Use ctx.Done() in select |
@@ -449,6 +450,8 @@ func TestRepository(t *testing.T) {
 
 - Single-method: `-er` suffix (`Reader`, `Writer`, `Closer`)
 - Multiple methods: Descriptive name (`UserRepository`)
+- **NEVER use "Interface" suffix** (`UserRepositoryInterface` is WRONG)
+- **NEVER use "I" prefix** (`IUserRepository` is WRONG - not Go style)
 
 ---
 

@@ -188,6 +188,8 @@ type MockStorage struct {
 - Keep interfaces small (1-3 methods is ideal)
 - Define interfaces where they're used, not where they're implemented
 - Name single-method interfaces with "-er" suffix: `Reader`, `Writer`, `Uploader`
+- NEVER add "Interface" suffix: use `UserRepository` not `UserRepositoryInterface`
+- NEVER use "I" prefix: use `UserRepository` not `IUserRepository`
 - Use embedding to compose larger interfaces from smaller ones
 
 ## Function Naming Conventions
@@ -257,7 +259,7 @@ func ProcessWithValidationAndRetries(data []byte) error
 - **Exported**: Start with uppercase letter (visible outside package)
 - **Unexported**: Start with lowercase letter (private to package)
 - **Getters**: Don't use "Get" prefix—use `Owner()` not `GetOwner()`
-- **Interfaces**: Use agent nouns ending in "-er" for single-method interfaces
+- **Interfaces**: Use agent nouns ending in "-er" for single-method interfaces; NEVER use "Interface" suffix or "I" prefix
 - **Variables**: Use short names in small scopes, longer names for broader scope
 
 ### Formatting
@@ -585,6 +587,7 @@ go-arch-lint graph
 | `context.TODO()` | Remove context | Pass context from caller or use `context.Background()` |
 | `context.TODO()` | Use `context.Background()` everywhere | Accept `context.Context` as first parameter |
 | `GetX() naming` | Rename to `GetterX()` | Rename to `X()` (drop Get prefix) |
+| `Interface suffix` | Rename to `IRepository` | Rename to `Repository` (drop suffix/prefix) |
 | `goroutine no cancel` | Add `return` statement | Add `ctx.Done()` check in select |
 | `interface too large` | Add more methods | Split into smaller focused interfaces |
 | `wg.Done not deferred` | Remove wg.Done() | Wrap with `defer wg.Done()` at goroutine start |
