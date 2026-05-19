@@ -1,0 +1,147 @@
+# Global OpenAI Codex Instructions
+
+## Project Context
+
+This is a development environment following strict engineering practices:
+- Test-Driven Development (TDD) is mandatory for all code changes
+- Code must pass all quality gates before completion
+- Architecture patterns and conventions are defined in skill files
+- Skills are located in `~/.codex/skills/` and must be consulted before coding
+
+## MANDATORY: Check Skills Before Coding
+
+**CRITICAL**: Before writing ANY code, you MUST:
+
+1. **List available skills**: Check `~/.codex/skills/` for relevant skill files
+2. **Read applicable skill files**: If skills exist for the language/framework being used, READ THEM COMPLETELY
+3. **Follow skill guidelines**: All instructions in skill files are MANDATORY, not suggestions
+
+### Skill Priority Order
+
+When multiple skills apply:
+1. Project-specific skills (e.g., project AGENTS.md, local skills)
+2. Language-specific skills (e.g., `golang/`, `node-team/`)
+3. General development skills (e.g., `bash/`)
+
+## Test-Driven Development (TDD) - MANDATORY
+
+**You MUST follow TDD for ALL code changes. No exceptions.**
+
+If you write implementation code before writing a test, STOP and correct yourself.
+
+### The 6-Step TDD Workflow
+
+1. **INVESTIGATE** - Understand requirements, review existing code
+2. **PLAN** (features) / **REPRODUCE** (bugs) - Design API, identify test cases
+3. **TEST (RED)** - Write failing tests FIRST, confirm they FAIL
+4. **IMPLEMENT (GREEN)** - Write MINIMAL code to pass, confirm they PASS
+5. **VALIDATE** - Run ALL tests, lint, check coverage
+6. **REFACTOR** - Clean up while keeping tests green
+
+### Before Writing Code, Ask Yourself
+
+- "What test would prove this works?"
+- "How would I know if this breaks in the future?"
+- "What are the edge cases I should test?"
+
+## Project Startup Checklist
+
+Before starting ANY implementation task:
+
+- [ ] Listed skills in `~/.codex/skills/`
+- [ ] Read ALL relevant skill files for the language/framework
+- [ ] Identified testing requirements from skills
+- [ ] Confirmed TDD approach will be followed
+- [ ] Asked user about any project-specific requirements
+
+## Quality Gates
+
+Before considering any task complete:
+
+1. **Tests pass**: All tests must pass (`npm test`, `go test`, etc.)
+2. **Build succeeds**: Project must build without errors
+3. **Lint clean**: No linting errors or warnings
+4. **Coverage maintained**: Test coverage should not decrease
+
+## Code Conventions
+
+### File Handling (CRITICAL)
+
+**NEVER use `rm` to delete files.** Move files to `.trash/` instead:
+
+```bash
+mkdir -p .trash
+grep -q "^\.trash/$" .gitignore 2>/dev/null || echo ".trash/" >> .gitignore
+mv <file> .trash/
+```
+
+This applies to ALL files:
+- Task files
+- Result files
+- Code files (`.go`, `.ts`, `.js`, `.zig`, etc.)
+- Temporary files
+- Generated files
+- Any other files during cleanup
+
+**NO EXCEPTIONS.** Never use `rm` for any file. Never create `.gitkeep` files.
+
+### Code Style
+
+- Follow language-specific conventions from skills
+- Use Nerd Fonts icons instead of emojis for CLI output
+- Keep functions small and focused
+- Prefer explicit over implicit
+- No emojis in code, comments, documentation, or any output
+
+## Scripting Language Policy (CRITICAL)
+
+**NEVER use Python for scripting tools or automation tasks.**
+
+Instead, you MUST:
+1. **Use bash/shell scripts** for all automation and scripting tasks
+2. **Leverage CLI tools** (awk, sed, jq, curl, etc.) to accomplish what Python libraries would do
+3. **Compose Unix tools** with pipes and process substitution
+
+This applies to:
+- Build scripts and automation
+- Data processing and transformation
+- File manipulation
+- API interactions
+- System administration tasks
+- Any other scripting needs
+
+**NO EXCEPTIONS.** If a task seems to require Python, find the appropriate CLI tool or bash solution instead.
+
+## Git and Commit Rules
+
+- Follow project's commit message conventions
+- Run quality gates before committing
+- Never force push to main/master
+- Test locally before pushing
+
+## Safety Boundaries
+
+**Files and directories to NEVER modify:**
+- Linting configuration files (`.golangci.yml`, `.go-arch-lint.yml`, `.go-ai-lint.yml`)
+- Project task configuration (`Taskfile.yml`, `Makefile`)
+- CI/CD configuration files
+- Lock files (unless explicitly updating dependencies)
+
+**Dangerous commands to avoid:**
+- `rm -rf` without careful review
+- Force operations on main/master branches
+- Modifying production configuration
+
+## When Skills Conflict
+
+If multiple skills apply and have conflicting guidance:
+1. Project-specific skills take precedence
+2. Language-specific skills come second
+3. General skills are fallback
+
+## Acknowledgment
+
+When starting a new coding task, explicitly state:
+"I will follow the [language] skill guidelines including [key requirements from the skill]"
+
+This confirms you have read and understood the applicable skills.
