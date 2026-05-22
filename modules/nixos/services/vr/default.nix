@@ -48,6 +48,7 @@ in {
       python3
       python3Packages.pycairo
       python3Packages.pygobject3
+      slimevr
     ]);
 
     programs.steam = {
