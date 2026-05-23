@@ -8,13 +8,24 @@
   cfg = config.curtbushko.llm.server;
   llmCfg = config.curtbushko.llm;
 
-  # Build server command arguments
-  serverArgs = concatStringsSep " " ([
+  isLinux = pkgs.stdenv.isLinux;
+  isDarwin = pkgs.stdenv.isDarwin;
+
+  # Linux: llama-cpp with CUDA
+  # Build server command arguments for llama-cpp
+  llamaServerArgs = concatStringsSep " " ([
     "--host 0.0.0.0"
     "--port ${toString cfg.port}"
     "--parallel ${toString cfg.slots}"
   ] ++ cfg.extraArgs
   ++ lib.optional (cfg.defaultModel != null) "-m ${cfg.defaultModel}");
+
+  llamaServerBin = "/run/current-system/sw/bin/llama-server";
+
+  # macOS: oMLX server (optimized MLX with tiered caching)
+  # Installed via homebrew: brew tap jundot/omlx && brew install omlx
+  omlxServerBin = "/opt/homebrew/bin/omlx";
+  omlxModelDir = cfg.omlxModelDir;
 
 in {
   options.curtbushko.llm.server = {
@@ -22,13 +33,15 @@ in {
       type = types.bool;
       default = false;
       description = ''
-        Enable systemd socket-activated llama-cpp server with model slots.
+        Enable LLM server with OpenAI-compatible API.
+
+        On Linux: Uses llama-cpp with CUDA/GPU acceleration
+        On macOS: Uses MLX-LM (20-87% faster on Apple Silicon)
 
         Features:
-        - Socket activation: server starts on-demand when requests arrive
-        - Model slots: load/switch models dynamically via API
-        - Idle timeout: stops after inactivity to save resources
         - OpenAI-compatible API endpoints
+        - GPU acceleration (CUDA on Linux, Metal/MLX on macOS)
+        - Background service with auto-restart
       '';
     };
 
@@ -36,7 +49,7 @@ in {
       type = types.port;
       default = 8080;
       description = ''
-        Port for the llama-cpp server to listen on.
+        Port for the LLM server to listen on.
         Default: 8080 (http://localhost:8080)
       '';
     };
@@ -45,12 +58,7 @@ in {
       type = types.int;
       default = 2;
       description = ''
-        Number of model slots available.
-
-        Allows:
-        - Loading multiple models simultaneously
-        - Switching models without restarting the server
-        - Queuing requests across different models
+        Number of model slots available (llama-cpp only).
       '';
     };
 
@@ -59,12 +67,18 @@ in {
       default = null;
       example = "\${config.curtbushko.llm.models.qwen.modelPath}";
       description = ''
-        Default model to load on server startup.
+        Default model path for llama-cpp (Linux).
+        For GGUF model files.
+      '';
+    };
 
-        Set to null to start with no model loaded (load via API).
-        Set to a model path to auto-load on startup.
-
-        Example: config.curtbushko.llm.models.qwen.modelPath
+    omlxModelDir = mkOption {
+      type = types.str;
+      default = "~/models";
+      description = ''
+        Directory containing MLX models for oMLX (macOS).
+        oMLX will serve all models in this directory.
+        Download models via the oMLX admin UI or HuggingFace.
       '';
     };
 
@@ -73,12 +87,6 @@ in {
       default = "5min";
       description = ''
         How long to keep the server running after the last request.
-
-        Examples: "30s", "5min", "10min", "1h"
-        Set to "infinity" to keep running indefinitely.
-
-        The server will automatically restart when a new request arrives
-        thanks to socket activation.
       '';
     };
 
@@ -87,67 +95,91 @@ in {
       default = [];
       example = ["--ctx-size 4096" "--n-gpu-layers 35" "--threads 8"];
       description = ''
-        Additional arguments to pass to llama-cpp-server.
-
-        Common options:
-          --ctx-size N          Context size (default: 512)
-          --n-gpu-layers N      Layers to offload to GPU (-1 for all)
-          --threads N           Number of threads to use
-          --batch-size N        Batch size for prompt processing
-          --rope-freq-base N    RoPE frequency base
-          --rope-freq-scale N   RoPE frequency scale
-
-        See: llama-cpp-server --help
+        Additional arguments to pass to the server (llama-cpp on Linux).
       '';
     };
   };
 
   config = mkIf (llmCfg.enable && cfg.enable) {
-    # Run llama-server as a normal service (not socket-activated)
-    systemd.user.services.llama-server = {
-      Unit = {
-        Description = "llama.cpp server with model slots";
-        Documentation = "https://github.com/ggerganov/llama.cpp";
-        After = ["network.target"];
-      };
+    # Linux: Run llama-server as a systemd user service
+    systemd.user.services = mkIf isLinux {
+      llama-server = {
+        Unit = {
+          Description = "llama.cpp server with model slots";
+          Documentation = "https://github.com/ggerganov/llama.cpp";
+          After = ["network.target"];
+        };
 
-      Service = {
-        Type = "simple";
-        # Use llama-server from system PATH (CUDA version from NixOS system packages)
-        ExecStart = "/run/current-system/sw/bin/llama-server ${serverArgs}";
-        Restart = "on-failure";
-        RestartSec = "10s";
+        Service = {
+          Type = "simple";
+          ExecStart = "${llamaServerBin} ${llamaServerArgs}";
+          Restart = "on-failure";
+          RestartSec = "10s";
 
-        # Resource limits
-        LimitNOFILE = 4096;
+          # Resource limits
+          LimitNOFILE = 4096;
 
-        # NVIDIA/CUDA device access
-        DeviceAllow = [
-          "/dev/dri"
-          "/dev/nvidia0"
-          "/dev/nvidiactl"
-          "/dev/nvidia-modeset"
-          "/dev/nvidia-uvm"
-        ];
+          # NVIDIA/CUDA device access
+          DeviceAllow = [
+            "/dev/dri"
+            "/dev/nvidia0"
+            "/dev/nvidiactl"
+            "/dev/nvidia-modeset"
+            "/dev/nvidia-uvm"
+          ];
 
-        # Security hardening (relaxed for GPU access)
-        PrivateTmp = true;
-        PrivateDevices = false;  # Must be false for GPU access
-        NoNewPrivileges = true;
-      };
+          # Security hardening (relaxed for GPU access)
+          PrivateTmp = true;
+          PrivateDevices = false;  # Must be false for GPU access
+          NoNewPrivileges = true;
+        };
 
-      Install = {
-        WantedBy = ["default.target"];
+        Install = {
+          WantedBy = ["default.target"];
+        };
       };
     };
 
-    # Helper scripts for managing the server
-    programs.zsh.shellAliases = {
-      llama-server-start = "systemctl --user start llama-server.service";
-      llama-server-stop = "systemctl --user stop llama-server.service";
-      llama-server-restart = "systemctl --user restart llama-server.service";
-      llama-server-status = "systemctl --user status llama-server.service";
-      llama-server-logs = "journalctl --user -u llama-server.service -f";
+    # macOS: Run oMLX server as a launchd user agent
+    launchd.agents = mkIf isDarwin {
+      omlx-server = {
+        enable = true;
+        config = {
+          Label = "com.omlx.server";
+          ProgramArguments = [
+            omlxServerBin
+            "serve"
+            "--model-dir" omlxModelDir
+            "--port" (toString cfg.port)
+          ];
+          KeepAlive = true;
+          RunAtLoad = false;  # Don't start automatically, start on demand
+          StandardOutPath = "/tmp/omlx-server.log";
+          StandardErrorPath = "/tmp/omlx-server.err";
+          EnvironmentVariables = {
+            PATH = "/opt/homebrew/bin:/run/current-system/sw/bin:/usr/bin:/bin";
+          };
+        };
+      };
+    };
+
+    # Platform-specific helper aliases
+    programs.zsh.shellAliases = if isLinux then {
+      llm-server-start = "systemctl --user start llama-server.service";
+      llm-server-stop = "systemctl --user stop llama-server.service";
+      llm-server-restart = "systemctl --user restart llama-server.service";
+      llm-server-status = "systemctl --user status llama-server.service";
+      llm-server-logs = "journalctl --user -u llama-server.service -f";
+    } else {
+      # macOS: oMLX server via launchd (tiered caching, continuous batching)
+      llm-server-start = "launchctl load ~/Library/LaunchAgents/com.omlx.server.plist 2>/dev/null || launchctl start com.omlx.server";
+      llm-server-stop = "launchctl stop com.omlx.server";
+      llm-server-restart = "launchctl stop com.omlx.server; sleep 1; launchctl start com.omlx.server";
+      llm-server-status = "launchctl list | grep omlx || echo 'Not running'";
+      llm-server-logs = "tail -f /tmp/omlx-server.log";
+      # oMLX direct commands
+      omlx-serve = "${omlxServerBin} serve --model-dir ${omlxModelDir}";
+      omlx-admin = "open http://localhost:${toString cfg.port}/admin";
     };
 
     # API helper script for loading models

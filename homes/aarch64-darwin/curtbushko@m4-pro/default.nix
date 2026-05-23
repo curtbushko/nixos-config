@@ -19,7 +19,20 @@
     gaming.enable = true;
     git.enable = true;
     k8s.enable = true;
-    llm.enable = true;
+    llm = {
+      enable = true;
+      # Model configuration for Qwen (GGUF for llama-cpp)
+      models.qwen = {
+        enable = true;
+        autoDownload = false;  # Download manually to avoid timeout
+      };
+      # oMLX server (optimized MLX with tiered caching for Apple Silicon)
+      server = {
+        enable = true;
+        port = 8080;
+        omlxModelDir = "~/models";  # Download models via oMLX admin UI
+      };
+    };
     programming.enable = true;
     secrets.enable = true;
     shells.enable = true;
@@ -28,7 +41,16 @@
     wm.rectangle.enable = true;
     # Theme colors managed by flair: run `flair select <theme>`
     theme.wallpaper = "cyberpunk_2077_phantom_liberty_katana.jpg";
+  };
 
+  #---------------------------------------------------------------------
+  # oMLX LLM aliases (optimized MLX for Apple Silicon)
+  #---------------------------------------------------------------------
+  programs.zsh.shellAliases = {
+    # oMLX commands (tiered caching, continuous batching)
+    omlx-start = "omlx serve --model-dir ~/models";
+    omlx-admin = "open http://localhost:8080/admin";
+    omlx-download = "omlx download";
   };
 
   #---------------------------------------------------------------------
