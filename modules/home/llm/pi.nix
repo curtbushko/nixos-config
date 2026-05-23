@@ -49,6 +49,9 @@ in {
       text = builtins.toJSON {
         defaultProvider = "gamingrig";
         defaultModel = "qwen2.5-coder-7b";
+        checkForUpdates = false;
+        telemetry = false;
+        notifications = true;
       };
     };
 
