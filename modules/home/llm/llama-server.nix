@@ -113,15 +113,26 @@ in {
 
       Service = {
         Type = "simple";
-        ExecStart = "${pkgs.llama-cpp}/bin/llama-server ${serverArgs}";
+        # Use llama-server from system PATH (CUDA version from NixOS system packages)
+        ExecStart = "/run/current-system/sw/bin/llama-server ${serverArgs}";
         Restart = "on-failure";
         RestartSec = "10s";
 
         # Resource limits
         LimitNOFILE = 4096;
 
-        # Security hardening
+        # NVIDIA/CUDA device access
+        DeviceAllow = [
+          "/dev/dri"
+          "/dev/nvidia0"
+          "/dev/nvidiactl"
+          "/dev/nvidia-modeset"
+          "/dev/nvidia-uvm"
+        ];
+
+        # Security hardening (relaxed for GPU access)
         PrivateTmp = true;
+        PrivateDevices = false;  # Must be false for GPU access
         NoNewPrivileges = true;
       };
 

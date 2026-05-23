@@ -148,6 +148,14 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
+    # llama-cpp with CUDA support for GPU acceleration
+    (llama-cpp.override {
+      cudaSupport = true;
+      # Disable cuda_compat to work around nixpkgs bug
+      cudaPackages = pkgs.cudaPackages_12_6.overrideScope (final: prev: {
+        cuda_compat = null;
+      });
+    })
     alsa-oss
     cachix
     cmake

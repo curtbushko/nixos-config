@@ -52,7 +52,11 @@
         idleTimeout = "5min";
         extraArgs = [
           "--ctx-size 4096"
-          # "--n-gpu-layers -1"  # Uncomment to use GPU
+          "--n-gpu-layers -1"       # Offload all layers to GPU (Vulkan auto-detect)
+          "--batch-size 512"        # Larger batch for faster processing
+          "--ubatch-size 512"       # Larger micro-batch
+          "--threads 4"             # Reduced since GPU is doing the work
+          "--flash-attn on"         # Enable flash attention
         ];
       };
     };
