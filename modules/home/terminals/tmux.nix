@@ -14,6 +14,8 @@
   # Default fallback colors if flair style.json doesn't exist
   defaultColors = {
     "terminal-cyan" = "#89b482";
+    "text-muted" = "#928374";
+    "surface-bg-darkest" = "#1d2021";
     "surface-bg-overlay" = "#282828";
     "terminal-blue" = "#7daea3";
   };

@@ -157,10 +157,14 @@
       cleanup = "zap";
     };
     taps = [
-      "jundot/omlx"  # oMLX - optimized MLX LLM server
+      {
+        name = "jundot/omlx";
+        clone_target = "https://github.com/jundot/omlx";
+      }
     ];
     brews = [
-      "omlx"  # LLM inference with tiered caching for Apple Silicon
+      # LLM inference with tiered caching for Apple Silicon
+      "jundot/omlx/omlx"
     ];
   };
 }
