@@ -19,6 +19,11 @@
 
   # HuggingFace repository mapping
   variantRepos = {
+    # GGUF formats (for llama.cpp)
+    "2.5-coder-7b-instruct-gguf" = "bartowski/Qwen2.5-Coder-7B-Instruct-GGUF";
+    "2.5-coder-14b-instruct-gguf" = "bartowski/Qwen2.5-Coder-14B-Instruct-GGUF";
+    "2.5-coder-32b-instruct-gguf" = "bartowski/Qwen2.5-Coder-32B-Instruct-GGUF";
+    # GPTQ formats (safetensors - not for llama.cpp)
     "2.5-coder-7b-instruct-gptq-int4" = "Qwen/Qwen2.5-Coder-7B-Instruct-GPTQ-Int4";
     "2.5-coder-14b-instruct-gptq-int4" = "Qwen/Qwen2.5-Coder-14B-Instruct-GPTQ-Int4";
     "2.5-coder-32b-instruct-gptq-int4" = "Qwen/Qwen2.5-Coder-32B-Instruct-GPTQ-Int4";
@@ -38,12 +43,17 @@ in {
 
     variant = mkOption {
       type = types.str;
-      default = "2.5-coder-7b-instruct-gptq-int4";
+      default = "2.5-coder-7b-instruct-gguf";
       description = ''
         Which Qwen model variant to use.
 
-        Available options:
-          - 2.5-coder-7b-instruct-gptq-int4 (default)
+        Available GGUF options (for llama.cpp):
+          - 2.5-coder-7b-instruct-gguf (default)
+          - 2.5-coder-14b-instruct-gguf
+          - 2.5-coder-32b-instruct-gguf
+
+        Available GPTQ options (safetensors - not for llama.cpp):
+          - 2.5-coder-7b-instruct-gptq-int4
           - 2.5-coder-14b-instruct-gptq-int4
           - 2.5-coder-32b-instruct-gptq-int4
 
@@ -53,9 +63,15 @@ in {
 
     modelFile = mkOption {
       type = types.str;
-      default = "model.gguf";
+      default = "Qwen2.5-Coder-7B-Instruct-Q4_K_M.gguf";
       description = ''
         The GGUF model file name within the model directory.
+
+        Common bartowski quantizations:
+          - Qwen2.5-Coder-7B-Instruct-Q4_K_M.gguf (recommended, ~4.4GB)
+          - Qwen2.5-Coder-7B-Instruct-Q5_K_M.gguf (larger, ~5.3GB)
+          - Qwen2.5-Coder-7B-Instruct-Q6_K.gguf (largest, ~6.1GB)
+          - Qwen2.5-Coder-7B-Instruct-Q3_K_M.gguf (smallest, ~3.3GB)
       '';
     };
 

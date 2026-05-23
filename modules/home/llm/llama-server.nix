@@ -10,9 +10,9 @@
 
   # Build server command arguments
   serverArgs = concatStringsSep " " ([
-    "--host 127.0.0.1"
+    "--host 0.0.0.0"
     "--port ${toString cfg.port}"
-    "--slots ${toString cfg.slots}"
+    "--parallel ${toString cfg.slots}"
   ] ++ cfg.extraArgs
   ++ lib.optional (cfg.defaultModel != null) "-m ${cfg.defaultModel}");
 
@@ -103,38 +103,19 @@ in {
   };
 
   config = mkIf (llmCfg.enable && cfg.enable) {
-    # Socket activation - listens on port, starts service on connection
-    systemd.user.sockets.llama-server = {
-      Unit = {
-        Description = "llama.cpp server socket";
-        Documentation = "https://github.com/ggerganov/llama.cpp";
-      };
-      Socket = {
-        ListenStream = "127.0.0.1:${toString cfg.port}";
-        Accept = false;
-      };
-      Install = {
-        WantedBy = ["sockets.target"];
-      };
-    };
-
-    # The actual server service (started by socket activation)
+    # Run llama-server as a normal service (not socket-activated)
     systemd.user.services.llama-server = {
       Unit = {
         Description = "llama.cpp server with model slots";
         Documentation = "https://github.com/ggerganov/llama.cpp";
         After = ["network.target"];
-        Requires = ["llama-server.socket"];
       };
 
       Service = {
         Type = "simple";
         ExecStart = "${pkgs.llama-cpp}/bin/llama-server ${serverArgs}";
         Restart = "on-failure";
-        RestartSec = "5s";
-
-        # Stop after idle timeout
-        RuntimeMaxSec = cfg.idleTimeout;
+        RestartSec = "10s";
 
         # Resource limits
         LimitNOFILE = 4096;
@@ -151,10 +132,10 @@ in {
 
     # Helper scripts for managing the server
     programs.zsh.shellAliases = {
-      llama-server-start = "systemctl --user start llama-server.socket";
-      llama-server-stop = "systemctl --user stop llama-server.socket llama-server.service";
-      llama-server-restart = "systemctl --user restart llama-server.socket";
-      llama-server-status = "systemctl --user status llama-server.socket llama-server.service";
+      llama-server-start = "systemctl --user start llama-server.service";
+      llama-server-stop = "systemctl --user stop llama-server.service";
+      llama-server-restart = "systemctl --user restart llama-server.service";
+      llama-server-status = "systemctl --user status llama-server.service";
       llama-server-logs = "journalctl --user -u llama-server.service -f";
     };
 

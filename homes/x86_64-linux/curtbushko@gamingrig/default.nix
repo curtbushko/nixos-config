@@ -3,6 +3,7 @@
   pkgs,
   # You also have access to your flake's inputs.
   inputs,
+  config,
   ...
 }: {
   home.stateVersion = "18.09";
@@ -36,9 +37,9 @@
       # Model configuration
       models.qwen = {
         enable = true;
-        variant = "2.5-coder-7b-instruct-gguf";
-        modelFile = "qwen2.5-coder-7b-instruct-q4_k_m.gguf";
-        autoDownload = true;
+        # Uses default variant: "2.5-coder-7b-instruct-gguf" from bartowski
+        # Uses default modelFile: "Qwen2.5-Coder-7B-Instruct-Q4_K_M.gguf"
+        autoDownload = false;  # Disabled - download manually to avoid timeout
       };
 
       # Server configuration (socket activation + slots)
@@ -46,9 +47,8 @@
         enable = true;
         port = 8080;
         slots = 2;
-        # Set to null to start without a model (load via API)
-        # Or set to full path: "${config.home.homeDirectory}/.local/share/llama-cpp/models/qwen/2.5-coder-7b-instruct-gptq-int4/model.gguf"
-        defaultModel = null;
+        # Load Qwen model by default
+        defaultModel = config.curtbushko.llm.models.qwen.modelPath;
         idleTimeout = "5min";
         extraArgs = [
           "--ctx-size 4096"
