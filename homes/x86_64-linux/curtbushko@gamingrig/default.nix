@@ -30,7 +30,32 @@
     im.enable = true;
     k8s.enable = true;
     git.enable = true;
-    llm.enable = true;
+    llm = {
+      enable = true;
+
+      # Model configuration
+      models.qwen = {
+        enable = true;
+        variant = "2.5-coder-7b-instruct-gguf";
+        modelFile = "qwen2.5-coder-7b-instruct-q4_k_m.gguf";
+        autoDownload = true;
+      };
+
+      # Server configuration (socket activation + slots)
+      server = {
+        enable = true;
+        port = 8080;
+        slots = 2;
+        # Set to null to start without a model (load via API)
+        # Or set to full path: "${config.home.homeDirectory}/.local/share/llama-cpp/models/qwen/2.5-coder-7b-instruct-gptq-int4/model.gguf"
+        defaultModel = null;
+        idleTimeout = "5min";
+        extraArgs = [
+          "--ctx-size 4096"
+          # "--n-gpu-layers -1"  # Uncomment to use GPU
+        ];
+      };
+    };
     programming.enable = true;
     secrets.enable = true;
     shells.enable = true;

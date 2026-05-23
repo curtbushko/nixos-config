@@ -35,6 +35,16 @@
       url = "github:numtide/llm-agents.nix";
     };
 
+    llmfit = {
+      url = "github:AlexsJones/llmfit";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    opencode = {
+      url = "github:dan-online/opencode-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     minecraft-servers = {
       url = "github:curtbushko/minecraft-servers";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -47,6 +57,11 @@
 
     niri = {
       url = "github:sodiboo/niri-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    pi = {
+      url = "github:lukasl-dev/pi.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

@@ -1,7 +1,9 @@
 {
   config,
+  inputs,
   lib,
   pkgs,
+  system,
   ...
 }: let
   inherit (lib) mkIf;
@@ -9,22 +11,24 @@
 in {
   config = mkIf cfg.enable {
     # Pi.dev CLI installation
-    home.packages = with pkgs; [
+    home.packages = [
       # Pi.dev is installed via npm
-      nodejs
+      pkgs.nodejs
+
+      inputs.pi.packages.${system}.coding-agent
     ];
 
     # Install pi.dev globally via npm
-    home.activation.installPiDev = lib.hm.dag.entryAfter ["writeBoundary"] ''
-      if ! command -v pi &> /dev/null; then
-        $DRY_RUN_CMD ${pkgs.nodejs}/bin/npm install -g @pi.dev/cli 2>/dev/null || true
-      fi
-    '';
+    # home.activation.installPiDev = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    #   if ! command -v pi &> /dev/null; then
+    #     $DRY_RUN_CMD ${pkgs.nodejs}/bin/npm install -g @pi.dev/cli 2>/dev/null || true
+    #   fi
+    # '';
 
     programs.zsh = {
-      shellAliases = {
-        pi = "npx @pi.dev/cli";
-      };
+      #shellAliases = {
+      #  pi = "npx @pi.dev/cli";
+      #};
     };
   };
 }

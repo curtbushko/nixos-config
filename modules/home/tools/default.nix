@@ -57,7 +57,7 @@ in {
         pkgs.mutagen
         pkgs.nil # language server
         pkgs.nixd #language server for nix
-        pkgs.nodejs_22
+        pkgs.nodejs
         pkgs.presenterm
         pkgs.ripgrep
         pkgs.shellcheck

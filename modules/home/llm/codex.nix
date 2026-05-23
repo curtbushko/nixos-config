@@ -9,9 +9,9 @@
 in {
   config = mkIf cfg.enable {
     home.packages = with pkgs; [
-      # OpenAI Codex CLI (if available via packages)
-      # For now, assuming it's installed via other means
+      codex
     ];
+
 
     programs.zsh = {
       sessionVariables = {
@@ -19,7 +19,6 @@ in {
         OPENAI_API_KEY = ""; # Set via environment or secrets management
       };
       shellAliases = {
-        codex = "codex";
         cx = "codex";
       };
     };
