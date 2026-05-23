@@ -84,7 +84,7 @@
 
       home.file = {
         # Pi settings - core configuration
-        ".pi/agent/settings.json".text = builtins.toJSON {
+        ".pi/agent/settings.json".source = pkgs.writeText "pi-settings.json" (builtins.toJSON {
           defaultProvider = "openai";
           defaultModel = "gpt-4-turbo";
           checkForUpdates = false;
@@ -107,10 +107,10 @@
             "npm:@burneikis/pi-fzfp"
             "npm:@burneikis/pi-vim"
           ];
-        };
+        });
 
         # OpenAI provider configuration
-        ".pi/agent/models.json".text = builtins.toJSON {
+        ".pi/agent/models.json".source = pkgs.writeText "pi-models.json" (builtins.toJSON {
           providers = {
             openai = {
               label = "ChatGPT (OpenAI)";
@@ -143,7 +143,7 @@
               ];
             };
           };
-        };
+        });
 
         # Custom theme using flair/stylix colors (base16 scheme)
         ".pi/agent/theme.json".text = builtins.toJSON {
