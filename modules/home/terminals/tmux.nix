@@ -62,6 +62,8 @@ in {
         set -g base-index 1
         set -g pane-base-index 1
         set -g renumber-windows on
+        set -g extended-keys on
+        set -g extended-keys-format csi-u
         setw -g mode-keys vi
         set -g escape-time 10
         # enable auto renaming
