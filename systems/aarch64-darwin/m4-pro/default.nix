@@ -119,9 +119,7 @@
 
   environment.shells = with pkgs; [bashInteractive zsh fish];
   environment.systemPackages = with pkgs; [
-    # LLM inference for Apple Silicon M4 Pro:
-    # - llama-cpp: Uses Metal backend (GGUF models)
-    # - oMLX: Optimized MLX server with tiered caching (installed via homebrew)
+    # LLM inference for Apple Silicon M4 Pro
     llama-cpp
 
     luajitPackages.tl
@@ -156,15 +154,5 @@
       autoUpdate = false;
       cleanup = "zap";
     };
-    taps = [
-      {
-        name = "jundot/omlx";
-        clone_target = "https://github.com/jundot/omlx";
-      }
-    ];
-    brews = [
-      # LLM inference with tiered caching for Apple Silicon
-      "jundot/omlx/omlx"
-    ];
   };
 }

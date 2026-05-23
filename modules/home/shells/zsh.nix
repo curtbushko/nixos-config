@@ -144,6 +144,13 @@ in {
          # Increase file descriptor limit on macOS
          ${lib.optionalString isDarwin "ulimit -n 1024"}
 
+         # Initialize Homebrew on macOS
+         ${lib.optionalString isDarwin ''
+         if [ -f /opt/homebrew/bin/brew ]; then
+           eval "$(/opt/homebrew/bin/brew shellenv)"
+         fi
+         ''}
+
          # Override SHELL to use the wrapper from user profile (for Claude Code structured output)
          export SHELL="/etc/profiles/per-user/${config.home.username}/bin/zsh"
 

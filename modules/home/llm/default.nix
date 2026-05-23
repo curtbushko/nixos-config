@@ -171,10 +171,9 @@ in {
   imports = [
     ./claude.nix
     ./codex.nix
-    ./llama-server.nix
     ./llmfit.nix
     ./opencode.nix
-    ./pi.nix
+    ./pi
     ./models/qwen.nix
   ];
 }
