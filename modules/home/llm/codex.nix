@@ -34,15 +34,13 @@
   c_fg = colors."statusline-c-fg";
 in {
   config = mkIf cfg.enable {
-    home.packages = with pkgs; [
-      codex
+    home.packages = [
+      pkgs.codex
     ];
-
 
     programs.zsh = {
       sessionVariables = {
         CODEX_HOME = "${config.home.homeDirectory}/.codex";
-        OPENAI_API_KEY = ""; # Set via environment or secrets management
       };
       shellAliases = {
         cx = "codex";
@@ -69,7 +67,8 @@ in {
     home.file.".codex/statusline.mjs" = {
       text = ''
         import { execSync } from "node:child_process";
-        import { readFileSync } from "node:fs";
+        import { readdirSync, readFileSync, statSync } from "node:fs";
+        import { join } from "node:path";
 
         const A_BG = "${a_bg}";
         const A_FG = "${a_fg}";
@@ -116,10 +115,120 @@ in {
           return raw.slice(0, 10);
         }
 
+        function normalizeLimitLabel(label, fallback) {
+          const normalized = (label || fallback || "").toLowerCase().replace(/[_\s]+/g, "-");
+          if (normalized === "five-hour-limit") return "5h";
+          if (normalized === "weekly-limit") return "week";
+          return label || fallback;
+        }
+
+        function formatLimit(limit, fallback) {
+          const label = normalizeLimitLabel(limit?.limit_name, fallback);
+          if (typeof limit?.used_percent === "number") {
+            return label + " " + Math.round(limit.used_percent) + "%";
+          }
+
+          return label;
+        }
+
+        function renderLimitSegment(limit, fallback, bg, fg, prevBg) {
+          const content = formatLimit(limit, fallback);
+          return (
+            hexToBg(bg) +
+            hexToFg(prevBg) +
+            " " +
+            hexToBg(bg) +
+            hexToFg(fg) +
+            " " +
+            content +
+            " "
+          );
+        }
+
+        function findLatestSessionFile(root) {
+          let latestFile = "";
+          let latestMtime = 0;
+          const stack = [root];
+
+          while (stack.length > 0) {
+            const current = stack.pop();
+            if (!current) continue;
+
+            let entries = [];
+            try {
+              entries = readdirSync(current, { withFileTypes: true });
+            } catch {
+              continue;
+            }
+
+            for (const entry of entries) {
+              const path = join(current, entry.name);
+              if (entry.isDirectory()) {
+                stack.push(path);
+                continue;
+              }
+
+              if (!entry.isFile() || !entry.name.endsWith(".jsonl")) {
+                continue;
+              }
+
+              let mtimeMs = 0;
+              try {
+                mtimeMs = statSync(path).mtimeMs;
+              } catch {
+                continue;
+              }
+
+              if (mtimeMs > latestMtime) {
+                latestMtime = mtimeMs;
+                latestFile = path;
+              }
+            }
+          }
+
+          return latestFile;
+        }
+
+        function readLatestRateLimits() {
+          if (!process.env.CODEX_HOME) {
+            return {};
+          }
+
+          const sessionRoot = process.env.CODEX_HOME + "/sessions";
+          const latestFile = findLatestSessionFile(sessionRoot);
+          if (!latestFile) {
+            return {};
+          }
+
+          let content = "";
+          try {
+            content = readFileSync(latestFile, "utf8");
+          } catch {
+            return {};
+          }
+
+          const lines = content.trim().split("\n").reverse();
+          for (const line of lines) {
+            if (!line) continue;
+
+            try {
+              const event = JSON.parse(line);
+              if (event?.type === "event_msg" && event?.payload?.type === "token_count" && event.payload.rate_limits) {
+                return event.payload.rate_limits;
+              }
+            } catch {
+              continue;
+            }
+          }
+
+          return {};
+        }
+
         const input = JSON.parse(readFileSync(0, "utf8"));
         const branch = run("git branch --show-current");
         const rawModel = input.model?.display_name || "";
-        const rateLimits = input.rate_limits || {};
+        const directRateLimits = input.rate_limits || {};
+        const rateLimits = Object.keys(directRateLimits).length > 0 ? directRateLimits : readLatestRateLimits();
 
         // Icon: AWS Bedrock vs default
         const icon = /\.anthropic\./.test(rawModel) ? " " : "󱚝 ";
@@ -152,20 +261,11 @@ in {
         out += hexToBg(A_BG) + hexToFg(A_FG) + " " + icon + modelPadded;
         out += hexToBg(B_BG) + hexToFg(A_BG) + sep;
         out += hexToBg(B_BG) + hexToFg(B_FG) + "󰊢 " + repo + " ";
+        let currentBg = B_BG;
         if (branch) {
           out += hexToBg(C_BG) + hexToFg(B_BG) + sep;
           out += hexToBg(C_BG) + hexToFg(C_FG) + " " + branch + " ";
-        } else {
-          out += hexToFg(B_BG) + sep;
-        }
-
-        function formatLimit(limit, fallback) {
-          const label = limit?.limit_name || fallback;
-          if (typeof limit?.used_percent === "number") {
-            return label + " " + Math.round(limit.used_percent) + "%";
-          }
-
-          return label;
+          currentBg = C_BG;
         }
 
         const fiveHourLimit =
@@ -181,9 +281,11 @@ in {
           rateLimits["weekly-limit"] ||
           {};
 
-        out += hexToBg(C_BG) + hexToFg(C_FG) + " " + formatLimit(fiveHourLimit, "five-hour-limit");
-        out += " " + formatLimit(weeklyLimit, "weekly-limit") + " ";
-        out += hexToFg(C_BG) + sep + RESET + CLR;
+        out += renderLimitSegment(fiveHourLimit, "five-hour-limit", B_BG, B_FG, currentBg);
+        currentBg = B_BG;
+        out += renderLimitSegment(weeklyLimit, "weekly-limit", C_BG, C_FG, currentBg);
+        currentBg = C_BG;
+        out += hexToFg(currentBg) + sep + RESET + CLR;
 
         process.stdout.write(out);
       '';
