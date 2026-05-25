@@ -1,0 +1,19 @@
+{
+  "name": "@curtbushko/pi-starship-statusline",
+  "version": "1.0.0",
+  "description": "Custom Starship-style statusline for Pi with themed colors",
+  "license": "MIT",
+  "keywords": ["pi-package"],
+  "files": ["index.ts", "README.md"],
+  "exports": {
+    ".": "./index.ts"
+  },
+  "pi": {
+    "extensions": ["./index.ts"]
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-ai": "*",
+    "@earendil-works/pi-coding-agent": "*",
+    "@earendil-works/pi-tui": "*"
+  }
+}

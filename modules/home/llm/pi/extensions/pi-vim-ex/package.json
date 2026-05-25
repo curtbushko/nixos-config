@@ -1,0 +1,40 @@
+{
+  "name": "@curtbushko/pi-vim-ex",
+  "version": "1.0.0",
+  "description": "Custom vim extension for pi with ex command support – normal, insert, visual, replace modes, and :q/:w/:wq commands",
+  "license": "MIT",
+  "author": "curtbushko",
+  "keywords": [
+    "pi-package"
+  ],
+  "files": [
+    "index.ts",
+    "keys.ts",
+    "motions.ts",
+    "operators.ts",
+    "registers.ts",
+    "repeat.ts",
+    "search.ts",
+    "ex-commands.ts",
+    "state.ts",
+    "text-objects.ts",
+    "vim-editor.ts",
+    "modes/",
+    "README.md"
+  ],
+  "exports": {
+    ".": "./index.ts"
+  },
+  "pi": {
+    "extensions": [
+      "./index.ts"
+    ]
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*",
+    "@earendil-works/pi-tui": "*"
+  },
+  "optionalDependencies": {
+    "@burneikis/pi-fzfp": "^2.1.0"
+  }
+}

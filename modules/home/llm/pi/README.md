@@ -19,25 +19,30 @@ Uses a custom `pi-npm` wrapper that redirects the global npm prefix to `~/.pi/ag
 ### Declarative Extensions
 Extensions are declared in `settings.json` packages list and installed via idempotent activation hooks:
 - `@burneikis/pi-fzfp` - Fuzzy find plugin
-- `@burneikis/pi-vim` - Vim mode plugin
+
+### Custom Local Extensions
+- `pi-vim-ex` - Custom vim extension with ex command support (`:q`, `:w`, `:wq`)
+  - Based on `@burneikis/pi-vim` with added ex commands
+  - Full vim motions, operators, text objects
+  - Visual mode, registers, dot repeat
+
+### Custom Starship Statusline
+Local extension (`extensions/starship-statusline/`) based on [@elianiva/pi-starship](https://github.com/elianiva/pi-starship):
+- Starship-style `❯` prompt with no borders
+- Info widget with gradient `▓▒░`, model 󰭹, directory 󰊢, git branch
+- Token usage and cost tracking
+- Auto-updates on git changes, model switches, and shell commands
 
 ### Custom Theme
 Integrates with flair/stylix for consistent theming using base16 color scheme.
 
-### Custom Statusline
-Custom Node.js statusline script (`.pi/statusline.mjs`) that displays:
-- Model name (with icon)
-- Repository name
-- Git branch
-- All with themed colors from flair/stylix
-
 ### Configuration Files
 All configuration files are managed declaratively:
-- `settings.json` - Core pi settings
-- `models.json` - OpenAI provider configuration
-- `theme.json` - Custom theme using flair colors
-- `keybindings.json` - Vim-style keybindings
-- `statusline.mjs` - Custom statusline script
+- `settings.json` - Core pi settings (no default provider for OAuth)
+- `models.json` - Empty for OAuth providers (auto-configured after `/login`)
+- `theme.json` - Custom theme using flair colors (base16 Gruvbox Material)
+- `extensions/pi-vim-ex/` - Custom vim extension
+- `extensions/starship-statusline/` - Custom statusline extension
 
 ## Adding Extensions
 
@@ -63,15 +68,18 @@ To add a new extension:
      '';
    ```
 
+## Authentication
+
+Pi is configured to use OAuth authentication. Run `pi /login` to authenticate with:
+- **ChatGPT Plus/Pro (Codex)** - Requires ChatGPT Plus or Pro subscription
+- **Claude Pro/Max** - Requires Anthropic subscription
+- **GitHub Copilot** - Requires GitHub Copilot subscription
+
+OAuth credentials are stored in `~/.pi/agent/auth.json` and auto-refresh when expired.
+
 ## Environment Variables
 
 - `PI_SKIP_VERSION_CHECK` - Disables version check notifications
-- `OPENAI_API_KEY` - OpenAI API key (set in shell or secrets)
-
-## Shell Aliases
-
-- `pi-gpt4` - Launch pi with GPT-4 Turbo
-- `pi-gpt35` - Launch pi with GPT-3.5 Turbo
 
 ## Inspiration
 
