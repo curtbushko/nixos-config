@@ -14,6 +14,10 @@
   # Home Options
   #---------------------------------------------------------------------
   curtbushko = {
+    cron = {
+      enable = true;
+      killExchangeProcesses.enable = true;
+    };
     git.enable = true;
     k8s.enable = true;
     programming.enable = true;

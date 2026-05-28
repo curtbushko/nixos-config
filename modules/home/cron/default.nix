@@ -31,6 +31,17 @@ in {
         '';
       };
     };
+    killExchangeProcesses = {
+      enable = mkOption {
+        type = types.bool;
+        default = false;
+        description = ''
+          Whether to kill Exchange-related processes daily at 8AM.
+          Kills exchangesyncd and calaccessd processes.
+          This is macOS-only.
+        '';
+      };
+    };
   };
 
   config = mkIf cfg.enable {
@@ -141,62 +152,84 @@ in {
     ]);
 
     # macOS: launchd agents
-    launchd.agents = mkIf isDarwin {
-      auto-nix-collect-garbage = {
-        enable = true;
-        config = {
-          ProgramArguments = [
-            "${pkgs.nix}/bin/nix-collect-garbage"
-            "--delete-older-than"
-            "7d"
-          ];
-          StartCalendarInterval = [
-            {
-              Hour = 2;
-              Minute = 0;
-            }
-          ];
-          StandardOutPath = "${config.home.homeDirectory}/Library/Logs/nix-collect-garbage.log";
-          StandardErrorPath = "${config.home.homeDirectory}/Library/Logs/nix-collect-garbage.log";
+    launchd.agents = mkIf isDarwin (lib.mkMerge [
+      {
+        auto-nix-collect-garbage = {
+          enable = true;
+          config = {
+            ProgramArguments = [
+              "${pkgs.nix}/bin/nix-collect-garbage"
+              "--delete-older-than"
+              "7d"
+            ];
+            StartCalendarInterval = [
+              {
+                Hour = 2;
+                Minute = 0;
+              }
+            ];
+            StandardOutPath = "${config.home.homeDirectory}/Library/Logs/nix-collect-garbage.log";
+            StandardErrorPath = "${config.home.homeDirectory}/Library/Logs/nix-collect-garbage.log";
+          };
         };
-      };
 
-      auto-nix-delete-generations = {
-        enable = true;
-        config = {
-          ProgramArguments = [
-            "${pkgs.nix}/bin/nix-env"
-            "--delete-generations"
-            "+3"
-          ];
-          StartCalendarInterval = [
-            {
-              Hour = 2;
-              Minute = 0;
-            }
-          ];
-          StandardOutPath = "${config.home.homeDirectory}/Library/Logs/nix-delete-generations.log";
-          StandardErrorPath = "${config.home.homeDirectory}/Library/Logs/nix-delete-generations.log";
+        auto-nix-delete-generations = {
+          enable = true;
+          config = {
+            ProgramArguments = [
+              "${pkgs.nix}/bin/nix-env"
+              "--delete-generations"
+              "+3"
+            ];
+            StartCalendarInterval = [
+              {
+                Hour = 2;
+                Minute = 0;
+              }
+            ];
+            StandardOutPath = "${config.home.homeDirectory}/Library/Logs/nix-delete-generations.log";
+            StandardErrorPath = "${config.home.homeDirectory}/Library/Logs/nix-delete-generations.log";
+          };
         };
-      };
 
-      auto-nix-store-gc = {
-        enable = true;
-        config = {
-          ProgramArguments = [
-            "${pkgs.nix}/bin/nix-store"
-            "--gc"
-          ];
-          StartCalendarInterval = [
-            {
-              Hour = 2;
-              Minute = 0;
-            }
-          ];
-          StandardOutPath = "${config.home.homeDirectory}/Library/Logs/nix-store-gc.log";
-          StandardErrorPath = "${config.home.homeDirectory}/Library/Logs/nix-store-gc.log";
+        auto-nix-store-gc = {
+          enable = true;
+          config = {
+            ProgramArguments = [
+              "${pkgs.nix}/bin/nix-store"
+              "--gc"
+            ];
+            StartCalendarInterval = [
+              {
+                Hour = 2;
+                Minute = 0;
+              }
+            ];
+            StandardOutPath = "${config.home.homeDirectory}/Library/Logs/nix-store-gc.log";
+            StandardErrorPath = "${config.home.homeDirectory}/Library/Logs/nix-store-gc.log";
+          };
         };
-      };
-    };
+      }
+      (mkIf cfg.killExchangeProcesses.enable {
+        kill-exchange-processes = {
+          enable = true;
+          config = {
+            ProgramArguments = [
+              "${pkgs.bash}/bin/bash"
+              "-c"
+              "pkill -9 exchangesyncd; pkill -9 calaccessd"
+            ];
+            StartCalendarInterval = [
+              {
+                Hour = 8;
+                Minute = 0;
+              }
+            ];
+            StandardOutPath = "${config.home.homeDirectory}/Library/Logs/kill-exchange-processes.log";
+            StandardErrorPath = "${config.home.homeDirectory}/Library/Logs/kill-exchange-processes.log";
+          };
+        };
+      })
+    ]);
   };
 }

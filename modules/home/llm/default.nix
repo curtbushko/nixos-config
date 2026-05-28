@@ -173,6 +173,7 @@ in {
     ./codex.nix
     ./llmfit.nix
     ./opencode.nix
+    ./openchamber.nix
     ./pi
     ./models/qwen.nix
   ];
