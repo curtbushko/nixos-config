@@ -10,7 +10,7 @@
   # OpenChamber version
   version = "1.11.7";
 
-  # Architecture-specific source
+  # Architecture-specific source for Darwin
   darwinSrc =
     if pkgs.stdenv.hostPlatform.isAarch64
     then {
@@ -22,7 +22,8 @@
       sha256 = "0mssssa384rlyqmygmvq8qcfbzyq5l1jghshzrzmm9rsc12hn7wk";
     };
 
-  openchamber = pkgs.stdenv.mkDerivation {
+  # Darwin: native macOS app
+  openchamber-darwin = pkgs.stdenv.mkDerivation {
     pname = "openchamber";
     inherit version;
 
@@ -58,15 +59,31 @@
       platforms = platforms.darwin;
     };
   };
-in {
-  config = mkIf (cfg.enable && pkgs.stdenv.isDarwin) {
-    # OpenChamber installation
-    home.packages = [ openchamber ];
 
-    programs.zsh = {
-      shellAliases = {
+  # Linux: wrapper script that uses npx to run @openchamber/web
+  # The npm package has native dependencies (better-sqlite3, node-pty) that are
+  # difficult to build with Nix, so we use npx which handles this automatically
+  openchamber-linux = pkgs.writeShellScriptBin "openchamber" ''
+    exec ${pkgs.nodejs}/bin/npx --yes @openchamber/web@${version} "$@"
+  '';
+in {
+  config = lib.mkMerge [
+    # Darwin configuration
+    (mkIf (cfg.enable && pkgs.stdenv.isDarwin) {
+      home.packages = [ openchamber-darwin ];
+
+      programs.zsh.shellAliases = {
         oc-ui = "openchamber";
       };
-    };
-  };
+    })
+
+    # Linux configuration
+    (mkIf (cfg.enable && pkgs.stdenv.isLinux) {
+      home.packages = [ openchamber-linux ];
+
+      programs.zsh.shellAliases = {
+        oc-ui = "openchamber";
+      };
+    })
+  ];
 }

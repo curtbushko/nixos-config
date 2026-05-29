@@ -22,6 +22,7 @@ in {
   config = mkIf cfg.enable {
     home.sessionVariables = {
       COLORTERM = "truecolor";
+      PODMAN_NO_EMOJI = "1";
     };
   };
 
