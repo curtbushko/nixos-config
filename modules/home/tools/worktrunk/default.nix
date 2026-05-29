@@ -7,35 +7,32 @@
   inherit (lib) mkIf;
   cfg = config.curtbushko.tools;
 
-  wt-checkout = pkgs.writeScriptBin "wt-checkout" ''
-    #!/usr/bin/env bash
-    set -e
-
-    # If arguments provided, pass directly to wt switch
-    if [ $# -gt 0 ]; then
-      exec wt switch "$@"
-    fi
-
-    # No arguments - show interactive picker for remote branches
-    # Redirect stdin to /dev/tty so fzf can work through aliases
-    #exec </dev/tty
-
-    BRANCH=$(git branch -r | grep -v HEAD | sed 's/^[* ]*//' | ${pkgs.fzf}/bin/fzf --prompt="Select remote branch: ")
-
-    if [ -n "$BRANCH" ]; then
-      # Remove 'origin/' prefix if present
-      BRANCH_NAME=$(echo "$BRANCH" | sed 's|^origin/||')
-      wt switch "$BRANCH_NAME"
-    fi
-  '';
-
   wt-clone = pkgs.writeScriptBin "wt-clone" ''
     #!/usr/bin/env bash
     set -e
 
+    # Handle --help flag
+    if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
+      echo "wt clone - Clone a repository into a bare git worktree setup"
+      echo ""
+      echo "Usage: wt clone <git-url>"
+      echo ""
+      echo "Clones a git repository using bare clone + worktree pattern:"
+      echo "  - Creates directory at ~/workspace/<host>/<org>/<repo>"
+      echo "  - Sets up .bare directory with git data"
+      echo "  - Creates initial worktree for default branch"
+      echo "  - Changes to the worktree directory after clone"
+      echo ""
+      echo "Examples:"
+      echo "  wt clone https://github.com/user/repo"
+      echo "  wt clone git@github.com:user/repo.git"
+      exit 0
+    fi
+
     URL="$1"
     if [ -z "$URL" ]; then
       echo "Usage: wt clone <git-url>"
+      echo "Run 'wt clone --help' for more information."
       exit 1
     fi
 
@@ -84,13 +81,20 @@
     git branch --set-upstream-to="origin/$DEFAULT_BRANCH" "$DEFAULT_BRANCH"
     cd ..
 
+    FINAL_DIR="$TARGET_DIR/$DEFAULT_BRANCH"
+
     echo ""
     echo "Repository cloned successfully!"
-    echo "Location: $TARGET_DIR/$DEFAULT_BRANCH"
+    echo "Location: $FINAL_DIR"
+
+    # Write to worktrunk's directive file so shell wrapper cds after script exits
+    if [ -n "$WORKTRUNK_DIRECTIVE_CD_FILE" ]; then
+      echo "$FINAL_DIR" > "$WORKTRUNK_DIRECTIVE_CD_FILE"
+    fi
   '';
 in {
   config = mkIf cfg.enable {
-    home.packages = [wt-checkout wt-clone];
+    home.packages = [wt-clone];
     programs.worktrunk = {
       enable = true;
       enableBashIntegration = true;
