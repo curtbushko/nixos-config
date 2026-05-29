@@ -41,24 +41,6 @@
         # Uses default modelFile: "Qwen2.5-Coder-7B-Instruct-Q4_K_M.gguf"
         autoDownload = false;  # Disabled - download manually to avoid timeout
       };
-
-      # Server configuration (socket activation + slots)
-      server = {
-        enable = true;
-        port = 8080;
-        slots = 2;
-        # Load Qwen model by default
-        defaultModel = config.curtbushko.llm.models.qwen.modelPath;
-        idleTimeout = "5min";
-        extraArgs = [
-          "--ctx-size 4096"
-          "--n-gpu-layers -1"       # Offload all layers to GPU (Vulkan auto-detect)
-          "--batch-size 512"        # Larger batch for faster processing
-          "--ubatch-size 512"       # Larger micro-batch
-          "--threads 4"             # Reduced since GPU is doing the work
-          "--flash-attn on"         # Enable flash attention
-        ];
-      };
     };
     programming.enable = true;
     secrets.enable = true;
