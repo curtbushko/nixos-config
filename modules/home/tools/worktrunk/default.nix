@@ -92,9 +92,11 @@
       echo "$FINAL_DIR" > "$WORKTRUNK_DIRECTIVE_CD_FILE"
     fi
   '';
+
+  wt-add = pkgs.writeScriptBin "wt-add" (builtins.readFile ./wt-add.sh);
 in {
   config = mkIf cfg.enable {
-    home.packages = [wt-clone];
+    home.packages = [wt-clone wt-add];
     programs.worktrunk = {
       enable = true;
       enableBashIntegration = true;

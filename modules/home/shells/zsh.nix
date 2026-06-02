@@ -228,6 +228,42 @@ in {
          # Add $HOME/bin to PATH
          export PATH=$PATH:$HOME/bin:$HOME/go/bin:$HOME/.local/bin
 
+         # wt-add wrapper function that changes to the new worktree directory
+         wta() {
+           if [[ -z "$1" ]]; then
+             wt-add
+             return $?
+           fi
+
+           local branch_name="$1"
+           shift
+
+           # Capture the output to extract the worktree path
+           local output
+           output=$(wt-add "$branch_name" "$@" 2>&1)
+           local exit_code=$?
+
+           # Print the output
+           echo "$output"
+
+           # If successful, extract and cd to the worktree path
+           if [[ $exit_code -eq 0 ]]; then
+             local worktree_path
+             worktree_path=$(echo "$output" | grep "^Location: " | sed 's/^Location: //')
+
+             if [[ -n "$worktree_path" && -d "$worktree_path" ]]; then
+               echo ""
+               echo "Changing to: $worktree_path"
+               cd "$worktree_path" || return 1
+             else
+               echo "Warning: Could not determine worktree path"
+               return 1
+             fi
+           fi
+
+           return $exit_code
+         }
+
          # television shell integration
          if command -v tv >/dev/null 2>&1; then
            eval "$(tv init zsh)"
