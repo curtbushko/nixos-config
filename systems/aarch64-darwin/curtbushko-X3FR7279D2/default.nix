@@ -1,5 +1,6 @@
 {
   pkgs,
+  inputs,
   ...
 }: {
   # We install Nix using a separate installer so we don't want nix-darwin
@@ -79,6 +80,8 @@
     luajitPackages.tl
     libvterm-neovim
     cachix
+    # Ghostty for terminfo support (xterm-ghostty) in SSH
+    inputs.ghostty.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 
   # Fonts
@@ -96,4 +99,7 @@
     noto-fonts-color-emoji
     powerline-fonts
   ];
+
+  # Enable SSH daemon
+  services.openssh.enable = true;
 }

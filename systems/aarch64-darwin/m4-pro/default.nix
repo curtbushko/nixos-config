@@ -1,5 +1,6 @@
 {
   pkgs,
+  inputs,
   ...
 }: {
   system.stateVersion = 5;
@@ -127,6 +128,8 @@
     cachix
     unixtools.netstat
     tailscale
+    # Ghostty for terminfo support (xterm-ghostty) in SSH
+    inputs.ghostty.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 
   # Fonts
@@ -146,6 +149,9 @@
   ];
 
   services.tailscale.enable = true;
+
+  # Enable SSH daemon
+  services.openssh.enable = true;
 
   # Homebrew for packages not in nixpkgs
   homebrew = {

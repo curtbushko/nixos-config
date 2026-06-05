@@ -1,5 +1,6 @@
 {
   pkgs,
+  inputs,
   ...
 }: {
   # We install Nix using a separate installer so we don't want nix-darwin
@@ -79,6 +80,8 @@
     libvterm-neovim
     cachix
     tailscale
+    # Ghostty for terminfo support (xterm-ghostty) in SSH
+    inputs.ghostty.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 
   # Fonts
@@ -98,4 +101,7 @@
   ];
 
   services.tailscale.enable = true;
+
+  # Enable SSH daemon
+  services.openssh.enable = true;
 }
