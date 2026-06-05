@@ -97,7 +97,4 @@
     noto-fonts-color-emoji
     powerline-fonts
   ];
-
-  # Enable SSH daemon
-  services.openssh.enable = true;
 }

@@ -148,9 +148,6 @@
 
   services.tailscale.enable = true;
 
-  # Enable SSH daemon
-  services.openssh.enable = true;
-
   # Homebrew for packages not in nixpkgs
   homebrew = {
     enable = true;

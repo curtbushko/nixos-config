@@ -99,7 +99,4 @@
   ];
 
   services.tailscale.enable = true;
-
-  # Enable SSH daemon
-  services.openssh.enable = true;
 }
