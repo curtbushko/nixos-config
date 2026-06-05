@@ -128,8 +128,6 @@
     cachix
     unixtools.netstat
     tailscale
-    # Ghostty for terminfo support (xterm-ghostty) in SSH
-    inputs.ghostty.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 
   # Fonts

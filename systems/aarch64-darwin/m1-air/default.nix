@@ -80,8 +80,6 @@
     libvterm-neovim
     cachix
     tailscale
-    # Ghostty for terminfo support (xterm-ghostty) in SSH
-    inputs.ghostty.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 
   # Fonts

@@ -80,8 +80,6 @@
     luajitPackages.tl
     libvterm-neovim
     cachix
-    # Ghostty for terminfo support (xterm-ghostty) in SSH
-    inputs.ghostty.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 
   # Fonts
