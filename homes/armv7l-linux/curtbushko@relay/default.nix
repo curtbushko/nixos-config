@@ -29,7 +29,27 @@
       extra-platforms = [ "armv7l-linux" ];
       # Trust the remote builder
       trusted-users = [ "root" "curtbushko" ];
+      # Always delegate builds to remote builder
+      max-jobs = 0;
+      # Let remote builder use substituters to avoid unnecessary builds
+      builders-use-substitutes = true;
     };
+
+    # Configure gamingrig as remote builder
+    buildMachines = [
+      {
+        hostName = "gamingrig";
+        sshUser = "curtbushko";
+        sshKey = "/home/curtbushko/.ssh/id_ed25519";
+        system = "x86_64-linux";
+        # gamingrig can emulate armv7l-linux via binfmt
+        supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
+        maxJobs = 8;
+      }
+    ];
+
+    # Enable distributed builds
+    distributedBuilds = true;
   };
 
   #---------------------------------------------------------------------
