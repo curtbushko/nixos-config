@@ -2,15 +2,22 @@
   config,
   lib,
   pkgs,
+  options,
   ...
 }: let
-  inherit (lib) mkIf;
+  inherit (lib) mkIf mkMerge;
   cfg = config.curtbushko.wm.niri;
   isLinux = pkgs.stdenv.isLinux;
+  hasStylex = options ? stylix;
 in {
-  config = mkIf cfg.enable {
-    stylix.targets.waybar.enable = false;
-    systemd.user.services.waybar = {
+  config = mkIf cfg.enable (mkMerge [
+    # Only set stylix options if stylix module is available
+    (mkIf hasStylex {
+      stylix.targets.waybar.enable = false;
+    })
+    # Main waybar configuration
+    {
+      systemd.user.services.waybar = {
       Unit = {
         PartOf = [ "graphical-session.target" ];
         After = [ "graphical-session.target" ];
@@ -532,5 +539,6 @@ in {
           }
         '';
     };
-  };
+  }
+  ]);
 }
