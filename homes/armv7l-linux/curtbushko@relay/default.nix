@@ -5,8 +5,9 @@
   # Let home manager manage itself
   programs.home-manager.enable = true;
 
-  # XDG disabled to avoid pulling in unsupported packages
-  xdg.enable = false;
+  # Enable XDG to allow nix configuration to be written to ~/.config/nix/nix.conf
+  # This is required for remote builder configuration to work on standalone Nix
+  xdg.enable = true;
 
   #---------------------------------------------------------------------
   # Nix Settings - Use gamingrig as remote builder
@@ -33,6 +34,22 @@
       max-jobs = 0;
       # Let remote builder use substituters to avoid unnecessary builds
       builders-use-substitutes = true;
+      # Automatic space management for limited Raspberry Pi storage
+      # Trigger GC when less than 500MB free
+      min-free = 500 * 1024 * 1024;
+      # Target 1GB free after GC
+      max-free = 1024 * 1024 * 1024;
+      # Enable auto-optimization to save space via hardlinking
+      auto-optimise-store = true;
+    };
+
+    # Automatic garbage collection - critical for limited storage
+    gc = {
+      automatic = true;
+      # Run daily
+      frequency = "daily";
+      # Keep only last 2 generations (minimal for space-constrained system)
+      options = "--delete-older-than 2d";
     };
 
     # Configure gamingrig as remote builder
@@ -41,10 +58,13 @@
         hostName = "gamingrig";
         sshUser = "curtbushko";
         sshKey = "/home/curtbushko/.ssh/id_ed25519";
+        # gamingrig is x86_64 but can build armv7l via binfmt emulation
         system = "x86_64-linux";
-        # gamingrig can emulate armv7l-linux via binfmt
+        systems = [ "x86_64-linux" "armv7l-linux" ];
         supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
         maxJobs = 8;
+        # Prefer substitutes over building to save time
+        mandatoryFeatures = [ ];
       }
     ];
 
