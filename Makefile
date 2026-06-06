@@ -12,6 +12,7 @@ HOME_MANAGER_HOSTS := steamdeck relay
 # Remote builder configuration for resource-constrained hosts
 REMOTE_BUILDER_HOST := gamingrig
 REMOTE_BUILD_HOSTS := relay
+GAMINGRIG_REMOTE_PATH := ~/workspace/github.com/curtbushko/nixos-config
 
 # Set NIXUSER based on hostname
 ifeq ($(HOST),steamdeck)
@@ -37,6 +38,17 @@ else
 	@echo "$(DATELOG) ERROR: Unknown host '$(HOST)'. Please add it to DARWIN_HOSTS, NIXOS_HOSTS, or HOME_MANAGER_HOSTS in the Makefile."
 	@exit 1
 endif
+
+.PHONY: deploy-relay
+deploy-relay: ## Deploy relay config by building on gamingrig and copying result
+	@echo "$(DATELOG) Building relay home-manager profile on gamingrig..."
+	@RESULT=$$(ssh $(REMOTE_BUILDER_HOST) "cd $(GAMINGRIG_REMOTE_PATH) && nix build .#homeConfigurations.\"curtbushko@relay\".activationPackage --no-link --print-out-paths") && \
+	echo "$(DATELOG) Build complete: $$RESULT" && \
+	echo "$(DATELOG) Copying closure to relay..." && \
+	ssh $(REMOTE_BUILDER_HOST) "nix copy --to ssh://relay $$RESULT" && \
+	echo "$(DATELOG) Activating on relay..." && \
+	ssh relay "$$RESULT/activate" && \
+	echo "$(DATELOG) Deployment complete!"
 
 .PHONY: switch
 switch: ## Build and switch your nix config.
