@@ -14,6 +14,28 @@
   xdg.enable = false;
 
   #---------------------------------------------------------------------
+  # Nix Settings - Use gamingrig as remote builder
+  # Relay (Raspberry Pi) lacks CPU/storage to build locally
+  #---------------------------------------------------------------------
+  nix = {
+    settings = {
+      # Use binary caches to avoid building when possible
+      substituters = [
+        "https://cache.nixos.org"
+        "https://nix-community.cachix.org"
+      ];
+      trusted-public-keys = [
+        "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+        "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Ber7dSSWDNp2XQP1v3jdiPp4="
+      ];
+      # Allow building for this architecture
+      extra-platforms = [ "armv7l-linux" ];
+      # Trust the remote builder
+      trusted-users = [ "root" "curtbushko" ];
+    };
+  };
+
+  #---------------------------------------------------------------------
   # Home Options - Minimal configuration for Raspberry Pi relay
   # Most modules disabled due to armv7l-linux limited package support
   #---------------------------------------------------------------------

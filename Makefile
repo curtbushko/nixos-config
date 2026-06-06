@@ -9,6 +9,10 @@ DARWIN_HOSTS := curtbushko-X3FR7279D2 m4-pro m1-air
 NIXOS_HOSTS := gamingrig node00 node01 node02
 HOME_MANAGER_HOSTS := steamdeck relay
 
+# Remote builder configuration for resource-constrained hosts
+REMOTE_BUILDER_HOST := gamingrig
+REMOTE_BUILD_HOSTS := relay
+
 # Set NIXUSER based on hostname
 ifeq ($(HOST),steamdeck)
 NIXUSER := deck
@@ -45,7 +49,12 @@ else ifneq (,$(findstring $(HOST),$(NIXOS_HOSTS)))
 else ifneq (,$(findstring $(HOST),$(HOME_MANAGER_HOSTS)))
 	@echo "$(DATELOG) Using home-manager for ${NIXUSER}@${HOST}"
 	@rm -f ~/.*.backup ~/.config/**/*.backup || true
+ifneq (,$(findstring $(HOST),$(REMOTE_BUILD_HOSTS)))
+	@echo "$(DATELOG) Using remote builder: $(REMOTE_BUILDER_HOST)"
+	nix --extra-experimental-features 'nix-command flakes' run nixpkgs#home-manager -- switch --flake ".#${NIXUSER}@${HOST}" -b backup --impure --builders "ssh://curtbushko@$(REMOTE_BUILDER_HOST)?ssh-key=/home/curtbushko/.ssh/id_ed25519" --max-jobs 0
+else
 	nix --extra-experimental-features 'nix-command flakes' run nixpkgs#home-manager -- switch --flake ".#${NIXUSER}@${HOST}" -b backup --impure
+endif
 else
 	@echo "$(DATELOG) ERROR: Unknown host '$(HOST)'. Please add it to DARWIN_HOSTS, NIXOS_HOSTS, or HOME_MANAGER_HOSTS in the Makefile."
 	@exit 1
@@ -75,7 +84,12 @@ else ifneq (,$(findstring $(HOST),$(NIXOS_HOSTS)))
 	sudo NIXPKGS_ALLOW_UNSUPPORTED_ARCH=1 nixos-rebuild test --flake ".#${HOST}" --impure
 else ifneq (,$(findstring $(HOST),$(HOME_MANAGER_HOSTS)))
 	@echo "$(DATELOG) Testing home-manager config for ${NIXUSER}@${HOST}"
+ifneq (,$(findstring $(HOST),$(REMOTE_BUILD_HOSTS)))
+	@echo "$(DATELOG) Using remote builder: $(REMOTE_BUILDER_HOST)"
+	nix --extra-experimental-features 'nix-command flakes' run nixpkgs#home-manager -- build --flake ".#${NIXUSER}@${HOST}" --impure --builders "ssh://curtbushko@$(REMOTE_BUILDER_HOST)?ssh-key=/home/curtbushko/.ssh/id_ed25519" --max-jobs 0
+else
 	nix --extra-experimental-features 'nix-command flakes' run nixpkgs#home-manager -- build --flake ".#${NIXUSER}@${HOST}" --impure
+endif
 else
 	@echo "$(DATELOG) ERROR: Unknown host '$(HOST)'. Please add it to DARWIN_HOSTS, NIXOS_HOSTS, or HOME_MANAGER_HOSTS in the Makefile."
 	@exit 1

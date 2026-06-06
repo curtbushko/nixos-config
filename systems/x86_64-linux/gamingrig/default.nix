@@ -35,8 +35,10 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  # Enable cross-compilation for aarch64-linux (used to build VMs for Apple Silicon)
-  boot.binfmt.emulatedSystems = ["aarch64-linux"];
+  # Enable cross-compilation for other architectures
+  # aarch64-linux: used to build VMs for Apple Silicon
+  # armv7l-linux: used as remote builder for relay (Raspberry Pi)
+  boot.binfmt.emulatedSystems = ["aarch64-linux" "armv7l-linux"];
 
   networking.hostName = "gamingrig"; # Define your hostname.
   # Pick only one of the below networking options.
