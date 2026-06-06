@@ -1,4 +1,8 @@
-{...}: {
+{inputs, ...}: {
+  imports = [
+    inputs.stylix.homeModules.stylix
+  ];
+
   home.stateVersion = "24.11";
   home.enableNixpkgsReleaseCheck = false;
 
