@@ -98,6 +98,8 @@
       niri.enable = false;
       rofi.enable = false;
     };
+    # Required for stylix module
+    theme.wallpaper = "firewatch-green.jpg";
   };
 
   #---------------------------------------------------------------------
