@@ -3,6 +3,9 @@
     inputs.stylix.homeModules.stylix
   ];
 
+  # Disable stylix - it pulls in packages that don't support armv7l-linux
+  stylix.enable = false;
+
   home.stateVersion = "24.11";
   home.enableNixpkgsReleaseCheck = false;
 
@@ -98,8 +101,6 @@
       niri.enable = false;
       rofi.enable = false;
     };
-    # Required for stylix module
-    theme.wallpaper = "firewatch-green.jpg";
   };
 
   #---------------------------------------------------------------------
