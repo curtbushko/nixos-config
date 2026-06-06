@@ -1,10 +1,10 @@
-{inputs, ...}: {
+{inputs, lib, ...}: {
   imports = [
     inputs.stylix.homeModules.stylix
   ];
 
   # Disable stylix - it pulls in packages that don't support armv7l-linux
-  stylix.enable = false;
+  stylix.enable = lib.mkForce false;
 
   home.stateVersion = "24.11";
   home.enableNixpkgsReleaseCheck = false;
