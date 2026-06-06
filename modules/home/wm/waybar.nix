@@ -2,15 +2,14 @@
   config,
   lib,
   pkgs,
-  options,
   ...
 }: let
-  inherit (lib) mkIf optionalAttrs;
+  inherit (lib) mkIf;
   cfg = config.curtbushko.wm.niri;
   isLinux = pkgs.stdenv.isLinux;
-  hasStylex = options ? stylix;
 in {
-  config = mkIf cfg.enable ({
+  config = mkIf cfg.enable {
+    stylix.targets.waybar.enable = false;
     systemd.user.services.waybar = {
       Unit = {
         PartOf = [ "graphical-session.target" ];
@@ -533,7 +532,5 @@ in {
           }
         '';
     };
-  } // optionalAttrs hasStylex {
-    stylix.targets.waybar.enable = false;
-  });
+  };
 }
