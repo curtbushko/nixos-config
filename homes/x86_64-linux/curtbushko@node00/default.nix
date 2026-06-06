@@ -24,6 +24,7 @@
     k8s.enable = true;
     llm.enable = false;
     programming.enable = false;
+    scripts.enable = true;
     secrets.enable = true;
     shells.enable = true;
     terminals.enable = true;

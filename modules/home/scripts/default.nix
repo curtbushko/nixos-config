@@ -1,8 +1,11 @@
 {
+  config,
   lib,
   pkgs,
   ...
 }: let
+  inherit (lib) types mkOption mkIf;
+  cfg = config.curtbushko.scripts;
   isLinux = pkgs.stdenv.isLinux;
 
   # Build structured-cli from source for Claude Code bash wrapper
@@ -101,7 +104,18 @@
   ollama-up = pkgs.writeScriptBin "ollama-up" (builtins.readFile ./ollama-up);
   zigbuildwatcher = pkgs.writeScriptBin "zigbuildwatcher" (builtins.readFile ./zigbuildwatcher);
 in {
-  home.packages =
+  options.curtbushko.scripts = {
+    enable = mkOption {
+      type = types.bool;
+      default = false;
+      description = ''
+        Whether to enable custom scripts
+      '';
+    };
+  };
+
+  config = mkIf cfg.enable {
+    home.packages =
     [
       aocgen
       bash
@@ -161,4 +175,5 @@ in {
       auto-sleep
       hyprstart
     ]);
+  };
 }

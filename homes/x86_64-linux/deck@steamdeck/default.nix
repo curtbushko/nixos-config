@@ -25,6 +25,7 @@
     gaming.enable = true;
     git.enable = true;
     programming.enable = false;
+    scripts.enable = true;
     secrets.enable = true;
     shells.enable = true;
     terminals.enable = true;

@@ -28,6 +28,7 @@
       };
     };
     programming.enable = true;
+    scripts.enable = true;
     secrets.enable = true;
     shells.enable = true;
     terminals.enable = true;

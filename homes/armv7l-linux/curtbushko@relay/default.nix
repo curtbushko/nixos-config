@@ -1,9 +1,4 @@
-{
-  pkgs,
-  inputs,
-  lib,
-  ...
-}: {
+{...}: {
   home.stateVersion = "24.11";
   home.enableNixpkgsReleaseCheck = false;
 
@@ -19,6 +14,8 @@
   #---------------------------------------------------------------------
   nix = {
     settings = {
+      # Enable flakes and nix command
+      experimental-features = [ "nix-command" "flakes" ];
       # Use binary caches to avoid building when possible
       substituters = [
         "https://cache.nixos.org"
@@ -47,6 +44,7 @@
     k8s.enable = false;
     llm.enable = false;
     programming.enable = false;
+    scripts.enable = false;
     secrets.enable = false;
     shells.enable = false;   # Disabled for armv7l compatibility
     terminals.enable = false;
@@ -59,16 +57,7 @@
   };
 
   #---------------------------------------------------------------------
-  # Packages - Minimal set for relay server
-  # Note: Install packages manually on the system if needed
-  #---------------------------------------------------------------------
-  home.packages = [
-    # Keeping empty for armv7l compatibility
-    # Install packages directly on the Raspberry Pi as needed
-  ];
-
-  #---------------------------------------------------------------------
-  # Env vars and dotfiles
+  # Env vars
   #---------------------------------------------------------------------
   home.sessionVariables = {
     LANG = "en_US.UTF-8";
@@ -77,11 +66,4 @@
     EDITOR = "vim";
     PAGER = "less -FirSwX";
   };
-
-  imports = [
-    inputs.stylix.homeModules.stylix
-  ];
-
-  # Disable stylix - has compatibility issues with armv7l-linux
-  stylix.enable = lib.mkForce false;
 }
