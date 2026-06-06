@@ -1,10 +1,5 @@
-{inputs, lib, ...}: {
-  imports = [
-    inputs.stylix.homeModules.stylix
-  ];
-
-  # Disable stylix - it pulls in packages that don't support armv7l-linux
-  stylix.enable = lib.mkForce false;
+{...}: {
+  # Note: stylix not imported - it pulls in packages that don't support armv7l-linux
 
   home.stateVersion = "24.11";
   home.enableNixpkgsReleaseCheck = false;
@@ -54,7 +49,7 @@
     gc = {
       automatic = true;
       # Run daily
-      frequency = "daily";
+      dates = "daily";
       # Keep only last 2 generations (minimal for space-constrained system)
       options = "--delete-older-than 2d";
     };
@@ -66,12 +61,9 @@
         sshUser = "curtbushko";
         sshKey = "/home/curtbushko/.ssh/id_ed25519";
         # gamingrig is x86_64 but can build armv7l via binfmt emulation
-        system = "x86_64-linux";
         systems = [ "x86_64-linux" "armv7l-linux" ];
         supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
         maxJobs = 8;
-        # Prefer substitutes over building to save time
-        mandatoryFeatures = [ ];
       }
     ];
 
