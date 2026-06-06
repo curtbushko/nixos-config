@@ -16,8 +16,22 @@ function logger() {
 }
 
 function wake() {
-	logger INFO "Bouncing off of $RELAY_TAILNET_ID"
-	ssh -t root@"$RELAY_TAILNET_ID" "etherwake -D -i eth0 '$GAMINGRIG_MAC_ADDRESS'"
+	local HOST=$1
+	# Extract short hostname (before first dot)
+	local SHORT_HOST="${HOST%%.*}"
+	# Convert to uppercase and append _MAC_ADDRESS
+	local MAC_VAR="${SHORT_HOST^^}_MAC_ADDRESS"
+	# Look up the MAC address from environment variable
+	local MAC_ADDRESS="${!MAC_VAR}"
+
+	if [ -z "$MAC_ADDRESS" ]; then
+		logger WARN "No MAC address found for $SHORT_HOST (expected env var: $MAC_VAR)"
+		logger WARN "Skipping Wake-on-LAN for this host"
+		return 1
+	fi
+
+	logger INFO "Bouncing off of $RELAY_TAILNET_ID to wake $SHORT_HOST"
+	ssh -t root@"$RELAY_TAILNET_ID" "etherwake -D -i eth0 '$MAC_ADDRESS'"
 }
 
 function pingWait() {
@@ -48,8 +62,11 @@ if [ "${HOST}" != "" ]; then
 		logger INFO "Host $HOST is up"
 	else
 		logger INFO "Host $HOST is down"
-		wake "$HOST"
-		pingWait "$HOST"
+		if wake "$HOST"; then
+			pingWait "$HOST"
+		else
+			logger ERROR "Cannot wake host and host is down. Connection will likely fail."
+		fi
 	fi
 
 	USER="curtbushko"
