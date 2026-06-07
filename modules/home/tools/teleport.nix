@@ -88,7 +88,7 @@ in {
 
     # macOS-specific: Install and trust Teleport CA certificate
     home.file.".teleport-ca.crt" = mkIf isDarwin {
-      source = ../../../../secrets/teleport-ca.crt;
+      source = ../../../secrets/teleport-ca.crt;
     };
 
     home.activation.trustTeleportCert = mkIf isDarwin (
