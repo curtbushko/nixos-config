@@ -72,26 +72,15 @@ in {
     };
 
     # macOS-specific: Install and trust Teleport CA certificate
+    # Only runs when the certificate file actually changes
     home.file.".teleport-ca.crt" = mkIf isDarwin {
       source = ../../../secrets/teleport-ca.crt;
+      onChange = ''
+        # Note: Using system sudo (/usr/bin/sudo) because Nix sudo lacks setuid bit
+        /usr/bin/sudo /usr/bin/security delete-certificate -c "Teleport gamingrig CA" /Library/Keychains/System.keychain 2>/dev/null || true
+        /usr/bin/sudo /usr/bin/security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain "$HOME/.teleport-ca.crt"
+        echo "Teleport CA certificate installed and trusted in system keychain"
+      '';
     };
-
-    home.activation.trustTeleportCert = mkIf isDarwin (
-      lib.hm.dag.entryAfter ["writeBoundary"] ''
-        CERT_PATH="$HOME/.teleport-ca.crt"
-        CERT_NAME="Teleport gamingrig CA"
-
-        # Check if certificate exists and is already trusted
-        if [ -f "$CERT_PATH" ]; then
-          # Remove old certificate if it exists
-          $DRY_RUN_CMD sudo /usr/bin/security delete-certificate -c "$CERT_NAME" /Library/Keychains/System.keychain 2>/dev/null || true
-
-          # Add certificate to system keychain and trust it for SSL
-          $DRY_RUN_CMD sudo /usr/bin/security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain "$CERT_PATH"
-
-          echo "Teleport CA certificate installed and trusted in system keychain"
-        fi
-      ''
-    );
   };
 }

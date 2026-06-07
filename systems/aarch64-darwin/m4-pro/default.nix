@@ -86,6 +86,7 @@
         "mitchellh.cachix.org-1:1b3lQ7+tlqfNhQGjx1LY0AJPt0hV5sWqVYyL4UQNV0Q="
       ];
       trusted-substituters = [
+        "http://gamingrig:8501"  # ncps: Pull-through cache (LRU, 100GB)
         "https://cache.nixos.org"
         "https://nix-community.cachix.org"
         "https://claude-code.cachix.org"

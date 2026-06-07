@@ -52,45 +52,8 @@
     pkgs.kubernetes-helm
     pkgs.awscli2
     pkgs.obsidian
-    pkgs.wakeonlan  # For wake-on-lan
   ];
 
-  # Wake-on-lan script for gamingrig (on LAN, use wakeonlan directly)
-  home.file.".local/bin/wake-gamingrig" = {
-    executable = true;
-    text = ''
-      #!/usr/bin/env bash
-      set -euo pipefail
-
-      GAMINGRIG="gamingrig"
-      MAC_ADDRESS="''${GAMINGRIG_MAC_ADDRESS:-}"
-
-      # Check if gamingrig is already up
-      if ping -c 1 -W 2 "$GAMINGRIG" &>/dev/null; then
-        echo "Gamingrig is already up"
-        exit 0
-      fi
-
-      # Wake gamingrig using wakeonlan (m1-pro is on LAN)
-      if [ -n "$MAC_ADDRESS" ]; then
-        echo "[$(date +%Y-%m-%dT%H:%M:%SZ)] Waking gamingrig (LAN)..."
-        wakeonlan "$MAC_ADDRESS" 2>/dev/null || true
-
-        # Wait for gamingrig to come up
-        for i in {1..30}; do
-          if ping -c 1 -W 2 "$GAMINGRIG" &>/dev/null; then
-            echo "[$(date +%Y-%m-%dT%H:%M:%SZ)] Gamingrig is up"
-            exit 0
-          fi
-          sleep 2
-        done
-        echo "[$(date +%Y-%m-%dT%H:%M:%SZ)] Warning: gamingrig did not respond after wake"
-      else
-        echo "Error: GAMINGRIG_MAC_ADDRESS not set in environment"
-        exit 1
-      fi
-    '';
-  };
 
   #---------------------------------------------------------------------
   # Env vars and dotfiles

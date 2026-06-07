@@ -41,9 +41,17 @@ endif
 switch: ## Build and switch your nix config.
 	@echo "$(DATELOG) Building nix config for $(HOST)"
 ifneq (,$(findstring $(HOST),$(DARWIN_HOSTS)))
+	@if command -v wake-gamingrig &>/dev/null; then \
+		echo "$(DATELOG) Waking gamingrig for cache access..."; \
+		wake-gamingrig; \
+	fi
 	nix --extra-experimental-features 'nix-command flakes' build ".#darwinConfigurations.${HOST}.system" --show-trace --impure
 	sudo ./result/sw/bin/darwin-rebuild switch --flake "$$(pwd)#${HOST}" --impure
 else ifneq (,$(findstring $(HOST),$(NIXOS_HOSTS)))
+	@if command -v wake-gamingrig &>/dev/null; then \
+		echo "$(DATELOG) Waking gamingrig for cache access..."; \
+		wake-gamingrig; \
+	fi
 	sudo NIXPKGS_ALLOW_UNSUPPORTED_ARCH=1 nixos-rebuild switch --flake ".#${HOST}" --impure
 else ifneq (,$(findstring $(HOST),$(HOME_MANAGER_HOSTS)))
 	@echo "$(DATELOG) Using home-manager for ${NIXUSER}@${HOST}"
@@ -72,9 +80,17 @@ endif
 test: ## Test your nix config.
 	@echo "$(DATELOG) Testing nix config"
 ifneq (,$(findstring $(HOST),$(DARWIN_HOSTS)))
+	@if command -v wake-gamingrig &>/dev/null; then \
+		echo "$(DATELOG) Waking gamingrig for cache access..."; \
+		wake-gamingrig; \
+	fi
 	nix --extra-experimental-features 'nix-command flakes' build ".#darwinConfigurations.${HOST}.system" --show-trace --impure
 	./result/sw/bin/darwin-rebuild test --flake "$$(pwd)#${HOST}" --impure
 else ifneq (,$(findstring $(HOST),$(NIXOS_HOSTS)))
+	@if command -v wake-gamingrig &>/dev/null; then \
+		echo "$(DATELOG) Waking gamingrig for cache access..."; \
+		wake-gamingrig; \
+	fi
 	sudo NIXPKGS_ALLOW_UNSUPPORTED_ARCH=1 nixos-rebuild test --flake ".#${HOST}" --impure
 else ifneq (,$(findstring $(HOST),$(HOME_MANAGER_HOSTS)))
 	@echo "$(DATELOG) Testing home-manager config for ${NIXUSER}@${HOST}"

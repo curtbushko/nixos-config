@@ -101,6 +101,7 @@
   pr-view = pkgs.writeScriptBin "pr-view" (builtins.readFile ./pr-view);
   snippet = pkgs.writeScriptBin "snippet" (builtins.readFile ./snippet);
   tailssh = pkgs.writeScriptBin "tailssh" (builtins.readFile ./tailssh);
+  wake-gamingrig = pkgs.writeScriptBin "wake-gamingrig" (builtins.readFile ./wake-gamingrig);
   ollama-up = pkgs.writeScriptBin "ollama-up" (builtins.readFile ./ollama-up);
   zigbuildwatcher = pkgs.writeScriptBin "zigbuildwatcher" (builtins.readFile ./zigbuildwatcher);
 in {
@@ -169,6 +170,7 @@ in {
       pr-view
       snippet
       tailssh
+      wake-gamingrig
       zigbuildwatcher
     ]
     ++ (lib.optionals isLinux [
