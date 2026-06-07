@@ -269,10 +269,6 @@ in {
            eval "$(tv init zsh)"
          fi
       '';
-      initExtra = ''
-        # Bind tab to search history like up arrow
-        bindkey '^I' up-line-or-beginning-search
-      '';
     };
     programs.zsh.oh-my-zsh = {
       enable = true;
