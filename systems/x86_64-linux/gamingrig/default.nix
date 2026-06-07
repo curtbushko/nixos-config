@@ -256,24 +256,59 @@
   services.openssh.settings.PasswordAuthentication = true;
   services.openssh.settings.PermitRootLogin = "no";
 
-  # Enable nix-serve to act as a binary cache for other machines
+  # Enable nix-serve to serve local /nix/store (port 5000)
   services.nix-serve = {
     enable = true;
     port = 5000;
-    # Bind to all interfaces so other machines can access it
     bindAddress = "0.0.0.0";
   };
 
-  # Configure Nix to fetch from cachix so we can cache and serve those packages
-  nix.settings = {
-    substituters = [
-      "https://cache.nixos.org/"
-      "https://nix-community.cachix.org"
-    ];
-    trusted-public-keys = [
-      "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-    ];
+  # Enable ncps for pull-through caching (port 8501)
+  services.ncps = {
+    enable = true;
+    settings = {
+      listen = "0.0.0.0:8501";
+
+      # Configure upstream caches
+      upstream = {
+        cache-nixos-org = {
+          url = "https://cache.nixos.org";
+          public-key = "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=";
+        };
+        nix-community = {
+          url = "https://nix-community.cachix.org";
+          public-key = "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=";
+        };
+      };
+
+      # LRU cache with 100GB limit
+      storage = {
+        type = "local";
+        path = "/var/lib/ncps";
+        max-size = "100GB";
+      };
+    };
+  };
+
+  # Configure Nix settings
+  nix = {
+    settings = {
+      substituters = [
+        "https://cache.nixos.org/"
+        "https://nix-community.cachix.org"
+      ];
+      trusted-public-keys = [
+        "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+        "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+      ];
+    };
+
+    # Automatic garbage collection
+    gc = {
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than 30d";
+    };
   };
 
   # Enable tailscale
