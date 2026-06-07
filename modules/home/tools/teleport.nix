@@ -71,21 +71,6 @@ in {
       tsh-ssh = "tsh ssh";
     };
 
-    # Add tsh completion to bash/zsh if enabled
-    programs.bash.initExtra = mkIf config.programs.bash.enable ''
-      # Teleport (tsh) shell completion
-      if command -v tsh &> /dev/null; then
-        source <(tsh --completion-script-bash)
-      fi
-    '';
-
-    programs.zsh.initExtra = mkIf config.programs.zsh.enable ''
-      # Teleport (tsh) shell completion
-      if command -v tsh &> /dev/null; then
-        source <(tsh --completion-script-zsh)
-      fi
-    '';
-
     # macOS-specific: Install and trust Teleport CA certificate
     home.file.".teleport-ca.crt" = mkIf isDarwin {
       source = ../../../secrets/teleport-ca.crt;

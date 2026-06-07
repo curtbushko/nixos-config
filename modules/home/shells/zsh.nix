@@ -271,6 +271,11 @@ in {
          if command -v tv >/dev/null 2>&1; then
            eval "$(tv init zsh)"
          fi
+
+         # Teleport (tsh) shell completion
+         if command -v tsh &> /dev/null; then
+           source <(tsh --completion-script-zsh)
+         fi
       '';
     };
     programs.zsh.oh-my-zsh = {
