@@ -266,27 +266,28 @@
   # Enable ncps for pull-through caching (port 8501)
   services.ncps = {
     enable = true;
-    settings = {
-      listen = "0.0.0.0:8501";
+
+    # LRU cache with 100GB limit
+    cache = {
+      hostName = "gamingrig";
+      storage.local = "/var/lib/ncps";
+      maxSize = "100G";
 
       # Configure upstream caches
       upstream = {
-        cache-nixos-org = {
-          url = "https://cache.nixos.org";
-          public-key = "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=";
-        };
-        nix-community = {
-          url = "https://nix-community.cachix.org";
-          public-key = "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=";
-        };
+        urls = [
+          "https://cache.nixos.org"
+          "https://nix-community.cachix.org"
+        ];
+        publicKeys = [
+          "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+          "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+        ];
       };
+    };
 
-      # LRU cache with 100GB limit
-      storage = {
-        type = "local";
-        path = "/var/lib/ncps";
-        max-size = "100GB";
-      };
+    server = {
+      addr = "0.0.0.0:8501";
     };
   };
 
@@ -307,7 +308,7 @@
     gc = {
       automatic = true;
       dates = "weekly";
-      options = "--delete-older-than 30d";
+      options = lib.mkForce "--delete-older-than 30d";
     };
   };
 
