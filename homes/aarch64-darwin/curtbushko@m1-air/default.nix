@@ -25,7 +25,10 @@
     secrets.enable = true;
     shells.enable = true;
     terminals.enable = true;
-    tools.enable = true;
+    tools = {
+      enable = true;
+      teleport.enable = true;
+    };
     wm.rectangle.enable = true;
     # Theme colors managed by flair: run `flair select <theme>`
     theme.wallpaper = "cyberpunk_2077_phantom_liberty_katana.jpg";
