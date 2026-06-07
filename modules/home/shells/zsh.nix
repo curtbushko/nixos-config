@@ -141,6 +141,9 @@ in {
           pcall = "wakeonlan -i 192.168.2.255 $GAMINGRIG_MAC_ADDRESS; sleep 1; $M1DDC display 2 set input 18; $M1DDC display 1 set input 15";
         };
       initContent = ''
+         # Fix for zsh completion conflict with _ alias (oh-my-zsh)
+         unalias _ 2>/dev/null || true
+
          # Increase file descriptor limit on macOS
          ${lib.optionalString isDarwin "ulimit -n 1024"}
 
