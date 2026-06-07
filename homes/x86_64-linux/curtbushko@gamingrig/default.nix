@@ -47,7 +47,10 @@
     secrets.enable = true;
     shells.enable = true;
     terminals.enable = true;
-    tools.enable = true;
+    tools = {
+      enable = true;
+      teleport.enable = true;
+    };
     wm = {
       tools.enable = true;
       niri.enable = true;

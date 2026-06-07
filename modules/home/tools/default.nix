@@ -18,6 +18,7 @@ in {
     ./exercism.nix
     ./mpv.nix
     ./notesmd-cli.nix
+    ./teleport.nix
     ./television
     ./worktrunk
     ./yazi.nix
