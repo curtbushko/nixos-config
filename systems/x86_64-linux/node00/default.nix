@@ -24,6 +24,8 @@
     services.minecraft.homestead.enable = false;
     services.vr.enable = false;
     services.wm.enable = false;
+    # Use gamingrig as binary cache with wake-on-lan
+    nix-cache-gamingrig.enable = true;
   };
 
   # Use the systemd-boot EFI boot loader.

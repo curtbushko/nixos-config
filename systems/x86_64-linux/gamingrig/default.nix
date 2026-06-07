@@ -256,6 +256,26 @@
   services.openssh.settings.PasswordAuthentication = true;
   services.openssh.settings.PermitRootLogin = "no";
 
+  # Enable nix-serve to act as a binary cache for other machines
+  services.nix-serve = {
+    enable = true;
+    port = 5000;
+    # Bind to all interfaces so other machines can access it
+    bindAddress = "0.0.0.0";
+  };
+
+  # Configure Nix to fetch from cachix so we can cache and serve those packages
+  nix.settings = {
+    substituters = [
+      "https://cache.nixos.org/"
+      "https://nix-community.cachix.org"
+    ];
+    trusted-public-keys = [
+      "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+    ];
+  };
+
   # Enable tailscale
   services.tailscale.enable = true;
   # Try and slow down startup of tailscaled after waking up

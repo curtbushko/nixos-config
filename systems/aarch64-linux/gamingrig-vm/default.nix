@@ -14,6 +14,8 @@
   curtbushko = {
     hardware.audio.enable = true;
     services.wm.enable = true;
+    # Use gamingrig as binary cache with wake-on-lan
+    nix-cache-gamingrig.enable = true;
   };
 
   # Use GRUB for VM boot (works better with QEMU/UTM)
