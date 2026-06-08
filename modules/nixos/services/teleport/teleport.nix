@@ -14,62 +14,66 @@ in {
 
   config = mkIf cfg.enable {
     # Configure sops to access the teleport auth token
-    sops.secrets.teleport_auth_token = {
+    sops.secrets."teleport/auth_token" = {
       sopsFile = ../../../../secrets/secrets.yaml;
-      key = "teleport/auth_token";
     };
     sops.age.keyFile = "/home/curtbushko/.config/sops/age/keys.txt";
 
-    # Enable Teleport service
+    # Generate teleport config with embedded token using sops template
+    sops.templates."teleport.yaml" = {
+      content = ''
+        version: v3
+        teleport:
+          nodename: gamingrig
+          data_dir: /var/lib/teleport
+          log:
+            severity: INFO
+            output: stderr
+
+        auth_service:
+          enabled: true
+          listen_addr: "0.0.0.0:3025"
+          cluster_name: gamingrig
+          tokens:
+            - "node:${config.sops.placeholder."teleport/auth_token"}"
+          session_recording: node
+          authentication:
+            type: local
+            second_factors:
+              - otp
+
+        proxy_service:
+          enabled: true
+          listen_addr: "0.0.0.0:3023"
+          web_listen_addr: "0.0.0.0:3080"
+          tunnel_listen_addr: "0.0.0.0:3024"
+          public_addr: "gamingrig:3080"
+
+        ssh_service:
+          enabled: true
+          labels:
+            role: server
+            env: home
+      '';
+      path = "/etc/teleport.yaml";
+      owner = "root";
+      mode = "0600";
+    };
+
+    # Enable Teleport service with custom config
     services.teleport = {
       enable = true;
+      settings = {};  # Empty - we use sops template instead
+    };
 
-      settings = {
-        teleport = {
-          nodename = "gamingrig";
-          data_dir = "/var/lib/teleport";
-          log = {
-            severity = "INFO";
-            output = "stderr";
-          };
-        };
-
-        # Enable auth service (authentication and session recording)
-        auth_service = {
-          enabled = true;
-          listen_addr = "0.0.0.0:3025";
-          cluster_name = "gamingrig";
-
-          # Session recording
-          session_recording = "node";
-
-          # Authentication settings
-          authentication = {
-            type = "local";
-            second_factors = ["otp"];  # TOTP: Google Authenticator, Authy, 1Password, etc.
-          };
-        };
-
-        # Enable proxy service (web UI and client access)
-        proxy_service = {
-          enabled = true;
-          listen_addr = "0.0.0.0:3023";
-          web_listen_addr = "0.0.0.0:3080";
-          tunnel_listen_addr = "0.0.0.0:3024";
-
-          # Public address (adjust if needed)
-          public_addr = "gamingrig:3080";
-        };
-
-        # Enable SSH service for the local node
-        ssh_service = {
-          enabled = true;
-          labels = {
-            role = "server";
-            env = "home";
-          };
-        };
+    # Override teleport service to use our sops-generated config
+    systemd.services.teleport = {
+      serviceConfig = {
+        ExecStart = lib.mkForce "${pkgs.teleport}/bin/teleport start --config=/etc/teleport.yaml";
       };
+      # Ensure sops secrets are available before teleport starts
+      after = ["sops-nix.service"];
+      wants = ["sops-nix.service"];
     };
 
     # Open required ports in the firewall

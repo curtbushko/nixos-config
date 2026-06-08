@@ -98,4 +98,7 @@
     noto-fonts-color-emoji
     powerline-fonts
   ];
+
+  # Teleport node - connects to gamingrig cluster
+  curtbushko.services.teleport.enable = true;
 }

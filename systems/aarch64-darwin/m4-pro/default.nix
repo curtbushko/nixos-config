@@ -149,6 +149,9 @@
 
   services.tailscale.enable = true;
 
+  # Teleport node - connects to gamingrig cluster
+  curtbushko.services.teleport.enable = true;
+
   # Homebrew for packages not in nixpkgs
   homebrew = {
     enable = true;
