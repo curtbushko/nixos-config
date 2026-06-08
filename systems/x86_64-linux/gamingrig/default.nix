@@ -27,7 +27,6 @@
     services.llm.enable = true;
     services.minecraft.dj-server.enable = false;
     services.minecraft.homestead.enable = false;
-    services.teleport.enable = true;
     services.vr.enable = true;
     services.wm.enable = true; # qt and wayland
   };
