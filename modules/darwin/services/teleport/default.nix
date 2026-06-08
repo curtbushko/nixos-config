@@ -76,18 +76,16 @@ in {
     # Install teleport package
     environment.systemPackages = [pkgs.teleport];
 
-    # Create data directory
-    system.activationScripts.teleport.text = ''
-      mkdir -p /var/lib/teleport
-      chmod 700 /var/lib/teleport
-    '';
-
     # Run teleport as a launchd daemon
     launchd.daemons.teleport = {
       path = [pkgs.coreutils pkgs.gnused];
 
-      # Script that substitutes the auth token and runs teleport
+      # Script that creates data dir, substitutes the auth token, and runs teleport
       script = ''
+        # Ensure data directory exists (activation scripts unreliable on darwin)
+        mkdir -p /var/lib/teleport
+        chmod 700 /var/lib/teleport
+
         AUTH_TOKEN=$(cat ${config.sops.secrets.teleport_auth_token.path})
         CONFIG_DIR="/var/lib/teleport"
         CONFIG_FILE="$CONFIG_DIR/teleport.yaml"
