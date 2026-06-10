@@ -28,7 +28,7 @@ in {
     environment.systemPackages = with pkgs; [
       wayland
       egl-wayland
-      libsForQt5.qt5.qtwayland
+      qt5.qtwayland
     ];
 
     # Enable xdg-desktop-portal at system level
