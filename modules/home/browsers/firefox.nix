@@ -12,6 +12,7 @@ in {
     stylix.targets.firefox.profileNames = ["default"];
     programs.firefox = {
       enable = true;
+      configPath = ".mozilla/firefox"; # Keep legacy path for stateVersion < 26.05
       policies = {
         OfferToSaveLogins = false;
         PasswordManagerEnabled = false;

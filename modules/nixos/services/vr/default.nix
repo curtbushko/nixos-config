@@ -22,6 +22,9 @@ in {
     # should allow scripts that use /bin/bash to work
     services.envfs.enable = true;
 
+    # Enable udev rules for slimevr devices
+    services.udev.packages = [ pkgs.slimevr ];
+
     environment.systemPackages = (with pkgs; [
       android-tools
       dbus

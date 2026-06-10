@@ -11,6 +11,7 @@ in {
     programs.yazi = {
       enable = true;
       enableZshIntegration = true;
+      shellWrapperName = "y"; # New default in 26.05, explicitly set to silence warning
       theme = with config.lib.stylix.colors.withHashtag; let
         mkFg = fg: {inherit fg;};
         mkBg = bg: {inherit bg;};

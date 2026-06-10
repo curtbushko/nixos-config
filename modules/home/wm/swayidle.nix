@@ -40,7 +40,7 @@ in {
   config = mkIf cfg.enable {
     services.swayidle = {
       enable = true;
-      systemdTarget = "graphical-session.target";
+      systemdTargets = ["graphical-session.target"];
       events = {
         after-resume = "${pkgs.niri}/bin/niri msg action power-on-monitors";
       };
@@ -55,6 +55,5 @@ in {
         }
       ];
     };
-    systemd.user.services.swayidle.Unit.After = lib.mkForce [ "graphical-session.target" ];
   };
 }
