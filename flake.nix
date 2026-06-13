@@ -111,8 +111,62 @@
         };
       };
     };
-  in
-    lib.mkFlake {
+
+    # Generate devShells for all supported systems
+    devShells = inputs.nixpkgs.lib.genAttrs
+      ["x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin"]
+      (system: let
+        pkgs = import inputs.nixpkgs {
+          inherit system;
+          config.allowUnfree = true;
+        };
+      in {
+        default = pkgs.mkShell {
+          packages = with pkgs; [
+            # Version control
+            git
+
+            # Nix formatting and linting
+            nixpkgs-fmt
+            nixd
+
+            # YAML linting
+            yamllint
+
+            # Secrets management (sops-nix)
+            sops
+            age
+
+            # Build and deployment
+            darwin-rebuild
+          ] ++ pkgs.lib.optionals pkgs.stdenv.isDarwin [
+            # macOS specific
+            pkgs.darwin.apple_sdk.frameworks.Security
+          ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
+            # Linux specific
+            nixos-rebuild
+          ];
+
+          shellHook = ''
+            # Auto-pull if on main branch
+            if [ "$(git rev-parse --abbrev-ref HEAD 2>/dev/null)" = "main" ]; then
+              echo "On main branch, pulling latest changes..."
+              git pull --quiet || true
+            fi
+
+            echo "NixOS Configuration Development Environment"
+            echo "==========================================="
+            echo ""
+            echo "Available tools:"
+            echo "  nixpkgs-fmt     - Format Nix code"
+            echo "  yamllint        - Lint YAML files"
+            echo "  sops            - Manage secrets"
+            echo ""
+          '';
+        };
+      });
+
+    flakeOutputs = lib.mkFlake {
       # Add armv7l-linux to the default supported systems
       supportedSystems = ["x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" "armv7l-linux"];
 
@@ -140,4 +194,6 @@
         stevenblack-hosts.nixosModule
       ];
     };
+  in
+    flakeOutputs // { inherit devShells; };
 }
