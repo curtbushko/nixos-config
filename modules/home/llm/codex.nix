@@ -44,6 +44,7 @@ in {
       };
       shellAliases = {
         cx = "codex";
+        cdx = "codex -m gpt-5.4";
       };
     };
 
@@ -55,7 +56,6 @@ in {
 
     # Codex statusline configuration
     home.file.".codex/config.toml".text = ''
-      model = "gpt-5.4"
       reasoning_effort = "medium"
       status_line = { command = "node $HOME/.codex/statusline.mjs", padding = 0, type = "command" }
 

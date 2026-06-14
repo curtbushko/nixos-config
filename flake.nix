@@ -136,12 +136,6 @@
             # Secrets management (sops-nix)
             sops
             age
-
-            # Build and deployment
-            darwin-rebuild
-          ] ++ pkgs.lib.optionals pkgs.stdenv.isDarwin [
-            # macOS specific
-            pkgs.darwin.apple_sdk.frameworks.Security
           ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
             # Linux specific
             nixos-rebuild

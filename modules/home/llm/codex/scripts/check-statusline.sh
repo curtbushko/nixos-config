@@ -43,9 +43,10 @@ assert_file_exists() {
 	fi
 }
 
+assert_contains "${REPO_ROOT}/modules/home/llm/codex.nix" 'cx = "codex";'
+assert_contains "${REPO_ROOT}/modules/home/llm/codex.nix" 'cdx = "codex -m gpt-5.4 -c \"projects.\\\"\$PWD\\\".trust_level=\\\"trusted\\\"\"";'
 assert_contains "${REPO_ROOT}/modules/home/llm/codex.nix" 'home.file.".codex/config.toml"'
 assert_contains "${REPO_ROOT}/modules/home/llm/codex.nix" 'status_line = {'
-assert_contains "${REPO_ROOT}/modules/home/llm/codex.nix" 'model = "gpt-5.4"'
 assert_contains "${REPO_ROOT}/modules/home/llm/codex.nix" 'reasoning_effort = "medium"'
 assert_contains "${REPO_ROOT}/modules/home/llm/codex.nix" "command = \"node ${home_token}/.codex/statusline.mjs\""
 assert_contains "${REPO_ROOT}/modules/home/llm/codex.nix" '[sandbox_workspace_write]'
