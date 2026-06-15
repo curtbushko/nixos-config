@@ -84,6 +84,20 @@ This applies to ALL files including:
 - Keep functions small and focused
 - Prefer explicit over implicit
 
+## Git Commit Messages (CRITICAL)
+
+**ALWAYS use single quotes for git commit messages.** Double quotes cause `unmatched "` errors in zsh.
+
+```bash
+# CORRECT - use single quotes
+git commit -m 'fix: resolve issue with parser'
+
+# WRONG - double quotes break with special characters
+git commit -m "fix: resolve issue with parser"
+```
+
+**NO EXCEPTIONS.** If the message contains an apostrophe, escape it: `'don'\''t do this'`
+
 ## Scripting Language Policy (CRITICAL)
 
 **NEVER use Python for scripting tools or automation tasks.**
