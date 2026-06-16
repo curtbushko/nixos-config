@@ -1,3 +1,8 @@
+---
+name: prd
+description: PRD (Product Requirements Document) Writing Skill
+---
+
 
 # PRD (Product Requirements Document) Writing Skill
 

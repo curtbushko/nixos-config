@@ -1,3 +1,8 @@
+---
+name: nix
+description: Nix Best Practices
+---
+
 # Nix Best Practices
 
 Comprehensive guide for working with Nix, including flakes, NixOS, home-manager, nix-darwin, and development environments.

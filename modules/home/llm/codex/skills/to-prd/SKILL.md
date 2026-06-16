@@ -1,3 +1,8 @@
+---
+name: to-prd
+description: To PRD - Conversation to Product Requirements Document
+---
+
 
 # To PRD - Conversation to Product Requirements Document
 

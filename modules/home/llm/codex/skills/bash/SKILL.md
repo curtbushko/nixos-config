@@ -1,3 +1,8 @@
+---
+name: bash
+description: Bash Shell Script Development Guidelines
+---
+
 # Bash Shell Script Development Guidelines
 
 High-quality, maintainable bash shell scripts following industry best practices.

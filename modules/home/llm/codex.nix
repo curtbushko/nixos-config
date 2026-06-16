@@ -32,39 +32,71 @@
   b_fg = colors."statusline-b-fg";
   c_bg = colors."statusline-c-bg";
   c_fg = colors."statusline-c-fg";
+
+  cdx = pkgs.writeShellScriptBin "cdx" ''
+    set -euo pipefail
+
+    export CODEX_HOME="''${CODEX_HOME:-${config.home.homeDirectory}/.config/codex}"
+
+    trust_root="$PWD"
+    if common_dir="$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null)"; then
+      trust_root="$(dirname "$common_dir")"
+    fi
+
+    project_key="''${trust_root//\\/\\\\}"
+    project_key="''${project_key//\"/\\\"}"
+
+    exec codex -m gpt-5.5 -c "projects={\"''${project_key}\"={trust_level=\"trusted\"}}" "$@"
+  '';
 in {
   config = mkIf cfg.enable {
     home.packages = [
       pkgs.codex
+      cdx
     ];
 
     programs.zsh = {
       sessionVariables = {
-        CODEX_HOME = "${config.home.homeDirectory}/.codex";
+        CODEX_HOME = "${config.home.homeDirectory}/.config/codex";
       };
       shellAliases = {
         cx = "codex";
-        cdx = "codex -m gpt-5.4";
       };
     };
 
     # Deploy Codex global instructions (AGENTS.md)
-    home.file.".codex/AGENTS.md".source = ./codex/AGENTS.md;
+    home.file.".config/codex/AGENTS.md".source = ./codex/AGENTS.md;
 
-    # Deploy Codex skills as individual AGENTS.md files
-    home.file.".codex/skills".source = ./codex/skills;
+    # Deploy Codex skills as individual SKILL.md files
+    home.file.".config/codex/skills".source = ./codex/skills;
 
     # Codex statusline configuration
-    home.file.".codex/config.toml".text = ''
+    home.file.".config/codex/config.toml".text = ''
+      approval_policy = "never"
+      sandbox_mode    = "workspace-write"
+      file_opener     = "none"
       reasoning_effort = "medium"
-      status_line = { command = "node $HOME/.codex/statusline.mjs", padding = 0, type = "command" }
+
+      status_line = { command = "node $HOME/.config/codex/statusline.mjs", padding = 0, type = "command" }
 
       [sandbox_workspace_write]
-      readable_roots = [ "${config.home.homeDirectory}/.codex/sessions" ]
+      readable_roots = [ "${config.home.homeDirectory}/.config/codex/sessions" ]
+      network_access = true
+
+      [shell_environment_policy]
+      inherit                 = "core"          # all | core | none
+      ignore_default_excludes = false           # if false, KEY/SECRET/TOKEN names are stripped first
+      include_only            = ["PATH", "HOME", "TMPDIR", "LANG", "LC_*"]
+      exclude                 = ["AWS_*", "GITHUB_*", "*_TOKEN", "*_SECRET", "*_KEY"]
+      set                     = { "CI" = "1", "NO_COLOR" = "1" }
+      experimental_use_profile = false
+
+      [projects."${config.home.homeDirectory}/workspace/github.com/curtbushko/nixos-config"]
+      trust_level = "trusted"
     '';
 
     # Codex statusline (Node.js for faster rendering)
-    home.file.".codex/statusline.mjs" = {
+    home.file.".config/codex/statusline.mjs" = {
       text = ''
         import { execSync } from "node:child_process";
         import { readdirSync, readFileSync, statSync } from "node:fs";
@@ -291,8 +323,8 @@ in {
       '';
     };
 
-    # Codex validation scripts
-    home.file.".codex/scripts" = {
+    # Deploy Codex helper scripts.
+    home.file.".config/codex/scripts" = {
       source = ./codex/scripts;
       recursive = true;
       executable = true;

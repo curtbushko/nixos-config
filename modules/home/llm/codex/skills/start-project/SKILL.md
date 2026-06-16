@@ -1,3 +1,8 @@
+---
+name: start-project
+description: Project Startup Checklist
+---
+
 # Project Startup Checklist
 
 CRITICAL: Before writing ANY code, ALWAYS complete this checklist:

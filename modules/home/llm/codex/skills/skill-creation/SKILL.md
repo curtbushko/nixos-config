@@ -1,3 +1,8 @@
+---
+name: skill-creation
+description: Skill Creation
+---
+
 
 # Skill Creation
 
@@ -30,10 +35,6 @@ modules/home/llm/claude/skills/
 ## SKILL.md Structure
 
 ```markdown
----
-name: skill-name-with-hyphens
-description: Use when [specific triggering conditions]. [What it does in third person].
----
 
 # Skill Name
 

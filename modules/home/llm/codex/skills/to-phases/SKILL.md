@@ -1,3 +1,8 @@
+---
+name: to-phases
+description: To Phases - Implementation Phase Manager
+---
+
 
 # To Phases - Implementation Phase Manager
 
@@ -47,61 +52,6 @@ else:
     Create new plan (Create Mode)
 ```
 
----
-
-### Create Mode
-
-#### 1a. Prompt for Project Name
-
-Use AskUserQuestion:
-
-**Question**: "What is the project name?"
-- Header: "Project"
-- This is REQUIRED. Do not proceed without a project name.
-
-#### 1b. Collect Phases
-
-**If PRD exists:**
-1. Analyze PRD user stories and group them into logical phases
-2. Present proposed phases to user for approval
-3. Use AskUserQuestion to confirm or modify phases
-
-**If no PRD:**
-For each phase, ask the user:
-
-1. **Phase name** - Short descriptive name (e.g., "Project Setup", "Core Domain")
-2. **Tasks** - List of implementation tasks as checklist items
-
-Use AskUserQuestion:
-
-**Question**: "Describe Phase {N}: {name}"
-- Header: "Phase {N}"
-- Ask for the tasks as a list. Each task should be a concrete, completable item.
-
-After each phase, ask:
-
-**Question**: "Add another phase?"
-- Header: "More?"
-- Options: "Yes, add another", "No, done with phases"
-
-Continue until the user is done.
-
-#### 1c. Validate PRD Coverage (if PRD exists)
-
-Before writing files, verify:
-- [ ] All user stories from PRD are covered by at least one phase
-- [ ] All modules from implementation decisions are addressed
-- [ ] Testing decisions are reflected in appropriate phases
-
-If coverage is incomplete, warn the user and ask if they want to add phases.
-
-#### 1d. Write the Files
-
-1. Create `.plans/` directory if needed: `mkdir -p .plans`
-2. Write `.plans/index.yaml` (format below)
-3. Write `.plans/phase-{NN}-{slug}.md` for each phase (format below)
-
----
 
 ### Append/Update Mode
 
@@ -151,61 +101,6 @@ Ask the user:
 3. Report uncovered stories
 4. Offer to create additional phases
 
----
-
-## Output Formats
-
-### `.plans/index.yaml` (Lean - orchestrator reads only this)
-
-```yaml
-project: "{PROJECT_NAME}"
-prd: "prd-{feature-name}.md"  # Optional: reference to PRD if exists
-current_phase: {PHASE_NUMBER}
-phases:
-  - id: 1
-    name: "{PHASE_NAME}"
-    file: "phase-01-{slug}.md"
-    status: completed    # pending | in_progress | completed
-    progress: "4/4"      # completed/total tasks
-  - id: 2
-    name: "{PHASE_NAME}"
-    file: "phase-02-{slug}.md"
-    status: in_progress
-    progress: "3/8"
-  - id: 3
-    name: "{PHASE_NAME}"
-    file: "phase-03-{slug}.md"
-    status: pending
-    progress: "0/6"
-```
-
-### `.plans/phase-{NN}-{slug}.md` (Full details - subagents read these)
-
-```markdown
-# Phase {N}: {PHASE_NAME}
-
-## PRD Reference
-
-Covers user stories: #1, #3, #5-7 from {prd-file}
-
-## Tasks
-
-- [ ] {Task description}
-- [ ] {Task description}
-- [x] {Completed task description}
-
-## Notes
-
-{Optional implementation notes, hints, or constraints}
-```
-
-### File Naming
-
-- Phase files use zero-padded numbers: `phase-01-`, `phase-02-`, etc.
-- Slugs are lowercase, hyphenated: `project-setup`, `core-domain`
-- Example: `phase-02-core-domain.md`
-
----
 
 ## Status Management
 
@@ -232,32 +127,6 @@ Covers user stories: #1, #3, #5-7 from {prd-file}
 - Automatically advances when a phase completes
 - Can be manually set by user
 
----
-
-## Integration with Other Skills
-
-Team skills (go-team, node-team, zig-team) read from `.plans/`:
-
-| Who | Reads | Purpose |
-|-----|-------|---------|
-| Orchestrator | `.plans/index.yaml` | Status overview, find current phase |
-| Task Manager | `.plans/phase-*.md` | Full task details for breakdown |
-| Task Manager | `.plans/prd-*.md` (optional) | PRD context if needed |
-| Builder/Reviewer | `.tasks/*.yaml` | Task specs (created by Task Manager) |
-
-### Workflow
-
-1. `/to-prd` creates `.plans/prd-*.md` (optional)
-2. `/to-phases` creates `.plans/` structure (index.yaml + phase files)
-3. `/go-team` (or node-team, zig-team) reads index.yaml to find current phase
-4. Task Manager reads the phase file (and PRD if needed), breaks into `.tasks/`
-5. Builder/Reviewer work from `.tasks/` files
-6. On task completion, orchestrator updates:
-   - `.tasks/status.yaml` (task status)
-   - `.plans/phase-*.md` (checkbox)
-   - `.plans/index.yaml` (progress)
-
----
 
 ## Examples
 
@@ -317,14 +186,3 @@ Implements modules:
 - Use value objects where appropriate
 ```
 
----
-
-## Anti-Patterns
-
-- Putting all phases in a single file (defeats context savings)
-- Storing full task details in index.yaml (keep it lean)
-- Not syncing progress between phase files and index.yaml
-- Using PLAN.md instead of `.plans/` structure
-- Ignoring PRD when it exists - phases must cover all scenarios
-- Not validating PRD coverage before finalizing phases
-- Including PRD content in phase files (just reference it)

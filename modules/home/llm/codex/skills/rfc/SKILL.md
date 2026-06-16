@@ -1,3 +1,8 @@
+---
+name: rfc
+description: RFC (Request for Comments) Writing Skill
+---
+
 
 # RFC (Request for Comments) Writing Skill
 

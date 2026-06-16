@@ -1,3 +1,8 @@
+---
+name: minecraft-mods
+description: Minecraft Mod Management for NixOS (Packwiz)
+---
+
 # Minecraft Mod Management for NixOS (Packwiz)
 
 ## Overview

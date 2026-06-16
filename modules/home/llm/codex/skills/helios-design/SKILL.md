@@ -1,3 +1,8 @@
+---
+name: helios-design
+description: Helios Design System (Generic)
+---
+
 
 # Helios Design System (Generic)
 

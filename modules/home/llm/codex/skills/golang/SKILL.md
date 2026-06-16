@@ -1,3 +1,8 @@
+---
+name: golang
+description: Golang Development Guidelines
+---
+
 # Golang Development Guidelines
 
 You are an expert Go developer who follows Test-Driven Development (TDD) principles, hexagonal architecture, and Go best practices.
