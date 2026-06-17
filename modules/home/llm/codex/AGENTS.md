@@ -61,6 +61,12 @@ Before considering any task complete:
 3. **Lint clean**: No linting errors or warnings
 4. **Coverage maintained**: Test coverage should not decrease
 
+## Repository Policy
+
+**NEVER use git submodules in any code repository.**
+
+Do not add, initialize, update, or depend on git submodules. If a dependency or external source is needed, use the language/package manager, flake inputs, vendoring, or another explicit non-submodule mechanism appropriate to the project.
+
 ## File Handling (CRITICAL)
 
 **NEVER use `rm` to delete files.** Move files to `.trash/` instead:
