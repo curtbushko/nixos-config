@@ -70,18 +70,41 @@ in {
     # Deploy Codex skills as individual SKILL.md files
     home.file.".config/codex/skills".source = ./codex/skills;
 
+    # Deploy Codex command approval rules.
+    home.file.".config/codex/rules".source = ./codex/rules;
+
     # Codex statusline configuration
     home.file.".config/codex/config.toml".text = ''
       approval_policy = "never"
       sandbox_mode    = "workspace-write"
       file_opener     = "none"
       reasoning_effort = "medium"
+      commit_attribution = ""
+      web_search = "live"
 
       status_line = { command = "node $HOME/.config/codex/statusline.mjs", padding = 0, type = "command" }
 
       [sandbox_workspace_write]
       readable_roots = [ "${config.home.homeDirectory}/.config/codex/sessions" ]
       network_access = true
+
+      [features.network_proxy]
+      enabled = true
+
+      [features.network_proxy.domains]
+      "api.github.com" = "allow"
+      "api.modrinth.com" = "allow"
+      "gist.github.com" = "allow"
+      "github.com" = "allow"
+      "github.io" = "allow"
+      "go.dev" = "allow"
+      "golangci-lint.run" = "allow"
+      "modrinth.com" = "allow"
+      "pkg.go.dev" = "allow"
+      "raw.githubusercontent.com" = "allow"
+      "stackoverflow.com" = "allow"
+      "zig.guide" = "allow"
+      "ziglang.org" = "allow"
 
       [shell_environment_policy]
       inherit                 = "core"          # all | core | none
