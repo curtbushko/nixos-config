@@ -127,6 +127,7 @@
             git
 
             # Nix formatting and linting
+            alejandra
             nixpkgs-fmt
             nixd
 
@@ -152,6 +153,7 @@
             echo "==========================================="
             echo ""
             echo "Available tools:"
+            echo "  alejandra       - Format Nix code"
             echo "  nixpkgs-fmt     - Format Nix code"
             echo "  yamllint        - Lint YAML files"
             echo "  sops            - Manage secrets"

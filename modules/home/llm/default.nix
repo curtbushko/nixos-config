@@ -8,6 +8,7 @@
 }: let
   inherit (lib) types mkOption mkIf;
   cfg = config.curtbushko.llm;
+  ds4 = pkgs.callPackage ../../../packages/ds4 {};
 in {
   options.curtbushko.llm = {
     enable = mkOption {
@@ -26,6 +27,8 @@ in {
         inputs.llm-agents.packages.${system}.rtk
         inputs.llm-agents.packages.${system}.ccusage
         pkgs.python3Packages.huggingface-hub
+    ] ++ lib.optionals pkgs.stdenv.isDarwin [
+      ds4
     ];
 
     # RTK config

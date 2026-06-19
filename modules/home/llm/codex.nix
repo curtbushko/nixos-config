@@ -111,7 +111,7 @@ in {
       ignore_default_excludes = false           # if false, KEY/SECRET/TOKEN names are stripped first
       include_only            = ["PATH", "HOME", "TMPDIR", "LANG", "LC_*"]
       exclude                 = ["AWS_*", "GITHUB_*", "*_TOKEN", "*_SECRET", "*_KEY"]
-      set                     = { "CI" = "1", "NO_COLOR" = "1" }
+      set                     = { "CI" = "1", "NO_COLOR" = "1", "USER" = "${config.home.username}", "LOGNAME" = "${config.home.username}", "PATH" = "${config.home.homeDirectory}/.local/bin:/run/wrappers/bin:${config.home.homeDirectory}/.nix-profile/bin:/nix/profile/bin:${config.home.homeDirectory}/.local/state/nix/profile/bin:/etc/profiles/per-user/${config.home.username}/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin" }
       experimental_use_profile = false
 
       [projects."${config.home.homeDirectory}/workspace/github.com/curtbushko/nixos-config"]
