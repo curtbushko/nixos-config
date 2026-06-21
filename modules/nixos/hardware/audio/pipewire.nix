@@ -11,14 +11,29 @@ in {
     # Bypassing some rkit bugs that are causing audio problems
     # See: https://github.com/heftig/rtkit/issues/32
     security.pam.loginLimits = [
-      { domain = "@audio"; item = "rtprio"; type = "-"; value = 95; }
-      { domain = "@audio"; item = "nice"; type = "-"; value = -19; }
-      { domain = "@audio"; item = "memlock"; type = "-"; value = 4194304; }
+      {
+        domain = "@audio";
+        item = "rtprio";
+        type = "-";
+        value = 95;
+      }
+      {
+        domain = "@audio";
+        item = "nice";
+        type = "-";
+        value = -19;
+      }
+      {
+        domain = "@audio";
+        item = "memlock";
+        type = "-";
+        value = 4194304;
+      }
     ];
 
     security.rtkit = {
       enable = true;
-      args = [ "--no-canary" ]; # bypass from above
+      args = ["--no-canary"]; # bypass from above
     };
     # Pipewire
     # Explicitly disable PulseAudio when using PipeWire

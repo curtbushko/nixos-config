@@ -78,7 +78,7 @@ in {
         '';
       };
 
-      networking.firewall.allowedTCPPorts = [ 25565 ];
+      networking.firewall.allowedTCPPorts = [25565];
     })
 
     # homestead configuration
@@ -116,7 +116,7 @@ in {
         '';
       };
 
-      networking.firewall.allowedTCPPorts = [ 25566 ];
+      networking.firewall.allowedTCPPorts = [25566];
     })
   ];
 }

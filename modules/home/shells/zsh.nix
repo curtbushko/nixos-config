@@ -4,7 +4,7 @@
   pkgs,
   ...
 }: let
-  inherit (lib)  mkIf;
+  inherit (lib) mkIf;
   cfg = config.curtbushko.shells;
   isDarwin = pkgs.stdenv.isDarwin;
   isLinux = pkgs.stdenv.isLinux;
@@ -26,19 +26,18 @@ in {
         dl = "$HOME/Downloads";
       };
       # environment variables
-      sessionVariables =
-        {
-          BUSHKO = "$HOME/workspace/github.com/curtbushko";
-          KLEIO = "$HOME/workspace/github.com/kleioverse";
-          DOTFILES = "$HOME/.dotfiles";
-          GHOSTTY = "$HOME/workspace/github.com/ghostty-org/ghostty";
-          GITHUB = "$HOME/workspace/github.com";
-          KB = "$BUSHKO/kb";
-          NIXOS_CONFIG = "$HOME/workspace/github.com/curtbushko/nixos-config";
-          SYNCTHING = "$HOME/Sync";
-          WORKSPACE = "$HOME/workspace";
-          M1DDC = "$HOME/.dotfiles/bin/m1ddc";
-        };
+      sessionVariables = {
+        BUSHKO = "$HOME/workspace/github.com/curtbushko";
+        KLEIO = "$HOME/workspace/github.com/kleioverse";
+        DOTFILES = "$HOME/.dotfiles";
+        GHOSTTY = "$HOME/workspace/github.com/ghostty-org/ghostty";
+        GITHUB = "$HOME/workspace/github.com";
+        KB = "$BUSHKO/kb";
+        NIXOS_CONFIG = "$HOME/workspace/github.com/curtbushko/nixos-config";
+        SYNCTHING = "$HOME/Sync";
+        WORKSPACE = "$HOME/workspace";
+        M1DDC = "$HOME/.dotfiles/bin/m1ddc";
+      };
       shellAliases =
         {
           ".." = "cd ..";
@@ -149,10 +148,10 @@ in {
 
          # Initialize Homebrew on macOS
          ${lib.optionalString isDarwin ''
-         if [ -f /opt/homebrew/bin/brew ]; then
-           eval "$(/opt/homebrew/bin/brew shellenv)"
-         fi
-         ''}
+          if [ -f /opt/homebrew/bin/brew ]; then
+            eval "$(/opt/homebrew/bin/brew shellenv)"
+          fi
+        ''}
 
          # Override SHELL to use the wrapper from user profile (for Claude Code structured output)
          export SHELL="/etc/profiles/per-user/${config.home.username}/bin/zsh"

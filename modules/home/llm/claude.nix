@@ -22,9 +22,10 @@
     "statusline-c-fg" = "#a9b665";
   };
 
-  colors = if builtins.pathExists flairStylePath
-           then builtins.fromJSON (builtins.readFile flairStylePath)
-           else defaultColors;
+  colors =
+    if builtins.pathExists flairStylePath
+    then builtins.fromJSON (builtins.readFile flairStylePath)
+    else defaultColors;
 
   a_bg = colors."statusline-a-bg";
   a_fg = colors."statusline-a-fg";
@@ -35,152 +36,152 @@
 in {
   config = mkIf cfg.enable {
     programs.claude-code = {
-    enable = true;
-    package = inputs.claude-code.packages.${pkgs.stdenv.hostPlatform.system}.default;
-    settings = {
-      includeCoAuthoredBy = false;
-      hooks = {
-        SessionStart = [
-          {
-            hooks = [
-              {
-                type = "command";
-                timeout = 10;
-                command = ''
-                  # Inject skill awareness and TDD reminders
-                  if [ -x "$HOME/.claude/scripts/session-start.sh" ]; then
-                    "$HOME/.claude/scripts/session-start.sh"
-                  fi
-                '';
-              }
-            ];
-          }
-        ];
-        UserPromptSubmit = [
-          {
-            hooks = [
-              {
-                type = "command";
-                command = ''
-                  # Remind about checking skills before coding
-                  if echo "$PROMPT" | grep -qiE "implement|create|build|write.*code|add.*feature"; then
-                    echo "REMINDER: Check ~/.claude/skills/ before coding!"
-                  fi
-                '';
-              }
-            ];
-          }
-        ];
-        PostToolUse = [
-          {
-            matcher = "Write|Edit";
-            hooks = [
-              {
-                type = "command";
-                timeout = 10;
-                command = ''
-                  # Check for emojis in written/edited files
-                  INPUT=$(cat)
-                  FILE=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
-                  if [ -n "$FILE" ] && [ -f "$FILE" ]; then
-                    if echo "$FILE" | grep -qE '\.(go|js|ts|jsx|tsx|py|rs|sh|bash|nix)$'; then
-                      if grep -P '[\x{1F600}-\x{1F64F}\x{1F300}-\x{1F5FF}\x{1F680}-\x{1F6FF}\x{2600}-\x{26FF}]' "$FILE" 2>/dev/null; then
-                        echo "Warning: File contains emojis. Use Nerd Font icons instead." >&2
+      enable = true;
+      package = inputs.claude-code.packages.${pkgs.stdenv.hostPlatform.system}.default;
+      settings = {
+        includeCoAuthoredBy = false;
+        hooks = {
+          SessionStart = [
+            {
+              hooks = [
+                {
+                  type = "command";
+                  timeout = 10;
+                  command = ''
+                    # Inject skill awareness and TDD reminders
+                    if [ -x "$HOME/.claude/scripts/session-start.sh" ]; then
+                      "$HOME/.claude/scripts/session-start.sh"
+                    fi
+                  '';
+                }
+              ];
+            }
+          ];
+          UserPromptSubmit = [
+            {
+              hooks = [
+                {
+                  type = "command";
+                  command = ''
+                    # Remind about checking skills before coding
+                    if echo "$PROMPT" | grep -qiE "implement|create|build|write.*code|add.*feature"; then
+                      echo "REMINDER: Check ~/.claude/skills/ before coding!"
+                    fi
+                  '';
+                }
+              ];
+            }
+          ];
+          PostToolUse = [
+            {
+              matcher = "Write|Edit";
+              hooks = [
+                {
+                  type = "command";
+                  timeout = 10;
+                  command = ''
+                    # Check for emojis in written/edited files
+                    INPUT=$(cat)
+                    FILE=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
+                    if [ -n "$FILE" ] && [ -f "$FILE" ]; then
+                      if echo "$FILE" | grep -qE '\.(go|js|ts|jsx|tsx|py|rs|sh|bash|nix)$'; then
+                        if grep -P '[\x{1F600}-\x{1F64F}\x{1F300}-\x{1F5FF}\x{1F680}-\x{1F6FF}\x{2600}-\x{26FF}]' "$FILE" 2>/dev/null; then
+                          echo "Warning: File contains emojis. Use Nerd Font icons instead." >&2
+                        fi
                       fi
                     fi
-                  fi
-                  exit 0
-                '';
-              }
-            ];
-          }
-          {
-            matcher = "Bash";
-            hooks = [
-              {
-                type = "command";
-                timeout = 5;
-                command = ''
-                  # Validate bash scripts after creation
-                  INPUT=$(cat)
-                  CMD=$(echo "$INPUT" | jq -r '.tool_input.command // empty')
-                  # Check if command created a .sh file
-                  if echo "$CMD" | grep -qE '>\s*[^|]+\.sh'; then
-                    echo "Reminder: New bash script should have shebang and set -euo pipefail" >&2
-                  fi
-                  exit 0
-                '';
-              }
-            ];
-          }
-        ];
-        Stop = [
-          {
-            hooks = [
-              {
-                type = "command";
-                timeout = 5;
-                command = ''
-                  echo "Reminder: Run ~/.claude/scripts/quality-gates.sh before committing"
-                '';
-              }
-            ];
-          }
-        ];
+                    exit 0
+                  '';
+                }
+              ];
+            }
+            {
+              matcher = "Bash";
+              hooks = [
+                {
+                  type = "command";
+                  timeout = 5;
+                  command = ''
+                    # Validate bash scripts after creation
+                    INPUT=$(cat)
+                    CMD=$(echo "$INPUT" | jq -r '.tool_input.command // empty')
+                    # Check if command created a .sh file
+                    if echo "$CMD" | grep -qE '>\s*[^|]+\.sh'; then
+                      echo "Reminder: New bash script should have shebang and set -euo pipefail" >&2
+                    fi
+                    exit 0
+                  '';
+                }
+              ];
+            }
+          ];
+          Stop = [
+            {
+              hooks = [
+                {
+                  type = "command";
+                  timeout = 5;
+                  command = ''
+                    echo "Reminder: Run ~/.claude/scripts/quality-gates.sh before committing"
+                  '';
+                }
+              ];
+            }
+          ];
+        };
+        permissions = {
+          allow = [
+            "Bash(make:*)"
+            "Bash(go:*)"
+            "Bash(ls:*)"
+            "Bash(find:*)"
+            "Bash(rg:*)"
+            "Bash(grep:*)"
+            "Bash(cat:*)"
+            "Bash(mkdir:*)"
+            "Bash(curl:*)"
+            "Bash(do)"
+            "Bash(echo:*)"
+            "Bash(done)"
+            "Bash(journalctl:*)"
+            "Bash(sudo ls:*)"
+            "Bash(sudo cat:*)"
+            "Bash(sudo systemctl:*)"
+            "Bash(systemctl status:*)"
+            "Bash(sudo tail:*)"
+            "Bash(nix search:*)"
+            "Bash(chmod:*)"
+            "Bash(nix-option:*)"
+            "Bash(unzip:*)"
+            "Read(~/.claude/**)"
+            "WebFetch(domain:pkg.go.dev)"
+            "WebFetch(domain:github.com)"
+            "WebFetch(domain:github.io)"
+            "WebFetch(domain:stackoverflow.com)"
+            "WebFetch(domain:go.dev)"
+            "WebFetch(domain:golangci-lint.run)"
+            "WebFetch(domain:gist.github.com)"
+            "WebFetch(domain:modrinth.com)"
+            "WebFetch(domain:api.modrinth.com)"
+            "WebFetch(domain:ziglang.org)"
+            "WebFetch(domain:zig.guide)"
+            "Bash(golangci-lint run)"
+            "Bash(go-arch-lint check)"
+            "Bash(go-ai-lint ./...)"
+          ];
+          deny = [];
+          ask = [
+            "Bash(rm:*)"
+          ];
+        };
+        statusLine = {
+          command = "node $HOME/.claude/statusline.mjs";
+          padding = 0;
+          type = "command";
+        };
+        theme = "dark";
       };
-      permissions = {
-        allow = [
-          "Bash(make:*)"
-          "Bash(go:*)"
-          "Bash(ls:*)"
-          "Bash(find:*)"
-          "Bash(rg:*)"
-          "Bash(grep:*)"
-          "Bash(cat:*)"
-          "Bash(mkdir:*)"
-          "Bash(curl:*)"
-          "Bash(do)"
-          "Bash(echo:*)"
-          "Bash(done)"
-          "Bash(journalctl:*)"
-          "Bash(sudo ls:*)"
-          "Bash(sudo cat:*)"
-          "Bash(sudo systemctl:*)"
-          "Bash(systemctl status:*)"
-          "Bash(sudo tail:*)"
-          "Bash(nix search:*)"
-          "Bash(chmod:*)"
-          "Bash(nix-option:*)"
-          "Bash(unzip:*)"
-          "Read(~/.claude/**)"
-          "WebFetch(domain:pkg.go.dev)"
-          "WebFetch(domain:github.com)"
-          "WebFetch(domain:github.io)"
-          "WebFetch(domain:stackoverflow.com)"
-          "WebFetch(domain:go.dev)"
-          "WebFetch(domain:golangci-lint.run)"
-          "WebFetch(domain:gist.github.com)"
-          "WebFetch(domain:modrinth.com)"
-          "WebFetch(domain:api.modrinth.com)"
-          "WebFetch(domain:ziglang.org)"
-          "WebFetch(domain:zig.guide)"
-          "Bash(golangci-lint run)"
-          "Bash(go-arch-lint check)"
-          "Bash(go-ai-lint ./...)"
-        ];
-        deny = [ ];
-        ask = [
-          "Bash(rm:*)"
-        ];
-      };
-      statusLine = {
-        command = "node $HOME/.claude/statusline.mjs";
-        padding = 0;
-        type = "command";
-      };
-      theme = "dark";
     };
-  };
 
     programs.zsh = {
       sessionVariables = {
@@ -324,6 +325,5 @@ in {
         process.stdout.write(out);
       '';
     };
-
   };
 }

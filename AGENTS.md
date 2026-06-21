@@ -11,7 +11,7 @@ This is a personal Nix flake managed with Snowfall Lib. Keep changes aligned wit
 - `modules/darwin/**` contains nix-darwin-only modules.
 - `modules/home/**` contains shared Home Manager modules and most user packages.
 - `modules/home/scripts/` contains shell scripts packaged via `pkgs.writeScriptBin` from `modules/home/scripts/default.nix`.
-- `modules/home/llm/codex/**` manages the generated global Codex configuration under `~/.config/codex`.
+- `modules/home/llm/codex/**` manages the generated global Codex configuration under `~/.codex`.
 - `secrets/**` is managed through sops-nix. Do not print, decrypt, rewrite, or move secrets unless explicitly asked.
 
 The intended layering is:
@@ -21,7 +21,7 @@ The intended layering is:
 
 ## Skills And Startup
 
-Before code changes, check available skills under `~/.config/codex/skills/` and read the relevant language/framework skill files completely. For this repository, the Nix skill usually applies; the Bash skill applies when editing scripts under `modules/home/scripts/` or hook/check scripts.
+Before code changes, check available skills under `~/.codex/skills/` and read the relevant language/framework skill files completely. For this repository, the Nix skill usually applies; the Bash skill applies when editing scripts under `modules/home/scripts/` or hook/check scripts.
 
 Follow TDD for implementation changes. For Nix/config changes, create or identify the smallest validation that proves the change before implementation, then run the relevant build/check after implementation.
 

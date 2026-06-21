@@ -2,13 +2,13 @@
 
 ## Codex Configuration Location
 
-This environment sets `CODEX_HOME` to `~/.config/codex` instead of Codex's default location. Resolve Codex configuration, global instructions, sessions, and skills under `~/.config/codex`.
+This environment uses Codex's default home at `~/.codex`. Resolve Codex configuration, global instructions, sessions, and skills under `~/.codex`.
 
 ## MANDATORY: Check Skills Before Coding
 
 **CRITICAL**: Before writing ANY code, you MUST:
 
-1. **List available skills**: Check `~/.config/codex/skills/` for relevant skills
+1. **List available skills**: Check `~/.codex/skills/` for relevant skills
 2. **Read applicable skill files**: If skills exist for the language/framework being used, READ THEM COMPLETELY
 3. **Follow skill guidelines**: All instructions in skill files are MANDATORY, not suggestions
 
@@ -25,7 +25,7 @@ This environment sets `CODEX_HOME` to `~/.config/codex` instead of Codex's defau
 
 ### The 6-Step TDD Workflow
 
-For the complete workflow, see `~/.config/codex/skills/golang/references/tdd-workflow.md`. The summary:
+For the complete workflow, see `~/.codex/skills/golang/references/tdd-workflow.md`. The summary:
 
 1. **INVESTIGATE** - Understand requirements, review existing code
 2. **PLAN** (features) / **REPRODUCE** (bugs) - Design API, identify test cases
@@ -44,7 +44,7 @@ For the complete workflow, see `~/.config/codex/skills/golang/references/tdd-wor
 
 Before starting ANY implementation task:
 
-- [ ] Listed skills in `~/.config/codex/skills/`
+- [ ] Listed skills in `~/.codex/skills/`
 - [ ] Read ALL relevant skill files for the language/framework
 - [ ] Identified testing requirements from skills
 - [ ] Confirmed TDD approach will be followed

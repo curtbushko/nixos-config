@@ -13,7 +13,7 @@ in {
       type = types.bool;
       default = false;
       description = ''
-        Whether to enable rofi 
+        Whether to enable rofi
       '';
     };
   };

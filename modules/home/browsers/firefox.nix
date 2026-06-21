@@ -42,13 +42,13 @@ in {
         };
         Permissions = {
           Notifications = {
-          Allow = [
-            "https://web.whatsapp.com"
-            "https://app.slack.com"
-            "https://discord.com"
-          ];
+            Allow = [
+              "https://web.whatsapp.com"
+              "https://app.slack.com"
+              "https://discord.com"
+            ];
+          };
         };
-    };
       };
 
       profiles.default = {
@@ -309,7 +309,7 @@ in {
           "browser.tabs.loadInBackground" = true;
           "browser.aboutConfig.showWarning" = false;
           "browser.aboutwelcome.enabled" = false;
-          #DISABLE ONBOARDING 
+          #DISABLE ONBOARDING
           "browser.onboarding.newtour" = "performance,private,addons,customize,default";
           "browser.onboarding.updatetour" = "performance,library,singlesearch,customize";
           "browser.onboarding.enabled" = false;

@@ -20,9 +20,10 @@
     "terminal-blue" = "#7daea3";
   };
 
-  colors = if builtins.pathExists flairStylePath
-           then builtins.fromJSON (builtins.readFile flairStylePath)
-           else defaultColors;
+  colors =
+    if builtins.pathExists flairStylePath
+    then builtins.fromJSON (builtins.readFile flairStylePath)
+    else defaultColors;
 in {
   config = mkIf cfg.enable {
     stylix.targets.tmux.enable = true;
@@ -124,7 +125,7 @@ in {
 
         set -g status-left '#[fg=${inactive},bg=${background}]      '
         set -g status-right ' '
-        set-option -g status-position top 
+        set-option -g status-position top
         set -g status-style 'fg=${inactive},bg=${background}'
         set -g status-left-style 'fg=${inactive},bg=${background}'
         set -g status-right-style 'fg=${inactive},bg=${background}'

@@ -29,8 +29,8 @@
     };
     settings = {
       # Build performance settings
-      cores = 0;  # Use all available cores for each build
-      max-jobs = "auto";  # Auto-detect optimal number of parallel jobs
+      cores = 0; # Use all available cores for each build
+      max-jobs = "auto"; # Auto-detect optimal number of parallel jobs
 
       # Parallel downloads for faster substitution
       http-connections = 128;
@@ -40,7 +40,7 @@
       connect-timeout = 5;
       stalled-download-timeout = 30;
       download-attempts = 3;
-      download-buffer-size = 256;  # Default is 64 MiB
+      download-buffer-size = 256; # Default is 64 MiB
 
       # Binary caches
       trusted-public-keys = [

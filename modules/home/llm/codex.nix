@@ -36,7 +36,7 @@
   cdx = pkgs.writeShellScriptBin "cdx" ''
     set -euo pipefail
 
-    export CODEX_HOME="''${CODEX_HOME:-${config.home.homeDirectory}/.config/codex}"
+    export CODEX_HOME="''${CODEX_HOME:-${config.home.homeDirectory}/.codex}"
 
     trust_root="$PWD"
     if common_dir="$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null)"; then
@@ -57,7 +57,7 @@ in {
 
     programs.zsh = {
       sessionVariables = {
-        CODEX_HOME = "${config.home.homeDirectory}/.config/codex";
+        CODEX_HOME = "${config.home.homeDirectory}/.codex";
       };
       shellAliases = {
         cx = "codex";
@@ -65,16 +65,16 @@ in {
     };
 
     # Deploy Codex global instructions (AGENTS.md)
-    home.file.".config/codex/AGENTS.md".source = ./codex/AGENTS.md;
+    home.file.".codex/AGENTS.md".source = ./codex/AGENTS.md;
 
     # Deploy Codex skills as individual SKILL.md files
-    home.file.".config/codex/skills".source = ./codex/skills;
+    home.file.".codex/skills".source = ./codex/skills;
 
     # Deploy Codex command approval rules.
-    home.file.".config/codex/rules".source = ./codex/rules;
+    home.file.".codex/rules".source = ./codex/rules;
 
     # Codex statusline configuration
-    home.file.".config/codex/config.toml".text = ''
+    home.file.".codex/config.toml".text = ''
       approval_policy = "never"
       sandbox_mode    = "workspace-write"
       file_opener     = "none"
@@ -82,10 +82,10 @@ in {
       commit_attribution = ""
       web_search = "live"
 
-      status_line = { command = "node $HOME/.config/codex/statusline.mjs", padding = 0, type = "command" }
+      status_line = { command = "node $HOME/.codex/statusline.mjs", padding = 0, type = "command" }
 
       [sandbox_workspace_write]
-      readable_roots = [ "${config.home.homeDirectory}/.config/codex/sessions" ]
+      readable_roots = [ "${config.home.homeDirectory}/.codex/sessions" ]
       network_access = true
 
       [features.network_proxy]
@@ -119,7 +119,7 @@ in {
     '';
 
     # Codex statusline (Node.js for faster rendering)
-    home.file.".config/codex/statusline.mjs" = {
+    home.file.".codex/statusline.mjs" = {
       text = ''
         import { execSync } from "node:child_process";
         import { readdirSync, readFileSync, statSync } from "node:fs";
@@ -347,7 +347,7 @@ in {
     };
 
     # Deploy Codex helper scripts.
-    home.file.".config/codex/scripts" = {
+    home.file.".codex/scripts" = {
       source = ./codex/scripts;
       recursive = true;
       executable = true;

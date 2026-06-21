@@ -19,8 +19,8 @@
 
     settings = {
       # Build performance settings
-      cores = 0;  # Use all available cores for each build
-      max-jobs = "auto";  # Auto-detect optimal number of parallel jobs
+      cores = 0; # Use all available cores for each build
+      max-jobs = "auto"; # Auto-detect optimal number of parallel jobs
 
       # Parallel downloads for faster substitution
       http-connections = 128;
@@ -42,7 +42,7 @@
         "mitchellh.cachix.org-1:1b3lQ7+tlqfNhQGjx1LY0AJPt0hV5sWqVYyL4UQNV0Q="
       ];
       trusted-substituters = [
-        "http://gamingrig:8501"  # ncps: Pull-through cache (LRU, 100GB)
+        "http://gamingrig:8501" # ncps: Pull-through cache (LRU, 100GB)
         "https://cache.nixos.org"
         "https://nix-community.cachix.org"
         "https://claude-code.cachix.org"

@@ -17,14 +17,14 @@ in {
     services.vicinae = {
       enable = true;
       settings = {
-         faviconService = "twenty";
-         keybinding = "vim";
+        faviconService = "twenty";
+        keybinding = "vim";
         #   theme.name = "vicinae-dark";
-      #   window = {
-      #     csd = true;
-      #     opacity = 0.95;
-      #     rounding = 10;
-      #   };
+        #   window = {
+        #     csd = true;
+        #     opacity = 0.95;
+        #     rounding = 10;
+        #   };
       };
     };
 

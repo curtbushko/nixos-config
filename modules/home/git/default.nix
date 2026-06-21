@@ -24,12 +24,12 @@
 
     cargoHash = "sha256-woog5FhtGGsB+70Q1VzYC/xu9YSL/JVp1vUrla/6JO8=";
 
-    nativeBuildInputs = with pkgs; [ pkg-config ];
-    buildInputs = with pkgs; [ openssl ];
+    nativeBuildInputs = with pkgs; [pkg-config];
+    buildInputs = with pkgs; [openssl];
 
     # Build only the CLI package
-    cargoBuildFlags = [ "--package" "sem-cli" ];
-    cargoTestFlags = [ "--package" "sem-cli" ];
+    cargoBuildFlags = ["--package" "sem-cli"];
+    cargoTestFlags = ["--package" "sem-cli"];
 
     meta = with lib; {
       description = "Semantic version control tool that works on top of Git";
@@ -54,12 +54,30 @@ in {
   };
 
   config = mkIf cfg.enable {
-    home.packages = [
-      pkgs.gh
-      pkgs.lazygit
-      pkgs.git-lfs
-      sem
-    ];
+    # Create a signed wrapper for hunk on macOS that shadows the unsigned binary
+    home.packages =
+      [
+        pkgs.gh
+        pkgs.lazygit
+        pkgs.git-lfs
+        sem
+      ]
+      ++ lib.optionals pkgs.stdenv.isDarwin [
+        (lib.hiPrio (pkgs.writeShellScriptBin "hunk" ''
+          HUNK_CACHE="$HOME/.cache/hunk-signed"
+          HUNK_BINARY="$HUNK_CACHE/hunk"
+
+          # Check if we need to (re)create the signed binary
+          if [ ! -f "$HUNK_BINARY" ] || [ "${inputs.hunk.packages.${pkgs.system}.default}/bin/hunk" -nt "$HUNK_BINARY" ]; then
+            mkdir -p "$HUNK_CACHE"
+            cp "${inputs.hunk.packages.${pkgs.system}.default}/bin/hunk" "$HUNK_BINARY"
+            chmod +w "$HUNK_BINARY"
+            codesign -s - -f "$HUNK_BINARY" 2>/dev/null || true
+          fi
+
+          exec "$HUNK_BINARY" "$@"
+        ''))
+      ];
 
     programs.git = {
       enable = true;
@@ -108,19 +126,20 @@ in {
 
       # Default fallback colors if flair style.json doesn't exist (gruvbox-material)
       defaultColors = {
-        base00 = "#2d353b";  # Default Background
-        base01 = "#232a2e";  # Lighter Background (status bars)
-        base03 = "#859289";  # Comments
-        base05 = "#d3c6aa";  # Default Foreground
-        base08 = "#e67e80";  # Red
-        base0B = "#a7c080";  # Green
-        base0D = "#7fbbb3";  # Blue/Cyan
-        base0E = "#d699b6";  # Purple/Magenta
+        base00 = "#2d353b"; # Default Background
+        base01 = "#232a2e"; # Lighter Background (status bars)
+        base03 = "#859289"; # Comments
+        base05 = "#d3c6aa"; # Default Foreground
+        base08 = "#e67e80"; # Red
+        base0B = "#a7c080"; # Green
+        base0D = "#7fbbb3"; # Blue/Cyan
+        base0E = "#d699b6"; # Purple/Magenta
       };
 
-      colors = if builtins.pathExists flairStylePath
-               then builtins.fromJSON (builtins.readFile flairStylePath)
-               else defaultColors;
+      colors =
+        if builtins.pathExists flairStylePath
+        then builtins.fromJSON (builtins.readFile flairStylePath)
+        else defaultColors;
     in {
       enable = true;
       enableGitIntegration = true;
@@ -179,7 +198,5 @@ in {
         };
       };
     };
-
   };
-
 }

@@ -23,9 +23,9 @@ in {
     services.envfs.enable = true;
 
     # Enable udev rules for slimevr devices
-    services.udev.packages = [ pkgs.slimevr ];
+    services.udev.packages = [pkgs.slimevr];
 
-    environment.systemPackages = (with pkgs; [
+    environment.systemPackages = with pkgs; [
       android-tools
       dbus
       libcap
@@ -52,7 +52,7 @@ in {
       python3Packages.pycairo
       python3Packages.pygobject3
       slimevr
-    ]);
+    ];
 
     programs.steam = {
       enable = true;
@@ -77,7 +77,7 @@ in {
       highPriority = true;
       # defaultRuntime = true;
     };
-    hardware.graphics.extraPackages = [ pkgs.monado-vulkan-layers pkgs.gamemode ];
+    hardware.graphics.extraPackages = [pkgs.monado-vulkan-layers pkgs.gamemode];
 
     # Configure WiVRn
     services.wivrn = {

@@ -1,7 +1,4 @@
-{
-  lib,
-  ...
-}: let
+{lib, ...}: let
   inherit (lib) types mkOption;
 in {
   # Theme colors are now managed by flair (~/.config/flair/style.json)

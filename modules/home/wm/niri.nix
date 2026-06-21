@@ -18,9 +18,10 @@
     "statusline-b-bg" = "#3c3836";
   };
 
-  colors = if builtins.pathExists flairStylePath
-           then builtins.fromJSON (builtins.readFile flairStylePath)
-           else defaultColors;
+  colors =
+    if builtins.pathExists flairStylePath
+    then builtins.fromJSON (builtins.readFile flairStylePath)
+    else defaultColors;
 
   # Wallpaper SHA256 hashes
   wallpaperHashes = {
@@ -52,8 +53,7 @@ in {
       WAYLAND_DISPLAY = "wayland-1";
     };
 
-    home.packages = with pkgs;
-    [
+    home.packages = with pkgs; [
       alacritty
       niri
       swaybg
@@ -64,18 +64,18 @@ in {
 
     # Run niri as a service so that other services start (ie swayidle)
     systemd.user.services.niri = {
-        Unit = {
-          Description = "A scrollable-tiling Wayland compositor";
-          BindsTo = "graphical-session.target";
-          Before = "graphical-session.target";
-          Wants = "graphical-session-pre.target";
-          After = "graphical-session-pre.target";
-        };
-        Service = {
-          Slice = "session.slice";
-          Type = "notify";
-          ExecStart = "${pkgs.niri}/bin/niri --session";
-        };
+      Unit = {
+        Description = "A scrollable-tiling Wayland compositor";
+        BindsTo = "graphical-session.target";
+        Before = "graphical-session.target";
+        Wants = "graphical-session-pre.target";
+        After = "graphical-session-pre.target";
+      };
+      Service = {
+        Slice = "session.slice";
+        Type = "notify";
+        ExecStart = "${pkgs.niri}/bin/niri --session";
+      };
     };
 
     programs.niri = {
@@ -104,9 +104,9 @@ in {
           QT_IM_MODULE = "wayland";
         };
         spawn-at-startup = [
-          { command = [ "systemctl" "--user" "import-environment" "WAYLAND_DISPLAY" "XDG_CURRENT_DESKTOP" ]; }
-          { command = [ "wl-paste --type text --watch cliphist store" ]; }
-          { command = [ "wl-paste --type image --watch cliphist store" ]; }
+          {command = ["systemctl" "--user" "import-environment" "WAYLAND_DISPLAY" "XDG_CURRENT_DESKTOP"];}
+          {command = ["wl-paste --type text --watch cliphist store"];}
+          {command = ["wl-paste --type image --watch cliphist store"];}
           # xwayland-satellite is managed by niri's built-in integration (since 25.08)
           # niri creates X11 sockets, exports DISPLAY, and spawns xwayland-satellite on demand
         ];
@@ -232,30 +232,28 @@ in {
 
         window-rules = [
           {
-            geometry-corner-radius =
-              let
-                radius = 4.0;
-              in
-              {
-                bottom-left = radius;
-                bottom-right = radius;
-                top-left = radius;
-                top-right = radius;
-              };
+            geometry-corner-radius = let
+              radius = 4.0;
+            in {
+              bottom-left = radius;
+              bottom-right = radius;
+              top-left = radius;
+              top-right = radius;
+            };
             clip-to-geometry = true;
           }
           # Block sensitive windows from screencasts
           {
             matches = [
-              { app-id = "^org\\.keepassxc\\.KeePassXC$"; }
-              { app-id = "^org\\.gnome\\.World\\.Secrets$"; }
+              {app-id = "^org\\.keepassxc\\.KeePassXC$";}
+              {app-id = "^org\\.gnome\\.World\\.Secrets$";}
             ];
             block-out-from = "screencast";
           }
           # Highlight windows being screencasted
           {
             matches = [
-              { is-window-cast-target = true; }
+              {is-window-cast-target = true;}
             ];
             focus-ring = {
               enable = true;
@@ -300,7 +298,7 @@ in {
           {
             matches = [
               {
-                  app-id = "^(zen|firefox|chromium-browser|edge|chrome-.*|zen-.*)$";
+                app-id = "^(zen|firefox|chromium-browser|edge|chrome-.*|zen-.*)$";
               }
             ];
             default-column-width.proportion = 0.33;
@@ -315,9 +313,9 @@ in {
                 app-id = "zen-.*$";
                 title = "^Picture-in-Picture$";
               }
-              {  title = "^Picture in picture$";}
-              {  title = "^Discord Popout$";}
-              {  title = "^floating$";}
+              {title = "^Picture in picture$";}
+              {title = "^Discord Popout$";}
+              {title = "^floating$";}
             ];
             open-floating = true;
             default-floating-position = {
@@ -330,8 +328,7 @@ in {
 
         binds = let
           inherit (config.lib.niri) actions;
-        in
-        {
+        in {
           "Mod+Return".action.spawn = "ghostty";
           "Mod+T".action.spawn = "ghostty";
           "Mod+Space".action.spawn = ["vicinae" "vicinae://toggle"]; # fuzzel
@@ -354,7 +351,7 @@ in {
 
           "Mod+Ctrl+Left".action = actions.move-column-left;
           "Mod+Ctrl+Down".action = actions.move-window-down;
-          "Mod+Ctrl+Up".action =actions.move-window-up;
+          "Mod+Ctrl+Up".action = actions.move-window-up;
           "Mod+Ctrl+Right".action = actions.move-column-right;
           "Mod+Ctrl+H".action = actions.move-column-left;
           "Mod+Ctrl+L".action = actions.move-column-right;
@@ -372,15 +369,14 @@ in {
           "Mod+Alt+Down".action = actions.switch-preset-window-height;
 
           # Volume keys mappings for PipeWire & WirePlumber.
-          XF86AudioRaiseVolume.action = actions.spawn [ "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "+2dB" ];
-          XF86AudioLowerVolume.action = actions.spawn [ "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "-2dB" ];
-          XF86AudioMute.action = actions.spawn [ "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle" ];
-          XF86AudioMicMute.action = actions.spawn [ "wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle" ];
-          XF86AudioNext.action = actions.spawn [ "playerctl" "next" ];
-          XF86AudioPrev.action = actions.spawn [ "playerctl" "previous" ];
-          XF86AudioPlay.action = actions.spawn [ "playerctl" "play-pause" ];
-          XF86AudioStop.action = actions.spawn [ "playerctl" "play-pause" ];
-
+          XF86AudioRaiseVolume.action = actions.spawn ["wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "+2dB"];
+          XF86AudioLowerVolume.action = actions.spawn ["wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "-2dB"];
+          XF86AudioMute.action = actions.spawn ["wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"];
+          XF86AudioMicMute.action = actions.spawn ["wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle"];
+          XF86AudioNext.action = actions.spawn ["playerctl" "next"];
+          XF86AudioPrev.action = actions.spawn ["playerctl" "previous"];
+          XF86AudioPlay.action = actions.spawn ["playerctl" "play-pause"];
+          XF86AudioStop.action = actions.spawn ["playerctl" "play-pause"];
         }; # binds
       }; # settings
     }; # programs.niri
@@ -397,12 +393,12 @@ in {
       enable = true;
       config = {
         common = {
-          default = [ "gnome" ];
-          "org.freedesktop.impl.portal.Settings" = [ "gnome" ];
+          default = ["gnome"];
+          "org.freedesktop.impl.portal.Settings" = ["gnome"];
         };
         niri = {
-          default = [ "gnome" ];
-          "org.freedesktop.impl.portal.Settings" = [ "gnome" ];
+          default = ["gnome"];
+          "org.freedesktop.impl.portal.Settings" = ["gnome"];
         };
       };
       extraPortals = with pkgs; [
@@ -441,4 +437,3 @@ in {
     };
   };
 }
-

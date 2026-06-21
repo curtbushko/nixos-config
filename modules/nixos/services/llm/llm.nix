@@ -12,6 +12,5 @@ in {
     # environment.systemPackages = with pkgs; [
     #   cudatoolkit
     # ];
-
   };
 }

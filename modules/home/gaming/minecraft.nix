@@ -18,8 +18,14 @@ in {
       enable = true;
       # Pre-configure servers in the multiplayer menu
       serverEntries = [
-        { name = "D&J Server (gamingrig)"; ip = "gamingrig:25565"; }
-        { name = "Homestead (gamingrig)"; ip = "gamingrig:25566"; }
+        {
+          name = "D&J Server (gamingrig)";
+          ip = "gamingrig:25565";
+        }
+        {
+          name = "Homestead (gamingrig)";
+          ip = "gamingrig:25566";
+        }
       ];
     };
 

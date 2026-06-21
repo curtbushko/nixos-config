@@ -21,15 +21,17 @@ in {
   };
 
   config = mkIf cfg.enable {
-    home.packages = [
+    home.packages =
+      [
         # llama-cpp with CUDA is installed at system level (see systems/x86_64-linux/gamingrig/default.nix)
         # Don't install here to avoid shadowing the CUDA version
         inputs.llm-agents.packages.${system}.rtk
         inputs.llm-agents.packages.${system}.ccusage
         pkgs.python3Packages.huggingface-hub
-    ] ++ lib.optionals pkgs.stdenv.isDarwin [
-      ds4
-    ];
+      ]
+      ++ lib.optionals pkgs.stdenv.isDarwin [
+        ds4
+      ];
 
     # RTK config
     xdg.configFile."rtk/config.toml".source = ./rtk-config.toml;

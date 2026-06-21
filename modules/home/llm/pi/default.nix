@@ -6,64 +6,63 @@
   system,
   ...
 }: {
-  config =
-    let
-      inherit (lib) mkIf;
-      cfg = config.curtbushko.llm;
+  config = let
+    inherit (lib) mkIf;
+    cfg = config.curtbushko.llm;
 
-      # NPM wrapper that redirects global prefix to a writable location under ~/.pi/agent/
-      # This avoids permission errors from trying to write to the read-only Nix store
-      piNpm = pkgs.writeShellScriptBin "pi-npm" ''
-        export PATH="${pkgs.nodejs}/bin:$PATH"
-        export NPM_CONFIG_PREFIX="$HOME/.pi/agent/npm"
-        exec ${pkgs.nodejs}/bin/npm "$@"
-      '';
+    # NPM wrapper that redirects global prefix to a writable location under ~/.pi/agent/
+    # This avoids permission errors from trying to write to the read-only Nix store
+    piNpm = pkgs.writeShellScriptBin "pi-npm" ''
+      export PATH="${pkgs.nodejs}/bin:$PATH"
+      export NPM_CONFIG_PREFIX="$HOME/.pi/agent/npm"
+      exec ${pkgs.nodejs}/bin/npm "$@"
+    '';
 
-      # Read colors from flair's style.json (same source as stylix)
-      # Note: Requires --impure flag for home-manager switch
-      flairStylePath = "${config.home.homeDirectory}/.config/flair/style.json";
+    # Read colors from flair's style.json (same source as stylix)
+    # Note: Requires --impure flag for home-manager switch
+    flairStylePath = "${config.home.homeDirectory}/.config/flair/style.json";
 
-      # Default fallback theme (gruvbox-material) if flair style.json doesn't exist
-      defaultColors = {
-        base00 = "#282828";
-        base01 = "#1d2021";
-        base02 = "#3c3836";
-        base03 = "#504945";
-        base04 = "#504945";
-        base05 = "#d4be98";
-        base06 = "#dbe0cd";
-        base07 = "#fff8e3";
-        base08 = "#ea6962";
-        base09 = "#e78a4e";
-        base0A = "#d8a657";
-        base0B = "#9fc975";
-        base0C = "#89b482";
-        base0D = "#7daea3";
-        base0E = "#9d7cd8";
-        base0F = "#a9b665";
-        # Statusline colors
-        "statusline-a-bg" = "#504945";
-        "statusline-a-fg" = "#282828";
-        "statusline-b-bg" = "#32302f";
-        "statusline-b-fg" = "#d4be98";
-        "statusline-c-bg" = "#1d2021";
-        "statusline-c-fg" = "#d4be98";
-      };
+    # Default fallback theme (gruvbox-material) if flair style.json doesn't exist
+    defaultColors = {
+      base00 = "#282828";
+      base01 = "#1d2021";
+      base02 = "#3c3836";
+      base03 = "#504945";
+      base04 = "#504945";
+      base05 = "#d4be98";
+      base06 = "#dbe0cd";
+      base07 = "#fff8e3";
+      base08 = "#ea6962";
+      base09 = "#e78a4e";
+      base0A = "#d8a657";
+      base0B = "#9fc975";
+      base0C = "#89b482";
+      base0D = "#7daea3";
+      base0E = "#9d7cd8";
+      base0F = "#a9b665";
+      # Statusline colors
+      "statusline-a-bg" = "#504945";
+      "statusline-a-fg" = "#282828";
+      "statusline-b-bg" = "#32302f";
+      "statusline-b-fg" = "#d4be98";
+      "statusline-c-bg" = "#1d2021";
+      "statusline-c-fg" = "#d4be98";
+    };
 
-      # Use flair colors if available, otherwise fall back to default
-      colors =
-        if builtins.pathExists flairStylePath
-        then builtins.fromJSON (builtins.readFile flairStylePath)
-        else defaultColors;
+    # Use flair colors if available, otherwise fall back to default
+    colors =
+      if builtins.pathExists flairStylePath
+      then builtins.fromJSON (builtins.readFile flairStylePath)
+      else defaultColors;
 
-      # Statusline color variables
-      a_bg = colors."statusline-a-bg";
-      a_fg = colors."statusline-a-fg";
-      b_bg = colors."statusline-b-bg";
-      b_fg = colors."statusline-b-fg";
-      c_bg = colors."statusline-c-bg";
-      c_fg = colors."statusline-c-fg";
-    in
+    # Statusline color variables
+    a_bg = colors."statusline-a-bg";
+    a_fg = colors."statusline-a-fg";
+    b_bg = colors."statusline-b-bg";
+    b_fg = colors."statusline-b-fg";
+    c_bg = colors."statusline-c-bg";
+    c_fg = colors."statusline-c-fg";
+  in
     mkIf cfg.enable {
       home.packages = [
         pkgs.nodejs
@@ -118,9 +117,9 @@
           colors = {
             # UI colors
             accent = colors.base0D;
-            border = colors.base02;           # Subtle visible border
-            borderAccent = colors.base0D;     # Accent border (blue)
-            borderMuted = colors.base03;      # Muted border (gray)
+            border = colors.base02; # Subtle visible border
+            borderAccent = colors.base0D; # Accent border (blue)
+            borderMuted = colors.base03; # Muted border (gray)
             success = colors.base0B;
             error = colors.base08;
             warning = colors.base0A;
@@ -131,16 +130,16 @@
 
             # Backgrounds
             selectedBg = colors.base02;
-            userMessageBg = colors.base01;    # Slightly elevated background
+            userMessageBg = colors.base01; # Slightly elevated background
             userMessageText = colors.base05;
-            customMessageBg = colors.base01;  # Slightly elevated background
+            customMessageBg = colors.base01; # Slightly elevated background
             customMessageText = colors.base05;
             customMessageLabel = colors.base0D;
             toolPendingBg = colors.base01;
             toolSuccessBg = colors.base01;
             toolErrorBg = colors.base01;
             toolTitle = colors.base0D;
-            toolOutput = colors.base05;       # Use main text color
+            toolOutput = colors.base05; # Use main text color
 
             # Markdown
             mdHeading = colors.base0A;
@@ -148,10 +147,10 @@
             mdLinkUrl = colors.base03;
             mdCode = colors.base0C;
             mdCodeBlock = colors.base05;
-            mdCodeBlockBorder = colors.base02;  # Subtle border for code blocks
+            mdCodeBlockBorder = colors.base02; # Subtle border for code blocks
             mdQuote = colors.base03;
-            mdQuoteBorder = colors.base0D;      # Accent border for quotes
-            mdHr = colors.base03;               # Visible horizontal rules
+            mdQuoteBorder = colors.base0D; # Accent border for quotes
+            mdHr = colors.base03; # Visible horizontal rules
             mdListBullet = colors.base0C;
 
             # Diff colors
@@ -210,7 +209,6 @@
           c_fg = c_fg;
           error = "#ea6962";
         };
-
       };
 
       # ========================================================================

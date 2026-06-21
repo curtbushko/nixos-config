@@ -12,7 +12,7 @@ in {
       enableBashIntegration = true;
       enableZshIntegration = true;
       # disable up arrow key
-      flags = [ "--disable-up-arrow" ];
+      flags = ["--disable-up-arrow"];
       settings = {
         auto_sync = false;
         #sync_frequency = "5m";

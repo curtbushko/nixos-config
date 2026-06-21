@@ -20,9 +20,10 @@
     "statusline-c-fg" = "#a9b665";
   };
 
-  colors = if builtins.pathExists flairStylePath
-           then builtins.fromJSON (builtins.readFile flairStylePath)
-           else defaultColors;
+  colors =
+    if builtins.pathExists flairStylePath
+    then builtins.fromJSON (builtins.readFile flairStylePath)
+    else defaultColors;
 
   a_bg = colors."statusline-a-bg";
   a_fg = colors."statusline-a-fg";

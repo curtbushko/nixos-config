@@ -1,4 +1,9 @@
-{config, lib, pkgs, ...}: let
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
   # Read colors from flair's style.json in ~/.config/flair/
   # Flair generates base16 colors directly (base00-base0F)
   # Note: Requires --impure flag for nix build/home-manager switch
@@ -25,9 +30,10 @@
   };
 
   # Use flair colors if available, otherwise fall back to default
-  colors = if builtins.pathExists flairStylePath
-           then builtins.fromJSON (builtins.readFile flairStylePath)
-           else defaultColors;
+  colors =
+    if builtins.pathExists flairStylePath
+    then builtins.fromJSON (builtins.readFile flairStylePath)
+    else defaultColors;
 
   # Strip leading '#' from hex colors for stylix (it expects "1a1b26" not "#1a1b26")
   stripHash = color: lib.removePrefix "#" color;
@@ -179,9 +185,9 @@ in {
   };
 
   # Add required icon theme packages (Linux only)
-  home.packages = with pkgs; lib.optionals isLinux [
-    hicolor-icon-theme # Base icon theme
-    gruvbox-plus-icons # Main icon theme
-  ];
-
+  home.packages = with pkgs;
+    lib.optionals isLinux [
+      hicolor-icon-theme # Base icon theme
+      gruvbox-plus-icons # Main icon theme
+    ];
 }

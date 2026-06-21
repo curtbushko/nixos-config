@@ -208,7 +208,6 @@
     #sunshine
   ];
 
-
   # Needed to run things like stylua in neovim on nixos
   programs.nix-ld.enable = true;
   programs.nix-ld.libraries = with pkgs; [
@@ -239,9 +238,8 @@
     libidn
     tbb
     zlib
-
   ];
- 
+
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   programs.mtr.enable = true;

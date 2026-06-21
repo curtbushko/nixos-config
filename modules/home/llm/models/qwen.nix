@@ -30,7 +30,6 @@
   };
 
   hfRepo = variantRepos.${cfg.variant} or cfg.variant;
-
 in {
   options.curtbushko.llm.models.qwen = {
     enable = mkOption {

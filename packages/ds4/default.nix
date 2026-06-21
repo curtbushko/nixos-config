@@ -5,8 +5,7 @@
   cudaPackages_12_6 ? null,
   cudaArch ? "sm_89",
   apple-sdk_15,
-}:
-let
+}: let
   isDarwin = stdenv.hostPlatform.isDarwin;
   cudaPackages =
     if isDarwin
@@ -50,24 +49,25 @@ in
         cudaPackages.cuda_cccl
       ];
 
-    buildPhase = ''
-      runHook preBuild
-    ''
-    + lib.optionalString isDarwin ''
-      # Set deployment target to macOS 15.0 for Metal 4 API support
-      export MACOSX_DEPLOYMENT_TARGET=15.0
-      make ${buildTargets} NATIVE_CPU_FLAG=
-    ''
-    + lib.optionalString (!isDarwin) ''
-      make ${buildTargets} \
-        NVCC=nvcc \
-        NATIVE_CPU_FLAG= \
-        "NVCCFLAGS=-O3 --use_fast_math -arch=${cudaArch} -Xcompiler -pthread" \
-        "CUDA_LDLIBS=-lm -Xcompiler -pthread -lcudart -lcublas"
-    ''
-    + ''
-      runHook postBuild
-    '';
+    buildPhase =
+      ''
+        runHook preBuild
+      ''
+      + lib.optionalString isDarwin ''
+        # Set deployment target to macOS 15.0 for Metal 4 API support
+        export MACOSX_DEPLOYMENT_TARGET=15.0
+        make ${buildTargets} NATIVE_CPU_FLAG=
+      ''
+      + lib.optionalString (!isDarwin) ''
+        make ${buildTargets} \
+          NVCC=nvcc \
+          NATIVE_CPU_FLAG= \
+          "NVCCFLAGS=-O3 --use_fast_math -arch=${cudaArch} -Xcompiler -pthread" \
+          "CUDA_LDLIBS=-lm -Xcompiler -pthread -lcudart -lcublas"
+      ''
+      + ''
+        runHook postBuild
+      '';
 
     installPhase = ''
       runHook preInstall

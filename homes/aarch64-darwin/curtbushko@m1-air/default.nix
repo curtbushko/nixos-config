@@ -29,7 +29,6 @@
     wm.rectangle.enable = true;
     # Theme colors managed by flair: run `flair select <theme>`
     theme.wallpaper = "cyberpunk_2077_phantom_liberty_katana.jpg";
-
   };
 
   #---------------------------------------------------------------------
@@ -41,7 +40,6 @@
     inputs.neovim.packages.${pkgs.stdenv.hostPlatform.system}.default
     pkgs.obsidian
   ];
-
 
   #---------------------------------------------------------------------
   # Env vars and dotfiles

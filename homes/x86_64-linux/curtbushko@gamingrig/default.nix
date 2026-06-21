@@ -39,7 +39,7 @@
         enable = true;
         # Uses default variant: "2.5-coder-7b-instruct-gguf" from bartowski
         # Uses default modelFile: "Qwen2.5-Coder-7B-Instruct-Q4_K_M.gguf"
-        autoDownload = false;  # Disabled - download manually to avoid timeout
+        autoDownload = false; # Disabled - download manually to avoid timeout
       };
     };
     programming.enable = true;
@@ -55,7 +55,6 @@
     };
     # Theme colors managed by flair: run `flair select <theme>`
     theme.wallpaper = "firewatch-green.jpg";
-
   };
 
   #---------------------------------------------------------------------

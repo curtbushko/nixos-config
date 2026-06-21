@@ -26,29 +26,29 @@
   # Uses hiPrio to shadow bash-interactive in the profile
   # NOTE: Shebang uses @bash@ placeholder to avoid infinite loop (env bash would find wrapper)
   bash = lib.hiPrio (pkgs.runCommand "bash" {
-    src = ./bash;
-    inherit structuredCli;
-  } ''
-    mkdir -p $out/bin
-    substitute $src $out/bin/bash \
-      --replace-fail "@bash@" "${pkgs.bash}" \
-      --replace-fail "@structuredCli@" "${structuredCli}"
-    chmod +x $out/bin/bash
-  '');
+      src = ./bash;
+      inherit structuredCli;
+    } ''
+      mkdir -p $out/bin
+      substitute $src $out/bin/bash \
+        --replace-fail "@bash@" "${pkgs.bash}" \
+        --replace-fail "@structuredCli@" "${structuredCli}"
+      chmod +x $out/bin/bash
+    '');
 
   # Zsh wrapper for Claude Code - substitutes @placeholders@ with Nix paths
   # Uses hiPrio to shadow zsh in the profile
   # NOTE: Shebang uses @zsh@ placeholder to avoid infinite loop (env zsh would find wrapper)
   zsh = lib.hiPrio (pkgs.runCommand "zsh" {
-    src = ./zsh;
-    inherit structuredCli;
-  } ''
-    mkdir -p $out/bin
-    substitute $src $out/bin/zsh \
-      --replace-fail "@zsh@" "${pkgs.zsh}" \
-      --replace-fail "@structuredCli@" "${structuredCli}"
-    chmod +x $out/bin/zsh
-  '');
+      src = ./zsh;
+      inherit structuredCli;
+    } ''
+      mkdir -p $out/bin
+      substitute $src $out/bin/zsh \
+        --replace-fail "@zsh@" "${pkgs.zsh}" \
+        --replace-fail "@structuredCli@" "${structuredCli}"
+      chmod +x $out/bin/zsh
+    '');
 
   aocgen = pkgs.writeScriptBin "aocgen" (builtins.readFile ./aocgen);
   auto-sleep = pkgs.writeScriptBin "auto-sleep" (builtins.readFile ./auto-sleep);
@@ -117,65 +117,65 @@ in {
 
   config = mkIf cfg.enable {
     home.packages =
-    [
-      aocgen
-      bash
-      zsh
-      build-ghostty
-      clean-filename
-      containerwatcher
-      context
-      custom-niri-session
-      daily-note
-      docker-clean
-      docker-image-dates
-      epub-to-mobi
-      file-preview
-      ghostty-update
-      git-checkout
-      git-diff
-      git-log
-      git-migrate-to-new-branch
-      git-open
-      git-recent
-      git-stats
-      git-switch
-      git-worktree-add
-      git-worktree-bare-clone
-      git-worktree-checkout-remote
-      git-worktree-switch
-      gke-delete-node
-      gobuildwatcher
-      gotestwatcher
-      helm-nuke
-      jira-ls
-      kubewatcher
-      leetgen
-      levity
-      makelintwatcher
-      makeunitwatcher
-      new-note
-      new-review
-      nodewatcher
-      ollama-up
-      open-file
-      pdf-clean
-      pod-failed-cleanup
-      pod-security-context
-      podwatcher
-      podwatcherwide
-      postscript-man
-      pr-create
-      pr-review
-      pr-view
-      snippet
-      tailssh
-      wake-gamingrig
-      zigbuildwatcher
-    ]
-    ++ (lib.optionals isLinux [
-      auto-sleep
-      hyprstart
-    ]);
+      [
+        aocgen
+        bash
+        zsh
+        build-ghostty
+        clean-filename
+        containerwatcher
+        context
+        custom-niri-session
+        daily-note
+        docker-clean
+        docker-image-dates
+        epub-to-mobi
+        file-preview
+        ghostty-update
+        git-checkout
+        git-diff
+        git-log
+        git-migrate-to-new-branch
+        git-open
+        git-recent
+        git-stats
+        git-switch
+        git-worktree-add
+        git-worktree-bare-clone
+        git-worktree-checkout-remote
+        git-worktree-switch
+        gke-delete-node
+        gobuildwatcher
+        gotestwatcher
+        helm-nuke
+        jira-ls
+        kubewatcher
+        leetgen
+        levity
+        makelintwatcher
+        makeunitwatcher
+        new-note
+        new-review
+        nodewatcher
+        ollama-up
+        open-file
+        pdf-clean
+        pod-failed-cleanup
+        pod-security-context
+        podwatcher
+        podwatcherwide
+        postscript-man
+        pr-create
+        pr-review
+        pr-view
+        snippet
+        tailssh
+        wake-gamingrig
+        zigbuildwatcher
+      ]
+      ++ (lib.optionals isLinux [
+        auto-sleep
+        hyprstart
+      ]);
   };
 }

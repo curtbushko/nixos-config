@@ -24,7 +24,7 @@
       # Model configuration for Qwen (GGUF for llama-cpp)
       models.qwen = {
         enable = true;
-        autoDownload = false;  # Download manually to avoid timeout
+        autoDownload = false; # Download manually to avoid timeout
       };
     };
     programming.enable = true;
@@ -48,7 +48,6 @@
     pkgs.podman
     pkgs.obsidian
   ];
-
 
   #---------------------------------------------------------------------
   # Env vars and dotfiles

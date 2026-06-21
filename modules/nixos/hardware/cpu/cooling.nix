@@ -18,22 +18,25 @@
   in "${toString r} ${toString g} ${toString b}";
 
   # Use stylix colors if available, otherwise use default gruvbox colors
-  gruvboxTheme = if config.stylix.enable or false then {
-    accent = hexToRgb config.stylix.base16Scheme.base0D;           # Blue for accents
-    bgOne = hexToRgb config.stylix.base16Scheme.base00;            # Main background
-    bgTwo = hexToRgb config.stylix.base16Scheme.base02;            # Secondary background
-    borderOne = "${hexToRgb config.stylix.base16Scheme.base0D} 0.25"; # Border with opacity
-    textColor = hexToRgb config.stylix.base16Scheme.base05;        # Main foreground text
-    textColorSecondary = hexToRgb config.stylix.base16Scheme.base03; # Secondary text
-  } else {
-    # Fallback to default gruvbox colors
-    accent = "131 165 152";
-    bgOne = "40 40 40";
-    bgTwo = "60 56 54";
-    borderOne = "124 111 100 0.25";
-    textColor = "235 219 178";
-    textColorSecondary = "146 131 116";
-  };
+  gruvboxTheme =
+    if config.stylix.enable or false
+    then {
+      accent = hexToRgb config.stylix.base16Scheme.base0D; # Blue for accents
+      bgOne = hexToRgb config.stylix.base16Scheme.base00; # Main background
+      bgTwo = hexToRgb config.stylix.base16Scheme.base02; # Secondary background
+      borderOne = "${hexToRgb config.stylix.base16Scheme.base0D} 0.25"; # Border with opacity
+      textColor = hexToRgb config.stylix.base16Scheme.base05; # Main foreground text
+      textColorSecondary = hexToRgb config.stylix.base16Scheme.base03; # Secondary text
+    }
+    else {
+      # Fallback to default gruvbox colors
+      accent = "131 165 152";
+      bgOne = "40 40 40";
+      bgTwo = "60 56 54";
+      borderOne = "124 111 100 0.25";
+      textColor = "235 219 178";
+      textColorSecondary = "146 131 116";
+    };
 in {
   config = mkIf cfg.enable {
     programs.coolercontrol = {

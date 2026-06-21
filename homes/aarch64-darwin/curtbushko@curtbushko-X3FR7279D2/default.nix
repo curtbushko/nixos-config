@@ -30,7 +30,6 @@
     wm.rectangle.enable = true;
     # Theme colors managed by flair: run `flair select <theme>`
     theme.wallpaper = "green-pasture.jpg";
-
   };
 
   #---------------------------------------------------------------------
@@ -50,7 +49,6 @@
     pkgs.awscli2
     pkgs.obsidian
   ];
-
 
   #---------------------------------------------------------------------
   # Env vars and dotfiles

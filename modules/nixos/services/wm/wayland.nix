@@ -9,19 +9,21 @@
 
   # Custom xkeyboard-config with additional keysyms
   xkeyboard-config-custom = pkgs.xkeyboard_config.overrideAttrs (oldAttrs: {
-    postInstall = (oldAttrs.postInstall or "") + ''
-      # Add missing keysym definitions to prevent xkbcomp warnings
-      cat >> $out/share/X11/xkb/symbols/inet <<'EOF'
+    postInstall =
+      (oldAttrs.postInstall or "")
+      + ''
+              # Add missing keysym definitions to prevent xkbcomp warnings
+              cat >> $out/share/X11/xkb/symbols/inet <<'EOF'
 
-// Additional multimedia and accessibility keys
-partial alphanumeric_keys
-xkb_symbols "evdev_custom" {
-    key <I372> { [ XF86DoNotDisturb ] };
-    key <I602> { [ XF86Accessibility ] };
-    key <I234> { [ XF86RefreshRateToggle ] };
-};
-EOF
-    '';
+        // Additional multimedia and accessibility keys
+        partial alphanumeric_keys
+        xkb_symbols "evdev_custom" {
+            key <I372> { [ XF86DoNotDisturb ] };
+            key <I602> { [ XF86Accessibility ] };
+            key <I234> { [ XF86RefreshRateToggle ] };
+        };
+        EOF
+      '';
   });
 in {
   config = mkIf cfg.enable {
@@ -39,8 +41,8 @@ in {
       ];
       config = {
         common = {
-          default = [ "gnome" ];
-          "org.freedesktop.impl.portal.Settings" = [ "gnome" ];
+          default = ["gnome"];
+          "org.freedesktop.impl.portal.Settings" = ["gnome"];
         };
       };
     };

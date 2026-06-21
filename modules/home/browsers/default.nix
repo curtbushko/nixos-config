@@ -28,6 +28,6 @@ in {
       [
       ]
       ++ (lib.optionals isLinux [
-      ]);
+        ]);
   };
 }
