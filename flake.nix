@@ -7,6 +7,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    hunk = {
+      url = "github:modem-dev/hunk";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     claude-code = {
       url = "github:sadjow/claude-code-nix/f4f8d6e7cc59e34e5a85550f017ead83ab925b22";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -94,7 +99,7 @@
       url = "github:max-sixty/worktrunk";
       inputs.nixpkgs.follows = "nixpkgs";
     };
- 
+
     zig.url = "github:mitchellh/zig-overlay";
   };
 
@@ -113,34 +118,44 @@
     };
 
     # Generate devShells for all supported systems
-    devShells = inputs.nixpkgs.lib.genAttrs
+    devShells =
+      inputs.nixpkgs.lib.genAttrs
       ["x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin"]
       (system: let
         pkgs = import inputs.nixpkgs {
           inherit system;
           config.allowUnfree = true;
         };
+        make-wrapper = pkgs.writeShellScriptBin "make" ''
+          exec ${pkgs.go-task}/bin/task "$@"
+        '';
       in {
         default = pkgs.mkShell {
-          packages = with pkgs; [
-            # Version control
-            git
+          packages = with pkgs;
+            [
+              # Version control
+              git
 
-            # Nix formatting and linting
-            alejandra
-            nixpkgs-fmt
-            nixd
+              # Nix formatting and linting
+              alejandra
+              nixpkgs-fmt
+              nixd
 
-            # YAML linting
-            yamllint
+              # YAML linting
+              yamllint
 
-            # Secrets management (sops-nix)
-            sops
-            age
-          ] ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
-            # Linux specific
-            nixos-rebuild
-          ];
+              # Secrets management (sops-nix)
+              sops
+              age
+
+              # Task runner
+              go-task
+              make-wrapper
+            ]
+            ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
+              # Linux specific
+              nixos-rebuild
+            ];
 
           shellHook = ''
             # Auto-pull if on main branch
@@ -149,14 +164,64 @@
               git pull --quiet || true
             fi
 
-            echo "NixOS Configuration Development Environment"
-            echo "==========================================="
+            # Terminal colors
+            BOLD='\033[1m'
+            BLUE='\033[0;34m'
+            GREEN='\033[0;32m'
+            YELLOW='\033[0;33m'
+            CYAN='\033[0;36m'
+            MAGENTA='\033[0;35m'
+            NC='\033[0m' # No Color
+
+            echo -e "''${BOLD}''${BLUE}NixOS Configuration Development Environment''${NC}"
+            echo -e "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
             echo ""
-            echo "Available tools:"
-            echo "  alejandra       - Format Nix code"
-            echo "  nixpkgs-fmt     - Format Nix code"
-            echo "  yamllint        - Lint YAML files"
-            echo "  sops            - Manage secrets"
+            echo -e "''${BOLD}Repository:''${NC} curtbushko/nixos-config"
+            echo -e "''${BOLD}Current host:''${NC} $(hostname -s)"
+            echo -e "''${BOLD}System:''${NC} $(uname -m)-$(uname -s | tr '[:upper:]' '[:lower:]')"
+            echo ""
+
+            echo -e "''${BOLD}''${GREEN}Common Tasks:''${NC}"
+            echo "  task switch     - Build and apply configuration (default)"
+            echo "  task test       - Test configuration without switching"
+            echo "  task fmt        - Format all Nix files with alejandra"
+            echo "  task update-all - Update all flake inputs"
+            echo "  task gc         - Garbage collect old generations (3+ days)"
+            echo "  task -l         - List all available tasks"
+            echo ""
+
+            echo -e "''${BOLD}''${YELLOW}Repository Structure:''${NC}"
+            echo "  flake.nix       - Main entry point with inputs/outputs"
+            echo "  systems/        - Per-machine NixOS/Darwin configurations"
+            echo "  modules/home/   - Cross-platform home-manager modules"
+            echo "  modules/nixos/  - NixOS-specific modules"
+            echo "  modules/darwin/ - macOS-specific modules"
+            echo "  Taskfile.yml    - Task definitions (replaces Makefile)"
+            echo ""
+
+            echo -e "''${BOLD}''${CYAN}Available Tools:''${NC}"
+            echo "  alejandra       - Nix code formatter (opinionated)"
+            echo "  nixpkgs-fmt     - Nix code formatter (minimal)"
+            echo "  nixd            - Nix language server"
+            echo "  yamllint        - YAML linter"
+            echo "  sops/age        - Secrets management"
+            echo "  go-task         - Task runner (aliased as 'make')"
+            echo ""
+
+            echo -e "''${BOLD}''${MAGENTA}Quick Tips:''${NC}"
+            echo "  • Config layers: flake.nix → systems → modules/[nixos|darwin] → modules/home"
+            echo "  • Format before commit: task fmt"
+            echo "  • Test changes safely: task test"
+            echo "  • See README.md for architecture details"
+            echo "  • Snowfall lib provides the directory structure"
+            echo ""
+
+            echo -e "''${BOLD}''${BLUE}Documentation:''${NC}"
+            echo "  README.md                     - Repository overview and design"
+            echo "  modules/home/llm/claude/      - Claude skills and agents"
+            echo "  Taskfile.yml                  - All available tasks"
+            echo ""
+            echo -e "Run ''${BOLD}task''${NC} to build and switch your configuration"
             echo ""
           '';
         };
@@ -191,5 +256,5 @@
       ];
     };
   in
-    flakeOutputs // { inherit devShells; };
+    flakeOutputs // {inherit devShells;};
 }

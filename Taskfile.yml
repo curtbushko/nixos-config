@@ -1,0 +1,239 @@
+version: '3'
+
+vars:
+  NIXOS_CONFIG_DIR:
+    sh: pwd
+  OS:
+    sh: uname | tr '[:upper:]' '[:lower:]'
+  ARCH:
+    sh: uname -m | tr '[:upper:]' '[:lower:]'
+  HOST:
+    sh: hostname -s
+  DATELOG:
+    sh: echo "[$(date -u +'%Y-%m-%dT%H:%M:%SZ')]"
+
+  # Define host types
+  DARWIN_HOSTS: "curtbushko-X3FR7279D2 m4-pro m1-air"
+  NIXOS_HOSTS: "gamingrig node00 node01 node02"
+  HOME_MANAGER_HOSTS: "steamdeck"
+
+  # Remote paths
+  GAMINGRIG_REMOTE_PATH: "~/workspace/github.com/curtbushko/nixos-config"
+  VM_DEST_DIR: "~/VMs/gamingrig-vm"
+
+  # Set NIXUSER based on hostname
+  NIXUSER:
+    sh: |
+      if [ "$(hostname -s)" = "steamdeck" ]; then
+        echo "deck"
+      else
+        echo "${NIXUSER:-curtbushko}"
+      fi
+
+tasks:
+  default:
+    desc: Build and switch your nix config
+    cmds:
+      - task: switch
+
+  setup:
+    desc: Setup nix on darwin and home-manager hosts
+    cmds:
+      - |
+        if echo "{{.DARWIN_HOSTS}}" | grep -qw "{{.HOST}}"; then
+          echo "{{.DATELOG}} Installing Determinate Nix Installer for Darwin..."
+          curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+        elif echo "{{.HOME_MANAGER_HOSTS}}" | grep -qw "{{.HOST}}"; then
+          echo "{{.DATELOG}} Installing Nix Installer for home-manager..."
+          sh <(curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install) --daemon
+        elif echo "{{.NIXOS_HOSTS}}" | grep -qw "{{.HOST}}"; then
+          echo "{{.DATELOG}} Setup not needed for NixOS hosts (Nix is pre-installed)"
+        else
+          echo "{{.DATELOG}} ERROR: Unknown host '{{.HOST}}'. Please add it to DARWIN_HOSTS, NIXOS_HOSTS, or HOME_MANAGER_HOSTS in the Taskfile."
+          exit 1
+        fi
+
+  switch:
+    desc: Build and switch your nix config
+    cmds:
+      - echo "{{.DATELOG}} Building nix config for {{.HOST}}"
+      - |
+        if echo "{{.DARWIN_HOSTS}}" | grep -qw "{{.HOST}}"; then
+          if command -v wake-gamingrig &>/dev/null; then
+            echo "{{.DATELOG}} Waking gamingrig for cache access..."
+            wake-gamingrig
+          fi
+          nix --extra-experimental-features 'nix-command flakes' build ".#darwinConfigurations.{{.HOST}}.system" --show-trace --impure
+          sudo ./result/sw/bin/darwin-rebuild switch --flake "$(pwd)#{{.HOST}}" --impure
+        elif echo "{{.NIXOS_HOSTS}}" | grep -qw "{{.HOST}}"; then
+          if command -v wake-gamingrig &>/dev/null; then
+            echo "{{.DATELOG}} Waking gamingrig for cache access..."
+            wake-gamingrig
+          fi
+          sudo NIXPKGS_ALLOW_UNSUPPORTED_ARCH=1 nixos-rebuild switch --flake ".#{{.HOST}}" --impure
+        elif echo "{{.HOME_MANAGER_HOSTS}}" | grep -qw "{{.HOST}}"; then
+          echo "{{.DATELOG}} Using home-manager for {{.NIXUSER}}@{{.HOST}}"
+          rm -f ~/.*.backup ~/.config/**/*.backup || true
+          nix --extra-experimental-features 'nix-command flakes' run nixpkgs#home-manager -- switch --flake ".#{{.NIXUSER}}@{{.HOST}}" -b backup --impure
+        else
+          echo "{{.DATELOG}} ERROR: Unknown host '{{.HOST}}'. Please add it to DARWIN_HOSTS, NIXOS_HOSTS, or HOME_MANAGER_HOSTS in the Taskfile."
+          exit 1
+        fi
+
+  dry-build:
+    desc: Dry build your nix config
+    cmds:
+      - echo "{{.DATELOG}} Building dry build of nix config"
+      - |
+        if echo "{{.DARWIN_HOSTS}}" | grep -qw "{{.HOST}}"; then
+          echo "{{.DATELOG}} Dry build not supported for Darwin hosts"
+        elif echo "{{.NIXOS_HOSTS}}" | grep -qw "{{.HOST}}"; then
+          sudo NIXPKGS_ALLOW_UNSUPPORTED_ARCH=1 nixos-rebuild dry-build --flake ".#{{.HOST}}" --impure -vvv 2>&1 | grep 'evaluating file'
+        elif echo "{{.HOME_MANAGER_HOSTS}}" | grep -qw "{{.HOST}}"; then
+          echo "{{.DATELOG}} Dry build not applicable for home-manager hosts"
+        else
+          echo "{{.DATELOG}} ERROR: Unknown host '{{.HOST}}'. Please add it to DARWIN_HOSTS, NIXOS_HOSTS, or HOME_MANAGER_HOSTS in the Taskfile."
+          exit 1
+        fi
+
+  test:
+    desc: Test your nix config
+    cmds:
+      - echo "{{.DATELOG}} Testing nix config"
+      - |
+        if echo "{{.DARWIN_HOSTS}}" | grep -qw "{{.HOST}}"; then
+          if command -v wake-gamingrig &>/dev/null; then
+            echo "{{.DATELOG}} Waking gamingrig for cache access..."
+            wake-gamingrig
+          fi
+          nix --extra-experimental-features 'nix-command flakes' build ".#darwinConfigurations.{{.HOST}}.system" --show-trace --impure
+          ./result/sw/bin/darwin-rebuild test --flake "$(pwd)#{{.HOST}}" --impure
+        elif echo "{{.NIXOS_HOSTS}}" | grep -qw "{{.HOST}}"; then
+          if command -v wake-gamingrig &>/dev/null; then
+            echo "{{.DATELOG}} Waking gamingrig for cache access..."
+            wake-gamingrig
+          fi
+          sudo NIXPKGS_ALLOW_UNSUPPORTED_ARCH=1 nixos-rebuild test --flake ".#{{.HOST}}" --impure
+        elif echo "{{.HOME_MANAGER_HOSTS}}" | grep -qw "{{.HOST}}"; then
+          echo "{{.DATELOG}} Testing home-manager config for {{.NIXUSER}}@{{.HOST}}"
+          nix --extra-experimental-features 'nix-command flakes' run nixpkgs#home-manager -- build --flake ".#{{.NIXUSER}}@{{.HOST}}" --impure
+        else
+          echo "{{.DATELOG}} ERROR: Unknown host '{{.HOST}}'. Please add it to DARWIN_HOSTS, NIXOS_HOSTS, or HOME_MANAGER_HOSTS in the Taskfile."
+          exit 1
+        fi
+
+  update-all:
+    desc: Update all packages
+    deps:
+      - update-flake
+      - update-llm-agents
+      - update-ghostty
+      - update-neovim
+      - update-minecraft
+      - update-vicinae
+
+  update-flake:
+    desc: Update nix packages
+    cmds:
+      - nix --extra-experimental-features 'nix-command flakes' flake update
+
+  update-claude-code:
+    desc: Update the claude-code flake
+    cmds:
+      - nix flake update claude-code
+
+  update-ghostty:
+    desc: Update the ghostty flake
+    cmds:
+      - nix flake update ghostty
+
+  update-llm-agents:
+    desc: Update the llm-agents flake
+    cmds:
+      - nix flake update llm-agents
+
+  update-minecraft:
+    desc: Update minecraft-servers flake
+    cmds:
+      - nix flake update minecraft-servers
+
+  update-neovim:
+    desc: Update the neovim flake
+    cmds:
+      - nix flake update neovim
+
+  update-vicinae:
+    desc: Update vicinae flake
+    cmds:
+      - nix flake update vicinae
+
+  update-worktrunk:
+    desc: Update worktrunk flake
+    cmds:
+      - nix flake update worktrunk
+
+  build-vm:
+    desc: Build aarch64-linux VM for Apple Silicon (run on gamingrig)
+    cmds:
+      - echo "{{.DATELOG}} Building aarch64-linux VM (gamingrig-vm)"
+      - |
+        if echo "{{.HOST}}" | grep -qw "gamingrig"; then
+          nix build ".#nixosConfigurations.gamingrig-vm.config.system.build.vm" --show-trace -o outdir/vm
+          echo "{{.DATELOG}} VM built successfully. Run with: outdir/vm/bin/run-gamingrig-vm-vm"
+        else
+          echo "{{.DATELOG}} ERROR: This target must be run on gamingrig (requires binfmt for aarch64)"
+          exit 1
+        fi
+
+  copy-vm:
+    desc: Copy built VM from gamingrig to Mac (run on Mac)
+    cmds:
+      - echo "{{.DATELOG}} Copying VM from {{.GAMINGRIG_TAILNET_ID}} to {{.VM_DEST_DIR}}"
+      - |
+        if echo "{{.DARWIN_HOSTS}}" | grep -qw "{{.HOST}}"; then
+          mkdir -p {{.VM_DEST_DIR}}
+          rsync -avz --progress {{.GAMINGRIG_TAILNET_ID}}:{{.GAMINGRIG_REMOTE_PATH}}/outdir/vm/ {{.VM_DEST_DIR}}/
+          echo "{{.DATELOG}} VM copied to {{.VM_DEST_DIR}}"
+          echo "{{.DATELOG}} Run with: {{.VM_DEST_DIR}}/bin/run-gamingrig-vm-vm"
+        else
+          echo "{{.DATELOG}} ERROR: This target should be run on a Darwin host"
+          exit 1
+        fi
+
+  repair:
+    desc: Use this when you start getting weird 'file not found' errors from nix-store
+    cmds:
+      - sudo nix-store --repair --verify --check-contents
+
+  channels:
+    desc: Add the channels before building NixOS
+    cmds:
+      - sudo nix-channel --add https://nixos.org/channels/nixos-unstable
+      - sudo nix-channel --add https://nixos.org/channels/nixpkgs-unstable
+      - sudo nix-channel --update
+
+  gc:
+    desc: Garbage collect nix files that are older than 3 days
+    cmds:
+      - echo "{{.DATELOG}} Garbage collecting nix files older than 3 days"
+      - sudo nix-collect-garbage --delete-older-than 3d
+      - sudo nix-env --delete-generations 3d
+      - sudo nix-store --gc
+      - |
+        if [ -e ./outdir ]; then
+          mkdir -p .trash
+          grep -q "^\.trash/$$" .gitignore 2>/dev/null || echo ".trash/" >> .gitignore
+          mv ./outdir .trash/outdir-$(date +%Y%m%d-%H%M%S)
+          echo "{{.DATELOG}} Moved ./outdir to .trash/"
+        fi
+
+  clean:
+    desc: Alias for gc
+    cmds:
+      - task: gc
+
+  fmt:
+    desc: Format nix files
+    cmds:
+      - echo "{{.DATELOG}} Formatting nix files"
+      - alejandra --quiet .

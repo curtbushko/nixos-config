@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }: let
   inherit (lib) types mkOption mkIf;
@@ -38,6 +39,10 @@
     };
   };
 in {
+  imports = [
+    inputs.hunk.homeManagerModules.default
+  ];
+
   options.curtbushko.git = {
     enable = mkOption {
       type = types.bool;
@@ -96,23 +101,21 @@ in {
       };
     };
 
-    programs.delta = let
+    programs.hunk = let
       # Read colors from flair's style.json in ~/.config/flair/
       # Note: Requires --impure flag for nix build/home-manager switch
       flairStylePath = "${config.home.homeDirectory}/.config/flair/style.json";
 
       # Default fallback colors if flair style.json doesn't exist (gruvbox-material)
       defaultColors = {
-        base0D = "#7daea3";  # Blue
-        base0A = "#d8a657";  # Yellow
-        base05 = "#d4be98";  # Foreground
-        base0E = "#9d7cd8";  # Purple
-        "diff-added-bg" = "#46503b";
-        "diff-added-fg" = "#a9b665";
-        "diff-deleted-bg" = "#593837";
-        "diff-deleted-fg" = "#ea6952";
-        "diff-changed-bg" = "#353c3a";
-        "diff-changed-fg" = "#89bcae";
+        base00 = "#2d353b";  # Default Background
+        base01 = "#232a2e";  # Lighter Background (status bars)
+        base03 = "#859289";  # Comments
+        base05 = "#d3c6aa";  # Default Foreground
+        base08 = "#e67e80";  # Red
+        base0B = "#a7c080";  # Green
+        base0D = "#7fbbb3";  # Blue/Cyan
+        base0E = "#d699b6";  # Purple/Magenta
       };
 
       colors = if builtins.pathExists flairStylePath
@@ -121,30 +124,59 @@ in {
     in {
       enable = true;
       enableGitIntegration = true;
-      options = {
-        side-by-side = true;
-        line-numbers = true;
-        syntax-theme = "none";
-        decorations = {
-          commit-decoration-style = "${colors.base0D} ol";        # Blue
-          hunk-header-decoration-style = "${colors.base0D} box";  # Blue
-          hunk-header-file-style = colors.base0D;                 # Blue
-          hunk-header-line-number-style = colors.base0A;          # Yellow
-          hunk-header-style = "file line-number";
-          file-decoration-style = "none";
-          file-style = "bold ${colors.base0A} ul";                # Yellow
-          minus-style = "${colors."diff-deleted-fg"} ${colors."diff-deleted-bg"}";
-          minus-emph-style = "${colors."diff-deleted-fg"} ${colors."diff-deleted-bg"}";
-          plus-style = "${colors."diff-added-fg"} ${colors."diff-added-bg"}";
-          plus-emph-style = "${colors."diff-added-fg"} ${colors."diff-added-bg"}";
-          zero-style = colors.base05;                             # Main foreground
-          commit-style = "raw";
-          line-numbers-minus-style = colors."diff-deleted-fg";
-          line-numbers-plus-style = colors."diff-added-fg";
-          line-numbers-zero-style = colors.base0E;                # Purple
+      settings = {
+        theme = "custom";
+        mode = "auto";
+        line_numbers = true;
+        custom_theme = {
+          label = "Flair";
+
+          # Main backgrounds - all base01
+          background = colors.base01;
+          panel = colors.base01;
+          panelAlt = colors.base01;
+          contextBg = colors.base01;
+          contextContentBg = colors.base01;
+          lineNumberBg = colors.base01;
+
+          # Text colors
+          text = colors.base05;
+          muted = colors.base03;
+          lineNumberFg = colors.base04;
+
+          # Borders and accents
+          border = colors.base02;
+          accent = colors.base0D;
+          accentMuted = colors.base0C;
+          noteBorder = colors.base0E;
+          noteBackground = colors.base01;
+          noteTitleBackground = colors.base01;
+
+          # Diff backgrounds (using flair's diff colors if available)
+          addedBg = colors."diff-added-bg" or colors.base0B;
+          removedBg = colors."diff-deleted-bg" or colors.base08;
+          addedContentBg = colors."diff-added-bg" or colors.base0B;
+          removedContentBg = colors."diff-deleted-bg" or colors.base08;
+
+          # Diff signs
+          addedSignColor = colors."diff-added-sign" or colors.base0B;
+          removedSignColor = colors."diff-deleted-sign" or colors.base08;
+
+          # File status colors
+          fileNew = colors."git-added" or colors.base0B;
+          fileDeleted = colors."git-deleted" or colors.base08;
+          fileModified = colors."git-modified" or colors.base0D;
+
+          # Syntax colors
+          syntaxColors = {
+            default = colors.base05;
+            keyword = colors.base0E;
+            string = colors.base0B;
+            comment = colors.base03;
+            operator = colors.base0D;
+            variable = colors.base05;
+          };
         };
-        features = "decorations line-numbers";
-        whitespace-error-style = "22 reverse";
       };
     };
 
