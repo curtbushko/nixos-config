@@ -3,8 +3,8 @@
   stdenv,
   fetchFromGitHub,
   cudaPackages_12_6 ? null,
-  darwin,
   cudaArch ? "sm_89",
+  apple-sdk_15,
 }:
 let
   isDarwin = stdenv.hostPlatform.isDarwin;
@@ -41,8 +41,8 @@ in
     buildInputs =
       if isDarwin
       then [
-        darwin.apple_sdk.frameworks.Foundation
-        darwin.apple_sdk.frameworks.Metal
+        # Use SDK 15 for Metal 4 API support
+        apple-sdk_15
       ]
       else [
         cudaPackages.cuda_cudart
@@ -54,6 +54,8 @@ in
       runHook preBuild
     ''
     + lib.optionalString isDarwin ''
+      # Set deployment target to macOS 15.0 for Metal 4 API support
+      export MACOSX_DEPLOYMENT_TARGET=15.0
       make ${buildTargets} NATIVE_CPU_FLAG=
     ''
     + lib.optionalString (!isDarwin) ''
@@ -91,7 +93,7 @@ in
     '';
 
     meta = {
-      description = "DeepSeek V4 Flash inference engine (CUDA build)";
+      description = "DeepSeek V4 Flash inference engine (CUDA on Linux, Metal on macOS)";
       homepage = "https://github.com/antirez/ds4";
       license = lib.licenses.mit;
       platforms = [
