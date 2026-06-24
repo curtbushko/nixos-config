@@ -21,7 +21,7 @@ in {
       content = builtins.toJSON {
         apibaseurl = "https://api.exercism.io/v1";
         token = config.sops.placeholder."exercism/token";
-        workspace = "/home/curtbushko/workspace/github.com/curtbushko/leetcode/exercism";
+        workspace = "${config.home.homeDirectory}/workspace/github.com/curtbushko/leetcode/exercism";
       };
       path = "${config.xdg.configHome}/exercism/user.json";
     };
