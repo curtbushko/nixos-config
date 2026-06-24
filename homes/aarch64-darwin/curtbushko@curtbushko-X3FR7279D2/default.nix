@@ -61,8 +61,4 @@
     PAGER = "less -FirSwX";
     TERM = "xterm-ghostty";
   };
-
-  imports = [
-    inputs.stylix.homeModules.stylix
-  ];
 }

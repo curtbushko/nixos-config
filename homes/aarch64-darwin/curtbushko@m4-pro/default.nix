@@ -61,8 +61,4 @@
     TERM = "xterm-ghostty";
     QT_QPA_PLATFORMTHEME = "kde";
   };
-
-  imports = [
-    inputs.stylix.homeModules.stylix
-  ];
 }

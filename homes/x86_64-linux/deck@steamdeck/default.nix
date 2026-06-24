@@ -74,7 +74,6 @@
   };
 
   imports = [
-    inputs.stylix.homeModules.stylix
     ./tailscale.nix
   ];
 

@@ -53,8 +53,4 @@
     TERM = "xterm-256color";
     QT_QPA_PLATFORMTHEME = "kde";
   };
-
-  imports = [
-    inputs.stylix.homeModules.stylix
-  ];
 }

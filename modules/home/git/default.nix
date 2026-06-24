@@ -68,9 +68,9 @@ in {
           HUNK_BINARY="$HUNK_CACHE/hunk"
 
           # Check if we need to (re)create the signed binary
-          if [ ! -f "$HUNK_BINARY" ] || [ "${inputs.hunk.packages.${pkgs.system}.default}/bin/hunk" -nt "$HUNK_BINARY" ]; then
+          if [ ! -f "$HUNK_BINARY" ] || [ "${inputs.hunk.packages.${pkgs.stdenv.hostPlatform.system}.default}/bin/hunk" -nt "$HUNK_BINARY" ]; then
             mkdir -p "$HUNK_CACHE"
-            cp "${inputs.hunk.packages.${pkgs.system}.default}/bin/hunk" "$HUNK_BINARY"
+            cp "${inputs.hunk.packages.${pkgs.stdenv.hostPlatform.system}.default}/bin/hunk" "$HUNK_BINARY"
             chmod +w "$HUNK_BINARY"
             codesign -s - -f "$HUNK_BINARY" 2>/dev/null || true
           fi

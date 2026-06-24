@@ -248,10 +248,12 @@
 
       systems.modules.darwin = with inputs; [
         home-manager.darwinModules.home-manager
+        stylix.darwinModules.stylix
       ];
 
       systems.modules.nixos = with inputs; [
         home-manager.nixosModules.home-manager
+        stylix.nixosModules.stylix
         stevenblack-hosts.nixosModule
       ];
     };

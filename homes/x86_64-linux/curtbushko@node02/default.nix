@@ -58,8 +58,4 @@
     PAGER = "less -FirSwX";
     TERM = "xterm-256color";
   };
-
-  imports = [
-    inputs.stylix.homeModules.stylix
-  ];
 }
