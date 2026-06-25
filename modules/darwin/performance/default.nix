@@ -63,6 +63,15 @@
       SiriSuggestionsEnabled = false;
     };
 
+    # Disable Siri app access, learning, and App Clips
+    # Note: With Siri fully disabled above, this prevents any remaining suggestion services
+    "com.apple.suggestions" = {
+      SuggestionsLearnFromAppClips = 0;  # Don't learn from App Clips
+      SuggestionsSuggestAppClips = 0;    # Don't suggest App Clips
+      # SiriCanLearnFromAppBlacklist controls per-app learning (managed by system settings)
+      # AppCanShowSiriSuggestionsBlacklist controls per-app suggestions display
+    };
+
     # Disable advertising and analytics
     "com.apple.AdLib" = {
       forceLimitAdTracking = 1;
@@ -87,17 +96,11 @@
     CURRENT_USER=$(/usr/bin/stat -f %Su /dev/console)
     USER_UID=$(/usr/bin/id -u "$CURRENT_USER")
 
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "  macOS Performance Optimization"
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-
     # ========================================================================
     # INTELLIGENCE & AI SERVICES
     # ========================================================================
-    echo ""
-    echo " Disabling Intelligence & AI Services..."
-
-    # Siri services - disable AND kill
+    # Siri services - disable in all domains (gui, user, system) for defense-in-depth
+    # GUI domain (primary)
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.assistantd" 2>/dev/null || true
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.assistant_service" 2>/dev/null || true
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.siriactionsd" 2>/dev/null || true
@@ -107,6 +110,16 @@
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.sirittsd" 2>/dev/null || true
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.SiriTTSTrainingAgent" 2>/dev/null || true
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.siri.context.service" 2>/dev/null || true
+    /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.Siri.agent" 2>/dev/null || true
+
+    # User domain (defensive - may not exist but disable anyway)
+    /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "user/$USER_UID/com.apple.assistantd" 2>/dev/null || true
+    /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "user/$USER_UID/com.apple.Siri.agent" 2>/dev/null || true
+
+    # System domain (requires root)
+    /usr/bin/sudo /bin/launchctl disable "system/com.apple.assistantd" 2>/dev/null || true
+    /usr/bin/sudo /bin/launchctl disable "system/com.apple.Siri.agent" 2>/dev/null || true
+    /usr/bin/sudo /bin/launchctl disable "system/com.apple.siri.acousticsignature" 2>/dev/null || true
 
     # Intelligence platform
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.intelligencecontextd" 2>/dev/null || true
@@ -131,7 +144,6 @@
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.spotlightknowledged.importer" 2>/dev/null || true
 
     # Also unload plists (secondary approach for persistence)
-    echo " Unloading service plists..."
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl unload -w /System/Library/LaunchAgents/com.apple.Siri.agent.plist 2>/dev/null || true
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl unload -w /System/Library/LaunchAgents/com.apple.siriactionsd.plist 2>/dev/null || true
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl unload -w /System/Library/LaunchAgents/com.apple.siriappintentsd.plist 2>/dev/null || true
@@ -160,8 +172,6 @@
     # ========================================================================
     # CONTINUITY SERVICES (Handoff, Universal Control)
     # ========================================================================
-    echo " Disabling Continuity Services..."
-
     # Handoff
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.coreservices.useractivityd" 2>/dev/null || true
 
@@ -171,16 +181,12 @@
     # ========================================================================
     # SAFARI SYNC
     # ========================================================================
-    echo " Disabling Safari Sync Services..."
-
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.SafariBookmarksSyncAgent" 2>/dev/null || true
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.SafariHistoryServiceAgent" 2>/dev/null || true
 
     # ========================================================================
     # GAME CENTER
     # ========================================================================
-    echo " Disabling Game Center..."
-
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.gamed" 2>/dev/null || true
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.gamesaved" 2>/dev/null || true
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.GameController.gamecontrolleragentd" 2>/dev/null || true
@@ -190,8 +196,6 @@
     # ========================================================================
     # MAPS SERVICES
     # ========================================================================
-    echo " Disabling Maps Services..."
-
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.maps.mapspushd" 2>/dev/null || true
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.maps.mapssyncd" 2>/dev/null || true
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.Maps.destinationd" 2>/dev/null || true
@@ -200,8 +204,6 @@
     # ========================================================================
     # ADDITIONAL CPU-INTENSIVE SERVICES
     # ========================================================================
-    echo " Disabling Additional Background Services..."
-
     # Photo analysis (high CPU usage)
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.photoanalysisd" 2>/dev/null || true
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.mediaanalysisd" 2>/dev/null || true
@@ -234,11 +236,5 @@
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.generativeexperiencesd" 2>/dev/null || true
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.imageplaygroundd" 2>/dev/null || true
 
-    echo ""
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "  Performance optimization complete!"
-    echo "  Restart required for full effect."
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo ""
   '';
 }
