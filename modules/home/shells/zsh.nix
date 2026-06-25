@@ -138,6 +138,7 @@ in {
           pc = "wakeonlan -i 192.168.2.255 $GAMINGRIG_MAC_ADDRESS; sleep 1; $M1DDC display 1 set input 15";
           pc2 = "wakeonlan -i 192.168.2.255 $GAMINGRIG_MAC_ADDRESS; sleep 1; $M1DDC display 2 set input 18";
           pcall = "wakeonlan -i 192.168.2.255 $GAMINGRIG_MAC_ADDRESS; sleep 1; $M1DDC display 2 set input 18; $M1DDC display 1 set input 15";
+          keychain = "open '/System/Library/CoreServices/Applications/Keychain Access.app'";
         };
       initContent = ''
          # Fix for zsh completion conflict with _ alias (oh-my-zsh)

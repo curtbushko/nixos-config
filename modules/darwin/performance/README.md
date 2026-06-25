@@ -59,6 +59,9 @@ This is the **preferred approach** - cleaner and more maintainable than shell sc
 ### 2. Service Disabling (launchctl disable)
 Prevents services from loading at boot via launchd's disabled services database (`/var/db/com.apple.xpc.launchd/disabled.plist`).
 
+### 2b. Aggressive Service Removal (launchctl bootout)
+Uses `bootout` to forcefully remove services from launchd. More aggressive than `disable` - it completely removes the service until explicitly bootstrapped again.
+
 ### 3. Plist Unloading (launchctl unload -w)
 Unloads service plists with the `-w` flag to write the disabled state persistently.
 
