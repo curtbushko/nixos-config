@@ -17,7 +17,7 @@ in {
 
     programs.zsh = {
       shellAliases = {
-        oc = "opencode";
+        ocode = "opencode";
       };
     };
   };
