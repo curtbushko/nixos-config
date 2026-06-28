@@ -128,12 +128,20 @@ in {
       defaultColors = {
         base00 = "#2d353b"; # Default Background
         base01 = "#232a2e"; # Lighter Background (status bars)
+        base02 = "#3d484d"; # Selection Background
         base03 = "#859289"; # Comments
+        base04 = "#a7c080"; # Dark Foreground
         base05 = "#d3c6aa"; # Default Foreground
+        base06 = "#e6d9c0"; # Light Foreground
+        base07 = "#eee8d5"; # Light Background
         base08 = "#e67e80"; # Red
+        base09 = "#e69875"; # Orange (variables)
+        base0A = "#d8a657"; # Yellow (classes)
         base0B = "#a7c080"; # Green
+        base0C = "#87c095"; # Cyan/Aqua
         base0D = "#7fbbb3"; # Blue/Cyan
         base0E = "#d699b6"; # Purple/Magenta
+        base0F = "#a89984"; # Brown (deprecated)
       };
 
       colors =

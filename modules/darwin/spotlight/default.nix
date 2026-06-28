@@ -25,17 +25,14 @@
     USER_UID=$(/usr/bin/id -u "$CURRENT_USER")
 
     # Disable Spotlight indexing on all volumes
-    echo "Disabling Spotlight indexing..."
     /usr/bin/sudo /usr/bin/mdutil -a -i off 2>/dev/null || true
 
     # Disable all Spotlight-related launchd services (system domain)
-    echo "Disabling Spotlight system services..."
     /usr/bin/sudo /bin/launchctl disable system/com.apple.metadata.mds 2>/dev/null || true
     /usr/bin/sudo /bin/launchctl disable system/com.apple.metadata.mds.index 2>/dev/null || true
     /usr/bin/sudo /bin/launchctl disable system/com.apple.metadata.mds.scan 2>/dev/null || true
 
     # Disable user-level Spotlight services
-    echo "Disabling Spotlight user services..."
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.Spotlight" 2>/dev/null || true
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.corespotlightd" 2>/dev/null || true
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.corespotlightservice" 2>/dev/null || true
@@ -48,7 +45,6 @@
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.metadata.mdwrite" 2>/dev/null || true
 
     # Bootout (unload) all running Spotlight services
-    echo "Unloading Spotlight services..."
     /usr/bin/sudo /bin/launchctl bootout system/com.apple.metadata.mds 2>/dev/null || true
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl bootout "gui/$USER_UID/com.apple.Spotlight" 2>/dev/null || true
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl bootout "gui/$USER_UID/com.apple.corespotlightd" 2>/dev/null || true
@@ -62,14 +58,11 @@
     /usr/bin/sudo -u "$CURRENT_USER" /usr/bin/defaults write com.apple.Spotlight MenuItemHidden -bool true 2>/dev/null || true
 
     # Kill all Spotlight-related processes
-    echo "Stopping Spotlight processes..."
     /usr/bin/killall mds 2>/dev/null || true
     /usr/bin/killall Spotlight 2>/dev/null || true
     /usr/bin/killall corespotlightd 2>/dev/null || true
     /usr/bin/killall managedcorespotlightd 2>/dev/null || true
     /usr/bin/killall spotlightknowledged 2>/dev/null || true
     /usr/bin/killall mdbulkimport 2>/dev/null || true
-
-    echo "Spotlight has been disabled"
   '';
 }
