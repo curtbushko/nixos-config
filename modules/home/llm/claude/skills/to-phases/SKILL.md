@@ -1,6 +1,6 @@
 ---
 name: to-phases
-description: Interactive implementation phase planner. Creates or updates .plans/ directory with index.yaml and phase files. If a PRD exists, ensures phases cover all scenarios from the PRD.
+description: Interactive implementation phase manager. Creates or updates .phases/ directory with index.yaml and phase files. If a PRD exists, ensures phases cover all scenarios from the PRD.
 arguments:
   - name: phase
     description: Specific phase number to add or update
@@ -11,13 +11,13 @@ arguments:
 
 ## Overview
 
-The To-Phases skill helps you create and manage implementation plans using a file-based structure that keeps orchestrator context lean. Plans are stored in `.plans/` with an index file and separate phase files.
+The To-Phases skill helps you create and manage implementation phases using a file-based structure that keeps orchestrator context lean. Phases are stored in `.phases/` with an index file and separate phase files.
 
-**If a PRD exists** (`.plans/prd-*.md`), this skill ensures phases cover all scenarios from the PRD.
+**If a PRD exists** (`.phases/prd-*.md`), this skill ensures phases cover all scenarios from the PRD.
 
 **Structure:**
 ```
-.plans/
+.phases/
 ├── prd-{feature-name}.md   # PRD (optional, created by to-prd)
 ├── index.yaml              # Lean summary (orchestrator reads ONLY this)
 ├── phase-01-project-setup.md
@@ -32,13 +32,13 @@ When this skill is invoked via `/to-phases`:
 ### Step 0: Check for PRD
 
 ```
-Check if .plans/prd-*.md exists:
+Check if .phases/prd-*.md exists:
   if exists:
     Read the PRD
     Note all user stories and implementation decisions
     Use these to guide phase creation
   else:
-    Continue with standard phase planning
+    Continue with standard phase creation
 ```
 
 **IMPORTANT:** If a PRD exists, phases MUST cover:
@@ -49,10 +49,10 @@ Check if .plans/prd-*.md exists:
 ### Step 1: Check Existing State
 
 ```
-if file_exists(".plans/index.yaml"):
+if file_exists(".phases/index.yaml"):
     Read and display current state (Append/Update Mode)
 else:
-    Create new plan (Create Mode)
+    Create new phases (Create Mode)
 ```
 
 ---
@@ -105,9 +105,9 @@ If coverage is incomplete, warn the user and ask if they want to add phases.
 
 #### 1d. Write the Files
 
-1. Create `.plans/` directory if needed: `mkdir -p .plans`
-2. Write `.plans/index.yaml` (format below)
-3. Write `.plans/phase-{NN}-{slug}.md` for each phase (format below)
+1. Create `.phases/` directory if needed: `mkdir -p .phases`
+2. Write `.phases/index.yaml` (format below)
+3. Write `.phases/phase-{NN}-{slug}.md` for each phase (format below)
 
 ---
 
@@ -115,7 +115,7 @@ If coverage is incomplete, warn the user and ask if they want to add phases.
 
 #### 2a. Display Current State
 
-Read `.plans/index.yaml` and display:
+Read `.phases/index.yaml` and display:
 
 ```
 Project: {project_name}
@@ -163,7 +163,7 @@ Ask the user:
 
 ## Output Formats
 
-### `.plans/index.yaml` (Lean - orchestrator reads only this)
+### `.phases/index.yaml` (Lean - orchestrator reads only this)
 
 ```yaml
 project: "{PROJECT_NAME}"
@@ -187,7 +187,7 @@ phases:
     progress: "0/6"
 ```
 
-### `.plans/phase-{NN}-{slug}.md` (Full details - subagents read these)
+### `.phases/phase-{NN}-{slug}.md` (Full details - subagents read these)
 
 ```markdown
 # Phase {N}: {PHASE_NAME}
@@ -244,26 +244,26 @@ Covers user stories: #1, #3, #5-7 from {prd-file}
 
 ## Integration with Other Skills
 
-Team skills (go-team, node-team, zig-team) read from `.plans/`:
+Team skills (go-team, node-team, zig-team) read from `.phases/`:
 
 | Who | Reads | Purpose |
 |-----|-------|---------|
-| Orchestrator | `.plans/index.yaml` | Status overview, find current phase |
-| Task Manager | `.plans/phase-*.md` | Full task details for breakdown |
-| Task Manager | `.plans/prd-*.md` (optional) | PRD context if needed |
+| Orchestrator | `.phases/index.yaml` | Status overview, find current phase |
+| Task Manager | `.phases/phase-*.md` | Full task details for breakdown |
+| Task Manager | `.phases/prd-*.md` (optional) | PRD context if needed |
 | Builder/Reviewer | `.tasks/*.yaml` | Task specs (created by Task Manager) |
 
 ### Workflow
 
-1. `/to-prd` creates `.plans/prd-*.md` (optional)
-2. `/to-phases` creates `.plans/` structure (index.yaml + phase files)
+1. `/to-prd` creates `.phases/prd-*.md` (optional)
+2. `/to-phases` creates `.phases/` structure (index.yaml + phase files)
 3. `/go-team` (or node-team, zig-team) reads index.yaml to find current phase
 4. Task Manager reads the phase file (and PRD if needed), breaks into `.tasks/`
 5. Builder/Reviewer work from `.tasks/` files
 6. On task completion, orchestrator updates:
    - `.tasks/status.yaml` (task status)
-   - `.plans/phase-*.md` (checkbox)
-   - `.plans/index.yaml` (progress)
+   - `.phases/phase-*.md` (checkbox)
+   - `.phases/index.yaml` (progress)
 
 ---
 
@@ -332,7 +332,7 @@ Implements modules:
 - Putting all phases in a single file (defeats context savings)
 - Storing full task details in index.yaml (keep it lean)
 - Not syncing progress between phase files and index.yaml
-- Using PLAN.md instead of `.plans/` structure
+- Using PLAN.md instead of `.phases/` structure (also avoids conflict with Claude plan mode)
 - Ignoring PRD when it exists - phases must cover all scenarios
 - Not validating PRD coverage before finalizing phases
 - Including PRD content in phase files (just reference it)

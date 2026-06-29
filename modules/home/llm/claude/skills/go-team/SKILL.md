@@ -1,6 +1,6 @@
 ---
 name: go-team
-description: Implements phases defined in .plans/ directory. Reads current phase from index.yaml, breaks down into tasks, then executes Builder -> Reviewer for each task.
+description: Implements phases defined in .phases/ directory. Reads current phase from index.yaml, breaks down into tasks, then executes Builder -> Reviewer for each task.
 arguments:
   - name: phase
     description: Specific phase number to implement (optional, uses current_phase from index.yaml if not specified)
@@ -26,7 +26,7 @@ The Go Team skill implements features you define. You provide the WHAT (plan pha
 
 ```mermaid
 flowchart TD
-    PLANS[".plans/ (you create with /planner)<br/>- index.yaml (status overview)<br/>- phase-*.md (task checklists)"]
+    PLANS[".phases/ (you create with /to-phases)<br/>- index.yaml (status overview)<br/>- phase-*.md (task checklists)"]
 
     TASK_MGR["TASK MANAGER (subagent)<br/>- Reads phase-*.md file<br/>- Breaks into 2-5 min tasks<br/>- Writes to .tasks/ files<br/>- Returns task count only"]
 
@@ -53,7 +53,7 @@ flowchart TD
 ### Context-Saving Design
 
 All subagents communicate via `.tasks/` files. The orchestrator only reads
-`.plans/index.yaml` for status - never source code or detailed results.
+`.phases/index.yaml` for status - never source code or detailed results.
 This keeps the orchestrator's context lean across many tasks and phases.
 
 ## Invocation
@@ -89,17 +89,17 @@ claude --model sonnet
 
 | Argument | Default | Description |
 |----------|---------|-------------|
-| `phase` | (current) | Specific phase number from `.plans/index.yaml` |
+| `phase` | (current) | Specific phase number from `.phases/index.yaml` |
 | `task` | (all) | Specific task number to implement (optional) |
 
 ---
 
-## Plan Structure (.plans/)
+## Phase Structure (.phases/)
 
-Plans are created with `/planner` and stored in `.plans/`:
+Phases are created with `/to-phases` and stored in `.phases/`:
 
 ```
-.plans/
+.phases/
 ├── index.yaml              # Lean status (orchestrator reads ONLY this)
 ├── phase-01-project-setup.md
 ├── phase-02-core-domain.md
@@ -150,7 +150,7 @@ Each agent is a subagent dispatched via the Task tool. The orchestrator does NOT
 
 | Agent | Role | Context File |
 |-------|------|--------------|
-| **Task Manager** | Parses phase file, explores codebase, creates task breakdown | `.plans/phase-*.md` |
+| **Task Manager** | Parses phase file, explores codebase, creates task breakdown | `.phases/phase-*.md` |
 | **Go Builder** | Implements tasks following TDD, hex architecture | `references/builder-context.md` |
 | **Go Reviewer** | Combined review: spec compliance + code quality in one pass | `references/reviewer-context.md` |
 
@@ -161,9 +161,9 @@ See `references/orchestration.md` for exact dispatch templates and the coordinat
 ## Anti-Patterns
 
 - Orchestrator reading source code, result files, or reference files (subagents do this)
-- Orchestrator reading `.plans/phase-*.md` files (Task Manager does this)
+- Orchestrator reading `.phases/phase-*.md` files (Task Manager does this)
 - Orchestrator echoing or summarizing full subagent output (wastes context)
-- Inlining plan content into dispatch prompts (reference by file path instead)
+- Inlining phase content into dispatch prompts (reference by file path instead)
 - Dispatching multiple builders in parallel (causes conflicts)
 - Proceeding with CHANGES_NEEDED status
 - Ignoring architecture violations
@@ -173,5 +173,5 @@ See `references/orchestration.md` for exact dispatch templates and the coordinat
 
 ## Integration with Other Skills
 
-- **planner**: Use `/planner` to create the `.plans/` structure before running `/go-team`
+- **planner**: Use `/to-phases` to create the `.phases/` structure before running `/go-team`
 - **go-code-review**: Go Team follows a similar review pattern

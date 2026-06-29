@@ -1,13 +1,13 @@
 ---
 name: to-prd
-description: Use when the user wants to create a PRD from the current conversation context. Synthesizes conversation and codebase understanding into a Product Requirements Document saved as .plans/prd-{name}.md. Triggers include "create a PRD", "write a PRD", or "turn this into a PRD".
+description: Use when the user wants to create a PRD from the current conversation context. Synthesizes conversation and codebase understanding into a Product Requirements Document saved as .phases/prd-{name}.md. Triggers include "create a PRD", "write a PRD", or "turn this into a PRD".
 ---
 
 # To PRD - Conversation to Product Requirements Document
 
 ## Core Principle
 
-Transform the current conversation context and codebase understanding into a comprehensive PRD without interviewing the user. Synthesize what is already known, explore the codebase to fill gaps, and produce a structured requirements document saved in `.plans/prd-{name}.md` for reference by planning and implementation phases.
+Transform the current conversation context and codebase understanding into a comprehensive PRD without interviewing the user. Synthesize what is already known, explore the codebase to fill gaps, and produce a structured requirements document saved in `.phases/prd-{name}.md` for reference by planning and implementation phases.
 
 ## When to Use
 
@@ -90,16 +90,16 @@ Using the template below, write a comprehensive PRD that includes:
 **CRITICAL: Do NOT include specific file paths or code snippets in the PRD.**
 These become outdated quickly. Focus on concepts and modules.
 
-### Step 4: Write PRD to .plans/ Directory
+### Step 4: Write PRD to .phases/ Directory
 
-1. Create `.plans/` directory if it doesn't exist: `mkdir -p .plans`
+1. Create `.phases/` directory if it doesn't exist: `mkdir -p .phases`
 2. Generate filename from feature name: `prd-{kebab-case-name}.md`
-3. Write the PRD to `.plans/prd-{name}.md`
+3. Write the PRD to `.phases/prd-{name}.md`
 4. Return the file path to the user
 
 **File naming examples:**
-- "Add Authentication" → `.plans/prd-add-authentication.md`
-- "API Caching Layer" → `.plans/prd-api-caching-layer.md`
+- "Add Authentication" → `.phases/prd-add-authentication.md`
+- "API Caching Layer" → `.phases/prd-api-caching-layer.md`
 
 ## PRD Template
 
@@ -165,7 +165,7 @@ Any further notes about the feature.
 - Creating shallow modules when deep modules are possible
 - Not checking module expectations with user
 - Writing vague user stories ("As a user, I want it to work")
-- Publishing to issue tracker instead of `.plans/` directory
+- Publishing to issue tracker instead of `.phases/` directory
 
 ## Integration with Other Skills
 
@@ -186,7 +186,7 @@ This skill fits into the workflow:
 
 **File structure created:**
 ```
-.plans/
+.phases/
 └── prd-{feature-name}.md    # Created by to-prd
 ```
 
@@ -197,7 +197,7 @@ When complete, provide:
 ```
 Created PRD: [Feature Name]
 
-File: .plans/prd-{feature-name}.md
+File: .phases/prd-{feature-name}.md
 
 Next steps:
 - Review the PRD for completeness

@@ -13,11 +13,11 @@ Your context window is finite. Every subagent return consumes context. You MUST:
 - Never echo or summarize subagent output
 
 ### You MUST:
-- Read `.plans/index.yaml` for status overview (Step 1)
+- Read `.phases/index.yaml` for status overview (Step 1)
 - Dispatch subagents using the Task tool
 - Extract ONLY: `status` and `verdict` from subagent output (1-2 lines)
 - Track task progress via `.tasks/status.yaml`
-- Update `.plans/` files when tasks complete (Step 3c)
+- Update `.phases/` files when tasks complete (Step 3c)
 - Report summary to user
 
 **NOTE**: Builders and reviewers run validation commands. The orchestrator does NOT run these - it only tracks status.
@@ -26,7 +26,7 @@ Your context window is finite. Every subagent return consumes context. You MUST:
 - Read source code files
 - Read `builder-context.md`, `reviewer-context.md`, or `examples.md`
 - Read `.tasks/task-*.yaml` or `.tasks/result-*.yaml` detail files
-- Read `.plans/phase-*.md` files (Task Manager reads these)
+- Read `.phases/phase-*.md` files (Task Manager reads these)
 - Write or edit any source code
 - Analyze code quality or architecture
 - Debug test failures
@@ -47,21 +47,21 @@ Subagents read their own context. You do NOT read these:
 | Node Reviewer | Review checklist | `~/.claude/skills/node-team/references/reviewer-context.md` |
 | Node Reviewer | Task details | `.tasks/task-{id}.yaml` |
 | Node Reviewer | Build results | `.tasks/result-{id}-build.yaml` |
-| Task Manager | Phase details | `.plans/phase-*.md` |
+| Task Manager | Phase details | `.phases/phase-*.md` |
 
 ---
 
-## Step 1: Read Plan Index and Check State
+## Step 1: Read Phase Index and Check State
 
 ```
 SPECIFIC_TASK = args.task or null
 SPECIFIC_PHASE = args.phase or null
 
 # Read the lean index file (orchestrator's view of the plan)
-if not file_exists(".plans/index.yaml"):
-    error "No plan found. Run /planner first to create .plans/"
+if not file_exists(".phases/index.yaml"):
+    error "No phases found. Run /to-phases first to create .phases/"
 
-INDEX = Read(".plans/index.yaml")
+INDEX = Read(".phases/index.yaml")
 
 # Determine which phase to work on
 if SPECIFIC_PHASE is set:
@@ -110,7 +110,7 @@ Task tool call:
     ## Task Manager: Break down phase into implementation tasks
 
     ### Instructions
-    1. Read the phase file at: `.plans/{PHASE.file}`
+    1. Read the phase file at: `.phases/{PHASE.file}`
     2. Parse the task checklist (extract all `- [ ]` items)
     3. Explore the codebase to find existing patterns, architecture, test helpers
     4. Identify which components/layers are affected
@@ -121,7 +121,7 @@ Task tool call:
     ### Context
     - Project: {INDEX.project}
     - Phase: {PHASE.id} - {PHASE.name}
-    - Phase file: `.plans/{PHASE.file}`
+    - Phase file: `.phases/{PHASE.file}`
 
     ### Output: Write these files
 
@@ -236,12 +236,12 @@ For task in STATUS.tasks (following execution_order):
     # Builder returns only: "status: complete|blocked, fixes: [count]"
   else: escalate_to_user
 
-  # 3c: Complete — update .tasks/ AND .plans/
+  # 3c: Complete — update .tasks/ AND .phases/
   Edit .tasks/status.yaml: set task.status to "completed"
 
   # MANDATORY: Update phase file checklist
   # Read task.plan_tasks from .tasks/status.yaml for this task
-  PHASE_FILE = ".plans/{STATUS.phase_file}"
+  PHASE_FILE = ".phases/{STATUS.phase_file}"
   For each plan_task in task.plan_tasks:
     Use the Edit tool on PHASE_FILE:
       old_string: "- [ ] {plan_task}"
@@ -253,7 +253,7 @@ For task in STATUS.tasks (following execution_order):
   total_count = total tasks in .tasks/status.yaml
   
   # Update progress in index.yaml
-  Edit .plans/index.yaml:
+  Edit .phases/index.yaml:
     Update phase {STATUS.phase_id} progress to "{completed_count}/{total_count}"
     If all tasks complete, set status to "completed"
     If first task just completed, set status to "in_progress"
@@ -370,7 +370,7 @@ mv .tasks/result-*.yaml .trash/
 # Keep .tasks/status.yaml for history
 
 # Update index.yaml
-Edit .plans/index.yaml:
+Edit .phases/index.yaml:
   - Set phase {PHASE.id} status to "completed"
   - Increment current_phase to next pending phase (if any)
 
@@ -398,4 +398,4 @@ Report to user:
 **Blocker: test failure** - Include error output in next builder dispatch
 **Review cycles exceeded (2)** - AskUserQuestion: skip / manual fix / abort
 **Stale .tasks/ state** - If task files reference nonexistent source files, re-run Task Manager
-**No .plans/ found** - Direct user to run `/planner` first
+**No .phases/ found** - Direct user to run `/to-phases` first
