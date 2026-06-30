@@ -242,15 +242,26 @@ Task tool:
   prompt: |
     ## Zig Builder: Task {task.id} - {task.name}
 
-    Read these files FIRST:
+    Read and FOLLOW ALL procedures in these files:
     1. Your task spec: `.tasks/task-{task.id}.yaml`
-    2. Your coding standards: `~/.claude/skills/zig-team/references/builder-context.md`
+    2. Your coding standards (MANDATORY): `~/.claude/skills/zig-team/references/builder-context.md`
 
-    Follow ALL standards: TDD (RED/GREEN/REFACTOR), build gates
-    (zig build, zig build test), Zig idioms, error unions, allocator management.
+    You MUST follow TDD (RED/GREEN/REFACTOR), Zig idioms, error unions, and allocator management.
+
+    ## MANDATORY VERIFICATION - NON-NEGOTIABLE
+
+    Before marking status as "completed", you MUST run ALL these commands
+    and ensure they ALL pass. If ANY fail, fix and re-run:
+
+    ```bash
+    zig build           # MUST pass
+    zig build test -j1  # MUST pass (serial to avoid race conditions)
+    ```
+
+    Do NOT mark as completed until ALL verification passes.
 
     Write your full results to: `.tasks/result-{task.id}-build.yaml`
-    (format defined in builder-context.md)
+    (format defined in builder-context.md - include verification results)
 
     **IMPORTANT**: Return ONLY this to the orchestrator (2 lines max):
     ```
@@ -269,19 +280,30 @@ Task tool:
   prompt: |
     ## Combined Review: Task {task.id} - {task.name}
 
-    Read these files FIRST:
+    Read and EXECUTE ALL review procedures from these files:
     1. Task acceptance criteria: `.tasks/task-{task.id}.yaml`
     2. Build results: `.tasks/result-{task.id}-build.yaml`
-    3. Review standards: `~/.claude/skills/zig-team/references/reviewer-context.md`
+    3. Review standards (MANDATORY): `~/.claude/skills/zig-team/references/reviewer-context.md`
 
     Perform BOTH reviews in a single pass:
     - Stage 1: Spec compliance (requirements met? under/over-building?)
     - Stage 2: Code quality (only if Stage 1 passes)
 
+    ## MANDATORY VERIFICATION - NON-NEGOTIABLE
+
+    You MUST verify that these commands passed in the build results:
+
+    ```bash
+    zig build           # MUST have passed
+    zig build test -j1  # MUST have passed
+    ```
+
+    If build results show failures, verdict MUST be CHANGES_NEEDED.
+
     Read the source files listed in the build results and review them.
 
     Write your full results to: `.tasks/result-{task.id}-review.yaml`
-    (format defined in reviewer-context.md)
+    (format defined in reviewer-context.md - include verification status)
 
     **IMPORTANT**: Return ONLY this to the orchestrator (2 lines max):
     ```
@@ -300,16 +322,27 @@ Task tool:
   prompt: |
     ## Fix Review Feedback: Task {task.id} - {task.name}
 
-    Read these files FIRST:
+    Read and FOLLOW ALL procedures in these files:
     1. Task spec: `.tasks/task-{task.id}.yaml`
     2. Review feedback: `.tasks/result-{task.id}-review.yaml`
-    3. Coding standards: `~/.claude/skills/zig-team/references/builder-context.md`
+    3. Coding standards (MANDATORY): `~/.claude/skills/zig-team/references/builder-context.md`
 
     Fix each issue listed in `changes_required` in priority order.
-    Run zig build && zig build test -j1 after each change. Commit fixes.
+
+    ## MANDATORY VERIFICATION - NON-NEGOTIABLE
+
+    After fixing issues, you MUST run ALL these commands and ensure they pass:
+
+    ```bash
+    zig build           # MUST pass
+    zig build test -j1  # MUST pass (serial to avoid race conditions)
+    ```
+
+    Do NOT mark as completed until ALL verification passes.
+    Commit fixes after verification passes.
 
     Write your fix results to: `.tasks/result-{task.id}-fix-{cycle}.yaml`
-    (same format as build results)
+    (same format as build results - include verification results)
 
     **IMPORTANT**: Return ONLY this to the orchestrator (2 lines max):
     ```
