@@ -104,7 +104,7 @@ in {
           QT_IM_MODULE = "wayland";
         };
         spawn-at-startup = [
-          {command = ["systemctl" "--user" "import-environment" "WAYLAND_DISPLAY" "XDG_CURRENT_DESKTOP"];}
+          {command = ["systemctl" "--user" "import-environment" "WAYLAND_DISPLAY" "XDG_CURRENT_DESKTOP" "NIRI_SOCKET"];}
           {command = ["wl-paste --type text --watch cliphist store"];}
           {command = ["wl-paste --type image --watch cliphist store"];}
           # xwayland-satellite is managed by niri's built-in integration (since 25.08)
