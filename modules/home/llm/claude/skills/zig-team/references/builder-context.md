@@ -6,6 +6,22 @@
 2. GREEN: Write MINIMAL code to pass
 3. REFACTOR: Clean up while green
 
+## Implementation Ladder (Before Writing Code)
+
+Stop at the first rung that holds:
+
+1. **Does this need to exist?** → skip it (YAGNI)
+2. **Already in this codebase?** → reuse it, don't rewrite
+3. **Stdlib does it?** → use it
+4. **Native platform feature?** → use it
+5. **Installed dependency?** → use it
+6. **One line?** → one line
+7. **Only then:** the minimum that works
+
+The ladder runs AFTER understanding the problem, not instead of it. Read the task and the code it touches first, trace the flow, then climb. The first solution that works is the right one.
+
+**Never simplify away:** input validation at trust boundaries, error handling that prevents data loss, security measures, or anything explicitly requested.
+
 ## File Rules
 
 **NEVER create .gitkeep files.** Git tracks files, not directories. If a directory needs to exist, it will be created when you add files to it. Empty directories are not needed and .gitkeep files just add clutter.
