@@ -11,20 +11,28 @@ in {
   config = mkIf cfg.enable {
     services.cliphist = {
       enable = true;
+      systemdTargets = ["niri.service"];
     };
-    # systemd.user.services.cliphist = {
-    #   Unit = {
-    #     Description = "Clipboard history";
-    #     BindsTo = "graphical-session.target";
-    #     PartOf = "graphical-session.target";
-    #     After = "graphical-session.target";
-    #     Requisite = "graphical-session.target";
-    #   };
-    #   Service = {
-    #     ExecStart = "${pkgs.wl-clipboard}/bin/wl-paste --watch ${pkgs.cliphist}/bin/cliphist store";
-    #     Restart = "on-failure";
-    #   };
-    #   Install.WantedBy = [ "graphical-session.target" ];
-    # };
+
+    # Override systemd units to wait for niri and handle restarts gracefully
+    systemd.user.services.cliphist = {
+      Unit = {
+        After = ["niri.service"];
+        Requires = ["niri.service"];
+      };
+      Service = {
+        RestartSec = 3;
+      };
+    };
+
+    systemd.user.services.cliphist-images = {
+      Unit = {
+        After = ["niri.service"];
+        Requires = ["niri.service"];
+      };
+      Service = {
+        RestartSec = 3;
+      };
+    };
   };
 }

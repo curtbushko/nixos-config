@@ -44,7 +44,7 @@ in {
   config = mkIf cfg.enable {
     services.swayidle = {
       enable = true;
-      systemdTargets = ["graphical-session.target"];
+      systemdTargets = ["niri.service"];
       events = {
         after-resume = "${pkgs.niri}/bin/niri msg action power-on-monitors";
       };
@@ -58,6 +58,17 @@ in {
           command = ''${pkgs.coreutils}/bin/sleep 10; ${suspend-script}/bin/suspend-script'';
         }
       ];
+    };
+
+    # Override systemd unit to wait for niri and handle restarts gracefully
+    systemd.user.services.swayidle = {
+      Unit = {
+        After = ["niri.service"];
+        Requires = ["niri.service"];
+      };
+      Service = {
+        RestartSec = 3;
+      };
     };
   };
 }

@@ -12,16 +12,17 @@ in {
     stylix.targets.waybar.enable = false;
     systemd.user.services.waybar = {
       Unit = {
-        PartOf = ["graphical-session.target"];
-        After = ["graphical-session.target"];
-        Requisite = ["graphical-session.target"];
+        PartOf = ["niri.service"];
+        After = ["niri.service"];
+        Requires = ["niri.service"];
         ConditionEnvironment = "WAYLAND_DISPLAY";
       };
       Install = {
-        WantedBy = ["graphical-session.target"];
+        WantedBy = ["niri.service"];
       };
       Service = {
         Restart = "on-failure";
+        RestartSec = 3;
         ExecStart = "${pkgs.waybar}/bin/waybar";
       };
     };

@@ -53,10 +53,10 @@
 
     # Disable Apple Intelligence feature flags and opt-out
     "com.apple.CloudSubscriptionFeatures.optIn" = {
-      "545129924" = false;    # Apple Intelligence feature flag
-      "1341174415" = false;   # Apple Intelligence feature flag
-      "device" = false;       # Device-level opt-in
-      "auto_opt_in" = false;  # Automatic opt-in
+      "545129924" = false; # Apple Intelligence feature flag
+      "1341174415" = false; # Apple Intelligence feature flag
+      "device" = false; # Device-level opt-in
+      "auto_opt_in" = false; # Automatic opt-in
     };
 
     # Disable Apple Intelligence reporting
@@ -169,34 +169,34 @@
     # These settings disable per-app Siri access that appears in System Settings > Siri
     "com.apple.suggestions" = {
       # Global toggles - disable for ALL apps (no per-app blacklist needed)
-      SiriCanLearnFromApp = false;           # Disable "Learn from this App" for all apps
-      AppCanShowSiriSuggestions = false;     # Disable "Show Siri Suggestions" for all apps
-      SuggestionsAllowGeoLocation = false;   # Disable location-based suggestions
-      SuggestionsAllowNotificationAccess = false;  # Disable notification access for suggestions
-      SuggestionsLearnFromAppClips = 0;      # Don't learn from App Clips
-      SuggestionsSuggestAppClips = 0;        # Don't suggest App Clips
-      SuggestionsAppLaunchLearningEnabled = false;  # Disable app launch learning
+      SiriCanLearnFromApp = false; # Disable "Learn from this App" for all apps
+      AppCanShowSiriSuggestions = false; # Disable "Show Siri Suggestions" for all apps
+      SuggestionsAllowGeoLocation = false; # Disable location-based suggestions
+      SuggestionsAllowNotificationAccess = false; # Disable notification access for suggestions
+      SuggestionsLearnFromAppClips = 0; # Don't learn from App Clips
+      SuggestionsSuggestAppClips = 0; # Don't suggest App Clips
+      SuggestionsAppLaunchLearningEnabled = false; # Disable app launch learning
     };
 
     # Disable Siri search suggestions and Look Up
     "com.apple.lookup" = {
-      LookupSuggestionsDisabled = true;      # Disable Look Up suggestions
+      LookupSuggestionsDisabled = true; # Disable Look Up suggestions
     };
 
     # Disable Siri data syncing
     "com.apple.assistant.backedup" = {
-      "Siri Data Sharing Opt-In Status" = 2;  # Opt out of Siri data sharing
-      "Cloud Sync Enabled" = false;           # Disable Siri cloud sync
+      "Siri Data Sharing Opt-In Status" = 2; # Opt out of Siri data sharing
+      "Cloud Sync Enabled" = false; # Disable Siri cloud sync
     };
 
     # Disable parsec (Siri suggestion engine)
     "com.apple.parsec" = {
-      ParsecLocalModelDisabled = true;        # Disable local Siri model
+      ParsecLocalModelDisabled = true; # Disable local Siri model
     };
 
     # Disable search suggestions in Spotlight and Safari
     "com.apple.Safari.SandboxBroker" = {
-      ShowSiriSuggestionsPreference = false;  # Disable Siri suggestions in Safari
+      ShowSiriSuggestionsPreference = false; # Disable Siri suggestions in Safari
     };
 
     # Disable advertising and analytics

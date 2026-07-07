@@ -105,8 +105,7 @@ in {
         };
         spawn-at-startup = [
           {command = ["systemctl" "--user" "import-environment" "WAYLAND_DISPLAY" "XDG_CURRENT_DESKTOP" "NIRI_SOCKET"];}
-          {command = ["wl-paste --type text --watch cliphist store"];}
-          {command = ["wl-paste --type image --watch cliphist store"];}
+          # cliphist is managed by systemd services (cliphist.service, cliphist-images.service)
           # xwayland-satellite is managed by niri's built-in integration (since 25.08)
           # niri creates X11 sockets, exports DISPLAY, and spawns xwayland-satellite on demand
         ];
