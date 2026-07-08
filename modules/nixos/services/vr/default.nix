@@ -27,7 +27,6 @@ in {
 
     environment.systemPackages = with pkgs; [
       android-tools
-      dbus
       libcap
       libdrm
       openvr
