@@ -92,15 +92,29 @@ This applies to ALL files including:
 
 ## Git Commit Messages (CRITICAL)
 
-**ALWAYS use single quotes for git commit messages.** Double quotes cause `unmatched "` errors in zsh.
+**ALWAYS use conventional commits format.** Every commit message MUST have a type prefix:
+
+- `feat`: new feature or capability
+- `fix`: bug fix
+- `chore`: maintenance, dependencies, config
+- `refactor`: code restructuring without behavior change
+- `docs`: documentation only
+- `test`: adding or updating tests
+- `ci`: CI/CD changes
+- `perf`: performance improvement
+- `style`: formatting, whitespace (no code change)
+
+**Format**: `type(optional-scope): short description`
 
 ```bash
-# CORRECT - use single quotes
-git commit -m 'fix: resolve issue with parser'
-
-# WRONG - double quotes break with special characters
-git commit -m "fix: resolve issue with parser"
+# CORRECT examples
+git commit -m 'feat(auth): add OAuth2 login flow'
+git commit -m 'fix: resolve nil pointer in parser'
+git commit -m 'chore(deps): update claude-code to 2.1.205'
+git commit -m 'refactor(api): extract handler middleware'
 ```
+
+**ALWAYS use single quotes for git commit messages.** Double quotes cause `unmatched "` errors in zsh.
 
 **NO EXCEPTIONS.** If the message contains an apostrophe, escape it: `'don'\''t do this'`
 

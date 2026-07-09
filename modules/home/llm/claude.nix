@@ -133,6 +133,7 @@ in {
         };
         permissions = {
           allow = [
+            # --- Shell basics ---
             "Bash(make:*)"
             "Bash(go:*)"
             "Bash(ls:*)"
@@ -142,34 +143,172 @@ in {
             "Bash(cat:*)"
             "Bash(mkdir:*)"
             "Bash(curl:*)"
-            "Bash(do)"
             "Bash(echo:*)"
+            "Bash(do)"
             "Bash(done)"
+            "Bash(env)"
+            "Bash(awk:*)"
+            "Bash(bash:*)"
+            "Bash(touch:*)"
+            "Bash(tee:*)"
+            "Bash(cp:*)"
+            "Bash(tar:*)"
+            "Bash(mktemp:*)"
+            "Bash(chmod:*)"
+            "Bash(unzip:*)"
+            "Bash(readlink:*)"
+            "Bash(which:*)"
+            "Bash(xxd)"
+            "Bash(ldd:*)"
+            "Bash(tree:*)"
+            "Read(~/.claude/**)"
+
+            # --- System / hardware ---
             "Bash(journalctl:*)"
             "Bash(sudo ls:*)"
             "Bash(sudo cat:*)"
             "Bash(sudo systemctl:*)"
-            "Bash(systemctl status:*)"
             "Bash(sudo tail:*)"
+            "Bash(sudo chown:*)"
+            "Bash(sudo nixos-rebuild:*)"
+            "Bash(systemctl:*)"
+            "Bash(systemctl status:*)"
+            "Bash(pactl:*)"
+            "Bash(strace:*)"
+            "Bash(lspci:*)"
+            "Bash(ss -tlnp:*)"
+            "Bash(netstat:*)"
+            "Bash(pi:*)"
+
+            # --- Nix ---
             "Bash(nix search:*)"
-            "Bash(chmod:*)"
+            "Bash(nix build:*)"
+            "Bash(nix eval:*)"
+            "Bash(nix develop:*)"
+            "Bash(nix log:*)"
+            "Bash(nix flake check:*)"
+            "Bash(nix flake show:*)"
+            "Bash(nix flake update:*)"
+            "Bash(nix flake metadata:*)"
             "Bash(nix-option:*)"
-            "Bash(unzip:*)"
-            "Read(~/.claude/**)"
+            "Bash(nix-build:*)"
+            "Bash(nix-instantiate:*)"
+            "Bash(nix-locate:*)"
+
+            # --- Git ---
+            "Bash(git add:*)"
+            "Bash(git commit:*)"
+            "Bash(git diff:*)"
+            "Bash(git log:*)"
+            "Bash(git push:*)"
+            "Bash(git status:*)"
+            "Bash(git stash:*)"
+            "Bash(git show:*)"
+            "Bash(git show-ref:*)"
+            "Bash(git checkout:*)"
+            "Bash(git symbolic-ref:*)"
+            "Bash(git ls-remote:*)"
+            "Bash(git tag:*)"
+            "Bash(git:*)"
+
+            # --- GitHub CLI ---
+            "Bash(gh api:*)"
+            "Bash(gh pr view:*)"
+            "Bash(gh pr diff:*)"
+            "Bash(gh pr checks:*)"
+            "Bash(gh issue list:*)"
+            "Bash(gh run view:*)"
+            "Bash(gh run list:*)"
+            "Bash(gh run watch:*)"
+            "Bash(gh release create:*)"
+
+            # --- Go tooling ---
+            "Bash(golangci-lint run)"
+            "Bash(golangci-lint run:*)"
+            "Bash(golangci-lint version:*)"
+            "Bash(go-arch-lint check)"
+            "Bash(go-arch-lint check:*)"
+            "Bash(go-ai-lint ./...)"
+            "Bash(gofmt:*)"
+            "Bash(goimports:*)"
+            "Bash(go get:*)"
+            "Bash(go mod tidy:*)"
+            "Bash(GOPROXY=direct go install:*)"
+
+            # --- Task runner ---
+            "Bash(task build:*)"
+            "Bash(task test:*)"
+            "Bash(task test *)"
+            "Bash(task lint:*)"
+            "Bash(task lint:arch:*)"
+            "Bash(task format *)"
+            "Bash(task fmt *)"
+            "Bash(task ci *)"
+
+            # --- Node / Bun ---
+            "Bash(npm install)"
+            "Bash(npm run test:coverage:*)"
+            "Bash(bun test:*)"
+            "Bash(bun run build:*)"
+            "Bash(bunx biome check:*)"
+
+            # --- .NET ---
+            "Bash(dotnet build:*)"
+            "Bash(dotnet test:*)"
+            "Bash(dotnet restore:*)"
+            "Bash(dotnet clean:*)"
+
+            # --- Zig ---
+            "Bash(zig build:*)"
+            "Bash(zig build *)"
+            "Bash(zig fmt:*)"
+            "Bash(zig fmt *)"
+
+            # --- Containers / K8s ---
+            "Bash(docker run:*)"
+            "Bash(kubectl config:*)"
+
+            # --- Media ---
+            "Bash(ffmpeg:*)"
+            "Bash(ffprobe:*)"
+            "Bash(blender:*)"
+            "Bash(godot:*)"
+
+            # --- Misc tools ---
+            "Bash(tailscale status:*)"
+            "Bash(vulkaninfo:*)"
+            "Bash(packwiz refresh:*)"
+            "Bash(gcloud storage cp:*)"
+            "Bash(timber-git:*)"
+
+            # --- WebSearch ---
+            "WebSearch"
+
+            # --- Websites ---
             "WebFetch(domain:pkg.go.dev)"
-            "WebFetch(domain:github.com)"
-            "WebFetch(domain:github.io)"
-            "WebFetch(domain:stackoverflow.com)"
             "WebFetch(domain:go.dev)"
             "WebFetch(domain:golangci-lint.run)"
+            "WebFetch(domain:github.com)"
+            "WebFetch(domain:github.io)"
             "WebFetch(domain:gist.github.com)"
+            "WebFetch(domain:raw.githubusercontent.com)"
+            "WebFetch(domain:curtbushko.github.io)"
+            "WebFetch(domain:stackoverflow.com)"
             "WebFetch(domain:modrinth.com)"
             "WebFetch(domain:api.modrinth.com)"
             "WebFetch(domain:ziglang.org)"
             "WebFetch(domain:zig.guide)"
-            "Bash(golangci-lint run)"
-            "Bash(go-arch-lint check)"
-            "Bash(go-ai-lint ./...)"
+            "WebFetch(domain:taskfile.dev)"
+            "WebFetch(domain:www.shadertoy.com)"
+            "WebFetch(domain:blog.maximeheckel.com)"
+            "WebFetch(domain:www.youtube.com)"
+            "WebFetch(domain:docs.obsidian.md)"
+            "WebFetch(domain:support.atlassian.com)"
+            "WebFetch(domain:community.atlassian.com)"
+            "WebFetch(domain:jira.atlassian.com)"
+            "WebFetch(domain:developer.box.com)"
+            "WebFetch(domain:developers.zoom.us)"
+            "WebFetch(domain:prow.ci.openshift.org)"
           ];
           deny = [];
           ask = [
@@ -182,7 +321,7 @@ in {
           type = "command";
         };
         preferences = {
-          bypassPermissionsModeAccepted = true;
+          skipDangerousModePermissionPrompt = true;
         };
         theme = "dark";
       };
