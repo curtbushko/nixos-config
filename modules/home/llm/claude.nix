@@ -132,6 +132,7 @@ in {
           ];
         };
         permissions = {
+          defaultMode = "bypassPermissions";
           allow = [
             # --- Shell basics ---
             "Bash(make:*)"
