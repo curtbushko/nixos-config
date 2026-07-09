@@ -40,6 +40,8 @@ in {
       package = inputs.claude-code.packages.${pkgs.stdenv.hostPlatform.system}.default;
       settings = {
         includeCoAuthoredBy = false;
+        # Remove all MCP servers
+        mcp.servers = {};
         hooks = {
           SessionStart = [
             {
@@ -195,6 +197,7 @@ in {
         CLAUDE_CODE_MAX_OUTPUT_TOKENS = "64000";
         MAX_THINKING_TOKENS = "31999";
         DISABLE_AUTOUPDATER = "1";
+        CLAUDE_CODE_DISABLE_BYPASS_WARNING = "1";
       };
       shellAliases = {
         cld = "TMUX= claude --model claude-sonnet-4-5-20250929";
