@@ -181,6 +181,9 @@ in {
           padding = 0;
           type = "command";
         };
+        preferences = {
+          bypassPermissionsModeAccepted = true;
+        };
         theme = "dark";
       };
     };
@@ -197,11 +200,11 @@ in {
         CLAUDE_CODE_MAX_OUTPUT_TOKENS = "64000";
         MAX_THINKING_TOKENS = "31999";
         DISABLE_AUTOUPDATER = "1";
-        CLAUDE_CODE_DISABLE_BYPASS_WARNING = "1";
       };
       shellAliases = {
         cld = "TMUX= claude --model claude-sonnet-4-5-20250929";
-        yolo = "TMUX= claude --model claude-sonnet-4-5-20250929 --dangerously-skip-permissions";
+        sonnet = "TMUX= claude --model claude-sonnet-4-5-20250929 --dangerously-skip-permissions";
+        opus = "TMUX= claude --model claude-opus-4-6 --dangerously-skip-permissions";
       };
     };
 

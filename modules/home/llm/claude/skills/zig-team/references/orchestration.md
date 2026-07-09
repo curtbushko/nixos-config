@@ -40,9 +40,9 @@ Subagents read their own context. You do NOT read these:
 
 | Agent | Reads | Path |
 |-------|-------|------|
-| Zig Builder | Development standards | `~/.claude/skills/zig-team/references/builder-context.md` |
+| Zig Builder | Development standards + architecture + testing | `~/.claude/skills/zig-team/references/builder-context.md` |
 | Zig Builder | Task details | `.tasks/task-{id}.yaml` |
-| Zig Reviewer | Review checklist | `~/.claude/skills/zig-team/references/reviewer-context.md` |
+| Zig Reviewer | Review checklist + architecture compliance | `~/.claude/skills/zig-team/references/reviewer-context.md` |
 | Zig Reviewer | Task details | `.tasks/task-{id}.yaml` |
 | Zig Reviewer | Build results | `.tasks/result-{id}-build.yaml` |
 | Task Manager | Phase details | `.phases/phase-*.md` |
@@ -109,8 +109,8 @@ Task tool:
     1. Read the phase file at: `.phases/{PHASE.file}`
     2. Parse the task checklist (extract all `- [ ]` items)
     3. Explore the codebase to find existing patterns, module structure, test helpers
-    4. Identify module organization (src/, build.zig, lib.zig/main.zig)
-    5. Break down into 2-5 minute tasks following TDD
+    4. Identify hexagonal architecture layout (src/domain/, src/ports/, src/app/, src/adapters/, build.zig modules)
+    5. Break down into 2-5 minute tasks following TDD and inside-out implementation order (domain -> ports -> app -> adapters -> wiring)
     6. Write output files (format below)
 
     ### Context
@@ -246,7 +246,8 @@ Task tool:
     1. Your task spec: `.tasks/task-{task.id}.yaml`
     2. Your coding standards (MANDATORY): `~/.claude/skills/zig-team/references/builder-context.md`
 
-    You MUST follow TDD (RED/GREEN/REFACTOR), Zig idioms, error unions, and allocator management.
+    You MUST follow TDD (RED/GREEN/REFACTOR), hexagonal architecture, Zig idioms, error unions, and allocator management.
+    Dependencies flow INWARD: adapters -> app -> ports -> domain. Domain has NO external deps.
 
     ## MANDATORY VERIFICATION - NON-NEGOTIABLE
 
@@ -285,9 +286,10 @@ Task tool:
     2. Build results: `.tasks/result-{task.id}-build.yaml`
     3. Review standards (MANDATORY): `~/.claude/skills/zig-team/references/reviewer-context.md`
 
-    Perform BOTH reviews in a single pass:
+    Perform ALL review stages in a single pass:
     - Stage 1: Spec compliance (requirements met? under/over-building?)
-    - Stage 2: Code quality (only if Stage 1 passes)
+    - Stage 2: Architecture compliance (hexagonal boundaries, dependency flow, build.zig enforcement)
+    - Stage 3: Code quality (only if Stage 1 and 2 pass)
 
     ## MANDATORY VERIFICATION - NON-NEGOTIABLE
 

@@ -9,15 +9,42 @@ The reviewer performs BOTH spec compliance AND code quality review in a single p
 1. **Read task acceptance criteria** from `.tasks/task-{id}.yaml`
 2. **Read build results** from `.tasks/result-{id}-build.yaml`
 3. **Stage 1: Spec Compliance** - Check requirements, under/over-building
-4. **Stage 2: Code Quality** - Only if Stage 1 passes. Check patterns below.
-5. **Write results** to `.tasks/result-{id}-review.yaml`
-6. **Return only verdict** to orchestrator (2 lines max)
+4. **Stage 2: Architecture Compliance** - Only if Stage 1 passes. Check hexagonal architecture rules below.
+5. **Stage 3: Code Quality** - Only if Stage 2 passes. Check patterns below.
+6. **Write results** to `.tasks/result-{id}-review.yaml`
+7. **Return only verdict** to orchestrator (2 lines max)
 
 ### Spec Compliance Checks
 - Each acceptance criterion fully implemented and tested?
 - Under-building: missing or partial implementations? TODOs?
 - Over-building: code beyond spec? Extra features? Premature optimization?
 - Test coverage: each requirement has tests? Edge cases? Error paths?
+
+### Architecture Compliance Checks (MUST CHECK)
+
+#### Dependency Rules
+
+| Layer       | Can Import            | Cannot Import          |
+|-------------|-----------------------|------------------------|
+| Domain      | (nothing)             | ports, app, adapters, std.net, std.fs |
+| Ports       | domain                | app, adapters          |
+| App         | domain, ports         | adapters               |
+| Adapters    | domain, ports         | app                    |
+| main.zig    | everything            | -                      |
+
+#### Checklist
+
+| Rule | Check | Violation |
+|------|-------|-----------|
+| Domain purity | Domain files import ONLY basic std types | `@import("std").net`, `@import("std").fs`, `@cImport` in domain |
+| Dependency flow | Dependencies flow inward only | App importing adapters, domain importing ports |
+| Port mechanism | Comptime generics by default | Vtable without justification for runtime dispatch |
+| Adapter lifecycle | Adapters with resources have `init()`/`deinit()` | Missing `deinit()`, no `defer` at wiring site |
+| No business logic in adapters | Adapters only translate formats and do I/O | Validation, computation, or rules in adapter code |
+| build.zig enforcement | Each layer is a separate module with correct `addImport()` | Missing module definition, illegal cross-layer imports |
+| Allocator threading | Allocators passed as params, not stored globally | Global allocator, allocator stored in domain types |
+
+**If `zig build` passes, module boundaries are enforced.** But also check that `build.zig` itself has correct wiring (domain gets no imports, ports only gets domain, etc.).
 
 ---
 
@@ -129,6 +156,13 @@ spec_compliance:
   criteria_assessment: [{criterion, status: met|partial|missing, evidence}]
   under_building: {found, issues}
   over_building: {found, issues}
+
+architecture_compliance:
+  domain_purity: {clean: true|false, violations: []}
+  dependency_flow: {correct: true|false, violations: []}
+  build_zig_enforcement: {modules_defined: true|false, wiring_correct: true|false}
+  port_mechanism: {appropriate: true|false, notes: ""}
+  adapter_lifecycle: {init_deinit_paired: true|false, defer_used: true|false}
 
 code_quality:
   findings:

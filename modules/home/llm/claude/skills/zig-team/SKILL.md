@@ -1,6 +1,6 @@
 ---
 name: zig-team
-description: Implements phases defined in .phases/ directory for Zig projects. Reads current phase from index.yaml, breaks down into tasks, then executes Builder -> Reviewer for each task.
+description: Implements phases defined in .phases/ directory for Zig projects. Reads current phase from index.yaml, breaks down into tasks, then executes Builder -> Reviewer for each task. All Zig projects follow hexagonal architecture with compile-time boundary enforcement via build.zig modules.
 arguments:
   - name: phase
     description: Specific phase number to implement (optional, uses current_phase from index.yaml if not specified)
@@ -16,13 +16,13 @@ arguments:
 
 **Follow the orchestration procedure in `references/orchestration.md`.**
 
-**DO NOT read** `references/builder-context.md`, `references/reviewer-context.md`, or `references/examples.md`. Those are read by subagents only.
+**DO NOT read** `references/builder-context.md` or `references/reviewer-context.md`. Those are read by subagents only.
 
 ---
 
 ## Overview
 
-The Zig Team skill implements features you define. You provide the WHAT (plan phases), it handles the HOW (implementation).
+The Zig Team skill implements features you define. You provide the WHAT (plan phases), it handles the HOW (implementation). All Zig projects follow hexagonal architecture (ports and adapters) with compile-time boundary enforcement via `build.zig` modules.
 
 ```mermaid
 flowchart TD
@@ -146,6 +146,17 @@ phases:
 
 ---
 
+## Architecture Rules
+
+**Non-negotiable** (enforced by builders and reviewers, all inlined in their context files):
+- Dependencies flow INWARD: adapters -> application -> ports -> domain
+- Domain layer has NO external dependencies (no std.net, no std.fs, no C imports)
+- Layer boundaries are enforced at compile time via `build.zig` module isolation
+- Prefer comptime generics for ports; vtable structs only when runtime polymorphism is needed
+- All adapters with resources MUST have explicit `init()` / `deinit()` lifecycle
+
+---
+
 ## Agents and Their Context
 
 Each agent is a subagent dispatched via the Task tool. The orchestrator does NOT read these files - subagents read their own context.
@@ -153,8 +164,8 @@ Each agent is a subagent dispatched via the Task tool. The orchestrator does NOT
 | Agent | Role | Context File |
 |-------|------|--------------|
 | **Task Manager** | Parses phase file, explores codebase, creates task breakdown | `.phases/phase-*.md` |
-| **Zig Builder** | Implements tasks following TDD, Zig best practices | `references/builder-context.md` |
-| **Zig Reviewer** | Combined review: spec compliance + code quality in one pass | `references/reviewer-context.md` |
+| **Zig Builder** | Implements tasks following TDD, hexagonal architecture, Zig best practices | `references/builder-context.md` |
+| **Zig Reviewer** | Combined review: spec compliance + architecture compliance + code quality | `references/reviewer-context.md` |
 
 See `references/orchestration.md` for exact dispatch templates and the coordination loop.
 
@@ -170,6 +181,9 @@ See `references/orchestration.md` for exact dispatch templates and the coordinat
 - Proceeding with CHANGES_NEEDED status
 - Ignoring memory safety issues
 - Marking task complete with failing tests
+- Putting business logic in adapters (adapters only translate between external formats and domain types)
+- Importing std.net, std.fs, or C libraries in domain layer
+- Modifying `build.zig` to add cross-layer imports without architectural review
 
 ---
 
