@@ -132,7 +132,7 @@ in {
           ];
         };
         permissions = {
-          defaultMode = "bypassPermissions";
+          defaultMode = "auto";
           allow = [
             # --- Shell basics ---
             "Bash(make:*)"
@@ -321,9 +321,6 @@ in {
           padding = 0;
           type = "command";
         };
-        preferences = {
-          skipDangerousModePermissionPrompt = true;
-        };
         theme = "dark";
       };
     };
@@ -334,7 +331,7 @@ in {
         ANTHROPIC_DEFAULT_OPUS_MODEL = "claude-opus-4-5-20251101";
         ANTHROPIC_DEFAULT_SONNET_MODEL = "claude-sonnet-4-5-20250929";
         ANTHROPIC_DEFAULT_HAIKU_MODEL = "claude-haiku-4-5-20251001";
-        CLAUDE_CODE_EFFORT_LEVEL = "high";
+        CLAUDE_CODE_EFFORT_LEVEL = "medium";
         CLAUDE_CODE_AUTO_COMPACT_WINDOW = "200000";
         CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING = "1";
         CLAUDE_CODE_MAX_OUTPUT_TOKENS = "64000";
