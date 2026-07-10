@@ -21,7 +21,5 @@
 
     # Turn off automatic update scheduling (runs as root)
     /usr/sbin/softwareupdate --schedule off 2>/dev/null || true
-
-    echo "Software Update notifications have been disabled"
   '';
 }
