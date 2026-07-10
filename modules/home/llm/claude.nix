@@ -339,9 +339,9 @@ in {
         DISABLE_AUTOUPDATER = "1";
       };
       shellAliases = {
-        cld = "TMUX= claude --model claude-sonnet-4-5-20250929";
-        sonnet = "TMUX= claude --model claude-sonnet-4-5-20250929 --dangerously-skip-permissions";
-        opus = "TMUX= claude --model claude-opus-4-6 --dangerously-skip-permissions";
+        cld = "TMUX= claude --model claude-sonnet-4-5-20250929 --effort medium";
+        sonnet = "TMUX= claude --model claude-sonnet-4-5-20250929 --effort medium --dangerously-skip-permissions";
+        opus = "TMUX= claude --model claude-opus-4-6 --effort medium --dangerously-skip-permissions";
       };
     };
 
