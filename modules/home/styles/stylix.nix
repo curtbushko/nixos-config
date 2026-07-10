@@ -104,6 +104,7 @@ in {
   # Brown: base0F
   stylix = {
     enable = true;
+    overlays.enable = false;
     #image = ./wallpapers/3440x1440/cyberpunk-tokyo.png;
     #image = ./wallpapers/3440x1440/green_pasture.jpg;
     #image = ./wallpapers/3440x1440/cyberpunk-city-future-digital-art-rq.jpg;
