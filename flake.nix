@@ -158,12 +158,6 @@
             ];
 
           shellHook = ''
-            # Auto-pull if on main branch
-            if [ "$(git rev-parse --abbrev-ref HEAD 2>/dev/null)" = "main" ]; then
-              echo "On main branch, pulling latest changes..."
-              git pull --quiet || true
-            fi
-
             # Terminal colors
             BOLD='\033[1m'
             BLUE='\033[0;34m'
