@@ -84,4 +84,11 @@
       };
     };
   };
+
+  system.activationScripts.postActivation.text = ''
+    # Force macOS to re-read symbolic hotkeys (Cmd+Left/Right for desktop switching)
+    # CustomUserPreferences writes the plist but cfprefsd caches the old values
+    /usr/bin/killall cfprefsd 2>/dev/null || true
+    /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u 2>/dev/null || true
+  '';
 }
