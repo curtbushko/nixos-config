@@ -43,4 +43,45 @@
   system.defaults.menuExtraClock = {
     ShowDate = 0;
   };
+
+  # Trackpad - 3-finger vertical swipe for Mission Control / App Expose
+  system.defaults.trackpad = {
+    TrackpadThreeFingerVertSwipeGesture = 2;
+  };
+
+  # Keyboard shortcuts - Cmd+Left/Right arrow to switch desktops
+  system.defaults.CustomUserPreferences = {
+    "com.apple.symbolichotkeys" = {
+      AppleSymbolicHotKeys = {
+        "79" = {
+          enabled = true;
+          value = {
+            parameters = [65535 123 1048576];
+            type = "standard";
+          };
+        };
+        "80" = {
+          enabled = true;
+          value = {
+            parameters = [65535 123 1179648];
+            type = "standard";
+          };
+        };
+        "81" = {
+          enabled = true;
+          value = {
+            parameters = [65535 124 1048576];
+            type = "standard";
+          };
+        };
+        "82" = {
+          enabled = true;
+          value = {
+            parameters = [65535 124 1179648];
+            type = "standard";
+          };
+        };
+      };
+    };
+  };
 }
