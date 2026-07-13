@@ -118,7 +118,11 @@
         </dict>
       </dict>'
 
+    # Force macOS to re-read all preferences written during activation
+    # Kill the user's cfprefsd (not just root's) so it re-reads plist files
+    launchctl asuser "$(/usr/bin/id -u "$CURRENT_USER")" /usr/bin/sudo -u "$CURRENT_USER" /usr/bin/killall cfprefsd 2>/dev/null || true
     /usr/bin/killall cfprefsd 2>/dev/null || true
+    sleep 1
     /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u 2>/dev/null || true
   '';
 }
