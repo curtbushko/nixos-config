@@ -11,6 +11,7 @@ This skill provides comprehensive guidelines for creating high-quality, maintain
 - **ALWAYS** run `shellcheck` and `shfmt` before completing any script
 - **NEVER** use `eval` unless absolutely necessary and after careful security review
 - **NEVER** parse `ls` output - use globs or `find` instead
+- **NEVER** use `rm` to delete files - move to `.trash/` instead: `mkdir -p .trash && mv "$file" .trash/`
 - **NO EMOJIS** in scripts or comments
 
 ## Quality Gates (NON-NEGOTIABLE)
@@ -325,8 +326,9 @@ main "$@"
    temp_dir="$(mktemp -d)"
 
    cleanup() {
-       rm -f "$temp_file"
-       rm -rf "$temp_dir"
+       mkdir -p .trash
+       mv "$temp_file" .trash/ 2>/dev/null || true
+       mv "$temp_dir" .trash/ 2>/dev/null || true
    }
    trap cleanup EXIT
    ```
@@ -395,21 +397,23 @@ main "$@"
 1. **Never use user input directly in commands**:
    ```bash
    # Bad - command injection vulnerability
-   eval "rm $user_input"
+   eval "mv $user_input .trash/"
 
    # Good - validate and sanitize
    if [[ "$user_input" =~ ^[a-zA-Z0-9_-]+$ ]]; then
-       rm -f "$user_input"
+       mkdir -p .trash
+       mv "$user_input" .trash/
    fi
    ```
 
-2. **Use full paths for commands in scripts run as root**:
+2. **Never use `rm` to delete files — move to `.trash/` instead**:
    ```bash
-   # Good
-   /usr/bin/rm -f "$file"
-
-   # Risky if PATH is modified
+   # Bad - destructive and irreversible
    rm -f "$file"
+
+   # Good - recoverable
+   mkdir -p .trash
+   mv "$file" .trash/
    ```
 
 3. **Set secure permissions on sensitive scripts**:
@@ -495,7 +499,7 @@ Example test file (test.bats):
 - [ ] `shellcheck` passes with no errors or warnings
 - [ ] `shfmt -d` shows no diff
 - [ ] Variables are properly quoted
-- [ ] Cleanup happens on exit (no temp files left behind)
+- [ ] Cleanup happens on exit (move temp files to `.trash/`, never `rm`)
 - [ ] Script is idempotent when possible
 
 ## Code Review Checklist

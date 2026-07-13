@@ -165,8 +165,9 @@ nix-store --gc --print-roots | grep -v '/proc/'
 # Remove result symlinks (careful!)
 find /nix/var/nix/gcroots/auto -type l ! -exec test -e {} \; -delete
 
-# Remove project result links
-rm ./result
+# Move project result links to trash
+mkdir -p .trash
+mv ./result .trash/
 ```
 
 ## Protecting Packages
