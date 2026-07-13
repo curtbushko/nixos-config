@@ -44,50 +44,80 @@
     ShowDate = 0;
   };
 
-  # Trackpad - 3-finger vertical swipe for Mission Control / App Expose
+  # Trackpad
   system.defaults.trackpad = {
+    ActuateDetents = true;
+    Clicking = false;
+    DragLock = false;
+    Dragging = false;
+    FirstClickThreshold = 1;
+    ForceSuppressed = false;
+    SecondClickThreshold = 1;
+    TrackpadCornerSecondaryClick = 2;
+    TrackpadFourFingerHorizSwipeGesture = 2;
+    TrackpadFourFingerPinchGesture = 2;
+    TrackpadFourFingerVertSwipeGesture = 2;
+    TrackpadMomentumScroll = true;
+    TrackpadPinch = true;
+    TrackpadRightClick = false;
+    TrackpadRotate = true;
+    TrackpadThreeFingerDrag = false;
+    TrackpadThreeFingerHorizSwipeGesture = 2;
+    TrackpadThreeFingerTapGesture = 0;
     TrackpadThreeFingerVertSwipeGesture = 2;
+    TrackpadTwoFingerDoubleTapGesture = true;
+    TrackpadTwoFingerFromRightEdgeSwipeGesture = 3;
   };
 
-  # Keyboard shortcuts - Cmd+Left/Right arrow to switch desktops
-  system.defaults.CustomUserPreferences = {
-    "com.apple.symbolichotkeys" = {
-      AppleSymbolicHotKeys = {
-        "79" = {
-          enabled = true;
-          value = {
-            parameters = [65535 123 1048576];
-            type = "standard";
-          };
-        };
-        "80" = {
-          enabled = true;
-          value = {
-            parameters = [65535 123 1179648];
-            type = "standard";
-          };
-        };
-        "81" = {
-          enabled = true;
-          value = {
-            parameters = [65535 124 1048576];
-            type = "standard";
-          };
-        };
-        "82" = {
-          enabled = true;
-          value = {
-            parameters = [65535 124 1179648];
-            type = "standard";
-          };
-        };
-      };
-    };
-  };
+  # Global trackpad settings
+  system.defaults.NSGlobalDomain."com.apple.trackpad.forceClick" = true;
 
   system.activationScripts.postActivation.text = ''
-    # Force macOS to re-read symbolic hotkeys (Cmd+Left/Right for desktop switching)
-    # CustomUserPreferences writes the plist but cfprefsd caches the old values
+    CURRENT_USER=$(/usr/bin/stat -f %Su /dev/console)
+
+    # Keyboard shortcuts - Cmd+Left/Right arrow to switch desktops
+    # Uses defaults write with nested plist dicts which CustomUserPreferences can't handle
+    /usr/bin/sudo -u "$CURRENT_USER" /usr/bin/defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 79 '
+      <dict>
+        <key>enabled</key><true/>
+        <key>value</key><dict>
+          <key>parameters</key><array>
+            <integer>65535</integer><integer>123</integer><integer>1048576</integer>
+          </array>
+          <key>type</key><string>standard</string>
+        </dict>
+      </dict>'
+    /usr/bin/sudo -u "$CURRENT_USER" /usr/bin/defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 80 '
+      <dict>
+        <key>enabled</key><true/>
+        <key>value</key><dict>
+          <key>parameters</key><array>
+            <integer>65535</integer><integer>123</integer><integer>1179648</integer>
+          </array>
+          <key>type</key><string>standard</string>
+        </dict>
+      </dict>'
+    /usr/bin/sudo -u "$CURRENT_USER" /usr/bin/defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 81 '
+      <dict>
+        <key>enabled</key><true/>
+        <key>value</key><dict>
+          <key>parameters</key><array>
+            <integer>65535</integer><integer>124</integer><integer>1048576</integer>
+          </array>
+          <key>type</key><string>standard</string>
+        </dict>
+      </dict>'
+    /usr/bin/sudo -u "$CURRENT_USER" /usr/bin/defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 82 '
+      <dict>
+        <key>enabled</key><true/>
+        <key>value</key><dict>
+          <key>parameters</key><array>
+            <integer>65535</integer><integer>124</integer><integer>1179648</integer>
+          </array>
+          <key>type</key><string>standard</string>
+        </dict>
+      </dict>'
+
     /usr/bin/killall cfprefsd 2>/dev/null || true
     /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u 2>/dev/null || true
   '';
