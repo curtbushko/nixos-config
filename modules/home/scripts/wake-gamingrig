@@ -36,7 +36,7 @@ fi
 
 # Wake gamingrig using host-specific method
 case "$CURRENT_HOST" in
-	curtbushko-X3FR7279D2|m1-pro)
+	curtbushko-X3FR7279D2|curtbushko-K4W6XK6XND|jackson-m1pro|m1-pro)
 		# On LAN - use wakeonlan directly
 		logger INFO "Waking gamingrig (LAN)..."
 		wakeonlan "$MAC_ADDRESS" 2>/dev/null || true

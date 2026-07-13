@@ -13,7 +13,7 @@ vars:
     sh: echo "[$(date -u +'%Y-%m-%dT%H:%M:%SZ')]"
 
   # Define host types
-  DARWIN_HOSTS: "curtbushko-X3FR7279D2 m4-pro m1-air"
+  DARWIN_HOSTS: "curtbushko-X3FR7279D2 curtbushko-K4W6XK6XND jackson-m1pro m4-pro m1-air"
   NIXOS_HOSTS: "gamingrig node00 node01 node02"
   HOME_MANAGER_HOSTS: "steamdeck"
 
