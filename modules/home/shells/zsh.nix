@@ -36,7 +36,7 @@ in {
         NIXOS_CONFIG = "$HOME/workspace/github.com/curtbushko/nixos-config";
         SYNCTHING = "$HOME/Sync";
         WORKSPACE = "$HOME/workspace";
-        M1DDC = "$HOME/.dotfiles/bin/m1ddc";
+        M1DDC = "$HOME/bin/m1ddc";
       };
       shellAliases =
         {
