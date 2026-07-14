@@ -3,6 +3,7 @@
   inputs,
   ...
 }: {
+  curtbushko.user.name = "curtbushko";
   system.stateVersion = 5;
 
   # This makes it work with the Determinate Nix installer

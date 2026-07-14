@@ -1,36 +1,50 @@
 {
-  inputs,
+  config,
+  lib,
   pkgs,
   ...
-}: {
-  homebrew = {
-    enable = true;
-    onActivation = {
-      autoUpdate = false; # Don't auto-update on rebuild
-      cleanup = "zap";
-      upgrade = false; # Don't auto-upgrade
+}: let
+  inherit (lib) types mkOption mkIf;
+  cfg = config.curtbushko.user;
+in {
+  options.curtbushko.user = {
+    name = mkOption {
+      type = types.str;
+      description = "Primary user name for this darwin system";
     };
-    brews = [];
-    taps = [];
-    casks = [
-      #"discord"
-      "firefox"
-      "obs"
-      "rectangle"
-      "slack"
-      "vlc"
-      "notunes"
-      "podman-desktop"
-      "openvpn-connect"
-    ];
+    home = mkOption {
+      type = types.str;
+      default = "/Users/${cfg.name}";
+      description = "Home directory for the primary user";
+    };
   };
 
-  # 2025-06-21 temporary hack as nix-darwin cleans things up
-  system.primaryUser = "curtbushko";
-  # The user should already exist, but we need to set this up so Nix knows
-  # what our home directory is (https://github.com/LnL7/nix-darwin/issues/423).
-  users.users.curtbushko = {
-    home = "/Users/curtbushko";
-    shell = pkgs.zsh;
+  config = {
+    system.primaryUser = cfg.name;
+    users.users.${cfg.name} = {
+      home = cfg.home;
+      shell = pkgs.zsh;
+    };
+
+    homebrew = {
+      enable = true;
+      onActivation = {
+        autoUpdate = false;
+        cleanup = "zap";
+        upgrade = false;
+      };
+      brews = [];
+      taps = [];
+      casks = [
+        "firefox"
+        "obs"
+        "rectangle"
+        "slack"
+        "vlc"
+        "notunes"
+        "podman-desktop"
+        "openvpn-connect"
+      ];
+    };
   };
 }
