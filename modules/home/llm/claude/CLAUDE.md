@@ -106,17 +106,16 @@ This applies to ALL files including:
 
 **Format**: `type(optional-scope): short description`
 
+**ALWAYS use `git commit -F <file>` for commit messages.** Write the message to a temp file first, then pass it with `-F`. Single-quoting `-m` in zsh causes literal quote characters in the message; double quotes cause `unmatched "` errors.
+
 ```bash
-# CORRECT examples
+# CORRECT - write message to temp file, commit with -F
+echo 'feat(auth): add OAuth2 login flow' > /tmp/commit-msg.txt
+git commit -F /tmp/commit-msg.txt
+
+# WRONG - quotes end up in the commit message
 git commit -m 'feat(auth): add OAuth2 login flow'
-git commit -m 'fix: resolve nil pointer in parser'
-git commit -m 'chore(deps): update claude-code to 2.1.205'
-git commit -m 'refactor(api): extract handler middleware'
 ```
-
-**ALWAYS use single quotes for git commit messages.** Double quotes cause `unmatched "` errors in zsh.
-
-**NO EXCEPTIONS.** If the message contains an apostrophe, escape it: `'don'\''t do this'`
 
 ## Scripting Language Policy (CRITICAL)
 
