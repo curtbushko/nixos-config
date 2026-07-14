@@ -116,6 +116,27 @@ in {
                 }
               ];
             }
+            {
+              matcher = "Bash";
+              hooks = [
+                {
+                  type = "command";
+                  timeout = 5;
+                  command = ''
+                    INPUT=$(cat)
+                    CMD=$(echo "$INPUT" | jq -r '.tool_input.command // empty')
+                    if echo "$CMD" | grep -q '^git commit'; then
+                      MSG=$(git log -1 --pretty=%B 2>/dev/null)
+                      if echo "$MSG" | grep -qE '\$\(cat|<<.*EOF|<<.*HEREDOC'; then
+                        printf '{"decision":"block","reason":"Commit message contains heredoc junk. Run: git commit --amend -m your-clean-message"}\n'
+                        exit 0
+                      fi
+                    fi
+                    exit 0
+                  '';
+                }
+              ];
+            }
           ];
           Stop = [
             {
