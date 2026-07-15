@@ -4,6 +4,13 @@
   ...
 }: {
   curtbushko.user.name = "jackson";
+  curtbushko.networking.stevenBlackHosts = {
+    enable = true;
+    blockPorn = true;
+    blockGambling = true;
+    blockFakenews = true;
+    blockSocial = false;
+  };
   system.stateVersion = 5;
 
   # This makes it work with the Determinate Nix installer
