@@ -1,7 +1,9 @@
 keys:
   - &gamingrig age144rvv7z6qtfq4nqtx2ehzy5dmksg79g5e4fmy0sfw0kq4cwrqydqgrtn9t
+  - &m1pro age1f7a4n4zz2jrurmtal5jkf4lg6xxgq9k7jch0wwet62aq027hv9fsq2rxsj
 creation_rules:
   - path_regex: secrets/[^/]+\.(yaml|env|)$
     key_groups:
       - age:
         - *gamingrig
+        - *m1pro
