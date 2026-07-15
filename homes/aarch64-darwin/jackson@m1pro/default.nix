@@ -18,12 +18,12 @@
     cron.enable = true;
     gaming.enable = true;
     git.enable = true;
-    k8s.enable = true;
+    k8s.enable = false;
     llm = {
-      enable = true;
+      enable = false;
       # Model configuration for Qwen (GGUF for llama-cpp)
       models.qwen = {
-        enable = true;
+        enable = false;
         autoDownload = false; # Download manually to avoid timeout
       };
     };
@@ -35,7 +35,7 @@
     tools.enable = true;
     wm.rectangle.enable = true;
     # Theme colors managed by flair: run `flair select <theme>`
-    theme.wallpaper = "cyberpunk_2077_phantom_liberty_katana.jpg";
+    theme.wallpaper = "space-cloud.jpg";
   };
 
   #---------------------------------------------------------------------
@@ -45,8 +45,6 @@
     # Darwin only
     pkgs.cachix
     inputs.neovim.packages.${pkgs.stdenv.hostPlatform.system}.default
-    pkgs.podman
-    pkgs.obsidian
   ];
 
   #---------------------------------------------------------------------

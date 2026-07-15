@@ -42,8 +42,6 @@ in {
         "slack"
         "vlc"
         "notunes"
-        "podman-desktop"
-        "openvpn-connect"
       ];
     };
   };

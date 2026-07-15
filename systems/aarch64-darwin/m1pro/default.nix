@@ -122,8 +122,6 @@
 
   environment.shells = with pkgs; [bashInteractive zsh fish];
   environment.systemPackages = with pkgs; [
-    llama-cpp
-
     luajitPackages.tl
     libvterm-neovim
     cachix
