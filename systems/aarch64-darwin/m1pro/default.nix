@@ -3,6 +3,7 @@
   inputs,
   ...
 }: {
+  networking.hostName = "m1pro";
   ns.user.name = "jackson";
   ns.networking.stevenBlackHosts = {
     enable = true;
