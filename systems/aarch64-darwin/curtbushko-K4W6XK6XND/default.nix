@@ -3,7 +3,7 @@
   inputs,
   ...
 }: {
-  ns.user.name = "jackson";
+  ns.user.name = "curtbushko";
   nix.enable = false;
   system.stateVersion = 5;
 
