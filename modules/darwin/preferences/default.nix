@@ -28,6 +28,13 @@
     "com.apple.swipescrolldirection" = false;
   };
 
+  # CustomUserPreferences for settings without dedicated nix-darwin options
+  system.defaults.CustomUserPreferences = {
+    NSGlobalDomain = {
+      AppleActionOnDoubleClick = "None"; # Disable double-click title bar to maximize
+    };
+  };
+
   # Window Manager - disable all tiling, hide widgets
   system.defaults.WindowManager = {
     EnableTiledWindowMargins = false;
