@@ -18,6 +18,35 @@
     show-recents = false;
   };
 
+  # Disable Spotlight keyboard shortcuts (Cmd+Space and Cmd+Option+Space)
+  system.activationScripts.preActivation.text = ''
+    CURRENT_USER=$(/usr/bin/stat -f %Su /dev/console)
+
+    # Disable Spotlight search (Cmd+Space) - hotkey ID 64
+    /usr/bin/sudo -u "$CURRENT_USER" /usr/bin/defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 64 '
+      <dict>
+        <key>enabled</key><false/>
+        <key>value</key><dict>
+          <key>parameters</key><array>
+            <integer>32</integer><integer>49</integer><integer>1048576</integer>
+          </array>
+          <key>type</key><string>standard</string>
+        </dict>
+      </dict>'
+
+    # Disable Finder search window (Cmd+Option+Space) - hotkey ID 65
+    /usr/bin/sudo -u "$CURRENT_USER" /usr/bin/defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 65 '
+      <dict>
+        <key>enabled</key><false/>
+        <key>value</key><dict>
+          <key>parameters</key><array>
+            <integer>32</integer><integer>49</integer><integer>1572864</integer>
+          </array>
+          <key>type</key><string>standard</string>
+        </dict>
+      </dict>'
+  '';
+
   # Disable Spotlight indexing and unload all services
   system.activationScripts.postActivation.text = ''
     # Get the current user (console owner)
