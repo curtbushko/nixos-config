@@ -125,6 +125,10 @@
         </dict>
       </dict>'
 
+    # Reinforce CustomUserPreferences settings (written above but need explicit set for current session)
+    /usr/bin/sudo -u "$CURRENT_USER" /usr/bin/defaults write NSGlobalDomain com.apple.swipescrolldirection -bool false 2>/dev/null || true
+    /usr/bin/sudo -u "$CURRENT_USER" /usr/bin/defaults write NSGlobalDomain AppleActionOnDoubleClick -string "None" 2>/dev/null || true
+
     # Trackpad and symbolic hotkey settings require a logout/login to take effect.
     # cfprefsd kill + activateSettings helps some settings reload without logout.
     launchctl asuser "$(/usr/bin/id -u "$CURRENT_USER")" /usr/bin/sudo -u "$CURRENT_USER" /usr/bin/killall cfprefsd 2>/dev/null || true
