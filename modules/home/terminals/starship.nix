@@ -46,9 +46,9 @@ in {
           command = ''
             h=$(hostname)
             case "$h" in
-              curtbushko-X3FR7279D2) icon=" "; name="work" ;;
               curtbushko-K4W6XK6XND) icon=" "; name="work" ;;
               gamingrig) icon=" "; name="gamingrig" ;;
+              m1-pro)    icon="󰍳 "; name="m1-pro" ;;
               m4-pro)    icon=" "; name="m4-pro" ;;
               node00)    icon="󱃾 "; name="node00 (k8s)" ;;
               node01)    icon="󱃾 "; name="node01 (k8s)" ;;
