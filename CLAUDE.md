@@ -40,17 +40,17 @@ task -l          # List all available tasks
 
 ## Module Pattern
 
-All modules follow this structure with the `curtbushko` namespace:
+All modules follow this structure with the `ns` namespace:
 
 ```nix
 { config, lib, pkgs, ... }:
 let
   inherit (lib) types mkOption mkIf;
-  cfg = config.curtbushko.modulename;
+  cfg = config.ns.modulename;
   isDarwin = pkgs.stdenv.isDarwin;
   isLinux = pkgs.stdenv.isLinux;
 in {
-  options.curtbushko.modulename = {
+  options.ns.modulename = {
     enable = mkOption {
       type = types.bool;
       default = false;
@@ -109,7 +109,7 @@ inputs = {
 System configs in `systems/` enable modules from `modules/nixos/`:
 
 ```nix
-curtbushko = {
+ns = {
   hardware.audio.enable = true;
   hardware.cpu.enable = true;
   services.wm.enable = true;
@@ -122,7 +122,7 @@ curtbushko = {
 Home configs in `homes/` enable modules from `modules/home/`:
 
 ```nix
-curtbushko = {
+ns = {
   browsers.enable = true;
   gaming.enable = true;
   llm.enable = true;
@@ -177,13 +177,13 @@ home.packages = [
 ### Adding a New System Module
 
 1. Create `modules/nixos/services/newservice/default.nix`
-2. Follow the module pattern with `curtbushko.services.newservice.enable`
-3. Enable in relevant system config: `curtbushko.services.newservice.enable = true;`
+2. Follow the module pattern with `ns.services.newservice.enable`
+3. Enable in relevant system config: `ns.services.newservice.enable = true;`
 
 ### Adding a New Home Module
 
 1. Create `modules/home/newmodule/default.nix`
-2. Follow the module pattern with `curtbushko.newmodule.enable`
+2. Follow the module pattern with `ns.newmodule.enable`
 3. Add import to parent module's `default.nix`
 4. Enable in relevant home config
 
@@ -220,7 +220,7 @@ Before writing Nix code, stop at the first rung that holds:
 ## Anti-Patterns
 
 - Using `with pkgs;` (use explicit `pkgs.X` references)
-- Creating modules without the `curtbushko` namespace
+- Creating modules without the `ns` namespace
 - Hardcoding paths (use `config.home.homeDirectory`, `config.xdg.configHome`)
 - Not following nixpkgs in flake inputs
 - Using `rm` to delete files (move to `.trash/` instead)
