@@ -24,7 +24,6 @@
 
   # Global preferences
   system.defaults.NSGlobalDomain = {
-    AppleActionOnDoubleClick = "None";
     AppleInterfaceStyle = "Dark";
     "com.apple.swipescrolldirection" = false;
   };
