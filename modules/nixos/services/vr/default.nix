@@ -6,9 +6,9 @@
   ...
 }: let
   inherit (lib) types mkOption mkIf;
-  cfg = config.curtbushko.services.vr;
+  cfg = config.ns.services.vr;
 in {
-  options.curtbushko.services.vr = {
+  options.ns.services.vr = {
     enable = mkOption {
       type = types.bool;
       default = false;

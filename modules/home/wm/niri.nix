@@ -6,7 +6,7 @@
   ...
 }: let
   inherit (lib) types mkOption mkIf;
-  cfg = config.curtbushko.wm.niri;
+  cfg = config.ns.wm.niri;
 
   # Read colors from flair's style.json in ~/.config/flair/
   # Note: Requires --impure flag for nix build/home-manager switch
@@ -33,11 +33,11 @@
   };
 
   wallpaper = pkgs.fetchurl {
-    url = "https://raw.githubusercontent.com/curtbushko/nixos-wallpapers/main/3440x1440/${config.curtbushko.theme.wallpaper}";
-    sha256 = wallpaperHashes.${config.curtbushko.theme.wallpaper} or lib.fakeHash;
+    url = "https://raw.githubusercontent.com/curtbushko/nixos-wallpapers/main/3440x1440/${config.ns.theme.wallpaper}";
+    sha256 = wallpaperHashes.${config.ns.theme.wallpaper} or lib.fakeHash;
   };
 in {
-  options.curtbushko.wm.niri = {
+  options.ns.wm.niri = {
     enable = mkOption {
       type = types.bool;
       default = false;

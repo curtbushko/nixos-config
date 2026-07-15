@@ -5,9 +5,9 @@
   ...
 }: let
   inherit (lib) types mkOption mkIf;
-  cfg = config.curtbushko.services.k8s.agent;
+  cfg = config.ns.services.k8s.agent;
 in {
-  options.curtbushko.services.k8s.agent = {
+  options.ns.services.k8s.agent = {
     enable = mkOption {
       type = types.bool;
       default = false;

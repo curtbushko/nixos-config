@@ -6,7 +6,7 @@
   ...
 }: let
   inherit (lib) types mkOption mkIf;
-  cfg = config.curtbushko.git;
+  cfg = config.ns.git;
 
   # Build sem from source - semantic version control tool
   sem = pkgs.rustPlatform.buildRustPackage rec {
@@ -43,7 +43,7 @@ in {
     inputs.hunk.homeManagerModules.default
   ];
 
-  options.curtbushko.git = {
+  options.ns.git = {
     enable = mkOption {
       type = types.bool;
       default = false;

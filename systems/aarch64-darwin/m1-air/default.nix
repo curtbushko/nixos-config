@@ -3,7 +3,7 @@
   inputs,
   ...
 }: {
-  curtbushko.user.name = "curtbushko";
+  ns.user.name = "curtbushko";
   system.stateVersion = 5;
 
   # Keep in async with vm-shared.nix. (todo: pull this out into a file)

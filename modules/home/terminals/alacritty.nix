@@ -4,7 +4,7 @@
   ...
 }: let
   inherit (lib) mkIf;
-  cfg = config.curtbushko.terminals;
+  cfg = config.ns.terminals;
 in {
   config = mkIf cfg.enable {
     programs.alacritty = {

@@ -5,9 +5,9 @@
   ...
 }:
 with lib; let
-  cfg = config.curtbushko.nix-cache-gamingrig;
+  cfg = config.ns.nix-cache-gamingrig;
 in {
-  options.curtbushko.nix-cache-gamingrig = {
+  options.ns.nix-cache-gamingrig = {
     enable = mkEnableOption "Use gamingrig as primary binary cache with wake-on-lan support";
 
     relayHost = mkOption {

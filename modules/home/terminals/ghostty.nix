@@ -5,7 +5,7 @@
   ...
 }: let
   inherit (lib) mkIf;
-  cfg = config.curtbushko.terminals;
+  cfg = config.ns.terminals;
   # Helper function to convert hex color to RGBA values
   hexToRGBA = hex: alpha: let
     r = builtins.fromTOML "v=0x${builtins.substring 1 2 hex}";

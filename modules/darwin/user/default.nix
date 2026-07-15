@@ -5,9 +5,9 @@
   ...
 }: let
   inherit (lib) types mkOption mkIf;
-  cfg = config.curtbushko.user;
+  cfg = config.ns.user;
 in {
-  options.curtbushko.user = {
+  options.ns.user = {
     name = mkOption {
       type = types.str;
       description = "Primary user name for this darwin system";

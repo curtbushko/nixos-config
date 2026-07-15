@@ -5,7 +5,7 @@
   ...
 }: let
   inherit (lib) types mkOption mkIf;
-  cfg = config.curtbushko.wm.rectangle;
+  cfg = config.ns.wm.rectangle;
   isDarwin = pkgs.stdenv.isDarwin;
 
   keyCodes = {
@@ -48,7 +48,7 @@
     inherit keyCode modifierFlags;
   };
 in {
-  options.curtbushko.wm.rectangle = {
+  options.ns.wm.rectangle = {
     enable = mkOption {
       type = types.bool;
       default = false;

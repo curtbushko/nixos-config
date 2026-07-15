@@ -1,7 +1,7 @@
 {lib, ...}: let
   inherit (lib) types mkOption;
 in {
-  options.curtbushko.services.llm = {
+  options.ns.services.llm = {
     enable = mkOption {
       type = types.bool;
       default = false;

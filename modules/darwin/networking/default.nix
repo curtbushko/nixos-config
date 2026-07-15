@@ -5,7 +5,7 @@
   ...
 }: let
   inherit (lib) types mkOption mkIf mkEnableOption;
-  cfg = config.curtbushko.networking.stevenBlackHosts;
+  cfg = config.ns.networking.stevenBlackHosts;
   alternatesList =
     (lib.optional cfg.blockFakenews "fakenews")
     ++ (lib.optional cfg.blockGambling "gambling")
@@ -19,7 +19,7 @@
   in
     orig;
 in {
-  options.curtbushko.networking.stevenBlackHosts = {
+  options.ns.networking.stevenBlackHosts = {
     enable = mkEnableOption "Steven Black's hosts file blocklist on macOS";
     blockFakenews = mkEnableOption "fakenews hosts entries";
     blockGambling = mkEnableOption "gambling hosts entries";

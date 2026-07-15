@@ -5,8 +5,8 @@
   ...
 }: let
   inherit (lib) mkIf;
-  cfg = config.curtbushko.tools;
-  secretsEnabled = config.curtbushko.secrets.enable;
+  cfg = config.ns.tools;
+  secretsEnabled = config.ns.secrets.enable;
 in {
   config = mkIf (cfg.enable && secretsEnabled) {
     home.packages = [

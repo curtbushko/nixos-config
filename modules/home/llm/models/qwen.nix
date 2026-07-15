@@ -5,8 +5,8 @@
   ...
 }: let
   inherit (lib) mkIf mkOption types;
-  cfg = config.curtbushko.llm.models.qwen;
-  llmCfg = config.curtbushko.llm;
+  cfg = config.ns.llm.models.qwen;
+  llmCfg = config.ns.llm;
 
   # Base directory for all llama.cpp models
   modelsBaseDir = "${config.home.homeDirectory}/.local/share/llama-cpp/models";
@@ -31,7 +31,7 @@
 
   hfRepo = variantRepos.${cfg.variant} or cfg.variant;
 in {
-  options.curtbushko.llm.models.qwen = {
+  options.ns.llm.models.qwen = {
     enable = mkOption {
       type = types.bool;
       default = false;

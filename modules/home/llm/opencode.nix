@@ -7,7 +7,7 @@
   ...
 }: let
   inherit (lib) mkIf;
-  cfg = config.curtbushko.llm;
+  cfg = config.ns.llm;
 in {
   config = mkIf cfg.enable {
     # OpenCode installation

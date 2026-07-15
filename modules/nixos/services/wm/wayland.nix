@@ -5,7 +5,7 @@
   ...
 }: let
   inherit (lib) mkIf;
-  cfg = config.curtbushko.services.wm;
+  cfg = config.ns.services.wm;
 
   # Custom xkeyboard-config with additional keysyms
   xkeyboard-config-custom = pkgs.xkeyboard_config.overrideAttrs (oldAttrs: {

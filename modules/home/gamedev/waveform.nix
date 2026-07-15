@@ -7,8 +7,8 @@
   ...
 }: let
   inherit (lib) types mkOption mkIf mkEnableOption;
-  cfg = config.curtbushko.gamedev.waveform;
-  gamedevCfg = config.curtbushko.gamedev;
+  cfg = config.ns.gamedev.waveform;
+  gamedevCfg = config.ns.gamedev;
   isLinux = pkgs.stdenv.isLinux;
 
   # Waveform package definition
@@ -91,7 +91,7 @@
     };
   };
 in {
-  options.curtbushko.gamedev.waveform = {
+  options.ns.gamedev.waveform = {
     enable = mkEnableOption "Tracktion Waveform Free DAW";
 
     package = mkOption {

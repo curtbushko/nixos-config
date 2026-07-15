@@ -1,7 +1,7 @@
 {lib, ...}: let
   inherit (lib) types mkOption;
 in {
-  options.curtbushko.hardware.audio = {
+  options.ns.hardware.audio = {
     enable = mkOption {
       type = types.bool;
       default = false;

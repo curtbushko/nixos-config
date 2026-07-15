@@ -5,9 +5,9 @@
   ...
 }: let
   inherit (lib) types mkOption mkIf;
-  cfg = config.curtbushko.programming;
+  cfg = config.ns.programming;
 in {
-  options.curtbushko.programming = {
+  options.ns.programming = {
     enable = mkOption {
       type = types.bool;
       default = false;

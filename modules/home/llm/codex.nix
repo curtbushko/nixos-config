@@ -5,7 +5,7 @@
   ...
 }: let
   inherit (lib) mkIf;
-  cfg = config.curtbushko.llm;
+  cfg = config.ns.llm;
 
   # Read colors from flair's style.json in ~/.config/flair/
   # Note: Requires --impure flag for nix build/home-manager switch

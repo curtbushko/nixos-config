@@ -14,7 +14,7 @@
   #---------------------------------------------------------------------
   # Home Options - Based on gamingrig but VM-appropriate
   #---------------------------------------------------------------------
-  curtbushko = {
+  ns = {
     browsers.enable = true;
     git.enable = true;
     im.enable = true;

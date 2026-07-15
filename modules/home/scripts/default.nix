@@ -5,7 +5,7 @@
   ...
 }: let
   inherit (lib) types mkOption mkIf;
-  cfg = config.curtbushko.scripts;
+  cfg = config.ns.scripts;
   isLinux = pkgs.stdenv.isLinux;
 
   # Build structured-cli from source for Claude Code bash wrapper
@@ -105,7 +105,7 @@
   ollama-up = pkgs.writeScriptBin "ollama-up" (builtins.readFile ./ollama-up);
   zigbuildwatcher = pkgs.writeScriptBin "zigbuildwatcher" (builtins.readFile ./zigbuildwatcher);
 in {
-  options.curtbushko.scripts = {
+  options.ns.scripts = {
     enable = mkOption {
       type = types.bool;
       default = false;

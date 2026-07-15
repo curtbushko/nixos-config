@@ -3,7 +3,7 @@
 in {
   # Theme colors are now managed by flair (~/.config/flair/style.json)
   # Run: flair select <theme-name> to switch themes
-  options.curtbushko.theme = {
+  options.ns.theme = {
     wallpaper = mkOption {
       type = with types; nullOr str;
       description = ''

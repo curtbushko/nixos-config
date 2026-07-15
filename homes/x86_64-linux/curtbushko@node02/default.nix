@@ -16,7 +16,7 @@
   #---------------------------------------------------------------------
   # Home Options
   #---------------------------------------------------------------------
-  curtbushko = {
+  ns = {
     browsers.enable = false;
     gamedev.enable = false;
     gaming.enable = false;

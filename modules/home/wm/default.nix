@@ -5,7 +5,7 @@
   ...
 }: let
   inherit (lib) types mkOption mkIf;
-  cfg = config.curtbushko.wm.tools;
+  cfg = config.ns.wm.tools;
   isLinux = pkgs.stdenv.isLinux;
 in {
   imports = [
@@ -21,7 +21,7 @@ in {
     ./waybar.nix
   ];
 
-  options.curtbushko.wm.tools = {
+  options.ns.wm.tools = {
     enable = mkOption {
       type = types.bool;
       default = false;

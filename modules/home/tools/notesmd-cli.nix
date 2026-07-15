@@ -5,7 +5,7 @@
   ...
 }: let
   inherit (lib) mkIf;
-  cfg = config.curtbushko.tools;
+  cfg = config.ns.tools;
 
   # Build notesmd-cli from source - CLI for managing Obsidian markdown notes
   # Requires Go >= 1.25.8, so we override with the latest Go version

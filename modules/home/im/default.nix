@@ -5,9 +5,9 @@
   ...
 }: let
   inherit (lib) types mkOption mkIf;
-  cfg = config.curtbushko.im;
+  cfg = config.ns.im;
 in {
-  options.curtbushko.im = {
+  options.ns.im = {
     enable = mkOption {
       type = types.bool;
       default = false;

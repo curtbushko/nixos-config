@@ -5,7 +5,7 @@
   ...
 }: let
   inherit (lib) mkIf;
-  cfg = config.curtbushko.wm.niri;
+  cfg = config.ns.wm.niri;
   # Re-checks every 10 minutes while the session stays idle, suspending as
   # soon as nothing is busy. swayidle's resumeCommand stops this loop on
   # the first user input.

@@ -5,7 +5,7 @@
   ...
 }: let
   inherit (lib) mkIf;
-  cfg = config.curtbushko.llm;
+  cfg = config.ns.llm;
 
   # OpenChamber version
   version = "1.11.7";

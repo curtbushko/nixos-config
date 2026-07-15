@@ -6,7 +6,7 @@
   ...
 }: let
   inherit (lib) mkIf;
-  cfg = config.curtbushko.browsers;
+  cfg = config.ns.browsers;
 in {
   config = mkIf cfg.enable {
     stylix.targets.firefox.profileNames = ["default"];

@@ -3,8 +3,8 @@
   inputs,
   ...
 }: {
-  curtbushko.user.name = "jackson";
-  curtbushko.networking.stevenBlackHosts = {
+  ns.user.name = "jackson";
+  ns.networking.stevenBlackHosts = {
     enable = true;
     blockPorn = true;
     blockGambling = true;

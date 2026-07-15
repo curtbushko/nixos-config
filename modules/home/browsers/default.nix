@@ -6,10 +6,10 @@
   ...
 }: let
   inherit (lib) types mkOption mkIf;
-  cfg = config.curtbushko.browsers;
+  cfg = config.ns.browsers;
   isLinux = pkgs.stdenv.isLinux;
 in {
-  options.curtbushko.browsers = {
+  options.ns.browsers = {
     enable = mkOption {
       type = types.bool;
       default = false;

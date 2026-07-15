@@ -4,7 +4,7 @@
   ...
 }: let
   inherit (lib) mkIf;
-  cfg = config.curtbushko.hardware.audio;
+  cfg = config.ns.hardware.audio;
 in {
   config = mkIf cfg.enable {
     # 2024.11.04

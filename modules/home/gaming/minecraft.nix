@@ -6,7 +6,7 @@
   ...
 }: let
   inherit (lib) mkIf;
-  cfg = config.curtbushko.gaming;
+  cfg = config.ns.gaming;
 in {
   imports = [
     inputs.minecraft-servers.homeManagerModules.default

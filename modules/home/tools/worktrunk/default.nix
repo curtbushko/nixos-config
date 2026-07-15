@@ -5,7 +5,7 @@
   ...
 }: let
   inherit (lib) mkIf;
-  cfg = config.curtbushko.tools;
+  cfg = config.ns.tools;
 
   wt-clone = pkgs.writeScriptBin "wt-clone" ''
     #!/usr/bin/env bash

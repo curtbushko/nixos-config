@@ -5,7 +5,7 @@
   ...
 }: let
   inherit (lib) mkIf;
-  cfg = config.curtbushko.tools;
+  cfg = config.ns.tools;
 in {
   config = mkIf (cfg.enable && pkgs.stdenv.isLinux) {
     stylix.targets.yazi.enable = false;

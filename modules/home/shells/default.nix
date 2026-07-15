@@ -5,11 +5,11 @@
   ...
 }: let
   inherit (lib) types mkOption mkIf;
-  cfg = config.curtbushko.shells;
+  cfg = config.ns.shells;
   isDarwin = pkgs.stdenv.isDarwin;
   isLinux = pkgs.stdenv.isLinux;
 in {
-  options.curtbushko.shells = {
+  options.ns.shells = {
     enable = mkOption {
       type = types.bool;
       default = false;

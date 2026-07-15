@@ -6,7 +6,7 @@
   ...
 }: let
   inherit (lib) mkIf;
-  cfg = config.curtbushko.wm.niri;
+  cfg = config.ns.wm.niri;
   isLinux = pkgs.stdenv.isLinux;
 
   # Dummy input server that does nothing (vicinae's input server needs root privileges)

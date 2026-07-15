@@ -5,7 +5,7 @@
   ...
 }: let
   inherit (lib) mkIf;
-  cfg = config.curtbushko.wm.niri;
+  cfg = config.ns.wm.niri;
   isLinux = pkgs.stdenv.isLinux;
 
   # Wallpaper SHA256 hashes
@@ -18,8 +18,8 @@
   };
 
   wallpaper = pkgs.fetchurl {
-    url = "https://raw.githubusercontent.com/curtbushko/nixos-wallpapers/main/3440x1440/${config.curtbushko.theme.wallpaper}";
-    sha256 = wallpaperHashes.${config.curtbushko.theme.wallpaper} or lib.fakeHash;
+    url = "https://raw.githubusercontent.com/curtbushko/nixos-wallpapers/main/3440x1440/${config.ns.theme.wallpaper}";
+    sha256 = wallpaperHashes.${config.ns.theme.wallpaper} or lib.fakeHash;
   };
 in {
   config = mkIf cfg.enable {

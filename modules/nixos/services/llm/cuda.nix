@@ -5,7 +5,7 @@
   ...
 }: let
   inherit (lib) mkIf;
-  cfg = config.curtbushko.services.llm;
+  cfg = config.ns.services.llm;
   cuda = pkgs.cudaPackages_12_6.overrideScope (_final: _prev: {
     cuda_compat = null;
   });

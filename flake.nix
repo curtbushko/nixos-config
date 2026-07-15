@@ -109,7 +109,7 @@
       src = ./.;
 
       snowfall = {
-        namespace = "curtbushko";
+        namespace = "ns";
         meta = {
           name = "curtbushko";
           title = "Custom Flake";

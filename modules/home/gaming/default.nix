@@ -1,7 +1,7 @@
 {lib, ...}: let
   inherit (lib) types mkOption;
 in {
-  options.curtbushko.gaming = {
+  options.ns.gaming = {
     enable = mkOption {
       type = types.bool;
       default = false;

@@ -7,10 +7,10 @@
   ...
 }: let
   inherit (lib) types mkOption mkIf;
-  cfg = config.curtbushko.llm;
+  cfg = config.ns.llm;
   ds4 = pkgs.callPackage ../../../packages/ds4 {};
 in {
-  options.curtbushko.llm = {
+  options.ns.llm = {
     enable = mkOption {
       type = types.bool;
       default = false;

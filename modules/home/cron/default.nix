@@ -5,11 +5,11 @@
   ...
 }: let
   inherit (lib) mkOption mkIf types;
-  cfg = config.curtbushko.cron;
+  cfg = config.ns.cron;
   isDarwin = pkgs.stdenv.isDarwin;
   isLinux = pkgs.stdenv.isLinux;
 in {
-  options.curtbushko.cron = {
+  options.ns.cron = {
     enable = mkOption {
       type = types.bool;
       default = false;

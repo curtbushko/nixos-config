@@ -5,7 +5,7 @@
   ...
 }: let
   inherit (lib) types mkOption mkIf mkMerge;
-  cfg = config.curtbushko.services.minecraft;
+  cfg = config.ns.services.minecraft;
 
   # Shared whitelist for both servers
   whitelist = ''
@@ -21,7 +21,7 @@
     ]
   '';
 in {
-  options.curtbushko.services.minecraft = {
+  options.ns.services.minecraft = {
     dj-server = {
       enable = mkOption {
         type = types.bool;

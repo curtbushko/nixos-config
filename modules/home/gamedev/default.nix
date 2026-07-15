@@ -5,10 +5,10 @@
   ...
 }: let
   inherit (lib) types mkOption mkIf;
-  cfg = config.curtbushko.gamedev;
+  cfg = config.ns.gamedev;
   isLinux = pkgs.stdenv.isLinux;
 in {
-  options.curtbushko.gamedev = {
+  options.ns.gamedev = {
     enable = mkOption {
       type = types.bool;
       default = false;

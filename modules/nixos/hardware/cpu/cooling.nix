@@ -5,7 +5,7 @@
   ...
 }: let
   inherit (lib) mkIf;
-  cfg = config.curtbushko.hardware.cpu;
+  cfg = config.ns.hardware.cpu;
 
   # Helper function to convert hex color to RGB string
   hexToRgb = hex: let

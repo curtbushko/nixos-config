@@ -14,7 +14,7 @@
     blockSocial = false;
   };
 
-  curtbushko = {
+  ns = {
     hardware.audio.enable = false;
     hardware.cpu.enable = false;
     services.cron.enable = true;

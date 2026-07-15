@@ -5,7 +5,7 @@
   ...
 }: let
   inherit (lib) mkIf;
-  cfg = config.curtbushko.tools;
+  cfg = config.ns.tools;
 in {
   config = mkIf cfg.enable {
     home.packages = [

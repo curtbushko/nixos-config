@@ -8,7 +8,7 @@
 }: {
   config = let
     inherit (lib) mkIf;
-    cfg = config.curtbushko.llm;
+    cfg = config.ns.llm;
 
     # NPM wrapper that redirects global prefix to a writable location under ~/.pi/agent/
     # This avoids permission errors from trying to write to the read-only Nix store

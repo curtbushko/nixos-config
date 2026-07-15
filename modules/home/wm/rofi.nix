@@ -5,10 +5,10 @@
   ...
 }: let
   inherit (lib) types mkOption mkIf;
-  cfg = config.curtbushko.wm.rofi;
+  cfg = config.ns.wm.rofi;
   isLinux = pkgs.stdenv.isLinux;
 in {
-  options.curtbushko.wm.rofi = {
+  options.ns.wm.rofi = {
     enable = mkOption {
       type = types.bool;
       default = false;

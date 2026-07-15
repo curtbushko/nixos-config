@@ -4,7 +4,7 @@
   ...
 }: let
   inherit (lib) mkIf;
-  cfg = config.curtbushko.services.wm;
+  cfg = config.ns.services.wm;
 in {
   config = mkIf cfg.enable {
     qt = {

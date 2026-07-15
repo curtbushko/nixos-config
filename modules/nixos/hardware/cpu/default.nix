@@ -1,7 +1,7 @@
 {lib, ...}: let
   inherit (lib) types mkOption;
 in {
-  options.curtbushko.hardware.cpu = {
+  options.ns.hardware.cpu = {
     enable = mkOption {
       type = types.bool;
       default = false;

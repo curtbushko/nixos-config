@@ -66,8 +66,8 @@
   };
 
   wallpaper = pkgs.fetchurl {
-    url = "https://raw.githubusercontent.com/curtbushko/nixos-wallpapers/main/3440x1440/${config.curtbushko.theme.wallpaper}";
-    sha256 = wallpaperHashes.${config.curtbushko.theme.wallpaper} or lib.fakeHash;
+    url = "https://raw.githubusercontent.com/curtbushko/nixos-wallpapers/main/3440x1440/${config.ns.theme.wallpaper}";
+    sha256 = wallpaperHashes.${config.ns.theme.wallpaper} or lib.fakeHash;
   };
   isLinux = pkgs.stdenv.isLinux;
 in {

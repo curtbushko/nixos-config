@@ -5,7 +5,7 @@
   ...
 }: let
   inherit (lib) mkIf;
-  cfg = config.curtbushko.wm.niri;
+  cfg = config.ns.wm.niri;
   isLinux = pkgs.stdenv.isLinux;
 in {
   config = mkIf cfg.enable {

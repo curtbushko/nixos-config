@@ -6,7 +6,7 @@
   ...
 }: let
   inherit (lib) types mkOption mkIf;
-  cfg = config.curtbushko.tools;
+  cfg = config.ns.tools;
   isDarwin = pkgs.stdenv.isDarwin;
   isLinux = pkgs.stdenv.isLinux;
 in {
@@ -22,7 +22,7 @@ in {
     ./worktrunk
     ./yazi.nix
   ];
-  options.curtbushko.tools = {
+  options.ns.tools = {
     enable = mkOption {
       type = types.bool;
       default = false;
