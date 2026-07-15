@@ -25,13 +25,13 @@
   # Global preferences
   system.defaults.NSGlobalDomain = {
     AppleInterfaceStyle = "Dark";
-    "com.apple.swipescrolldirection" = false;
   };
 
   # CustomUserPreferences for settings without dedicated nix-darwin options
   system.defaults.CustomUserPreferences = {
     NSGlobalDomain = {
       AppleActionOnDoubleClick = "None"; # Disable double-click title bar to maximize
+      "com.apple.swipescrolldirection" = false; # Disable natural scrolling
     };
   };
 
