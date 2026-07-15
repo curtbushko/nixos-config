@@ -7,6 +7,10 @@
   nix.enable = false;
   system.stateVersion = 5;
 
+  # Never start the screen saver on idle. caffeinate only blocks display
+  # sleep, not the screensaver idle timer, which is what triggers the lock.
+  system.defaults.CustomUserPreferences."com.apple.screensaver".idleTime = 0;
+
   # Keep in async with vm-shared.nix. (todo: pull this out into a file)
   nix = {
     # We need to enable flakes

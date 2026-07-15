@@ -25,7 +25,7 @@
   # Global preferences
   system.defaults.NSGlobalDomain = {
     AppleInterfaceStyle = "Dark";
-    "com.apple.swipescrolldirection" = false;
+    "com.apple.swipescrolldirection" = true;
   };
 
   # Window Manager - disable all tiling, hide widgets
