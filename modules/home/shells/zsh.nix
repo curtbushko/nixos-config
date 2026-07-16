@@ -114,7 +114,7 @@ in {
           tux = "tmuxinator start home";
           mux = "tmuxinator start home";
           tdetach = "tmux detach";
-          claude-local = "ANTHROPIC_API_KEY=not-needed CLAUDE_API_BASE_URL=http://localhost:1234/v1 CLAUDE_MODEL='LM Studio' claude";
+          claude-local = "ANTHROPIC_API_KEY=not-needed ANTHROPIC_BASE_URL=http://localhost:1234/v1 ANTHROPIC_MODEL=local claude";
         }
         # monitor switching
         // lib.optionalAttrs isLinux
