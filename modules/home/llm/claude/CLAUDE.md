@@ -106,17 +106,6 @@ This applies to ALL files including:
 
 **Format**: `type(optional-scope): short description`
 
-**ALWAYS use `git commit -F <file>` for commit messages.** Write the message to a temp file first, then pass it with `-F`. Single-quoting `-m` in zsh causes literal quote characters in the message; double quotes cause `unmatched "` errors.
-
-```bash
-# CORRECT - write message to temp file, commit with -F
-echo 'feat(auth): add OAuth2 login flow' > /tmp/commit-msg.txt
-git commit -F /tmp/commit-msg.txt
-
-# WRONG - quotes end up in the commit message
-git commit -m 'feat(auth): add OAuth2 login flow'
-```
-
 ## Scripting Language Policy (CRITICAL)
 
 **NEVER use Python for scripting tools or automation tasks.**
