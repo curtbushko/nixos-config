@@ -73,6 +73,7 @@ in {
           };
         };
         search.force = true;
+        search.default = "ddg";
         search.engines = {
           "Home Manager NixOs" = {
             urls = [
