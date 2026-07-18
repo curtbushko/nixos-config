@@ -32,6 +32,11 @@ in {
             installation_mode = "force_installed";
             default_area = "navbar";
           };
+          "{446900e4-71c2-419f-a6a7-df9c091e268b}" = {
+            install_url = "https://addons.mozilla.org/firefox/downloads/latest/bitwarden-password-manager/latest.xpi";
+            installation_mode = "force_installed";
+            default_area = "navbar";
+          };
         };
         Preferences = {
           "browser.in-content.dark-mode" = true; # Use dark mode
@@ -39,6 +44,31 @@ in {
 
           "extensions.autoDisableScopes" = 0; # Automatically enable extensions
           "extensions.update.enabled" = false;
+        };
+        Homepage = {
+          URL = "about:blank";
+          StartPage = "none";
+        };
+        FirefoxHome = {
+          Search = false;
+          TopSites = false;
+          SponsoredTopSites = false;
+          Highlights = false;
+          Pocket = false;
+          SponsoredPocket = false;
+          Snippets = false;
+          Locked = true;
+        };
+        NewTabPage = false;
+        SearchEngines = {
+          Default = "DuckDuckGo";
+        };
+        Cookies = {
+          Allow = [
+            "https://login.microsoftonline.com"
+            "https://login.live.com"
+            "https://office.com"
+          ];
         };
         Permissions = {
           Notifications = {
@@ -129,7 +159,9 @@ in {
         settings = {
           # GENERAL
           "content.notify.interval" = 100000;
-          "browser.startup.homepage" = "";
+          "browser.startup.homepage" = "about:blank";
+          "browser.startup.page" = 0;
+          "browser.newtabpage.enabled" = false;
           "browser.toolbars.bookmarks.visibility" = "always";
           # KEYS (set Super instead of Ctrl)
           "ui.key.accelKey" = 91;
@@ -183,6 +215,20 @@ in {
           "browser.helperApps.deleteTempFileOnExit" = true;
           "browser.uitour.enabled" = false;
           "identity.fxaccounts.enabled" = false;
+          "identity.fxaccounts.toolbar.enabled" = false;
+          "browser.tabs.firefox-view" = false;
+          "browser.tabs.firefox-view-next" = false;
+          # SYNC
+          "services.sync.enabled" = false;
+          "services.sync.engine.addons" = false;
+          "services.sync.engine.bookmarks" = false;
+          "services.sync.engine.history" = false;
+          "services.sync.engine.passwords" = false;
+          "services.sync.engine.prefs" = false;
+          "services.sync.engine.tabs" = false;
+          "services.sync.engine.creditcards" = false;
+          "services.sync.engine.addresses" = false;
+          "services.sync.declinedEngines" = "addons,bookmarks,history,passwords,prefs,tabs,creditcards,addresses";
           "privacy.globalprivacycontrol.enabled" = true;
           "privacy.globalprivacycontrol.functionality.enabled" = true;
           "privacy.trackingprotection.enabled" = true;
@@ -338,6 +384,18 @@ in {
           # NEW TAB PAGE
           "browser.newtabpage.activity-stream.feeds.topsites" = false;
           "browser.newtabpage.activity-stream.feeds.section.topstories" = false;
+          "browser.newtabpage.activity-stream.feeds.section.highlights" = false;
+          "browser.newtabpage.activity-stream.feeds.snippets" = false;
+          "browser.newtabpage.activity-stream.feeds.weatherfeed" = false;
+          "browser.newtabpage.activity-stream.feeds.system.topsites" = false;
+          "browser.newtabpage.activity-stream.feeds.system.topstories" = false;
+          "browser.newtabpage.activity-stream.section.highlights.includeBookmarks" = false;
+          "browser.newtabpage.activity-stream.section.highlights.includeDownloads" = false;
+          "browser.newtabpage.activity-stream.section.highlights.includePocket" = false;
+          "browser.newtabpage.activity-stream.section.highlights.includeVisited" = false;
+          "browser.newtabpage.activity-stream.showSearch" = false;
+          "browser.newtabpage.activity-stream.showWeather" = false;
+          "browser.newtabpage.activity-stream.default.sites" = "";
           # POCKET
           "browser.pocket.enabled" = false;
           "extensions.pocket.enabled" = false;

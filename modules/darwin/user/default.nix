@@ -36,7 +36,6 @@ in {
       brews = [];
       taps = [];
       casks = [
-        "firefox"
         "obs"
         "rectangle"
         "slack"
