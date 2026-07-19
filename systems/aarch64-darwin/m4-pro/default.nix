@@ -4,6 +4,10 @@
   ...
 }: {
   ns.user.name = "curtbushko";
+  ns.supercmd.enable = true;
+
+  # Ensure the native macOS menu bar is visible.
+  system.defaults.NSGlobalDomain._HIHideMenuBar = false;
   system.stateVersion = 5;
 
   # This makes it work with the Determinate Nix installer

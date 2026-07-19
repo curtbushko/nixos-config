@@ -14,6 +14,7 @@ in {
     ./rectangle.nix
     ./rofi.nix
     ./niri.nix
+    ./supercmd.nix
     ./swaybg.nix
     ./swayidle.nix
     ./vicinae.nix

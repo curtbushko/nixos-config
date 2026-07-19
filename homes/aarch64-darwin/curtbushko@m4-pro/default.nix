@@ -34,6 +34,7 @@
     terminals.enable = true;
     tools.enable = true;
     wm.rectangle.enable = true;
+    wm.supercmd.enable = true;
     # Theme colors managed by flair: run `flair select <theme>`
     theme.wallpaper = "cyberpunk_2077_phantom_liberty_katana.jpg";
   };
