@@ -348,10 +348,10 @@ in {
 
     programs.zsh = {
       sessionVariables = {
-        ANTHROPIC_MODEL = "claude-sonnet-4-5-20250929";
-        ANTHROPIC_DEFAULT_OPUS_MODEL = "claude-opus-4-5-20251101";
-        ANTHROPIC_DEFAULT_SONNET_MODEL = "claude-sonnet-4-5-20250929";
-        ANTHROPIC_DEFAULT_HAIKU_MODEL = "claude-haiku-4-5-20251001";
+        ANTHROPIC_MODEL = "claude-sonnet-4-6";
+        ANTHROPIC_DEFAULT_OPUS_MODEL = "claude-opus-4-6";
+        ANTHROPIC_DEFAULT_SONNET_MODEL = "claude-sonnet-4-6";
+        ANTHROPIC_DEFAULT_HAIKU_MODEL = "claude-haiku-4-5";
         CLAUDE_CODE_EFFORT_LEVEL = "medium";
         CLAUDE_CODE_AUTO_COMPACT_WINDOW = "200000";
         CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING = "1";
@@ -360,9 +360,9 @@ in {
         DISABLE_AUTOUPDATER = "1";
       };
       shellAliases = {
-        cld = "TMUX= claude --model claude-sonnet-4-5-20250929 --effort medium";
-        sonnet = "TMUX= claude --model claude-sonnet-4-5-20250929 --effort medium --dangerously-skip-permissions";
-        opus = "TMUX= claude --model claude-opus-4-6 --effort medium --dangerously-skip-permissions";
+        cld = "TMUX= claude --model claude-sonnet-4-6 --effort medium";
+        sonnet = "TMUX= claude --model claude-sonnet-4-6 --effort medium";
+        opus = "TMUX= claude --model claude-opus-4-7 --effort medium";
       };
     };
 
