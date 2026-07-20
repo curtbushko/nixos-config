@@ -29,6 +29,7 @@
     tools.enable = true;
     llm.enable = true;
     wm.rectangle.enable = true;
+    wm.supercmd.enable = true;
     # Theme colors managed by flair: run `flair select <theme>`
     theme.wallpaper = "green-pasture.jpg";
   };
