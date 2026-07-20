@@ -18,5 +18,7 @@ in {
   config = mkIf cfg.enable {
     homebrew.taps = ["supercmdlabs/supercmd"];
     homebrew.casks = ["supercmd"];
+    # Homebrew 4.5+ blocks third-party taps unless allowlisted
+    environment.variables.HOMEBREW_ALLOWED_TAPS = "supercmdlabs/supercmd";
   };
 }
