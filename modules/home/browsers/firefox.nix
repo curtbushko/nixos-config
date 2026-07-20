@@ -12,7 +12,12 @@ in {
     stylix.targets.firefox.profileNames = ["default"];
     programs.firefox = {
       enable = true;
-      configPath = ".mozilla/firefox"; # Keep legacy path for stateVersion < 26.05
+      # Keep legacy path for stateVersion < 26.05 on Linux;
+      # on macOS Firefox reads from ~/Library/Application Support/Firefox.
+      configPath =
+        if pkgs.stdenv.isDarwin
+        then "Library/Application Support/Firefox"
+        else ".mozilla/firefox";
       policies = {
         OfferToSaveLogins = false;
         PasswordManagerEnabled = false;
