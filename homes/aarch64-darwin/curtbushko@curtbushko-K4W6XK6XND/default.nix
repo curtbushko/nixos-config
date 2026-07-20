@@ -14,6 +14,7 @@
   # Home Options
   #---------------------------------------------------------------------
   ns = {
+    browsers.enable = true;
     cron = {
       enable = true;
       killExchangeProcesses.enable = true;
