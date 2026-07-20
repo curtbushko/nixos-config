@@ -4,7 +4,6 @@
   ...
 }: {
   ns.user.name = "curtbushko";
-  ns.supercmd.enable = true;
 
   # Ensure the native macOS menu bar is visible.
   system.defaults.NSGlobalDomain._HIHideMenuBar = false;

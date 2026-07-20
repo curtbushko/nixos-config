@@ -4,7 +4,6 @@
   ...
 }: {
   ns.user.name = "curtbushko";
-  ns.supercmd.enable = true;
   nix.enable = false;
   system.stateVersion = 5;
 
