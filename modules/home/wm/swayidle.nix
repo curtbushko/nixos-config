@@ -70,9 +70,9 @@ in {
     systemd.user.services.swayidle = {
       Unit = {
         After = ["niri.service"];
-        Requires = ["niri.service"];
       };
       Service = {
+        Restart = lib.mkForce "on-failure";
         RestartSec = 3;
       };
     };

@@ -75,6 +75,9 @@ in {
         Slice = "session.slice";
         Type = "notify";
         ExecStart = "${pkgs.niri}/bin/niri --session";
+        ExecStartPost = [
+          "${pkgs.systemd}/bin/systemctl --user set-environment WAYLAND_DISPLAY=wayland-1 XDG_CURRENT_DESKTOP=niri XDG_SESSION_DESKTOP=niri XDG_SESSION_TYPE=wayland"
+        ];
       };
     };
 
@@ -104,7 +107,9 @@ in {
           QT_IM_MODULE = "wayland";
         };
         spawn-at-startup = [
-          {command = ["systemctl" "--user" "import-environment" "WAYLAND_DISPLAY" "XDG_CURRENT_DESKTOP" "NIRI_SOCKET"];}
+          # Env vars for children (WAYLAND_DISPLAY, XDG_*) are exported via
+          # niri.service's ExecStartPost so they are guaranteed to be in the
+          # systemd user env before After=niri.service dependents start.
           # cliphist is managed by systemd services (cliphist.service, cliphist-images.service)
           # xwayland-satellite is managed by niri's built-in integration (since 25.08)
           # niri creates X11 sockets, exports DISPLAY, and spawns xwayland-satellite on demand

@@ -18,7 +18,6 @@ in {
     systemd.user.services.cliphist = {
       Unit = {
         After = ["niri.service"];
-        Requires = ["niri.service"];
       };
       Service = {
         RestartSec = 3;
@@ -28,7 +27,6 @@ in {
     systemd.user.services.cliphist-images = {
       Unit = {
         After = ["niri.service"];
-        Requires = ["niri.service"];
       };
       Service = {
         RestartSec = 3;

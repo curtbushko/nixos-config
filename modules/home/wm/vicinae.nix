@@ -46,14 +46,14 @@ in {
         Description = "Vicinae Launcher Daemon";
         Documentation = "https://docs.vicinae.com";
         After = "niri.service";
-        Requires = ["dbus.socket" "niri.service"];
+        Requires = ["dbus.socket"];
         PartOf = "niri.service";
       };
       Service = {
         Type = "simple";
         ExecStart = "${config.home.profileDirectory}/bin/vicinae server --replace";
         ExecReload = "/bin/kill -HUP $MAINPID";
-        Restart = "always";
+        Restart = "on-failure";
         RestartSec = 3;
         KillMode = "mixed";
         # Ensure pactl and other tools are in PATH

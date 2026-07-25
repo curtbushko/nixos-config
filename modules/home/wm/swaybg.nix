@@ -27,7 +27,6 @@ in {
       Unit = {
         PartOf = ["niri.service"];
         After = ["niri.service"];
-        Requires = ["niri.service"];
         ConditionEnvironment = "WAYLAND_DISPLAY";
       };
       Install = {
