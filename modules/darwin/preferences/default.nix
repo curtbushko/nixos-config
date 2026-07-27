@@ -33,6 +33,8 @@
       AppleActionOnDoubleClick = "None"; # Disable double-click title bar to maximize
       "com.apple.swipescrolldirection" = false; # Disable natural scrolling
     };
+    # Disable screensaver (idleTime = 0 means never)
+    "com.apple.screensaver".idleTime = 0;
   };
 
   # Window Manager - disable all tiling, hide widgets
