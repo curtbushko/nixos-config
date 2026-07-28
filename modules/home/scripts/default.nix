@@ -8,48 +8,6 @@
   cfg = config.ns.scripts;
   isLinux = pkgs.stdenv.isLinux;
 
-  # Build structured-cli from source for Claude Code bash wrapper
-  structuredCli = pkgs.buildGoModule {
-    pname = "structured-cli";
-    version = "0.1.0";
-    src = pkgs.fetchFromGitHub {
-      owner = "curtbushko";
-      repo = "structured-cli";
-      rev = "ff05f6e5c5161157f36ce52cabd5fef2bb7a94e5";
-      sha256 = "sha256-KY+3rCflQ29OBFGMbBabjm9PRpFvcSSeRbBNqX3+DQk=";
-    };
-    vendorHash = "sha256-G6es2KHZgp3EJQFGESwT7iuKE+mdbD+LX0I5S1f5fF4=";
-    doCheck = false;
-  };
-
-  # Bash wrapper for Claude Code - substitutes @placeholders@ with Nix paths
-  # Uses hiPrio to shadow bash-interactive in the profile
-  # NOTE: Shebang uses @bash@ placeholder to avoid infinite loop (env bash would find wrapper)
-  bash = lib.hiPrio (pkgs.runCommand "bash" {
-      src = ./bash;
-      inherit structuredCli;
-    } ''
-      mkdir -p $out/bin
-      substitute $src $out/bin/bash \
-        --replace-fail "@bash@" "${pkgs.bash}" \
-        --replace-fail "@structuredCli@" "${structuredCli}"
-      chmod +x $out/bin/bash
-    '');
-
-  # Zsh wrapper for Claude Code - substitutes @placeholders@ with Nix paths
-  # Uses hiPrio to shadow zsh in the profile
-  # NOTE: Shebang uses @zsh@ placeholder to avoid infinite loop (env zsh would find wrapper)
-  zsh = lib.hiPrio (pkgs.runCommand "zsh" {
-      src = ./zsh;
-      inherit structuredCli;
-    } ''
-      mkdir -p $out/bin
-      substitute $src $out/bin/zsh \
-        --replace-fail "@zsh@" "${pkgs.zsh}" \
-        --replace-fail "@structuredCli@" "${structuredCli}"
-      chmod +x $out/bin/zsh
-    '');
-
   aocgen = pkgs.writeScriptBin "aocgen" (builtins.readFile ./aocgen);
   auto-sleep = pkgs.writeScriptBin "auto-sleep" (builtins.readFile ./auto-sleep);
   build-ghostty = pkgs.writeScriptBin "build-ghostty" (builtins.readFile ./build-ghostty);
@@ -119,8 +77,6 @@ in {
     home.packages =
       [
         aocgen
-        bash
-        zsh
         build-ghostty
         clean-filename
         containerwatcher

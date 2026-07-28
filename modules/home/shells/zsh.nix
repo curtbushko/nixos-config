@@ -155,9 +155,6 @@ in {
           fi
         ''}
 
-         # Override SHELL to use the wrapper from user profile (for Claude Code structured output)
-         export SHELL="/etc/profiles/per-user/${config.home.username}/bin/zsh"
-
          #if [ -f $GHOSTTY/zig-out/bin/ghostty ]; then
          #  mkdir -p $HOME/.local/bin
         #  ln -s $GHOSTTY/zig-out/bin/ghostty $HOME/.local/bin/ghostty
