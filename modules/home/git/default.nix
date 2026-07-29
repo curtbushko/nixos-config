@@ -41,6 +41,7 @@
 in {
   imports = [
     inputs.hunk.homeManagerModules.default
+    ./tuicr.nix
   ];
 
   options.ns.git = {

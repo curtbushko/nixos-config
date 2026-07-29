@@ -100,6 +100,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    tuicr = {
+      url = "github:agavra/tuicr";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     zig.url = "github:mitchellh/zig-overlay";
   };
 
