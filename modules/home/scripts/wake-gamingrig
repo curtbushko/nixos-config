@@ -34,32 +34,23 @@ if [ -z "$MAC_ADDRESS" ]; then
 	exit 1
 fi
 
-# Wake gamingrig using host-specific method
+# Wake gamingrig: LAN wake from the work laptop, bounce off relay from anywhere else.
+# Failures are non-fatal — gamingrig is only a nix cache accelerator, so the
+# caller (usually `task switch`) should proceed even if the wake attempt fails.
 case "$CURRENT_HOST" in
 	curtbushko-K4W6XK6XND)
-		# On LAN - use wakeonlan directly
 		logger INFO "Waking gamingrig (LAN)..."
-		wakeonlan "$MAC_ADDRESS" 2>/dev/null || true
-		;;
-	m4-pro|m1-pro)
-		# Remote - bounce off relay via Tailscale
-		logger INFO "Waking gamingrig via $RELAY (Tailscale)..."
-		ssh -o ConnectTimeout=5 -o StrictHostKeyChecking=no \
-			root@"$RELAY" "etherwake -D -i eth0 '$MAC_ADDRESS'" 2>/dev/null || true
-		;;
-	node00|node01|node02|gamingrig-vm)
-		# Linux servers - bounce off relay
-		logger INFO "Waking gamingrig via $RELAY..."
-		ssh -o ConnectTimeout=5 -o StrictHostKeyChecking=no \
-			root@"$RELAY" "etherwake -D -i eth0 '$MAC_ADDRESS'" 2>/dev/null || true
+		wakeonlan "$MAC_ADDRESS" || logger WARN "wakeonlan failed (continuing)"
 		;;
 	*)
-		logger ERROR "Unknown host: $CURRENT_HOST"
-		exit 1
+		logger INFO "Bouncing off of $RELAY to wake gamingrig"
+		ssh root@"$RELAY" "etherwake -D -i eth0 '$MAC_ADDRESS'" \
+			|| logger WARN "ssh/etherwake via $RELAY failed (continuing)"
 		;;
 esac
 
-# Wait for gamingrig to come up (max 60 seconds)
+# Wait for gamingrig to come up (max 60 seconds). Never fail the caller — a
+# missing cache just means a slower local build.
 logger INFO "Waiting for gamingrig to respond..."
 for i in {1..30}; do
 	if ping -c 1 -W 2 "$GAMINGRIG" &>/dev/null; then
@@ -69,5 +60,5 @@ for i in {1..30}; do
 	sleep 2
 done
 
-logger WARN "Gamingrig did not respond after wake attempt"
-exit 1
+logger WARN "Gamingrig did not respond; continuing without cache"
+exit 0
