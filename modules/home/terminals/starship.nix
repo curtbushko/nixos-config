@@ -96,6 +96,7 @@ in {
               Music)                 icon="󰝚 "; name="Music" ;;
               neovim-flake)          icon=" "; name="neovim-flake" ;;
               nixos-config)          icon="󱄅 "; name="nixos-config" ;;
+              cobalt-vm)             icon="󰒋 "; name="cobalt-vm" ;;
               Pictures)              icon="󰄀 "; name="Pictures" ;;
               terraform)             icon="󱁢 "; name="terraform" ;;
               Videos)                icon=" "; name="Videos" ;;
