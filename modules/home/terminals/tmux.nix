@@ -59,6 +59,7 @@ in {
         set -g update-environment "DISPLAY WAYLAND_DISPLAY XDG_RUNTIME_DIR XDG_CURRENT_DESKTOP XDG_SESSION_TYPE"
         set -g default-terminal "tmux-256color"
         set -ag terminal-features ",tmux-256color:RGB"
+        set -as terminal-features ",*:bpaste"
         set -g mouse on
         set -g set-clipboard on
         set -g history-limit 102400
