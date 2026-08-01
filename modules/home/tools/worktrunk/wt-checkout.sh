@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-# Script: wt-add.sh
-# Description: Create a new local branch and worktree
-# Usage: wt-add <branch-name>
+# Script: wt-checkout.sh
+# Description: Check out an existing remote branch into a worktree with tracking
+# Usage: wt-checkout <branch-name>
 
 set -euo pipefail
 
@@ -17,13 +17,13 @@ log_error() { echo -e "${RED}[ERROR]${NC} $*" >&2; }
 
 usage() {
 	cat <<EOF
-Usage: wt-add <branch-name>
+Usage: wt-checkout <branch-name>
 
-Creates a new local branch and worktree. For checking out an existing remote
-branch, use wt-checkout instead.
+Checks out an existing remote branch into a worktree with upstream tracking.
+For creating a new local branch, use wt-add instead.
 
 Examples:
-  wt-add feature-branch    # Create new local branch and worktree
+  wt-checkout feature-branch    # Check out origin/feature-branch into a worktree
 
 Options:
   -h, --help    Show this help message
@@ -60,25 +60,29 @@ main() {
 		exit 1
 	fi
 
-	if git show-ref --verify --quiet "refs/remotes/origin/$branch_name"; then
-		log_warn "Remote branch 'origin/$branch_name' exists. Use wt-checkout to track it."
+	log_info "Fetching latest from remote..."
+	if ! git fetch origin 2>&1 | grep -v "^$"; then
+		log_warn "Failed to fetch from remote, continuing anyway..."
+	fi
+
+	if ! git show-ref --verify --quiet "refs/remotes/origin/$branch_name"; then
+		log_error "Remote branch 'origin/$branch_name' does not exist"
+		log_warn "To create a new local branch, use wt-add instead."
 		exit 1
 	fi
 
-	log_info "Creating new local branch '$branch_name'..."
-	git worktree add "$branch_name" -b "$branch_name"
+	log_info "Checking out remote branch 'origin/$branch_name'..."
+	git worktree add -B "$branch_name" "$branch_name" "origin/$branch_name"
 
-	# Set up upstream tracking so the first push goes to the right place
+	# Explicitly set upstream tracking (git worktree add doesn't always do this)
 	cd "$branch_name" || exit 1
-	git config branch."$branch_name".remote origin
-	git config branch."$branch_name".merge "refs/heads/$branch_name"
+	git branch --set-upstream-to="origin/$branch_name" "$branch_name"
 	cd - >/dev/null || exit 1
 
 	local worktree_path
 	worktree_path="$(git worktree list | grep "/$branch_name\$" | awk '{print $1}')"
 
-	log_info "Created worktree '$branch_name'"
-	log_warn "Push to create remote branch: git push -u origin $branch_name"
+	log_info "Created worktree '$branch_name' tracking 'origin/$branch_name'"
 	echo ""
 	echo "Worktree created successfully!"
 	echo "Location: $worktree_path"

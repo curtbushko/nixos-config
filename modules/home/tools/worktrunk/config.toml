@@ -5,4 +5,4 @@ worktree-path = "{{ repo_path }}/../{{ branch }}"
 
 # Custom aliases - available globally
 [aliases]
-checkout = "wt switch --remotes {{ args }}"
+checkout = "wt-checkout {{ args }}"

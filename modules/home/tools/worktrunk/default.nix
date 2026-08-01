@@ -94,9 +94,10 @@
   '';
 
   wt-add = pkgs.writeScriptBin "wt-add" (builtins.readFile ./wt-add.sh);
+  wt-checkout = pkgs.writeScriptBin "wt-checkout" (builtins.readFile ./wt-checkout.sh);
 in {
   config = mkIf cfg.enable {
-    home.packages = [wt-clone wt-add];
+    home.packages = [wt-clone wt-add wt-checkout];
     programs.worktrunk = {
       enable = true;
       enableBashIntegration = true;
