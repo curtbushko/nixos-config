@@ -72,6 +72,9 @@
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.metadata.mdbulkimport" 2>/dev/null || true
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.metadata.mdflagwriter" 2>/dev/null || true
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.metadata.mdwrite" 2>/dev/null || true
+    # hybridsearchd fires com.apple.hybridsearch.index-version-changed via notifyd,
+    # which is one of the three LaunchEvents hooks that restart spotlightknowledged.updater
+    /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.hybridsearchd" 2>/dev/null || true
 
     # Bootout (unload) all running Spotlight services
     /usr/bin/sudo /bin/launchctl bootout system/com.apple.metadata.mds 2>/dev/null || true
@@ -82,6 +85,30 @@
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl bootout "gui/$USER_UID/com.apple.spotlightknowledged.importer" 2>/dev/null || true
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl bootout "gui/$USER_UID/com.apple.spotlightknowledged.updater" 2>/dev/null || true
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl bootout "gui/$USER_UID/com.apple.managedcorespotlightd" 2>/dev/null || true
+    /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl bootout "gui/$USER_UID/com.apple.hybridsearchd" 2>/dev/null || true
+
+    # unload -w writes Disabled=true into the per-user launchd override database,
+    # which persists the disabled state across launchctl disable resets from OS updates
+    /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl unload -w /System/Library/LaunchAgents/com.apple.spotlightknowledged.plist 2>/dev/null || true
+    /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl unload -w /System/Library/LaunchAgents/com.apple.spotlightknowledged.updater.plist 2>/dev/null || true
+    /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl unload -w /System/Library/LaunchAgents/com.apple.spotlightknowledged.importer.plist 2>/dev/null || true
+    /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl unload -w /System/Library/LaunchAgents/com.apple.hybridsearchd.plist 2>/dev/null || true
+
+    # Belt-and-suspenders: write directly to the launchd disabled DB so the disabled
+    # state survives macOS update resets of the override database
+    DISABLED_DB="/private/var/db/com.apple.xpc.launchd/disabled.$USER_UID.plist"
+    if [ -f "$DISABLED_DB" ]; then
+      for SVC in \
+        com.apple.spotlightknowledged.updater \
+        com.apple.spotlightknowledged \
+        com.apple.spotlightknowledged.importer \
+        com.apple.hybridsearchd \
+        com.apple.corespotlightd \
+        com.apple.Spotlight; do
+        /usr/libexec/PlistBuddy -c "Set :$SVC true" "$DISABLED_DB" 2>/dev/null || \
+        /usr/libexec/PlistBuddy -c "Add :$SVC bool true" "$DISABLED_DB" 2>/dev/null || true
+      done
+    fi
 
     # Remove Spotlight search icon from menu bar
     /usr/bin/sudo -u "$CURRENT_USER" /usr/bin/defaults write com.apple.Spotlight MenuItemHidden -bool true 2>/dev/null || true
@@ -93,5 +120,6 @@
     /usr/bin/killall managedcorespotlightd 2>/dev/null || true
     /usr/bin/killall spotlightknowledged 2>/dev/null || true
     /usr/bin/killall mdbulkimport 2>/dev/null || true
+    /usr/bin/killall hybridsearchd 2>/dev/null || true
   '';
 }

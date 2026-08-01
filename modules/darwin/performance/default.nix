@@ -344,6 +344,12 @@
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl bootout "gui/$USER_UID/com.apple.suggestd" 2>/dev/null || true
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl bootout "gui/$USER_UID/com.apple.proactived" 2>/dev/null || true
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl bootout "gui/$USER_UID/com.apple.parsecd" 2>/dev/null || true
+    /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl bootout "gui/$USER_UID/com.apple.GenerativeFunctions.agentstored" 2>/dev/null || true
+    /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl bootout "gui/$USER_UID/com.apple.textunderstandingd" 2>/dev/null || true
+    /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl bootout "gui/$USER_UID/com.apple.ModelCatalogAgent" 2>/dev/null || true
+    /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl bootout "gui/$USER_UID/com.apple.duetexpertd" 2>/dev/null || true
+    /usr/bin/sudo /bin/launchctl bootout "system/com.apple.modelcatalogd" 2>/dev/null || true
+    /usr/bin/sudo /bin/launchctl bootout "system/com.apple.ospredictiond" 2>/dev/null || true
 
     # Suggestions and predictions
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.suggestd" 2>/dev/null || true
@@ -395,6 +401,30 @@
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.spotlightknowledged.updater" 2>/dev/null || true
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.spotlightknowledged.importer" 2>/dev/null || true
 
+    # Generative AI agent store - provides cascade.donationrequest.Siri.Transcript.Turn MachService
+    # which lets other agents donate Siri transcript data into Cascade even when higher-level services are disabled
+    /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.GenerativeFunctions.agentstored" 2>/dev/null || true
+
+    # Text understanding - provides corespotlight.receiver.textunderstandingd MachService;
+    # corespotlightd can wake it on demand to process document content for Smart Replies
+    /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.textunderstandingd" 2>/dev/null || true
+
+    # Model catalog agent - has a postboot bg.system.task (ScheduleAfter: 0) that fires within
+    # 4 minutes of every login to evaluate and download Apple Intelligence models
+    /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.ModelCatalogAgent" 2>/dev/null || true
+
+    # On-device ML trainer - runs anchor model training on local data (contacts, usage patterns)
+    # used by Proactive/Siri suggestions; has 5+ daily bg.system.task hooks
+    /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl disable "gui/$USER_UID/com.apple.duetexpertd" 2>/dev/null || true
+
+    # Model catalog daemon (system-level) - wakes on first unlock and every MobileAsset Siri UAF delivery;
+    # ModelCatalog.SpotlightKnowledge.AEMModelVersionChanged couples it to the Spotlight knowledge pipeline
+    /usr/bin/sudo /bin/launchctl disable "system/com.apple.modelcatalogd" 2>/dev/null || true
+
+    # OS prediction daemon (system-level) - runs ML model evaluation on every screen sleep via
+    # xpc.activity evaluateModelType; pulls from the same CoreDuet context store as knowledge-agent
+    /usr/bin/sudo /bin/launchctl disable "system/com.apple.ospredictiond" 2>/dev/null || true
+
     # Also unload plists (secondary approach for persistence)
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl unload -w /System/Library/LaunchAgents/com.apple.Siri.agent.plist 2>/dev/null || true
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl unload -w /System/Library/LaunchAgents/com.apple.siriactionsd.plist 2>/dev/null || true
@@ -428,6 +458,12 @@
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl unload -w /System/Library/LaunchAgents/com.apple.spotlightknowledged.updater.plist 2>/dev/null || true
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl unload -w /System/Library/LaunchAgents/com.apple.spotlightknowledged.importer.plist 2>/dev/null || true
     /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl unload -w /System/Library/LaunchAgents/com.apple.SoftwareUpdateNotificationManager.plist 2>/dev/null || true
+    /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl unload -w /System/Library/LaunchAgents/com.apple.GenerativeFunctions.agentstored.plist 2>/dev/null || true
+    /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl unload -w /System/Library/LaunchAgents/com.apple.textunderstandingd.plist 2>/dev/null || true
+    /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl unload -w /System/Library/LaunchAgents/com.apple.ModelCatalogAgent.plist 2>/dev/null || true
+    /usr/bin/sudo -u "$CURRENT_USER" /bin/launchctl unload -w /System/Library/LaunchAgents/com.apple.duetexpertd.plist 2>/dev/null || true
+    /usr/bin/sudo /bin/launchctl unload -w /System/Library/LaunchDaemons/com.apple.modelcatalogd.plist 2>/dev/null || true
+    /usr/bin/sudo /bin/launchctl unload -w /System/Library/LaunchDaemons/com.apple.ospredictiond.plist 2>/dev/null || true
 
     # Kill running processes immediately
     /usr/bin/killall -9 assistantd assistant_service siriactionsd siriappintentsd siriinferenced siriknowledged sirittsd SiriTTSTrainingAgent 2>/dev/null || true
@@ -444,6 +480,7 @@
     /usr/bin/killall -9 suggestd proactived proactiveeventtrackerd 2>/dev/null || true
     /usr/bin/killall -9 parsecd routined personaserver biomesyncd biomed coreduetd 2>/dev/null || true
     /usr/bin/killall -9 spotlightknowledged.updater spotlightknowledged.importer 2>/dev/null || true
+    /usr/bin/killall -9 agentstored textunderstandingd ModelCatalogAgent modelcatalogd duetexpertd ospredictiond 2>/dev/null || true
 
     # ========================================================================
     # CONTINUITY SERVICES (Handoff, Universal Control)
