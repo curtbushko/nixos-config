@@ -470,14 +470,14 @@ in {
         const padRight = width - model.length - padLeft;
         const modelPadded = " ".repeat(Math.max(0, padLeft)) + model + " ".repeat(Math.max(0, padRight));
 
-        const sep = " ";
+        const sep = "";
 
         // Build statusline
         let out = RESET;
         out += hexToBg(A_BG) + hexToFg(A_FG) + "▓▒░";
         out += hexToBg(A_BG) + hexToFg(A_FG) + " " + icon + modelPadded;
         out += hexToBg(B_BG) + hexToFg(A_BG) + sep;
-        out += hexToBg(B_BG) + hexToFg(B_FG) + "󰊢 " + repo + " ";
+        out += hexToBg(B_BG) + hexToFg(B_FG) + " 󰊢 " + repo + " ";
         if (branch) {
           out += hexToBg(C_BG) + hexToFg(B_BG) + sep;
           out += hexToBg(C_BG) + hexToFg(C_FG) + " " + branch + " ";
