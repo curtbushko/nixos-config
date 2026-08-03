@@ -59,15 +59,16 @@ in {
         set -g update-environment "DISPLAY WAYLAND_DISPLAY XDG_RUNTIME_DIR XDG_CURRENT_DESKTOP XDG_SESSION_TYPE"
         set -g default-terminal "tmux-256color"
         set -ag terminal-features ",tmux-256color:RGB"
-        set -as terminal-features ",*:bpaste"
+        set -ag terminal-overrides ",*:BE=\\E[?2004h:BD=\\E[?2004l:PS=\\E[200~:PE=\\E[201~"
         set -g mouse on
         set -g set-clipboard on
         set -g history-limit 102400
         set -g base-index 1
         set -g pane-base-index 1
         set -g renumber-windows on
-        set -g extended-keys on
-        set -g extended-keys-format csi-u
+        # extended-keys disabled: breaks paste in nvim under ghostty
+        # https://github.com/ghostty-org/ghostty/discussions/5924
+        set -g extended-keys off
         setw -g mode-keys vi
         set -g escape-time 10
         # enable auto renaming
