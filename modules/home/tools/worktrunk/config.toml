@@ -6,3 +6,4 @@ worktree-path = "{{ repo_path }}/../{{ branch }}"
 # Custom aliases - available globally
 [aliases]
 checkout = "wt-checkout {{ args }}"
+add = "wt-add {{ args }}"
