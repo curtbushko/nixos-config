@@ -359,6 +359,7 @@ in {
           "browser.preferences.moreFromMozilla" = false;
           "browser.tabs.tabmanager.enabled" = false;
           "browser.tabs.loadInBackground" = true;
+          "browser.tabs.loadBookmarksInTabs" = true;
           "browser.aboutConfig.showWarning" = false;
           "browser.aboutwelcome.enabled" = false;
           #DISABLE ONBOARDING
