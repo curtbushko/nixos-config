@@ -1,11 +1,13 @@
 {
   config,
+  inputs,
   lib,
   pkgs,
   ...
 }: let
   inherit (lib) mkIf;
   cfg = config.ns.llm;
+  codexPkgs = inputs.codex-nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system};
 
   # Read colors from flair's style.json in ~/.config/flair/
   # Note: Requires --impure flag for nix build/home-manager switch
@@ -32,27 +34,10 @@
   b_fg = colors."statusline-b-fg";
   c_bg = colors."statusline-c-bg";
   c_fg = colors."statusline-c-fg";
-
-  cdx = pkgs.writeShellScriptBin "cdx" ''
-    set -euo pipefail
-
-    export CODEX_HOME="''${CODEX_HOME:-${config.home.homeDirectory}/.codex}"
-
-    trust_root="$PWD"
-    if common_dir="$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null)"; then
-      trust_root="$(dirname "$common_dir")"
-    fi
-
-    project_key="''${trust_root//\\/\\\\}"
-    project_key="''${project_key//\"/\\\"}"
-
-    exec codex -m gpt-5.5 -c "projects={\"''${project_key}\"={trust_level=\"trusted\"}}" "$@"
-  '';
 in {
   config = mkIf cfg.enable {
     home.packages = [
-      pkgs.codex
-      cdx
+      codexPkgs.codex
     ];
 
     programs.zsh = {
@@ -76,13 +61,16 @@ in {
     # Codex statusline configuration
     home.file.".codex/config.toml".text = ''
       approval_policy = "never"
-      sandbox_mode    = "workspace-write"
+      sandbox_mode    = "danger-full-access"
       file_opener     = "none"
       reasoning_effort = "medium"
       commit_attribution = ""
       web_search = "live"
 
       status_line = { command = "node $HOME/.codex/statusline.mjs", padding = 0, type = "command" }
+
+      [features]
+      memories = true
 
       [sandbox_workspace_write]
       readable_roots = [ "${config.home.homeDirectory}/.codex/sessions" ]
@@ -107,12 +95,12 @@ in {
       "ziglang.org" = "allow"
 
       [shell_environment_policy]
-      inherit                 = "core"          # all | core | none
+      inherit                 = "all"           # all | core | none
       ignore_default_excludes = false           # if false, KEY/SECRET/TOKEN names are stripped first
-      include_only            = ["PATH", "HOME", "TMPDIR", "LANG", "LC_*"]
+      include_only            = ["PATH", "HOME", "TMPDIR", "LANG", "LC_*", "USER", "LOGNAME"]
       exclude                 = ["AWS_*", "GITHUB_*", "*_TOKEN", "*_SECRET", "*_KEY"]
-      set                     = { "CI" = "1", "NO_COLOR" = "1", "USER" = "${config.home.username}", "LOGNAME" = "${config.home.username}", "PATH" = "${config.home.homeDirectory}/.local/bin:/run/wrappers/bin:${config.home.homeDirectory}/.nix-profile/bin:/nix/profile/bin:${config.home.homeDirectory}/.local/state/nix/profile/bin:/etc/profiles/per-user/${config.home.username}/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin" }
-      experimental_use_profile = false
+      set                     = { "CI" = "1", "NO_COLOR" = "1" }
+      experimental_use_profile = true
 
       [projects."${config.home.homeDirectory}/workspace/github.com/curtbushko/nixos-config"]
       trust_level = "trusted"

@@ -200,6 +200,22 @@
         "type": "github"
       }
     },
+    "codex-nixpkgs": {
+      "locked": {
+        "lastModified": 1785975029,
+        "narHash": "sha256-X44cn5rzytELc3NNoQsh0aLkjWA/QzPfc6HPQmsG3sU=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "70ce234312134a463ba7728e94da2486a1d237ac",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "70ce234312134a463ba7728e94da2486a1d237ac",
+        "type": "github"
+      }
+    },
     "crane": {
       "locked": {
         "lastModified": 1775839657,
@@ -1292,6 +1308,7 @@
     "root": {
       "inputs": {
         "claude-code": "claude-code",
+        "codex-nixpkgs": "codex-nixpkgs",
         "darwin": "darwin",
         "firefox-addons": "firefox-addons",
         "flair": "flair",
