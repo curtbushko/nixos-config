@@ -52,11 +52,17 @@ in {
     # Deploy Codex global instructions (AGENTS.md)
     home.file.".codex/AGENTS.md".source = ./codex/AGENTS.md;
 
-    # Deploy Codex skills as individual SKILL.md files
-    home.file.".codex/skills".source = ./codex/skills;
+    # Deploy Agent Skills from the canonical, host-neutral source directory.
+    # The same ./skills tree is also consumed by Claude Code (see claude.nix).
+    home.file.".codex/skills".source = ./skills;
 
     # Deploy Codex command approval rules.
     home.file.".codex/rules".source = ./codex/rules;
+
+    # Deploy Codex subagent definitions (TOML). Codex uses a different agent
+    # format than Claude Code (which uses Markdown in ./claude/agents), so these
+    # cannot share one canonical source the way ./skills does.
+    home.file.".codex/agents".source = ./codex/agents;
 
     # Codex statusline configuration
     home.file.".codex/config.toml".text = ''
@@ -104,6 +110,15 @@ in {
 
       [projects."${config.home.homeDirectory}/workspace/github.com/curtbushko/nixos-config"]
       trust_level = "trusted"
+
+      # Subagents: auto-discovered from ~/.codex/agents/*.toml. Reviewers run
+      # read-only and the builder runs workspace-write, per each agent's own
+      # sandbox_mode. Model is inherited from the parent thread unless an agent
+      # overrides it.
+      [agents]
+      enabled = true
+      max_concurrent_threads_per_session = 4
+      default_subagent_reasoning_effort = "medium"
     '';
 
     # Codex statusline (Node.js for faster rendering)

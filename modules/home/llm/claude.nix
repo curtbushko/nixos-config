@@ -369,8 +369,9 @@ in {
     # Deploy Claude Code global instructions (CLAUDE.md)
     home.file.".claude/CLAUDE.md".source = ./claude/CLAUDE.md;
 
-    # Deploy Claude Code skills
-    home.file.".claude/skills".source = ./claude/skills;
+    # Deploy Agent Skills from the canonical, host-neutral source directory.
+    # The same ../skills tree is also consumed by Codex (see codex.nix).
+    home.file.".claude/skills".source = ./skills;
 
     # Claude Code commands
     home.file.".claude/commands".source = ./claude/commands;
