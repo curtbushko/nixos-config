@@ -14,5 +14,6 @@ in {
   imports = [
     ./llm.nix
     ./cuda.nix
+    ./swap.nix
   ];
 }
