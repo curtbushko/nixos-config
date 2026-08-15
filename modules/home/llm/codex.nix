@@ -5,9 +5,30 @@
   pkgs,
   ...
 }: let
-  inherit (lib) mkIf;
+  inherit (lib) concatMapStringsSep filterAttrs mkIf;
   cfg = config.ns.llm;
   codexPkgs = inputs.codex-nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system};
+
+  workspacePath = "${config.home.homeDirectory}/workspace";
+  workspaceDirectories = let
+    readDirectories = path:
+      if builtins.pathExists path
+      then
+        map
+        (name: "${path}/${name}")
+        (builtins.attrNames (filterAttrs (_: type: type == "directory") (builtins.readDir path)))
+      else [];
+    levelOne = readDirectories workspacePath;
+    levelTwo = builtins.concatMap readDirectories levelOne;
+    levelThree = builtins.concatMap readDirectories levelTwo;
+  in
+    levelOne ++ levelTwo ++ levelThree;
+  trustedWorkspaceProjects =
+    concatMapStringsSep "\n" (path: ''
+      [projects."${path}"]
+      trust_level = "trusted"
+    '')
+    workspaceDirectories;
 
   # Read colors from flair's style.json in ~/.config/flair/
   # Note: Requires --impure flag for nix build/home-manager switch
@@ -108,8 +129,7 @@ in {
       set                     = { "CI" = "1", "NO_COLOR" = "1" }
       experimental_use_profile = true
 
-      [projects."${config.home.homeDirectory}/workspace/github.com/curtbushko/nixos-config"]
-      trust_level = "trusted"
+      ${trustedWorkspaceProjects}
 
       # Subagents: auto-discovered from ~/.codex/agents/*.toml. Reviewers run
       # read-only and the builder runs workspace-write, per each agent's own
