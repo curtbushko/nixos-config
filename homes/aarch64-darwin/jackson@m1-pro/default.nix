@@ -44,7 +44,6 @@
   home.packages = [
     # Darwin only
     pkgs.cachix
-    pkgs.temurin-jre-bin
     inputs.neovim.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 
