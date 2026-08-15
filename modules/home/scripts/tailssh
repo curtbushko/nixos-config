@@ -74,6 +74,11 @@ if [ "${HOST}" != "" ]; then
 		USER="deck"
 	fi
 
+	if [[ "$HOST" == *"m1-pro"* ]]; then
+		USER="jackson"
+	fi
+
+
 	logger INFO "Ssh'ing into $HOST"
 	ssh "$USER@$HOST"
 fi

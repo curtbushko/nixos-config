@@ -155,6 +155,13 @@
 
   services.tailscale.enable = true;
 
+  # Enable Tailscale SSH
+  system.activationScripts.tailscaleSsh.text = ''
+    if [ -x /run/current-system/sw/bin/tailscale ]; then
+      /run/current-system/sw/bin/tailscale set --ssh || true
+    fi
+  '';
+
   # Homebrew for packages not in nixpkgs
   homebrew = {
     enable = true;
