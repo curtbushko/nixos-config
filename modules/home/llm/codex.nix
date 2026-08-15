@@ -94,10 +94,13 @@ in {
       commit_attribution = ""
       web_search = "live"
 
-      status_line = { command = "node $HOME/.codex/statusline.mjs", padding = 0, type = "command" }
-
       [features]
       memories = true
+
+      # Codex currently supports built-in status-line items only. Command-backed
+      # status lines and ANSI styling are tracked upstream in openai/codex#17827.
+      [tui]
+      status_line = ["model-with-reasoning", "current-dir", "git-branch", "five-hour-limit", "weekly-limit"]
 
       [sandbox_workspace_write]
       readable_roots = [ "${config.home.homeDirectory}/.codex/sessions" ]
