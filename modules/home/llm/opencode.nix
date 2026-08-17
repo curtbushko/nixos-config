@@ -106,6 +106,7 @@
     enabled_providers = [
       "gamingrig"
       "openai"
+      "local"
     ];
     provider = {
       gamingrig = {
@@ -123,6 +124,21 @@
           };
         };
       };
+      local = {
+        name = "local qwen 3.8";
+        npm = "@ai-sdk/openai-compatible";
+        env = [];
+        options = {
+          baseURL = "http://localhost:8080/v1";
+        };
+        models = {
+          "qwen3.8-27b" = {
+            name = "Qwen3.8-27B (unsloth)";
+            tool_call = true;
+            reasoning = true;
+          };
+        };
+      };
     };
   };
 
@@ -130,8 +146,6 @@
     "$schema" = "https://opencode.ai/tui.json";
     theme = "flair";
     plugin = ["./plugins/claude-statusline.tsx"];
-    plugin_enabled.which-key = true;
-    keybinds.which_key_toggle = "ctrl+space";
   };
 in {
   config = mkIf cfg.enable {
