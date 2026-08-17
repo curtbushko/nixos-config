@@ -102,12 +102,65 @@
           ];
         });
 
-        # Models configuration - empty for OAuth providers
+        # Models configuration - local llama-server providers alongside OAuth.
         # OAuth providers (ChatGPT Plus/Pro, Claude Pro/Max, GitHub Copilot)
-        # have their models auto-configured after /login
+        # are auto-configured after /login and merged with these entries.
         ".pi/agent/models.json".source = pkgs.writeText "pi-models.json" (builtins.toJSON {
-          providers = {};
+          providers = {
+            local = {
+              baseUrl = "http://localhost:8080/v1";
+              api = "openai-completions";
+              apiKey = "local";
+              compat = {
+                supportsDeveloperRole = false;
+                supportsReasoningEffort = false;
+                thinkingFormat = "qwen-chat-template";
+              };
+              models = [
+                {
+                  id = "qwen3.8-27b";
+                  name = "Qwen3.8-27B (local)";
+                  reasoning = true;
+                  contextWindow = 32768;
+                  maxTokens = 8192;
+                }
+              ];
+            };
+            gamingrig = {
+              baseUrl = "http://gamingrig:8080/v1";
+              api = "openai-completions";
+              apiKey = "gamingrig";
+              compat = {
+                supportsDeveloperRole = false;
+                supportsReasoningEffort = false;
+                thinkingFormat = "qwen-chat-template";
+              };
+              models = [
+                {
+                  id = "qwen3.8-27b";
+                  name = "Qwen3.8-27B (gamingrig)";
+                  reasoning = true;
+                  contextWindow = 32768;
+                  maxTokens = 8192;
+                }
+              ];
+            };
+          };
         });
+
+        # Minimal system prompt for local models. Used by the `pi-local`
+        # wrapper alias to keep the context small so smaller local models
+        # aren't drowned in the default multi-thousand-token prompt.
+        ".pi/agent/prompts/local.md".text = ''
+          You are a coding assistant running in the pi TUI.
+
+          Rules:
+          - Use the available tools to read, edit, and run code. Do not guess file contents.
+          - Be concise. No preamble, no summaries of what you just did.
+          - Prefer editing existing files over creating new ones.
+          - When unsure, ask one short question instead of assuming.
+          - Reference code as `path:line` so the user can jump to it.
+        '';
 
         # Custom theme using flair/stylix colors (base16 scheme)
         # Pi requires ALL 51 color tokens to be defined
@@ -242,6 +295,11 @@
       programs.zsh.shellAliases = {
         # OAuth provider aliases (will work after /login)
         # Use the provider name shown in /login (e.g., "openai-codex" for ChatGPT Plus/Pro)
+
+        # Local llama-server on this host, minimal system prompt.
+        pi-local = "pi --provider local --model qwen3.8-27b --system-prompt \"$(cat ~/.pi/agent/prompts/local.md)\"";
+        # Remote llama-server on gamingrig, minimal system prompt.
+        pi-gamingrig = "pi --provider gamingrig --model qwen3.8-27b --system-prompt \"$(cat ~/.pi/agent/prompts/local.md)\"";
       };
 
       # Set OpenAI API key environment variable

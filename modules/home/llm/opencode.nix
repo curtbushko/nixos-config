@@ -102,12 +102,30 @@
     };
   };
 
+  localAgentPrompt = ''
+    You are a coding assistant running in the opencode TUI.
+
+    Rules:
+    - Use the available tools to read, edit, and run code. Do not guess file contents.
+    - Be concise. No preamble, no summaries of what you just did.
+    - Prefer editing existing files over creating new ones.
+    - When unsure, ask one short question instead of assuming.
+    - Reference code as `path:line` so the user can jump to it.
+  '';
+
   opencodeConfig = builtins.toJSON {
     enabled_providers = [
       "gamingrig"
       "openai"
       "local"
     ];
+    agent = {
+      local = {
+        description = "Minimal-prompt agent for local models";
+        prompt = "{file:./prompts/local.md}";
+        mode = "primary";
+      };
+    };
     provider = {
       gamingrig = {
         name = "gamingrig llama-server";
@@ -154,6 +172,7 @@ in {
     ];
 
     xdg.configFile."opencode/config.json".text = opencodeConfig;
+    xdg.configFile."opencode/prompts/local.md".text = localAgentPrompt;
     xdg.configFile."opencode/tui.json".text = opencodeTuiConfig;
     xdg.configFile."opencode/themes/flair.json".text = builtins.toJSON flairTheme;
     xdg.configFile."opencode/plugins/claude-statusline.tsx".text = ''
