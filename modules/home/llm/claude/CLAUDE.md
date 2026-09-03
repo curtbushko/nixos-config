@@ -1,5 +1,12 @@
 # Global Claude Code Instructions
 
+## User-Facing Message Timestamps
+
+Prefix every progress update and final report sent to the user with a current
+Toronto-local timestamp in the user-friendly format `[YYYY-MM-DD HH:MM TZ]`.
+Example: `[2026-09-03 02:58 EDT]`. Obtain a fresh timestamp for each message; do
+not reuse a timestamp from an earlier message.
+
 ## MANDATORY: Check Skills Before Coding
 
 **CRITICAL**: Before writing ANY code, you MUST:

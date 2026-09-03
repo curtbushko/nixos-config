@@ -12,6 +12,49 @@ Your context window is finite. Every subagent return consumes context. You MUST:
 - Never read source code, task detail files, or result files
 - Never echo or summarize subagent output
 
+### Mandatory Watchdog Loop
+
+The orchestrator MUST remain active while the phase has unfinished tasks. After
+dispatching any Task Manager, Builder, Reviewer, or fix agent, it MUST run this
+watchdog until that agent completes:
+
+```text
+POLL_INTERVAL = 60 seconds
+STATUS_INTERVAL = 5 minutes
+INSPECT_AFTER = 10 minutes without evidence of progress
+RECOVER_AFTER = 15 minutes without evidence of progress
+MAX_RECOVERY_ATTEMPTS = 3
+
+while phase has unfinished tasks:
+  event = wait_agent(timeout=POLL_INTERVAL)
+  if event, agent output, active command output, result/status file timestamp,
+     or task transition proves progress:
+    record last_progress_at and continue the normal workflow
+  if STATUS_INTERVAL elapsed:
+    report a concise timestamped status without asking the user to respond
+  if no progress for STATUS_INTERVAL:
+    ask the active agent for its exact command and last completed step
+  if no progress for INSPECT_AFTER:
+    inspect agent state, process state, command activity, and artifact timestamps
+  if no progress for RECOVER_AFTER:
+    interrupt the stalled agent and dispatch a replacement for the same task,
+    preserving all existing edits and task artifacts
+  if recovery fails MAX_RECOVERY_ATTEMPTS times for the same condition:
+    report the concrete blocker and preserved state to the user
+```
+
+A `wait_agent` timeout is a polling event, never a reason to stop the orchestration turn.
+An agent being alive is not evidence of progress. Conversely, a long-running command
+with fresh output or resource activity is progress and MUST NOT be interrupted merely
+for exceeding a wall-clock threshold. After every completion, the orchestrator MUST
+immediately dispatch the next required Builder, Reviewer, fix, or task without waiting
+for a user prompt.
+
+The orchestrator MUST NOT return a final response while work remains unless the same
+genuine blocking condition has survived all recovery attempts. Model-capacity errors
+and terminated agents are recoverable conditions: retry or replace the agent and
+continue from `.tasks/` state.
+
 ### You MUST:
 - Read `.phases/index.yaml` for status overview (Step 1)
 - Dispatch subagents using the host's subagent mechanism
@@ -204,7 +247,7 @@ Extract EXECUTION_ORDER and task count
 ## Step 3: Execution Loop
 
 ```
-MAX_REVIEW_CYCLES = 2
+MAX_REVIEW_CYCLES = 10
 STATUS = Read(".tasks/status.yaml")
 
 For task in STATUS.tasks (following execution_order):
@@ -427,6 +470,6 @@ Report to user:
 **Blocker: missing dependency** - Check `.tasks/status.yaml` for dep status, reorder if needed
 **Blocker: unclear requirement** - ask the user, offering concrete options
 **Blocker: test failure** - Include error output in next builder dispatch
-**Review cycles exceeded (2)** - ask the user: skip / manual fix / abort
+**Review cycles exceeded (10)** - ask the user: skip / manual fix / abort
 **Stale .tasks/ state** - If task files reference nonexistent source files, re-run Task Manager
 **No .phases/ found** - Direct user to run the `to-phases` skill first
