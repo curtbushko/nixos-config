@@ -19,6 +19,8 @@
 
     codex-nixpkgs.url = "github:nixos/nixpkgs/70ce234312134a463ba7728e94da2486a1d237ac";
 
+    yt-dlp-nixpkgs.url = "github:nixos/nixpkgs/5545adfad2e98de106a5544ca7067e03010410bd";
+
     darwin = {
       url = "github:LnL7/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";

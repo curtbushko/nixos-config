@@ -9,6 +9,7 @@
   cfg = config.ns.tools;
   isDarwin = pkgs.stdenv.isDarwin;
   isLinux = pkgs.stdenv.isLinux;
+  ytDlpPkgs = inputs.yt-dlp-nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system};
 in {
   imports = [
     inputs.worktrunk.homeModules.default
@@ -70,7 +71,7 @@ in {
         pkgs.watchexec
         pkgs.wakeonlan
         pkgs.wget
-        pkgs.yt-dlp
+        ytDlpPkgs.yt-dlp
         pkgs.yq-go
         pkgs.unison
         pkgs.unzip

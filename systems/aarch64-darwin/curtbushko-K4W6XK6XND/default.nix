@@ -80,6 +80,7 @@
     luajitPackages.tl
     libvterm-neovim
     cachix
+    obsidian
   ];
 
   # Fonts

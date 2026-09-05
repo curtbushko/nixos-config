@@ -25,6 +25,11 @@ in {
   ];
 
   config = mkIf cfg.enable {
+    targets.darwin = lib.mkIf isDarwin {
+      linkApps.enable = false;
+      copyApps.enable = true;
+    };
+
     home.packages =
       [
       ]

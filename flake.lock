@@ -1312,6 +1312,7 @@
         "tuicr": "tuicr",
         "vicinae": "vicinae",
         "worktrunk": "worktrunk",
+        "yt-dlp-nixpkgs": "yt-dlp-nixpkgs",
         "zig": "zig_3"
       }
     },
@@ -1915,6 +1916,22 @@
       "original": {
         "owner": "Supreeeme",
         "repo": "xwayland-satellite",
+        "type": "github"
+      }
+    },
+    "yt-dlp-nixpkgs": {
+      "locked": {
+        "lastModified": 1788400875,
+        "narHash": "sha256-JIHQ6xNAN53cdo6zZ72LRcQ9lpvnABCnNE4hldJ5uZU=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "5545adfad2e98de106a5544ca7067e03010410bd",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "5545adfad2e98de106a5544ca7067e03010410bd",
         "type": "github"
       }
     },
