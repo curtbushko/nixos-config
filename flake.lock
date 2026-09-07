@@ -883,11 +883,11 @@
         "plugin-wayfinder": "plugin-wayfinder"
       },
       "locked": {
-        "lastModified": 1785771436,
-        "narHash": "sha256-mP8vxWlWnBv92nnqS1B45r2hegq6/Fp7dfA/w04D38k=",
+        "lastModified": 1788794802,
+        "narHash": "sha256-PdiWCIkkEuwOM6XLlpTSjHKflSZcImLWHHHwMKYCO5c=",
         "owner": "curtbushko",
         "repo": "neovim-flake",
-        "rev": "2587ec8badd89bcfcc43868f78046ebbaeab08c2",
+        "rev": "e55025eb6240b913afb55ae1559b5ab337c5584a",
         "type": "github"
       },
       "original": {
