@@ -37,6 +37,7 @@ in {
         SYNCTHING = "$HOME/Sync";
         WORKSPACE = "$HOME/workspace";
         M1DDC = "$HOME/bin/m1ddc";
+        GIT_OPTIONAL_LOCKS = "0";
       };
       shellAliases =
         {

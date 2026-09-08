@@ -39,7 +39,7 @@ in {
       enableNushellIntegration = false;
       settings = {
         add_newline = true;
-        command_timeout = 2000;
+        command_timeout = 5000;
         # The  is a mix of what section came first and after
         format = "[ ░▒▓](${a_bg})[](bg:${a_bg} fg:${a_fg})\${custom.hostname_fixed}[ ](bg:${b_bg} fg:${a_bg})\${custom.worktree}[](fg:${b_bg} bg:${c_bg})$git_branch$git_status[](fg:${c_bg})$character";
         custom.hostname_fixed = {
@@ -115,8 +115,7 @@ in {
           style = "fg:${c_fg} bg:${c_bg}";
         };
         git_status = {
-          style = "fg:${c_fg} bg:${c_bg}";
-          format = "[ ($all_status$ahead_behind)]($style)";
+          disabled = true;
         };
       };
     };
