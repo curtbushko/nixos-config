@@ -39,7 +39,8 @@ in {
       enableNushellIntegration = false;
       settings = {
         add_newline = true;
-        command_timeout = 5000;
+        command_timeout = 1000;
+        scan_timeout = 30;
         # The  is a mix of what section came first and after
         format = "[ ░▒▓](${a_bg})[](bg:${a_bg} fg:${a_fg})\${custom.hostname_fixed}[ ](bg:${b_bg} fg:${a_bg})\${custom.worktree}[](fg:${b_bg} bg:${c_bg})$git_branch$git_status[](fg:${c_bg})$character";
         custom.hostname_fixed = {
@@ -65,23 +66,22 @@ in {
         };
         custom.worktree = {
           command = ''
-            export GIT_OPTIONAL_LOCKS=0
-            git_common=$(timeout 2s git rev-parse --git-common-dir 2>/dev/null)
-            if [ -n "$git_common" ]; then
-              # In a git repository or worktree
+            if timeout 1s git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
               icon="󰊢 "
-              # Check if this is a worktree by looking for .bare in the path
-              if echo "$git_common" | grep -q '\.bare'; then
-                # In a worktree - use dirname of git_common
-                name=$(basename "$(dirname "$git_common")")
-              else
-                # In normal repo - use toplevel directory name
-                name=$(basename "$(timeout 1s git rev-parse --show-toplevel 2>/dev/null)")
-              fi
+              git_common=$(git rev-parse --git-common-dir 2>/dev/null)
+              case "$git_common" in
+                *.bare*)
+                  parent=''${git_common%/*}
+                  name=''${parent##*/}
+                  ;;
+                *)
+                  toplevel=$(git rev-parse --show-toplevel 2>/dev/null)
+                  name=''${toplevel##*/}
+                  ;;
+              esac
             else
-              # Regular directory (not a git repo)
-              icon=" "
-              name=$(basename "$PWD")
+              icon=" "
+              name=''${PWD##*/}
             fi
 
             # Apply icon and name mappings (overrides defaults)
@@ -115,7 +115,8 @@ in {
           style = "fg:${c_fg} bg:${c_bg}";
         };
         git_status = {
-          disabled = true;
+          style = "fg:${c_fg} bg:${c_bg}";
+          format = "[ ($all_status$ahead_behind)]($style)";
         };
       };
     };
