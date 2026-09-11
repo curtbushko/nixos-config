@@ -42,7 +42,7 @@ in {
         command_timeout = 1000;
         scan_timeout = 30;
         # The  is a mix of what section came first and after
-        format = "[ ░▒▓](${a_bg})[](bg:${a_bg} fg:${a_fg})\${custom.hostname_fixed}[ ](bg:${b_bg} fg:${a_bg})\${custom.worktree}[](fg:${b_bg} bg:${c_bg})$git_branch$git_status[](fg:${c_bg})$character";
+        format = "[ ░▒▓](${a_bg})[](bg:${a_bg} fg:${a_fg})\${custom.hostname_fixed}[ ](bg:${b_bg} fg:${a_bg})\${custom.worktree}\${custom.git_open}$git_branch$git_status\${custom.git_close}\${custom.no_git_close}$character";
         custom.hostname_fixed = {
           command = ''
             h=$(hostname)
@@ -107,6 +107,18 @@ in {
           format = "[ $output ]($style)";
           when = "true";
           style = "fg:${b_fg} bg:${b_bg}";
+        };
+        custom.git_open = {
+          when = "git rev-parse --is-inside-work-tree";
+          format = "[](fg:${b_bg} bg:${c_bg})";
+        };
+        custom.git_close = {
+          when = "git rev-parse --is-inside-work-tree";
+          format = "[](fg:${c_bg})";
+        };
+        custom.no_git_close = {
+          when = "! git rev-parse --is-inside-work-tree 2>/dev/null";
+          format = "[](fg:${b_bg})";
         };
         git_branch = {
           symbol = "";
