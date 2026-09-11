@@ -26,7 +26,7 @@
     else defaultColors;
 in {
   config = mkIf cfg.enable {
-    stylix.targets.tmux.enable = true;
+    stylix.targets.tmux.enable = false;
     programs.tmux = {
       enable = true;
       package = pkgs.tmux.overrideAttrs (oldAttrs: rec {
@@ -50,7 +50,7 @@ in {
       extraConfig = let
         active = "${colors."terminal-cyan"}";
         inactive = "${colors."text-muted"}";
-        background = "${colors."surface-bg-darkest"}";
+        background = "default";
         foreground = "${colors."terminal-blue"}";
       in ''
         # fix tmux not showing italics in neovim
@@ -140,8 +140,11 @@ in {
         # Window status styling to match zellij
         set-window-option -g window-status-format '#[fg=${inactive},bg=${background}]#W'
         set-window-option -g window-status-current-format '#[fg=${active},bg=${background}]#W'
+        set-window-option -g window-status-style 'fg=${inactive},bg=${background}'
         set-window-option -g window-status-current-style 'fg=${active},bg=${background}'
         set-window-option -g window-status-last-style 'fg=${active},bg=${background}'
+        set-window-option -g window-status-activity-style 'fg=${inactive},bg=${background}'
+        set-window-option -g window-status-bell-style 'fg=${inactive},bg=${background}'
         set-window-option -g window-status-separator '  '
       '';
     };
