@@ -28,13 +28,36 @@
   };
 
   # CustomUserPreferences for settings without dedicated nix-darwin options
-  system.defaults.CustomUserPreferences = {
+  system.defaults.CustomUserPreferences = let
+    # Remap Cmd+H (Hide) to Shift+Ctrl+Cmd+H per app.
+    # Menu title is "Hide <AppName>" and must match exactly.
+    # Modifier symbols: @ = Cmd, ~ = Opt, ^ = Ctrl, $ = Shift.
+    hideShortcut = appName: {
+      NSUserKeyEquivalents = {
+        "Hide ${appName}" = "@$^h";
+      };
+    };
+  in {
     NSGlobalDomain = {
       AppleActionOnDoubleClick = "None"; # Disable double-click title bar to maximize
       "com.apple.swipescrolldirection" = false; # Disable natural scrolling
     };
     # Disable screensaver (idleTime = 0 means never)
     "com.apple.screensaver".idleTime = 0;
+
+    # Per-app Cmd+H remaps: send Cmd+H through to the app by requiring
+    # Shift+Ctrl+Cmd+H for the Hide menu item instead.
+    "com.apple.Safari" = hideShortcut "Safari";
+    "com.apple.finder" = hideShortcut "Finder";
+    "com.google.Chrome" = hideShortcut "Google Chrome";
+    "org.mozilla.firefox" = hideShortcut "Firefox";
+    "company.thebrowser.Browser" = hideShortcut "Arc";
+    "md.obsidian" = hideShortcut "Obsidian";
+    "com.mitchellh.ghostty" = hideShortcut "Ghostty";
+    "com.tinyspeck.slackmacgap" = hideShortcut "Slack";
+    "com.microsoft.VSCode" = hideShortcut "Code";
+    "com.apple.mail" = hideShortcut "Mail";
+    "com.apple.MobileSMS" = hideShortcut "Messages";
   };
 
   # Window Manager - disable all tiling, hide widgets
