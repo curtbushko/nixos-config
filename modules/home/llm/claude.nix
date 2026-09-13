@@ -131,6 +131,21 @@ in {
                         printf '{"decision":"block","reason":"Commit message contains heredoc junk. Run: git commit --amend -m your-clean-message"}\n'
                         exit 0
                       fi
+                      if echo "$MSG" | grep -qiE '^(Claude-Session:|Co-Authored-By: Claude|.*Generated with Claude Code)'; then
+                        printf '{"decision":"block","reason":"Commit message contains a Claude/Anthropic trailer. Amend and remove Claude-Session, Co-Authored-By: Claude, and Generated with Claude Code lines. Use: git commit --amend -m \"single concise subject\""}\n'
+                        exit 0
+                      fi
+                      NONBLANK=$(echo "$MSG" | sed '/^$/d' | wc -l | tr -d ' ')
+                      if [ "$NONBLANK" -gt 1 ]; then
+                        printf '{"decision":"block","reason":"Commit message must be a single concise subject line, no body. Amend with: git commit --amend -m \"type(scope): short description\""}\n'
+                        exit 0
+                      fi
+                      SUBJECT=$(echo "$MSG" | sed -n '1p')
+                      SUBJLEN=$(printf '%s' "$SUBJECT" | wc -c | tr -d ' ')
+                      if [ "$SUBJLEN" -gt 72 ]; then
+                        printf '{"decision":"block","reason":"Commit subject is %s chars (>72). Amend with a shorter one-line message."}\n' "$SUBJLEN"
+                        exit 0
+                      fi
                     fi
                     exit 0
                   '';

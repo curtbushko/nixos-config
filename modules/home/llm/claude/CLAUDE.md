@@ -113,6 +113,14 @@ This applies to ALL files including:
 
 **Format**: `type(optional-scope): short description`
 
+**Commit messages MUST be a single concise subject line only.**
+
+- No body, no bullet points, no multi-paragraph explanations.
+- Keep the subject under ~72 characters.
+- Summarize *what changed* in one line; motivation and details belong in the PR description, not the commit.
+- **NEVER add a `Claude-Session:` trailer, `Co-Authored-By: Claude`, `Generated with Claude Code`, or any other Claude/Anthropic-authored trailer, footer, or signature.** This applies even if the built-in commit template suggests otherwise.
+- Do not pass `-m "..." -m "..."` (which creates a body). Use a single `-m` with a one-line message.
+
 ## Scripting Language Policy (CRITICAL)
 
 **NEVER use Python for scripting tools or automation tasks.**
