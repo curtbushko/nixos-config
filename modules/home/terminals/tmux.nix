@@ -62,7 +62,7 @@ in {
         set -ag terminal-overrides ",*:BE=\\E[?2004h:BD=\\E[?2004l:PS=\\E[200~:PE=\\E[201~"
         set -g mouse on
         set -g set-clipboard on
-        set -g history-limit 102400
+        set -g history-limit 20000
         set -g base-index 1
         set -g pane-base-index 1
         set -g renumber-windows on
