@@ -19,7 +19,8 @@ dispatching any Task Manager, Builder, Reviewer, or fix agent, it MUST run this
 watchdog until that agent completes:
 
 ```text
-POLL_INTERVAL = 60 seconds
+POLL_INTERVAL = 30 seconds
+PROGRESS_INTERVAL = 2 minutes
 STATUS_INTERVAL = 5 minutes
 INSPECT_AFTER = 10 minutes without evidence of progress
 RECOVER_AFTER = 15 minutes without evidence of progress
@@ -30,6 +31,8 @@ while phase has unfinished tasks:
   if event, agent output, active command output, result/status file timestamp,
      or task transition proves progress:
     record last_progress_at and continue the normal workflow
+  if PROGRESS_INTERVAL elapsed while an agent or command is active:
+    report the current stage, exact command, elapsed time, and latest evidence of progress
   if STATUS_INTERVAL elapsed:
     report a concise timestamped status without asking the user to respond
   if no progress for STATUS_INTERVAL:
@@ -49,6 +52,11 @@ with fresh output or resource activity is progress and MUST NOT be interrupted m
 for exceeding a wall-clock threshold. After every completion, the orchestrator MUST
 immediately dispatch the next required Builder, Reviewer, fix, or task without waiting
 for a user prompt.
+
+Builders and reviewers MUST send a concise progress update at least every two minutes
+while a command or investigation is still active. A progress update names the current
+stage, exact command, elapsed time, and most recent output or artifact change. The
+orchestrator relays this evidence instead of reporting only that an agent is alive.
 
 The orchestrator MUST NOT return a final response while work remains unless the same
 genuine blocking condition has survived all recovery attempts. Model-capacity errors
@@ -223,6 +231,29 @@ Verify `.tasks/status.yaml` exists after dispatch.
 
 ## Step 3: Execution Loop
 
+### Verification Strategy
+
+Run the narrowest relevant test first during RED, GREEN, and each fix cycle. A
+focused test should exercise only the changed behavior and its immediate integration
+boundary so ordinary development does not repeatedly pay for the whole repository.
+
+Run the full test suite once after the implementation is ready for review. Record that
+successful run in the build result so the reviewer can verify it without running the
+same suite again. Re-run the full test suite after a fix only when the fix has broad impact
+(shared infrastructure, public contracts, build wiring, persistence, concurrency, or
+multiple capabilities), or when the reviewer explicitly requests it. Otherwise, re-run
+the focused regression and record why the existing full-suite result remains applicable.
+
+Reserve exhaustive project-specific, packaged-runtime, and full-system gates for the final task of the phase.
+Earlier tasks run focused tests plus the standard full suite; the final task owns the
+phase-wide release matrix and records all of its results for final review.
+
+Test parallelism is configurable through `ZIG_TEAM_TEST_JOBS`. If it is unset, choose a
+conservative value capped by logical CPUs and available memory, budgeting 4 GiB per Zig
+test job: `max(1, min(logical_cpu_count, available_memory_gib / 4))`. Fall back to 1
+when memory or CPU count cannot be detected. Never hard-code `-j1`. Validate that an
+explicit override is a positive integer before passing it to Zig.
+
 ```
 MAX_REVIEW_CYCLES = 10
 
@@ -294,12 +325,14 @@ Dispatch a subagent:
 
     ## MANDATORY VERIFICATION - NON-NEGOTIABLE
 
-    Before marking status as "completed", you MUST run ALL these commands
-    and ensure they ALL pass. If ANY fail, fix and re-run:
+    During RED/GREEN, run the narrowest test that proves the behavior. Before the first
+    review, run the standard build and full suite once and ensure both pass:
+
+    Select and export ZIG_TEAM_TEST_JOBS using the verification strategy above, then run:
 
     ```bash
-    zig build           # MUST pass
-    zig build test -j1  # MUST pass (serial to avoid race conditions)
+    zig build
+    zig build test -j"$ZIG_TEAM_TEST_JOBS"
     ```
 
     Do NOT mark as completed until ALL verification passes.
@@ -336,11 +369,11 @@ Dispatch a subagent:
 
     ## MANDATORY VERIFICATION - NON-NEGOTIABLE
 
-    You MUST verify that these commands passed in the build results:
+    You MUST verify that the standard build and full suite passed in the build results:
 
     ```bash
-    zig build           # MUST have passed
-    zig build test -j1  # MUST have passed
+    zig build
+    zig build test -j"$ZIG_TEAM_TEST_JOBS"
     ```
 
     If build results show failures, verdict MUST be CHANGES_NEEDED.
@@ -376,14 +409,19 @@ Dispatch a subagent:
 
     ## MANDATORY VERIFICATION - NON-NEGOTIABLE
 
-    After fixing issues, you MUST run ALL these commands and ensure they pass:
+    After fixing issues, re-run the project-defined focused regression. Re-run the full suite only for
+    a broad-impact fix or when the reviewer explicitly requested it. Record the decision
+    and evidence in the fix result:
 
     ```bash
-    zig build           # MUST pass
-    zig build test -j1  # MUST pass (serial to avoid race conditions)
+    zig build
+    # Reuse the same focused test command recorded in .tasks/result-{task.id}-build.yaml
+    # (e.g. zig build test --test-filter "<name>") for the RED/GREEN behavior touched by this fix.
+    # Broad-impact or reviewer-requested fixes only:
+    zig build test -j"$ZIG_TEAM_TEST_JOBS"
     ```
 
-    Do NOT mark as completed until ALL verification passes.
+    Do NOT mark as completed until the required verification passes.
     Commit fixes after verification passes.
 
     Write your fix results to: `.tasks/result-{task.id}-fix-{cycle}.yaml`

@@ -38,14 +38,48 @@ mv <file> .trash/
 
 ## Build Quality Gates
 
-ALL must pass before completing:
+### Focused development loop
+
+During RED, GREEN, REFACTOR, and ordinary review-fix cycles, run the narrowest
+test step that proves the changed behavior. Record the command and result. Do not
+run the whole repository suite after every edit.
+
+Before the first review of a task, the standard build and full suite must pass once:
 ```bash
 zig build
-zig build test -j1     # limit parallelism to avoid OOM
-zig fmt --check src/   # if project uses it
-make lint              # if Makefile exists
-task lint              # if Taskfile exists (fallback if no Makefile)
+zig build test -j"$ZIG_TEAM_TEST_JOBS"
 ```
+
+Honor an existing positive integer `ZIG_TEAM_TEST_JOBS` value. When it is unset,
+choose a conservative job count capped by logical CPU count and available memory,
+using `max(1, min(logical_cpu_count, available_memory_gib / 4))`. Read Linux
+`MemAvailable` from `/proc/meminfo`;
+on Darwin, use `sysctl -n hw.memsize` conservatively; fall back to 1 if detection is
+unavailable. Reject an explicit value unless it is a positive integer. Export the
+selected value and record it in the result file. Never
+hard-code `-j1`; a user can still request serial execution with
+`ZIG_TEAM_TEST_JOBS=1`.
+
+After review feedback, always re-run the focused regression. Re-run the full suite
+only when the fix affects shared infrastructure, public contracts, build wiring,
+persistence, concurrency, or multiple capabilities, or when the reviewer requests
+it. Record either the new full-suite result or the reason the previous result remains
+applicable.
+
+### Final phase task only
+
+Reserve exhaustive project-specific gates for the final task of a phase. This includes
+packaged-runtime journeys, full-system matrices, and repository-wide format/lint or
+release checks such as the following when the project provides them:
+
+```bash
+zig fmt --check src/
+make lint
+task lint
+```
+
+The final task records the complete phase-wide release evidence. Earlier tasks use
+focused tests plus their one standard full-suite run.
 
 ---
 
