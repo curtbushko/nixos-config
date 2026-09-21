@@ -219,16 +219,18 @@ in {
           "group/system" = {
             orientation = "horizontal";
             modules = [
-              "custom/suspend"
+              "custom/mako"
               "clock"
             ];
           };
 
-          "custom/suspend" = {
-            format = " {}";
-            exec = "echo ; echo  suspend";
-            on-click = "systemctl suspend";
-            interval = 86400;
+          "custom/mako" = {
+            format = "󰂚 {}";
+            exec = "${pkgs.mako}/bin/makoctl list | ${pkgs.jq}/bin/jq -r '.data[0] | length'";
+            interval = 1;
+            on-click = "${pkgs.mako}/bin/makoctl dismiss --all";
+            on-click-right = "${pkgs.mako}/bin/makoctl restore";
+            on-click-middle = "${pkgs.mako}/bin/makoctl mode -t do-not-disturb";
             tooltip = false;
           };
 
@@ -426,7 +428,7 @@ in {
         /* inactiv widget modules */
         #cpu, #memory, #mpris, #custom-spotify, #custom-mode, #custom-gpuinfo, #custom-ddcutil,
         /* group "system" widgets */
-        #custom-updates, #custom-power, #custom-copyq,
+        #custom-updates, #custom-power, #custom-copyq, #custom-mako,
         /* group "temperature" widgets */
         #bluetooth, #pulseaudio, #wireplumber, #network, #custom-ddc_brightness, #custom-screenrecorder,
         /* group "resources" widgets */
