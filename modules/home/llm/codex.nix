@@ -8,6 +8,19 @@
   inherit (lib) concatMapStringsSep filterAttrs mkIf;
   cfg = config.ns.llm;
   codexPkgs = inputs.codex-nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system};
+  isDarwin = pkgs.stdenv.isDarwin;
+  isLinux = pkgs.stdenv.isLinux;
+
+  codexPruneScript = pkgs.writeShellScript "codex-prune-sessions" ''
+    set -eu
+    sessions="''${CODEX_HOME:-$HOME/.codex}/sessions"
+    trash="''${CODEX_HOME:-$HOME/.codex}/sessions-trash"
+    [ -d "$sessions" ] || exit 0
+    mkdir -p "$trash"
+    ${pkgs.findutils}/bin/find "$sessions" -type f -name '*.jsonl' -mtime +15 \
+      -exec mv -t "$trash" {} + 2>/dev/null || true
+    ${pkgs.findutils}/bin/find "$sessions" -mindepth 1 -type d -empty -delete 2>/dev/null || true
+  '';
 
   workspacePath = "${config.home.homeDirectory}/workspace";
   workspaceDirectories = let
@@ -29,7 +42,6 @@
       trust_level = "trusted"
     '')
     workspaceDirectories;
-
 in {
   config = mkIf cfg.enable {
     home.packages = [
@@ -43,31 +55,6 @@ in {
       shellAliases = {
         cx = "codex";
       };
-    };
-
-    # SessionStart hook: prune rollout JSONLs older than 30 days into a
-    # sibling trash dir. Runs async so it does not block session startup.
-    home.file.".codex/hooks.json".text = builtins.toJSON {
-      hooks.SessionStart = [
-        {
-          hooks = [
-            {
-              type = "command";
-              async = true;
-              command = ''
-                sessions="''${CODEX_HOME:-$HOME/.codex}/sessions"
-                trash="''${CODEX_HOME:-$HOME/.codex}/sessions-trash"
-                [ -d "$sessions" ] || exit 0
-                mkdir -p "$trash"
-                find "$sessions" -type f -name '*.jsonl' -mtime +30 \
-                  -exec mv -t "$trash" {} + 2>/dev/null
-                find "$sessions" -mindepth 1 -type d -empty -delete 2>/dev/null
-                exit 0
-              '';
-            }
-          ];
-        }
-      ];
     };
 
     # Deploy Codex global instructions (AGENTS.md)
@@ -144,12 +131,51 @@ in {
       default_subagent_reasoning_effort = "medium"
     '';
 
-
     # Deploy Codex helper scripts.
     home.file.".codex/scripts" = {
       source = ./codex/scripts;
       recursive = true;
       executable = true;
+    };
+
+    # Daily prune of codex sessions older than 15 days at 23:59 local time.
+    # Complements the SessionStart hook by running even when codex is idle.
+    systemd.user.services = mkIf isLinux {
+      codex-prune-sessions = {
+        Unit.Description = "Prune codex sessions older than 15 days";
+        Service = {
+          Type = "oneshot";
+          ExecStart = "${codexPruneScript}";
+        };
+      };
+    };
+
+    systemd.user.timers = mkIf isLinux {
+      codex-prune-sessions = {
+        Unit.Description = "Daily codex session pruning at 23:59";
+        Timer = {
+          OnCalendar = "*-*-* 23:59:00";
+          Persistent = true;
+          Unit = "codex-prune-sessions.service";
+        };
+        Install.WantedBy = ["timers.target"];
+      };
+    };
+
+    launchd.agents = mkIf isDarwin {
+      codex-prune-sessions = {
+        enable = true;
+        config = {
+          ProgramArguments = ["${codexPruneScript}"];
+          StartCalendarInterval = [
+            {
+              Hour = 23;
+              Minute = 59;
+            }
+          ];
+          RunAtLoad = false;
+        };
+      };
     };
   };
 }
