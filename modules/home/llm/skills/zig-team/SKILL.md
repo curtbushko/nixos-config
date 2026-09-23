@@ -9,7 +9,7 @@ description: Implements phases defined in .phases/ directory for Zig projects. R
 
 **Follow the orchestration procedure in `references/orchestration.md`.**
 
-**DO NOT read** `references/builder-context.md` or `references/reviewer-context.md`. Those are read by subagents only.
+**DO NOT read** `references/examples.md` or the sibling `zig-builder`/`zig-reviewer` skills. Those are read by subagents only.
 
 ---
 
@@ -131,13 +131,29 @@ phases:
 
 ---
 
-## Architecture Rules
+## Related Skills
 
-**Non-negotiable** (enforced by builders and reviewers, all inlined in their context files):
-- Dependencies flow INWARD: adapters -> application -> ports -> domain
-- Domain layer has NO external dependencies (no std.net, no std.fs, no C imports)
+`zig-team` is orchestration only. Everything else lives in sibling skills:
+
+| Skill                 | Purpose                                                                    |
+|-----------------------|----------------------------------------------------------------------------|
+| **`zig-builder`**     | Team-workflow builder skill — TDD loop, focused-test parallelism, `result-*-build.yaml` schema |
+| **`zig-reviewer`**    | Team-workflow reviewer skill — four-stage review, verdict, `result-*-review.yaml` schema |
+| **`zig`**             | Language idioms, TDD, hexagonal architecture, `build.zig` module boundaries, testing patterns |
+| **`zig-code-review`** | Memory safety, resource leaks, allocator misuse, architecture violations, semantic dead code |
+
+The Zig Builder subagent reads `zig-builder` (which references `zig`). The Zig Reviewer subagent reads `zig-reviewer` (which references `zig-code-review`).
+
+---
+
+## Architecture Rules (Quick Reference)
+
+Non-negotiable — details and enforcement live in the `zig` skill:
+
+- Dependencies flow INWARD: adapters → app → ports → domain
+- Domain has NO external dependencies (no `std.net`, no `std.fs`, no `@cImport`)
 - Layer boundaries are enforced at compile time via `build.zig` module isolation
-- Prefer comptime generics for ports; vtable structs only when runtime polymorphism is needed
+- Prefer comptime generics for ports; vtable only when runtime polymorphism is needed
 - All adapters with resources MUST have explicit `init()` / `deinit()` lifecycle
 
 ---
@@ -146,13 +162,14 @@ phases:
 
 Each agent is a subagent dispatched by the orchestrator. The orchestrator does NOT read these files - subagents read their own context.
 
-| Agent | Role | Context File |
-|-------|------|--------------|
-| **Task Manager** | Parses phase file, explores codebase, creates task breakdown | `.phases/phase-*.md` |
-| **Zig Builder** | Implements tasks following TDD, hexagonal architecture, Zig best practices | `references/builder-context.md` |
-| **Zig Reviewer** | Combined review: spec compliance + architecture compliance + code quality | `references/reviewer-context.md` |
+| Agent | Role | Skill it reads |
+|-------|------|----------------|
+| **Task Manager** | Parses phase file, explores codebase, creates task breakdown | `.phases/phase-*.md` directly |
+| **Zig Builder** | Implements tasks following TDD, hexagonal architecture, Zig best practices | `zig-builder` skill (which references `zig`) |
+| **Zig Reviewer** | Combined review: spec + architecture + code quality + dead code | `zig-reviewer` skill (which references `zig-code-review`) |
 
 See `references/orchestration.md` for exact dispatch templates and the coordination loop.
+See `references/examples.md` for worked usage examples.
 
 ---
 
@@ -174,5 +191,7 @@ See `references/orchestration.md` for exact dispatch templates and the coordinat
 
 ## Integration with Other Skills
 
-- **planner**: Use the `to-phases` skill to create the `.phases/` structure before running the `zig-team` skill
-- **prd/rfc**: Use these to write the feature specification before implementing
+- **`zig`**: Language, architecture, testing — read by the Zig Builder
+- **`zig-code-review`**: Pattern reference + Dead Code Review — read by the Zig Reviewer
+- **`to-phases`**: Create the `.phases/` structure before running `zig-team`
+- **`prd`/`rfc`**: Write the feature specification before implementing

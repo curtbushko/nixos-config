@@ -9,7 +9,7 @@ description: Implements phases defined in .phases/ directory for Node.js project
 
 **Follow the orchestration procedure in `references/orchestration.md`.**
 
-**DO NOT read** `references/builder-context.md`, `references/reviewer-context.md`, or `references/examples.md`. Those are read by subagents only.
+**DO NOT read** `references/examples.md` or the sibling `node-builder`/`node-reviewer` skills. Those are read by subagents only.
 
 ---
 
@@ -25,7 +25,7 @@ flowchart TD
 
     LOOP{{"For each task<br/>(dependency order)"}}
 
-    BUILDER["NODE BUILDER (subagent)<br/>- Reads: task spec + builder-context.md<br/>- Follows TDD: RED → GREEN → REFACTOR<br/>- Writes to result-build.yaml<br/>- Returns status + 1-line summary"]
+    BUILDER["NODE BUILDER (subagent)<br/>- Reads: task spec + node-builder skill<br/>- Follows TDD: RED → GREEN → REFACTOR<br/>- Writes to result-build.yaml<br/>- Returns status + 1-line summary"]
 
     REVIEWER["NODE REVIEWER (subagent)<br/>- Reads: task spec + build results<br/>- Reviews: spec compliance THEN quality<br/>- Writes to result-review.yaml<br/>- Returns verdict + issue count"]
 
@@ -133,13 +133,27 @@ phases:
 
 Each agent is a subagent dispatched by the orchestrator. The orchestrator does NOT read these files - subagents read their own context.
 
-| Agent | Role | Context File |
-|-------|------|--------------|
-| **Task Manager** | Parses phase file, explores codebase, creates task breakdown | `.phases/phase-*.md` |
-| **Node Builder** | Implements tasks following TDD, component architecture | `references/builder-context.md` |
-| **Node Reviewer** | Combined review: spec compliance + code quality in one pass | `references/reviewer-context.md` |
+| Agent | Role | Skill it reads |
+|-------|------|----------------|
+| **Task Manager** | Parses phase file, explores codebase, creates task breakdown | `.phases/phase-*.md` directly |
+| **Node Builder** | Implements tasks following TDD, component architecture | `node-builder` skill |
+| **Node Reviewer** | Combined review: spec compliance + code quality in one pass | `node-reviewer` skill |
 
 See `references/orchestration.md` for exact dispatch templates and the coordination loop.
+See `references/examples.md` for worked usage examples.
+
+---
+
+## Related Skills
+
+`node-team` is orchestration only. Everything else lives in sibling skills:
+
+| Skill               | Purpose                                                                    |
+|---------------------|----------------------------------------------------------------------------|
+| **`node-builder`**  | Team-workflow builder skill — TDD loop, ES modules, Zod/Vitest patterns, `result-*-build.yaml` schema |
+| **`node-reviewer`** | Team-workflow reviewer skill — two-stage review, verdict, `result-*-review.yaml` schema |
+
+The Node Builder subagent reads `node-builder`. The Node Reviewer subagent reads `node-reviewer`.
 
 ---
 

@@ -1,4 +1,12 @@
-# Node Reviewer Context
+---
+name: node-reviewer
+description: Team-workflow reviewer skill for node-team subagents. Owns the two-stage review procedure (spec / quality), verdict format, and `.tasks/result-*-review.yaml` schema. Also carries the Node review checklist (async pitfalls, security, resource leaks) until a `node-code-review` skill exists.
+---
+
+# Node Reviewer Skill
+
+Read by a subagent dispatched from `node-team`.
+
 
 The reviewer performs BOTH spec compliance AND code quality review in a single pass.
 

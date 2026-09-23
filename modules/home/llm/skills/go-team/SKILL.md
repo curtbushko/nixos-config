@@ -9,7 +9,7 @@ description: Implements phases defined in .phases/ directory. Reads current phas
 
 **Follow the orchestration procedure in `references/orchestration.md`.**
 
-**DO NOT read** `references/builder-context.md`, `references/reviewer-context.md`, or `references/examples.md`. Those are read by subagents only.
+**DO NOT read** `references/examples.md` or the sibling `go-builder`/`go-reviewer` skills. Those are read by subagents only.
 
 ---
 
@@ -25,7 +25,7 @@ flowchart TD
 
     LOOP{{"For each task<br/>(dependency order)"}}
 
-    BUILDER["GO BUILDER (subagent)<br/>- Reads: task spec + builder-context.md<br/>- Follows TDD: RED → GREEN → REFACTOR<br/>- Writes to result-build.yaml<br/>- Returns status + 1-line summary"]
+    BUILDER["GO BUILDER (subagent)<br/>- Reads: task spec + go-builder skill<br/>- Follows TDD: RED → GREEN → REFACTOR<br/>- Writes to result-build.yaml<br/>- Returns status + 1-line summary"]
 
     REVIEWER["GO REVIEWER (subagent)<br/>- Reads: task spec + build results<br/>- Reviews: spec compliance THEN quality<br/>- Writes to result-review.yaml<br/>- Returns verdict + issue count"]
 
@@ -133,13 +133,29 @@ phases:
 
 Each agent is a subagent dispatched by the orchestrator. The orchestrator does NOT read these files - subagents read their own context.
 
-| Agent | Role | Context File |
-|-------|------|--------------|
-| **Task Manager** | Parses phase file, explores codebase, creates task breakdown | `.phases/phase-*.md` |
-| **Go Builder** | Implements tasks following TDD, hex architecture | `references/builder-context.md` |
-| **Go Reviewer** | Combined review: spec compliance + code quality in one pass | `references/reviewer-context.md` |
+| Agent | Role | Skill it reads |
+|-------|------|----------------|
+| **Task Manager** | Parses phase file, explores codebase, creates task breakdown | `.phases/phase-*.md` directly |
+| **Go Builder** | Implements tasks following TDD, hex architecture | `go-builder` skill (which references `golang`) |
+| **Go Reviewer** | Combined review: spec compliance + code quality in one pass | `go-reviewer` skill (which references `go-code-review` and `golang`) |
 
 See `references/orchestration.md` for exact dispatch templates and the coordination loop.
+See `references/examples.md` for worked usage examples.
+
+---
+
+## Related Skills
+
+`go-team` is orchestration only. Everything else lives in sibling skills:
+
+| Skill                | Purpose                                                                    |
+|----------------------|----------------------------------------------------------------------------|
+| **`go-builder`**     | Team-workflow builder skill — TDD loop, Cobra/Viper/testify rules, `result-*-build.yaml` schema |
+| **`go-reviewer`**    | Team-workflow reviewer skill — two-stage review, verdict, `result-*-review.yaml` schema |
+| **`golang`**         | Language idioms, TDD workflow, hexagonal architecture, code patterns |
+| **`go-code-review`** | 100+ Go mistake patterns, semantic dead code review, review checklist |
+
+The Go Builder subagent reads `go-builder` (which references `golang`). The Go Reviewer subagent reads `go-reviewer` (which references `go-code-review`).
 
 ---
 

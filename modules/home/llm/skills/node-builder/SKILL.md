@@ -1,4 +1,12 @@
-# Node Builder Context Injection
+---
+name: node-builder
+description: Team-workflow builder skill for node-team subagents. Owns the TDD-driven build loop, ES-module conventions, Zod-based config/validation, testify-style AAA tests, `.tasks/result-*-build.yaml` schema, and fix-mode contract. Also carries Node language patterns until a `node` skill exists.
+---
+
+# Node Builder Skill
+
+Read by a subagent dispatched from `node-team`.
+
 
 This context is injected into every Node Builder agent dispatch.
 

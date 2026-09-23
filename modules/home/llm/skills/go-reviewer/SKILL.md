@@ -1,10 +1,17 @@
-# Go Reviewer Context
+---
+name: go-reviewer
+description: Team-workflow reviewer skill for go-team subagents. Owns the two-stage review procedure (spec / quality), verdict format, and `.tasks/result-*-review.yaml` schema. Pattern content lives in the `go-code-review` skill and shared references in the `golang` skill.
+---
 
-The reviewer performs BOTH spec compliance AND code quality review in a single pass.
+# Go Reviewer Skill
 
-**IMPORTANT**: For detailed patterns, see the shared Go references in the `golang` skill:
-- [architecture.md](../../golang/references/architecture.md) - Hexagonal architecture
-- [ai-code-problems.md](../../golang/references/ai-code-problems.md) - Common AI mistakes and fixes
+Read by a subagent dispatched from `go-team`. The reviewer performs BOTH spec compliance AND code quality review in a single pass.
+
+For detailed patterns, see the shared Go references:
+
+- `~/.claude/skills/golang/references/architecture.md` — Hexagonal architecture
+- `~/.claude/skills/golang/references/ai-code-problems.md` — Common AI mistakes and fixes
+- `~/.claude/skills/go-code-review/` — 100+ Go mistake patterns
 
 ---
 
@@ -12,12 +19,13 @@ The reviewer performs BOTH spec compliance AND code quality review in a single p
 
 1. **Read task acceptance criteria** from `.tasks/task-{task.id}.yaml`
 2. **Read build results** from `.tasks/result-{task.id}-build.yaml`
-3. **Stage 1: Spec Compliance** - Check requirements, under/over-building
-4. **Stage 2: Code Quality** - Only if Stage 1 passes. Check patterns below.
+3. **Stage 1: Spec Compliance** — Check requirements, under/over-building
+4. **Stage 2: Code Quality** — Only if Stage 1 passes. Check patterns below.
 5. **Write results** to `.tasks/result-{task.id}-review.yaml`
 6. **Return only verdict** to orchestrator (2 lines max)
 
 ### Spec Compliance Checks
+
 - Each acceptance criterion fully implemented and tested?
 - Under-building: missing or partial implementations? TODOs?
 - Over-building: code beyond spec? Extra features? Premature optimization?
@@ -30,9 +38,9 @@ The reviewer performs BOTH spec compliance AND code quality review in a single p
 **NEVER create .gitkeep files.** Git tracks files, not directories.
 
 **NEVER use `rm` to delete files.** Instead, move files to `.trash/`:
+
 ```bash
 mkdir -p .trash
-# Ensure .trash is in .gitignore
 grep -q "^\.trash/$" .gitignore 2>/dev/null || echo ".trash/" >> .gitignore
 mv <file> .trash/
 ```
@@ -42,6 +50,7 @@ mv <file> .trash/
 ## Lint Verification
 
 Before approving, confirm lint passes:
+
 ```bash
 task lint            # REQUIRED - error if Taskfile not found
 ```
@@ -50,7 +59,7 @@ task lint            # REQUIRED - error if Taskfile not found
 
 **DO NOT MODIFY** linting configuration files (`.golangci.yml`, `.go-arch-lint.yml`, `.go-ai-lint.yml`, `Taskfile.yml`). These are project-level standards. If code fails lint, fix the code, not the rules.
 
-**NEVER disable linting** - Do not use `//nolint:` directives. Do not remove, comment out, or disable lint rules in config files. If lint fails, fix the underlying code issue. There are no exceptions.
+**NEVER disable linting** — Do not use `//nolint:` directives. Do not remove, comment out, or disable lint rules in config files. If lint fails, fix the underlying code issue. There are no exceptions.
 
 ---
 
@@ -65,6 +74,7 @@ task lint            # REQUIRED - error if Taskfile not found
 ## Critical Issues (MUST CHECK)
 
 ### Error Handling
+
 - **Error ignored**: `_ = err` or `_, _ =` patterns
 - **Double handling**: Both logging AND returning error (#52)
 - **Missing context**: Bare `return err` without `fmt.Errorf("context: %w", err)` (#49)
@@ -81,6 +91,7 @@ return err  // no context!
 ```
 
 ### Nil Pointer Dereferences
+
 - Pointer params used without nil check
 - Map lookups without comma-ok idiom
 - Missing returns after nil checks
@@ -93,6 +104,7 @@ func ProcessUser(u *User) string {
 ```
 
 ### Resource Leaks
+
 - HTTP responses without `defer resp.Body.Close()` (#79)
 - Files, DB connections, rows without defer Close
 - `defer` inside `for` loops (#35)
@@ -107,6 +119,7 @@ for _, filename := range files {
 ```
 
 ### Concurrency Issues
+
 - Loop variable capture in goroutines (pre-Go 1.22) (#63)
 - Goroutines without context cancellation (#62)
 - Shared variables without mutex/channels (#58)
@@ -123,6 +136,7 @@ for i := 0; i < 10; i++ {
 ```
 
 ### Context Misuse
+
 - `context.Background()` in handlers (should use `r.Context()`)
 - `context.TODO()` in non-test code
 - HTTP requests without context
@@ -132,6 +146,7 @@ for i := 0; i < 10; i++ {
 ## Major Issues
 
 ### Architecture Violations
+
 - Domain importing adapters (`database/sql`, `net/http`)
 - Service depending on concrete type instead of interface
 - Business logic in handlers
@@ -146,11 +161,13 @@ func NewUserService(repo *postgres.UserRepository) // NO!
 ```
 
 ### Interface Design
+
 - Interface >5 methods (#5)
 - Interface defined at implementation instead of consumer (#6)
 - Returning interfaces instead of concrete types (#7)
 
 ### Unsafe Operations
+
 - Type assertions without comma-ok: `v.(Type)` instead of `v, ok := v.(Type)`
 - Defer args evaluated immediately (wrap in closure for deferred eval)
 - Nil map writes
@@ -171,6 +188,7 @@ func NewUserService(repo *postgres.UserRepository) // NO!
 ## Preferred Patterns
 
 ### io.Reader/io.Writer
+
 Accept interfaces, not concrete types. Maximize composability.
 
 ```go
@@ -181,6 +199,7 @@ func ProcessData(r io.Reader) error { ... }
 ```
 
 ### Embedding for Composition
+
 Use wrappers/decorators instead of inheritance-like patterns.
 
 ```go
@@ -241,7 +260,8 @@ changes_required: [{priority, description, location}]
 
 ### Return to Orchestrator (2 lines max)
 
-Write full results to the file above. Return ONLY this to the orchestrator:
+Write full results to the file above. Return ONLY:
+
 ```
 verdict: APPROVED|CHANGES_NEEDED
 issues: [count of changes_required]

@@ -75,7 +75,7 @@ continue from `.tasks/` state.
 
 ### You MUST NOT:
 - Read source code files
-- Read `builder-context.md` or `reviewer-context.md`
+- Read the `zig-builder`, `zig-reviewer`, or `examples.md` files
 - Read `.tasks/task-*.yaml` or `.tasks/result-*.yaml` detail files
 - Read `.phases/phase-*.md` files (Task Manager reads these)
 - Write or edit any source code
@@ -91,9 +91,9 @@ Subagents read their own context. You do NOT read these:
 
 | Agent | Reads | Path |
 |-------|-------|------|
-| Zig Builder | Development standards + architecture + testing | `references/builder-context.md` |
+| Zig Builder | Team workflow + language patterns | `~/.claude/skills/zig-builder/SKILL.md` + `~/.claude/skills/zig/SKILL.md` |
 | Zig Builder | Task details | `.tasks/task-{id}.yaml` |
-| Zig Reviewer | Review checklist + architecture compliance | `references/reviewer-context.md` |
+| Zig Reviewer | Team workflow + review patterns | `~/.claude/skills/zig-reviewer/SKILL.md` + `~/.claude/skills/zig-code-review/SKILL.md` |
 | Zig Reviewer | Task details | `.tasks/task-{id}.yaml` |
 | Zig Reviewer | Build results | `.tasks/result-{id}-build.yaml` |
 | Task Manager | Phase details | `.phases/phase-*.md` |
@@ -318,7 +318,8 @@ Dispatch a subagent:
 
     Read and FOLLOW ALL procedures in these files:
     1. Your task spec: `.tasks/task-{task.id}.yaml`
-    2. Your coding standards (MANDATORY): `references/builder-context.md`
+    2. The `zig-builder` skill (MANDATORY): `~/.claude/skills/zig-builder/SKILL.md` — team workflow
+    3. The `zig` skill (MANDATORY): `~/.claude/skills/zig/SKILL.md` — language, architecture, testing
 
     You MUST follow TDD (RED/GREEN/REFACTOR), hexagonal architecture, Zig idioms, error unions, and allocator management.
     Dependencies flow INWARD: adapters -> app -> ports -> domain. Domain has NO external deps.
@@ -338,7 +339,7 @@ Dispatch a subagent:
     Do NOT mark as completed until ALL verification passes.
 
     Write your full results to: `.tasks/result-{task.id}-build.yaml`
-    (format defined in builder-context.md - include verification results)
+    (format defined in the `zig-builder` skill — include verification results)
 
     **IMPORTANT**: Return ONLY this to the orchestrator (2 lines max):
     ```
@@ -360,12 +361,14 @@ Dispatch a subagent:
     Read and EXECUTE ALL review procedures from these files:
     1. Task acceptance criteria: `.tasks/task-{task.id}.yaml`
     2. Build results: `.tasks/result-{task.id}-build.yaml`
-    3. Review standards (MANDATORY): `references/reviewer-context.md`
+    3. The `zig-reviewer` skill (MANDATORY): `~/.claude/skills/zig-reviewer/SKILL.md` — team workflow
+    4. The `zig-code-review` skill (MANDATORY): `~/.claude/skills/zig-code-review/SKILL.md` — patterns + Dead Code Review
 
     Perform ALL review stages in a single pass:
     - Stage 1: Spec compliance (requirements met? under/over-building?)
     - Stage 2: Architecture compliance (hexagonal boundaries, dependency flow, build.zig enforcement)
     - Stage 3: Code quality (only if Stage 1 and 2 pass)
+    - Stage 4: Dead Code Review (only if Stage 3 passes — six-check rule from zig-code-review)
 
     ## MANDATORY VERIFICATION - NON-NEGOTIABLE
 
@@ -381,7 +384,7 @@ Dispatch a subagent:
     Read the source files listed in the build results and review them.
 
     Write your full results to: `.tasks/result-{task.id}-review.yaml`
-    (format defined in reviewer-context.md - include verification status)
+    (format defined in the `zig-reviewer` skill — include verification status)
 
     **IMPORTANT**: Return ONLY this to the orchestrator (2 lines max):
     ```
@@ -403,7 +406,8 @@ Dispatch a subagent:
     Read and FOLLOW ALL procedures in these files:
     1. Task spec: `.tasks/task-{task.id}.yaml`
     2. Review feedback: `.tasks/result-{task.id}-review.yaml`
-    3. Coding standards (MANDATORY): `references/builder-context.md`
+    3. The `zig-builder` skill (MANDATORY): `~/.claude/skills/zig-builder/SKILL.md` — team workflow + fix mode
+    4. The `zig` skill (MANDATORY): `~/.claude/skills/zig/SKILL.md` — language, architecture, testing
 
     Fix each issue listed in `changes_required` in priority order.
 

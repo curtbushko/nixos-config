@@ -67,7 +67,7 @@ continue from `.tasks/` state.
 
 ### You MUST NOT:
 - Read source code files
-- Read `builder-context.md`, `reviewer-context.md`, or `examples.md`
+- Read the `go-builder`, `go-reviewer`, or `examples.md` files
 - Read `.tasks/task-*.yaml` or `.tasks/result-*.yaml` detail files
 - Read `.phases/phase-*.md` files (Task Manager reads these)
 - Write or edit any source code
@@ -85,9 +85,9 @@ Subagents read their own context. You do NOT read these:
 
 | Agent | Reads | Path |
 |-------|-------|------|
-| Go Builder | Development standards | `references/builder-context.md` |
+| Go Builder | Team workflow + language patterns | `~/.claude/skills/go-builder/SKILL.md` + `~/.claude/skills/golang/` refs |
 | Go Builder | Task details | `.tasks/task-{task.id}.yaml` |
-| Go Reviewer | Review checklist | `references/reviewer-context.md` |
+| Go Reviewer | Team workflow + review patterns | `~/.claude/skills/go-reviewer/SKILL.md` + `~/.claude/skills/go-code-review/` |
 | Go Reviewer | Task details | `.tasks/task-{task.id}.yaml` |
 | Go Reviewer | Build results | `.tasks/result-{task.id}-build.yaml` |
 | Task Manager | Phase details | `.phases/phase-*.md` |
@@ -318,7 +318,8 @@ Dispatch a subagent:
 
     Read and FOLLOW ALL procedures in these files:
     1. Your task spec: `.tasks/task-{task.id}.yaml`
-    2. Your coding standards (MANDATORY): `references/builder-context.md`
+    2. The `go-builder` skill (MANDATORY): `~/.claude/skills/go-builder/SKILL.md` — team workflow
+    3. The `golang` skill (MANDATORY): `~/.claude/skills/golang/SKILL.md` — language, architecture, testing
 
     You MUST follow TDD (RED/GREEN/REFACTOR) and hexagonal architecture.
 
@@ -337,7 +338,7 @@ Dispatch a subagent:
     Do NOT mark as completed until ALL verification passes.
 
     Write your full results to: `.tasks/result-{task.id}-build.yaml`
-    (format defined in builder-context.md - include verification results)
+    (format defined in the `go-builder` skill — include verification results)
 
     **IMPORTANT**: Return ONLY this to the orchestrator (2 lines max):
     ```
@@ -359,11 +360,12 @@ Dispatch a subagent:
     Read and EXECUTE ALL review procedures from these files:
     1. Task acceptance criteria: `.tasks/task-{task.id}.yaml`
     2. Build results: `.tasks/result-{task.id}-build.yaml`
-    3. Review standards (MANDATORY): `references/reviewer-context.md`
+    3. The `go-reviewer` skill (MANDATORY): `~/.claude/skills/go-reviewer/SKILL.md` — team workflow
+    4. The `go-code-review` skill (MANDATORY): `~/.claude/skills/go-code-review/SKILL.md` — patterns + Dead Code Review
 
     Perform BOTH reviews in a single pass:
     - Stage 1: Spec compliance (requirements met? under/over-building?)
-    - Stage 2: Code quality (only if Stage 1 passes)
+    - Stage 2: Code quality including Dead Code Review (only if Stage 1 passes)
 
     ## MANDATORY VERIFICATION - NON-NEGOTIABLE
 
@@ -378,7 +380,7 @@ Dispatch a subagent:
     Read the source files listed in the build results and review them.
 
     Write your full results to: `.tasks/result-{task.id}-review.yaml`
-    (format defined in reviewer-context.md - include lint verification)
+    (format defined in the `go-reviewer` skill — include lint verification)
 
     **IMPORTANT**: Return ONLY this to the orchestrator (2 lines max):
     ```
@@ -400,7 +402,8 @@ Dispatch a subagent:
     Read and FOLLOW ALL procedures in these files:
     1. Task spec: `.tasks/task-{task.id}.yaml`
     2. Review feedback: `.tasks/result-{task.id}-review.yaml`
-    3. Coding standards (MANDATORY): `references/builder-context.md`
+    3. The `go-builder` skill (MANDATORY): `~/.claude/skills/go-builder/SKILL.md` — team workflow + fix mode
+    4. The `golang` skill (MANDATORY): `~/.claude/skills/golang/SKILL.md` — language, architecture, testing
 
     Fix each issue listed in `changes_required` in priority order.
 

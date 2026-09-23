@@ -67,7 +67,7 @@ continue from `.tasks/` state.
 
 ### You MUST NOT:
 - Read source code files
-- Read `builder-context.md`, `reviewer-context.md`, or `examples.md`
+- Read the `node-builder`, `node-reviewer`, or `examples.md` files
 - Read `.tasks/task-*.yaml` or `.tasks/result-*.yaml` detail files
 - Read `.phases/phase-*.md` files (Task Manager reads these)
 - Write or edit any source code
@@ -85,9 +85,9 @@ Subagents read their own context. You do NOT read these:
 
 | Agent | Reads | Path |
 |-------|-------|------|
-| Node Builder | Development standards | `references/builder-context.md` |
+| Node Builder | Team workflow + language patterns | `~/.claude/skills/node-builder/SKILL.md` |
 | Node Builder | Task details | `.tasks/task-{id}.yaml` |
-| Node Reviewer | Review checklist | `references/reviewer-context.md` |
+| Node Reviewer | Team workflow + review patterns | `~/.claude/skills/node-reviewer/SKILL.md` |
 | Node Reviewer | Task details | `.tasks/task-{id}.yaml` |
 | Node Reviewer | Build results | `.tasks/result-{id}-build.yaml` |
 | Task Manager | Phase details | `.phases/phase-*.md` |
@@ -318,7 +318,7 @@ Dispatch a subagent:
 
     Read and FOLLOW ALL procedures in these files:
     1. Your task spec: `.tasks/task-{task.id}.yaml`
-    2. Your coding standards (MANDATORY): `references/builder-context.md`
+    2. The `node-builder` skill (MANDATORY): `~/.claude/skills/node-builder/SKILL.md` — team workflow + Node patterns
 
     You MUST follow TDD (RED/GREEN/REFACTOR), component architecture, and async patterns.
 
@@ -335,7 +335,7 @@ Dispatch a subagent:
     Do NOT mark as completed until ALL verification passes.
 
     Write your full results to: `.tasks/result-{task.id}-build.yaml`
-    (format defined in builder-context.md - include verification results)
+    (format defined in the `node-builder` skill — include verification results)
 
     **IMPORTANT**: Return ONLY this to the orchestrator (2 lines max):
     ```
@@ -357,7 +357,7 @@ Dispatch a subagent:
     Read and EXECUTE ALL review procedures from these files:
     1. Task acceptance criteria: `.tasks/task-{task.id}.yaml`
     2. Build results: `.tasks/result-{task.id}-build.yaml`
-    3. Review standards (MANDATORY): `references/reviewer-context.md`
+    3. The `node-reviewer` skill (MANDATORY): `~/.claude/skills/node-reviewer/SKILL.md` — team workflow + review patterns
 
     Perform BOTH reviews in a single pass:
     - Stage 1: Spec compliance (requirements met? under/over-building?)
@@ -376,7 +376,7 @@ Dispatch a subagent:
     Read the source files listed in the build results and review them.
 
     Write your full results to: `.tasks/result-{task.id}-review.yaml`
-    (format defined in reviewer-context.md - include lint verification)
+    (format defined in the `node-reviewer` skill — include lint verification)
 
     **IMPORTANT**: Return ONLY this to the orchestrator (2 lines max):
     ```
@@ -398,7 +398,7 @@ Dispatch a subagent:
     Read and FOLLOW ALL procedures in these files:
     1. Task spec: `.tasks/task-{task.id}.yaml`
     2. Review feedback: `.tasks/result-{task.id}-review.yaml`
-    3. Coding standards (MANDATORY): `references/builder-context.md`
+    3. The `node-builder` skill (MANDATORY): `~/.claude/skills/node-builder/SKILL.md` — team workflow + fix mode
 
     Fix each issue listed in `changes_required` in priority order.
 

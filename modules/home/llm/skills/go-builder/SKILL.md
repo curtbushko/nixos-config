@@ -1,19 +1,24 @@
-# Go Builder Context Injection
+---
+name: go-builder
+description: Team-workflow builder skill for go-team subagents. Owns the TDD-driven build loop, Cobra/Viper CLI rules, testify convention, Taskfile quality gates, `.tasks/result-*-build.yaml` schema, and fix-mode contract. Detailed language patterns live in the `golang` skill.
+---
 
-This context is injected into every Go Builder agent dispatch.
+# Go Builder Skill
 
-**IMPORTANT**: For detailed patterns and examples, see the shared Go references in the `golang` skill:
-- [architecture.md](../../golang/references/architecture.md) - Hexagonal architecture
-- [tdd-workflow.md](../../golang/references/tdd-workflow.md) - TDD patterns
-- [code-patterns.md](../../golang/references/code-patterns.md) - Go idioms
-- [protobuf.md](../../golang/references/protobuf.md) - Protobuf guidelines
-- [ai-code-problems.md](../../golang/references/ai-code-problems.md) - Common mistakes and fixes
+Read by a subagent dispatched from `go-team`. Detailed patterns and examples live in the shared `golang` skill:
+
+- `~/.claude/skills/golang/references/architecture.md` — Hexagonal architecture
+- `~/.claude/skills/golang/references/tdd-workflow.md` — TDD patterns
+- `~/.claude/skills/golang/references/code-patterns.md` — Go idioms
+- `~/.claude/skills/golang/references/protobuf.md` — Protobuf guidelines
+- `~/.claude/skills/golang/references/ai-code-problems.md` — Common mistakes and fixes
 
 ---
 
 ## Non-Negotiable Requirements
 
 ### TDD Workflow
+
 ```
 1. RED: Write failing test FIRST, confirm it FAILS
 2. GREEN: Write MINIMAL code to pass
@@ -37,14 +42,18 @@ The ladder runs AFTER understanding the problem, not instead of it. Read the tas
 **Never simplify away:** input validation at trust boundaries, error handling that prevents data loss, security measures, or anything explicitly requested.
 
 ### CLI Framework
+
 **All service CLI entry points MUST use Cobra and Viper:**
+
 - [spf13/cobra](https://github.com/spf13/cobra) for command structure
 - [spf13/viper](https://github.com/spf13/viper) for configuration
 - Root command in `cmd/<app>/root.go`
 - Bind flags to Viper: `viper.BindPFlag("key", cmd.Flags().Lookup("flag"))`
 
 ### Testing Framework
+
 **All tests MUST use [testify](https://github.com/stretchr/testify):**
+
 - `require` for fatal assertions (stops test on failure)
 - `assert` for non-fatal assertions (continues test)
 - `mock` package for mocking
@@ -63,12 +72,13 @@ func TestExample(t *testing.T) {
 ```
 
 ### File Rules
+
 **NEVER create .gitkeep files.** Git tracks files, not directories.
 
 **NEVER use `rm` to delete files.** Instead, move files to `.trash/`:
+
 ```bash
 mkdir -p .trash
-# Ensure .trash is in .gitignore
 grep -q "^\.trash/$" .gitignore 2>/dev/null || echo ".trash/" >> .gitignore
 mv <file> .trash/
 ```
@@ -78,6 +88,7 @@ mv <file> .trash/
 ## Build Quality Gates
 
 Before completing, ALL must pass:
+
 ```bash
 task build           # REQUIRED - error if Taskfile not found
 task test            # REQUIRED - error if Taskfile not found
@@ -130,22 +141,26 @@ Domain layer has NO external dependencies
 If build/test fails repeatedly:
 
 ### Phase 1: Root Cause Investigation
+
 1. Read error messages COMPLETELY
 2. Reproduce consistently
 3. Check recent changes (git diff)
 4. Trace data flow from source to error
 
 ### Phase 2: Pattern Analysis
+
 1. Find working examples in codebase
 2. Compare against references
 3. Identify differences
 
 ### Phase 3: Hypothesis Testing
+
 1. Form ONE clear hypothesis
 2. Change ONE variable
 3. Verify before continuing
 
 ### Red Flags - STOP If:
+
 - "Quick fix for now"
 - "Just try changing X"
 - Already tried 3+ fixes
@@ -188,7 +203,8 @@ summary: [1-2 sentences]
 
 ### Return to Orchestrator (2 lines max)
 
-Write full results to the file above. Return ONLY this to the orchestrator:
+Write full results to the file above. Return ONLY:
+
 ```
 status: completed|blocked
 summary: [one sentence]
@@ -196,9 +212,8 @@ summary: [one sentence]
 
 ### Fix Mode
 
-When fixing review feedback, read the review results from `.tasks/result-{task.id}-review.yaml`
-and fix each issue in `changes_required`. Write fix results to `.tasks/result-{task.id}-fix-{cycle}.yaml`
-using the same format above. Return ONLY:
+When fixing review feedback, read the review results from `.tasks/result-{task.id}-review.yaml` and fix each issue in `changes_required`. Write fix results to `.tasks/result-{task.id}-fix-{cycle}.yaml` using the same format above. Return ONLY:
+
 ```
 status: completed|blocked
 fixes: [count of issues fixed]
