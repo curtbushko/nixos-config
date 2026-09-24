@@ -42,6 +42,11 @@ in {
     sops.secrets."hosts/m1-pro/mac_address" = {};
     sops.secrets."hosts/m1-pro/syncthing_id" = {};
     sops.secrets."hosts/m1-pro/tailnet_id" = {};
+    # curtbushko-K4W6XK6XND secrets
+    sops.secrets."OPENCODE_PASSWORD" = {
+      sopsFile = ../../../secrets/secrets.env;
+      format = "dotenv";
+    };
     # tailscale secrets
     sops.secrets."tailscale/k8s-oauth/client-id" = {};
     sops.secrets."tailscale/k8s-oauth/client-secret" = {};

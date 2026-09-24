@@ -139,11 +139,30 @@
     theme = "flair";
     plugin = ["./plugins/claude-statusline.tsx"];
   };
+
+  opencodePasswordFile = config.sops.secrets."OPENCODE_PASSWORD".path;
+
+  opencodeServeWrapper = pkgs.writeShellScript "opencode-serve" ''
+    set -eu
+    export OPENCODE_PASSWORD="$(cat ${opencodePasswordFile})"
+    exec ${opencode}/bin/opencode serve --service --hostname 127.0.0.1 --port 4096
+  '';
 in {
   config = mkIf cfg.enable {
     home.packages = [
       opencode
     ];
+
+    launchd.agents.opencode = lib.mkIf pkgs.stdenv.isDarwin {
+      enable = true;
+      config = {
+        ProgramArguments = [(toString opencodeServeWrapper)];
+        RunAtLoad = true;
+        KeepAlive = true;
+        StandardOutPath = "${config.home.homeDirectory}/Library/Logs/opencode.log";
+        StandardErrorPath = "${config.home.homeDirectory}/Library/Logs/opencode.err";
+      };
+    };
 
     xdg.configFile."opencode/config.json".text = opencodeConfig;
     xdg.configFile."opencode/tui.json".text = opencodeTuiConfig;
