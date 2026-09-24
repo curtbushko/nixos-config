@@ -50,7 +50,7 @@
     };
 
     opencode = {
-      url = "github:dan-online/opencode-nix";
+      url = "github:anomalyco/opencode/v2";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

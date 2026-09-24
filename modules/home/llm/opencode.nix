@@ -1,11 +1,22 @@
 {
   config,
+  inputs,
   lib,
   pkgs,
   ...
 }: let
   inherit (lib) mkIf;
   cfg = config.ns.llm;
+  opencode = inputs.opencode.packages.${pkgs.system}.opencode.overrideAttrs (_: {
+    # OpenCode v2's completion command does not currently produce the files
+    # expected by installShellCompletion, and its binary omits the commit
+    # suffix used by the flake's version check.
+    postInstall = "";
+    postFixup = lib.optionalString pkgs.stdenv.isDarwin ''
+      /usr/bin/codesign --force --sign - $out/bin/.opencode-wrapped
+    '';
+    doInstallCheck = false;
+  });
 
   # Read colors from flair's style.json (same pattern as modules/home/styles/stylix.nix).
   # Requires --impure (Taskfile already passes it).
@@ -102,62 +113,25 @@
     };
   };
 
-  localAgentPrompt = ''
-    You are a coding assistant running in the opencode TUI.
-
-    Rules:
-    - Use the available tools to read, edit, and run code. Do not guess file contents.
-    - Be concise. No preamble, no summaries of what you just did.
-    - Prefer editing existing files over creating new ones.
-    - When unsure, ask one short question instead of assuming.
-    - Reference code as `path:line` so the user can jump to it.
-  '';
-
   opencodeConfig = builtins.toJSON {
-    enabled_providers = [
-      "gamingrig"
-      "openai"
-      "local"
+    "$schema" = "https://opencode.ai/config.json";
+    experimental.policies = [
+      {
+        action = "provider.use";
+        resource = "*";
+        effect = "deny";
+      }
+      {
+        action = "provider.use";
+        resource = "openai";
+        effect = "allow";
+      }
+      {
+        action = "provider.use";
+        resource = "github-copilot";
+        effect = "allow";
+      }
     ];
-    agent = {
-      local = {
-        description = "Minimal-prompt agent for local models";
-        prompt = "{file:./prompts/local.md}";
-        mode = "primary";
-      };
-    };
-    provider = {
-      gamingrig = {
-        name = "gamingrig llama-server";
-        npm = "@ai-sdk/openai-compatible";
-        env = [];
-        options = {
-          baseURL = "http://gamingrig:8080/v1";
-        };
-        models = {
-          "qwen3.8-27b" = {
-            name = "Qwen3.8-27B (unsloth)";
-            tool_call = true;
-            reasoning = true;
-          };
-        };
-      };
-      local = {
-        name = "local qwen 3.8";
-        npm = "@ai-sdk/openai-compatible";
-        env = [];
-        options = {
-          baseURL = "http://localhost:8080/v1";
-        };
-        models = {
-          "qwen3.8-27b" = {
-            name = "Qwen3.8-27B (unsloth)";
-            tool_call = true;
-            reasoning = true;
-          };
-        };
-      };
-    };
   };
 
   opencodeTuiConfig = builtins.toJSON {
@@ -168,11 +142,10 @@
 in {
   config = mkIf cfg.enable {
     home.packages = [
-      pkgs.opencode
+      opencode
     ];
 
     xdg.configFile."opencode/config.json".text = opencodeConfig;
-    xdg.configFile."opencode/prompts/local.md".text = localAgentPrompt;
     xdg.configFile."opencode/tui.json".text = opencodeTuiConfig;
     xdg.configFile."opencode/themes/flair.json".text = builtins.toJSON flairTheme;
     xdg.configFile."opencode/plugins/claude-statusline.tsx".text = ''
