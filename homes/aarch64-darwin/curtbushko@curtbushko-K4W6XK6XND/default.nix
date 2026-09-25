@@ -28,6 +28,7 @@
     terminals.enable = true;
     tools.enable = true;
     llm.enable = true;
+    llm.opencode.serve.enable = true;
     wm.rectangle.enable = true;
     # Theme colors managed by flair: run `flair select <theme>`
     theme.wallpaper = "green-pasture.jpg";

@@ -5,8 +5,9 @@
   pkgs,
   ...
 }: let
-  inherit (lib) mkIf;
+  inherit (lib) mkIf mkOption types;
   cfg = config.ns.llm;
+  serveCfg = config.ns.llm.opencode.serve;
   opencode = inputs.opencode.packages.${pkgs.system}.opencode.overrideAttrs (_: {
     # OpenCode v2's completion command does not currently produce the files
     # expected by installShellCompletion, and its binary omits the commit
@@ -145,15 +146,21 @@
   opencodeServeWrapper = pkgs.writeShellScript "opencode-serve" ''
     set -eu
     export OPENCODE_PASSWORD="$(cat ${opencodePasswordFile})"
-    exec ${opencode}/bin/opencode serve --service --hostname 127.0.0.1 --port 4096
+    exec ${opencode}/bin/opencode serve --service --hostname 0.0.0.0 --port 4096
   '';
 in {
+  options.ns.llm.opencode.serve.enable = mkOption {
+    type = types.bool;
+    default = false;
+    description = "Whether to run the opencode server as a launchd agent on this host.";
+  };
+
   config = mkIf cfg.enable {
     home.packages = [
       opencode
     ];
 
-    launchd.agents.opencode = lib.mkIf pkgs.stdenv.isDarwin {
+    launchd.agents.opencode = lib.mkIf (pkgs.stdenv.isDarwin && serveCfg.enable) {
       enable = true;
       config = {
         ProgramArguments = [(toString opencodeServeWrapper)];
@@ -254,10 +261,13 @@ in {
       }
     '';
 
-    programs.zsh = {
-      shellAliases = {
+    programs.zsh.shellAliases =
+      {
         ocode = "opencode";
+        remotecode = "opencode --server http://curtbushko-K4W6XK6XND:4096";
+      }
+      // lib.optionalAttrs serveCfg.enable {
+        ocode-connect = "OPENCODE_PASSWORD=\"$(cat ${opencodePasswordFile})\" opencode --server http://localhost:4096";
       };
-    };
   };
 }
