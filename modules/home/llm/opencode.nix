@@ -146,7 +146,7 @@
   opencodeServeWrapper = pkgs.writeShellScript "opencode-serve" ''
     set -eu
     export OPENCODE_PASSWORD="$(cat ${opencodePasswordFile})"
-    exec ${opencode}/bin/opencode serve --service --hostname 0.0.0.0 --port 4096
+    exec ${opencode}/bin/opencode serve --hostname 0.0.0.0 --port 4096
   '';
 in {
   options.ns.llm.opencode.serve.enable = mkOption {
