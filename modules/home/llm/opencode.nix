@@ -93,14 +93,29 @@
       diffRemoved = c "base08";
       diffContext = c "base03";
       diffHunkHeader = c "base0C";
+      diffHighlightAdded = c "base0B";
+      diffHighlightRemoved = c "base08";
+      diffAddedBg = c "base01";
+      diffRemovedBg = c "base01";
+      diffContextBg = c "base00";
+      diffLineNumber = c "base03";
+      diffAddedLineNumberBg = c "base01";
+      diffRemovedLineNumberBg = c "base01";
       # Markdown
+      markdownText = c "base05";
       markdownHeading = c "base0A";
       markdownStrong = c "base09";
       markdownEmph = c "base0E";
       markdownCode = c "base0B";
+      markdownCodeBlock = c "base0B";
       markdownLink = c "base0D";
       markdownLinkText = c "base0D";
       markdownBlockQuote = c "base04";
+      markdownHorizontalRule = c "base03";
+      markdownListItem = c "base05";
+      markdownListEnumeration = c "base04";
+      markdownImage = c "base0D";
+      markdownImageText = c "base0D";
       # Syntax
       syntaxKeyword = c "base0E";
       syntaxString = c "base0B";
