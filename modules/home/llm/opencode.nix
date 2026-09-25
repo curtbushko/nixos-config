@@ -160,12 +160,17 @@
   # this path; sourcing it exports OPENCODE_PASSWORD along with every other var.
   opencodeSecretsEnv = "${config.xdg.configHome}/env/secrets.env";
 
+  # Launchd starts with a bare env, so the opencode server (and every command
+  # it spawns) would otherwise miss PATH additions, session variables, and
+  # anything exported from the user's shell. Source the secrets dotenv, then
+  # exec opencode inside an interactive zsh so ~/.zshenv, ~/.zprofile, and
+  # ~/.zshrc all run — exported vars and PATH flow through to opencode.
   opencodeServeWrapper = pkgs.writeShellScript "opencode-serve" ''
     set -eu
     set -a
     . ${opencodeSecretsEnv}
     set +a
-    exec ${opencode}/bin/opencode serve --hostname 0.0.0.0 --port 4096
+    exec ${pkgs.zsh}/bin/zsh -i -c 'exec ${opencode}/bin/opencode serve --hostname 0.0.0.0 --port 4096' < /dev/null
   '';
 in {
   options.ns.llm.opencode.serve.enable = mkOption {
