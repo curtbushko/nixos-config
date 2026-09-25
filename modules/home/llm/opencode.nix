@@ -261,13 +261,9 @@ in {
       }
     '';
 
-    programs.zsh.shellAliases =
-      {
-        ocode = "opencode";
-        remotecode = "opencode --server http://curtbushko-K4W6XK6XND:4096";
-      }
-      // lib.optionalAttrs serveCfg.enable {
-        ocode-connect = "OPENCODE_PASSWORD=\"$(cat ${opencodePasswordFile})\" opencode --server http://localhost:4096";
-      };
+    programs.zsh.shellAliases = {
+      ocode = "opencode";
+      remotecode = "OPENCODE_PASSWORD=\"$(cat ${opencodePasswordFile})\" opencode --server http://curtbushko-K4W6XK6XND:4096";
+    };
   };
 }
