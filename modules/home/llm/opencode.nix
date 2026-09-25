@@ -141,11 +141,15 @@
     plugin = ["./plugins/claude-statusline.tsx"];
   };
 
-  opencodePasswordFile = config.sops.secrets."OPENCODE_PASSWORD".path;
+  # The `secrets.env` home-manager sops secret decrypts the whole dotenv to
+  # this path; sourcing it exports OPENCODE_PASSWORD along with every other var.
+  opencodeSecretsEnv = "${config.xdg.configHome}/env/secrets.env";
 
   opencodeServeWrapper = pkgs.writeShellScript "opencode-serve" ''
     set -eu
-    export OPENCODE_PASSWORD="$(cat ${opencodePasswordFile})"
+    set -a
+    . ${opencodeSecretsEnv}
+    set +a
     exec ${opencode}/bin/opencode serve --hostname 0.0.0.0 --port 4096
   '';
 in {
@@ -263,7 +267,7 @@ in {
 
     programs.zsh.shellAliases = {
       ocode = "opencode";
-      remotecode = "OPENCODE_PASSWORD=\"$(cat ${opencodePasswordFile})\" opencode --server http://curtbushko-K4W6XK6XND:4096";
+      remotecode = "OPENCODE_PASSWORD=$(sed -n 's/^export OPENCODE_PASSWORD=//p' ${opencodeSecretsEnv}) opencode --server http://curtbushko-K4W6XK6XND:4096";
     };
   };
 }
