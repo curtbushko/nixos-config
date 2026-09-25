@@ -141,11 +141,14 @@
     plugin = ["./plugins/claude-statusline.tsx"];
   };
 
+  # Client alias reads the home-manager sops secret; the launchd server wrapper
+  # reads the nix-darwin system sops secret (available at boot before user agents).
   opencodePasswordFile = config.sops.secrets."OPENCODE_PASSWORD".path;
+  opencodeSystemPasswordFile = "/run/secrets/OPENCODE_PASSWORD";
 
   opencodeServeWrapper = pkgs.writeShellScript "opencode-serve" ''
     set -eu
-    export OPENCODE_PASSWORD="$(cat ${opencodePasswordFile})"
+    export OPENCODE_PASSWORD="$(cat ${opencodeSystemPasswordFile})"
     exec ${opencode}/bin/opencode serve --hostname 0.0.0.0 --port 4096
   '';
 in {

@@ -251,6 +251,7 @@
 
       systems.modules.darwin = with inputs; [
         home-manager.darwinModules.home-manager
+        sops-nix.darwinModules.sops
         stylix.darwinModules.stylix
       ];
 

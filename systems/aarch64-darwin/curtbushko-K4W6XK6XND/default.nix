@@ -4,6 +4,7 @@
   ...
 }: {
   ns.user.name = "curtbushko";
+  ns.secrets.enable = true;
   nix.enable = false;
   system.stateVersion = 5;
 
