@@ -160,17 +160,12 @@
   # this path; sourcing it exports OPENCODE_PASSWORD along with every other var.
   opencodeSecretsEnv = "${config.xdg.configHome}/env/secrets.env";
 
-  # Launchd starts with a bare env, so the opencode server (and every command
-  # it spawns) would otherwise miss PATH additions, session variables, and
-  # anything exported from the user's shell. Source the secrets dotenv, then
-  # exec opencode inside an interactive zsh so ~/.zshenv, ~/.zprofile, and
-  # ~/.zshrc all run — exported vars and PATH flow through to opencode.
   opencodeServeWrapper = pkgs.writeShellScript "opencode-serve" ''
     set -eu
     set -a
     . ${opencodeSecretsEnv}
     set +a
-    exec ${pkgs.zsh}/bin/zsh -i -c 'exec ${opencode}/bin/opencode serve --hostname 0.0.0.0 --port 4096' < /dev/null
+    exec ${opencode}/bin/opencode serve --hostname 0.0.0.0 --port 4096
   '';
 in {
   options.ns.llm.opencode.serve.enable = mkOption {
@@ -184,12 +179,22 @@ in {
       opencode
     ];
 
+    # Pin user identity in the plist so the agent runs as the user even when
+    # nix-darwin activates home-manager under sudo and bootstraps the plist
+    # into the system domain (where it would otherwise default to root).
     launchd.agents.opencode = lib.mkIf (pkgs.stdenv.isDarwin && serveCfg.enable) {
       enable = true;
       config = {
         ProgramArguments = [(toString opencodeServeWrapper)];
         RunAtLoad = true;
         KeepAlive = true;
+        UserName = config.home.username;
+        WorkingDirectory = config.home.homeDirectory;
+        EnvironmentVariables = {
+          HOME = config.home.homeDirectory;
+          USER = config.home.username;
+          LOGNAME = config.home.username;
+        };
         StandardOutPath = "${config.home.homeDirectory}/Library/Logs/opencode.log";
         StandardErrorPath = "${config.home.homeDirectory}/Library/Logs/opencode.err";
       };
