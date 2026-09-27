@@ -27,8 +27,11 @@
     shells.enable = true;
     terminals.enable = true;
     tools.enable = true;
-    llm.enable = true;
-    llm.opencode.serve.enable = true;
+    llm = {
+      enable = true;
+      opencode.serve.enable = true;
+      pi.enabledModels = ["github-copilot/*"];
+    };
     wm.rectangle.enable = true;
     # Theme colors managed by flair: run `flair select <theme>`
     theme.wallpaper = "green-pasture.jpg";

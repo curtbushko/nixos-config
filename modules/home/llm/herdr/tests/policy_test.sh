@@ -6,6 +6,12 @@ repo_root="$(git rev-parse --show-toplevel)"
 flake="$repo_root/flake.nix"
 module="$repo_root/modules/home/llm/herdr/default.nix"
 pi_module="$repo_root/modules/home/llm/pi/default.nix"
+work_home="$repo_root/homes/aarch64-darwin/curtbushko@curtbushko-K4W6XK6XND/default.nix"
+personal_homes=(
+	"$repo_root/homes/aarch64-darwin/curtbushko@m4-pro/default.nix"
+	"$repo_root/homes/aarch64-linux/curtbushko@gamingrig-vm/default.nix"
+	"$repo_root/homes/x86_64-linux/curtbushko@gamingrig/default.nix"
+)
 
 assert_contains() {
 	local file="$1"
@@ -22,6 +28,12 @@ assert_contains "$flake" 'github:aorumbayev/herdr-workflows/v0.15.1'
 assert_contains "$flake" 'github:mrcndz/herdr-routines/cd504512d2f1976d39668fbdc0fe9b86cf3eff85'
 assert_contains "$pi_module" '".pi/agent/skills".source = ../skills;'
 assert_contains "$pi_module" '@andrewjacop/pi-herdr'
+assert_contains "$pi_module" 'enabledModels = cfg.pi.enabledModels;'
+assert_contains "$work_home" 'enabledModels = ["github-copilot/*"];'
+for personal_home in "${personal_homes[@]}"; do
+	assert_contains "$personal_home" '"anthropic/*"'
+	assert_contains "$personal_home" '"openai-codex/*"'
+done
 assert_contains "$module" 'for integration in pi claude codex copilot; do'
 assert_contains "$module" "integration install \"\$integration\""
 for workflow in preflight verify-fast verify-full review implement-review; do

@@ -18,6 +18,13 @@ in {
         Whether to enable llm
       '';
     };
+    pi.enabledModels = mkOption {
+      type = types.listOf types.str;
+      default = [];
+      description = ''
+        Provider/model glob patterns exposed by Pi's model cycling interface.
+      '';
+    };
   };
 
   config = mkIf cfg.enable {

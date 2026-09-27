@@ -19,7 +19,15 @@
     git.enable = true;
     im.enable = true;
     k8s.enable = true;
-    llm.enable = true;
+    llm = {
+      enable = true;
+      pi.enabledModels = [
+        "anthropic/*"
+        "openai-codex/*"
+        "local/*"
+        "gamingrig/*"
+      ];
+    };
     programming.enable = true;
     scripts.enable = true;
     secrets.enable = true;

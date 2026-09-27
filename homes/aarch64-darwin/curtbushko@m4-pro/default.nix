@@ -21,6 +21,12 @@
     k8s.enable = true;
     llm = {
       enable = true;
+      pi.enabledModels = [
+        "anthropic/*"
+        "openai-codex/*"
+        "local/*"
+        "gamingrig/*"
+      ];
       # Model configuration for Qwen (GGUF for llama-cpp)
       models.qwen = {
         enable = true;

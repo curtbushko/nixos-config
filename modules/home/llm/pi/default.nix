@@ -106,6 +106,7 @@
           telemetry = false;
           quietStartup = true;
           notifications = true;
+          enabledModels = cfg.pi.enabledModels;
           # Pi shells out to npm for `pi install npm:...`. Under Nix, the
           # default global prefix points into the read-only Node store path, so
           # use a tiny wrapper that redirects npm's global prefix to a writable

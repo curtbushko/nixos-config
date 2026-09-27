@@ -33,6 +33,12 @@
     git.enable = true;
     llm = {
       enable = true;
+      pi.enabledModels = [
+        "anthropic/*"
+        "openai-codex/*"
+        "local/*"
+        "gamingrig/*"
+      ];
 
       # Model configuration
       models.qwen = {
