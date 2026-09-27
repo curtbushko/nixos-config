@@ -19,6 +19,12 @@ Uses a custom `pi-npm` wrapper that redirects the global npm prefix to `~/.pi/ag
 ### Declarative Extensions
 Extensions are declared in `settings.json` packages list and installed via idempotent activation hooks:
 - `@burneikis/pi-fzfp` - Fuzzy find plugin
+- `@andrewjacop/pi-herdr` - Pinned by Nix and exposed directly from the Nix store
+
+### Shared Skills
+
+`~/.pi/agent/skills` points at the same canonical `modules/home/llm/skills` tree
+used by Claude Code and Codex. Pi-specific copies are intentionally not created.
 
 ### Custom Local Extensions
 - `pi-vim-ex` - Custom vim extension with ex command support (`:q`, `:w`, `:wq`)
