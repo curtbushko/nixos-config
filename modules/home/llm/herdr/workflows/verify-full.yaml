@@ -1,0 +1,8 @@
+version: v1alpha1
+title: Verify full
+description: Run the repository's complete deterministic quality contract.
+steps:
+  - id: verify
+    run: [agent-quality, verify-full]
+returns:
+  output: "{{steps.verify.stdout}}"

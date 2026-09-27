@@ -1,0 +1,10 @@
+[settings]
+workspace = "routines"
+
+[[routine]]
+name = "infrastructure-smoke-test"
+description = "Disabled placeholder for manually validating the routine scheduler."
+every = "24h"
+type = "shell"
+command = ["herdr", "status"]
+enabled = false

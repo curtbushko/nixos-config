@@ -311,3 +311,23 @@ tasks:
         silent: true
       - cmd: echo "{{.DATELOG}} Formatting complete"
         silent: true
+
+  agent-preflight:
+    desc: Record repository state for an agent workflow
+    cmds:
+      - git status --short
+
+  agent-verify-fast:
+    desc: Run fast deterministic checks for an agent workflow
+    cmds:
+      - alejandra --check .
+      - bash modules/home/llm/herdr/tests/policy_test.sh
+      - shellcheck modules/home/llm/herdr/agent-quality.sh modules/home/llm/herdr/tests/policy_test.sh
+      - shfmt -d modules/home/llm/herdr/agent-quality.sh modules/home/llm/herdr/tests/policy_test.sh
+
+  agent-verify-full:
+    desc: Run the complete deterministic checks for an agent workflow
+    deps:
+      - agent-verify-fast
+    cmds:
+      - nix flake check --impure

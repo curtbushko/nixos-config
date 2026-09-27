@@ -1,0 +1,8 @@
+version: v1alpha1
+title: Verify fast
+description: Run the repository's cheap deterministic quality contract.
+steps:
+  - id: verify
+    run: [agent-quality, verify-fast]
+returns:
+  output: "{{steps.verify.stdout}}"

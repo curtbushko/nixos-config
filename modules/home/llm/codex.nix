@@ -83,6 +83,7 @@ in {
 
       [features]
       memories = true
+      hooks = true
 
       # Codex currently supports built-in status-line items only. Command-backed
       # status lines and ANSI styling are tracked upstream in openai/codex#17827.

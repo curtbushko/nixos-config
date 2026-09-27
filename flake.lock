@@ -690,6 +690,62 @@
         "type": "github"
       }
     },
+    "herdr": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "rust-overlay": "rust-overlay"
+      },
+      "locked": {
+        "lastModified": 1789583424,
+        "narHash": "sha256-N6+kprfWRyh0AkAiopkGsNXUGGORyPVFHEaDHCpGQs8=",
+        "owner": "herdrdev",
+        "repo": "herdr",
+        "rev": "065ef9d6a531c49fb8bee7e818ef837065b21ee9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "herdrdev",
+        "ref": "v0.9.1",
+        "repo": "herdr",
+        "type": "github"
+      }
+    },
+    "herdr-routines": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1784413702,
+        "narHash": "sha256-y+N7C4cw8gBnCyNjQsW+n2YHJ9gDNhWceLEZ1eKYUTg=",
+        "owner": "mrcndz",
+        "repo": "herdr-routines",
+        "rev": "cd504512d2f1976d39668fbdc0fe9b86cf3eff85",
+        "type": "github"
+      },
+      "original": {
+        "owner": "mrcndz",
+        "repo": "herdr-routines",
+        "rev": "cd504512d2f1976d39668fbdc0fe9b86cf3eff85",
+        "type": "github"
+      }
+    },
+    "herdr-workflows": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1790454068,
+        "narHash": "sha256-N6/tybvlqjCTjDMTzsJG3QNIM/FAk3+zDjEXME5nEPc=",
+        "owner": "aorumbayev",
+        "repo": "herdr-workflows",
+        "rev": "140de99b7fa43b10dc2a294e0667c62fa2f763dd",
+        "type": "github"
+      },
+      "original": {
+        "owner": "aorumbayev",
+        "ref": "v0.15.1",
+        "repo": "herdr-workflows",
+        "type": "github"
+      }
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -1234,6 +1290,7 @@
       "original": {
         "owner": "lukasl-dev",
         "repo": "pi.nix",
+        "rev": "3f392b014764faf4f0aaa611b6c5d082175ad81c",
         "type": "github"
       }
     },
@@ -1277,6 +1334,9 @@
         "firefox-addons": "firefox-addons",
         "flair": "flair",
         "ghostty": "ghostty",
+        "herdr": "herdr",
+        "herdr-routines": "herdr-routines",
+        "herdr-workflows": "herdr-workflows",
         "home-manager": "home-manager_2",
         "hunk": "hunk",
         "llm-agents": "llm-agents",
@@ -1316,6 +1376,27 @@
       }
     },
     "rust-overlay": {
+      "inputs": {
+        "nixpkgs": [
+          "herdr",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1783577481,
+        "narHash": "sha256-EWMxOWrJ031f8f/lrcEmhTRs4npw1/5N3Hcjin846c8=",
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "rev": "4cdea398dc491b082dccdce0fad1ed0b75fa3394",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "type": "github"
+      }
+    },
+    "rust-overlay_2": {
       "inputs": {
         "nixpkgs": [
           "worktrunk",
@@ -1837,7 +1918,7 @@
         "nixpkgs": [
           "nixpkgs"
         ],
-        "rust-overlay": "rust-overlay"
+        "rust-overlay": "rust-overlay_2"
       },
       "locked": {
         "lastModified": 1781079524,

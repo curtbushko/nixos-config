@@ -1,0 +1,61 @@
+version: v1alpha1
+title: Implement and review
+description: Preflight, implementation, fast verification, independent review, and full verification.
+inputs:
+  task:
+    type: text
+    description: Goal or focused implementation task.
+    min_length: 1
+steps:
+  - id: preflight
+    workflow: preflight
+  - id: implement
+    agent: |
+      Implement this task using the existing applicable skills and repository instructions:
+
+      {{inputs.task}}
+
+      Preserve unrelated changes and use test-driven development. Return a concise summary and verification evidence.
+    using: pi
+    pane:
+      open: beside
+      close: success
+  - id: fast
+    workflow: verify-fast
+  - id: review
+    workflow: review
+    inputs:
+      task: "{{inputs.task}}"
+      verification: "{{steps.fast.output}}"
+  - id: fix
+    when: "{{steps.review.verdict}} == 'CHANGES_NEEDED'"
+    agent: |
+      Fix the blocking independent-review findings for this task using the existing applicable skills:
+
+      Task:
+      {{inputs.task}}
+
+      Review findings:
+      {{steps.review.review}}
+
+      Preserve unrelated changes and return concise verification evidence.
+    using: pi
+    pane:
+      open: beside
+      close: success
+  - id: fast_after_fix
+    when: "{{steps.review.verdict}} == 'CHANGES_NEEDED'"
+    workflow: verify-fast
+  - id: final_review
+    workflow: review
+    inputs:
+      task: "{{inputs.task}}"
+      verification: "{{steps.fast.output}}"
+  - id: approval_gate
+    run: [test, "{{steps.final_review.verdict}}", =, APPROVED]
+  - id: full
+    workflow: verify-full
+returns:
+  implementation: "{{steps.implement.response}}"
+  review: "{{steps.final_review.review}}"
+  verification: "{{steps.full.output}}"

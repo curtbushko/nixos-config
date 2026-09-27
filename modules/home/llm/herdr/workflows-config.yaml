@@ -1,0 +1,12 @@
+profiles:
+  pi:
+    kind: pi
+  claude:
+    kind: claude
+  codex:
+    kind: codex
+  copilot:
+    kind: copilot
+  independent-review:
+    kind: codex
+default_profile: pi

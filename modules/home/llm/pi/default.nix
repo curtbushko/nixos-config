@@ -18,6 +18,22 @@
       exec ${pkgs.nodejs}/bin/npm "$@"
     '';
 
+    piHerdr = pkgs.stdenvNoCC.mkDerivation {
+      pname = "pi-herdr";
+      version = "0.5.0";
+      src = pkgs.fetchurl {
+        url = "https://registry.npmjs.org/@andrewjacop/pi-herdr/-/pi-herdr-0.5.0.tgz";
+        hash = "sha256-t4hxyXNx1Bt/ubo5UCYHIBI7M/YyKC1jXU92b6Y7NnA=";
+      };
+      sourceRoot = "package";
+      installPhase = ''
+        runHook preInstall
+        mkdir -p "$out"
+        cp -R . "$out/"
+        runHook postInstall
+      '';
+    };
+
     # Read colors from flair's style.json (same source as stylix)
     # Note: Requires --impure flag for home-manager switch
     flairStylePath = "${config.home.homeDirectory}/.config/flair/style.json";
@@ -147,6 +163,15 @@
             };
           };
         });
+
+        # Pi consumes the exact canonical skill tree used by Claude and Codex.
+        ".pi/agent/skills".source = ../skills;
+
+        # Nix owns the pinned pi-herdr package; Pi only discovers the extension.
+        ".pi/agent/extensions/pi-herdr" = {
+          source = piHerdr;
+          recursive = true;
+        };
 
         # Minimal system prompt for local models. Used by the `pi-local`
         # wrapper alias to keep the context small so smaller local models

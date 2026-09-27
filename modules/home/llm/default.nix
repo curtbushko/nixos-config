@@ -176,6 +176,7 @@ in {
   imports = [
     ./claude.nix
     ./codex.nix
+    ./herdr
     ./llmfit.nix
     ./opencode.nix
     ./openchamber.nix

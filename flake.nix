@@ -40,6 +40,21 @@
       url = "github:ghostty-org/ghostty";
     };
 
+    herdr = {
+      url = "github:herdrdev/herdr/v0.9.1";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    herdr-workflows = {
+      url = "github:aorumbayev/herdr-workflows/v0.15.1";
+      flake = false;
+    };
+
+    herdr-routines = {
+      url = "github:mrcndz/herdr-routines/cd504512d2f1976d39668fbdc0fe9b86cf3eff85";
+      flake = false;
+    };
+
     llm-agents = {
       url = "github:numtide/llm-agents.nix";
     };
@@ -70,7 +85,7 @@
     };
 
     pi = {
-      url = "github:lukasl-dev/pi.nix";
+      url = "github:lukasl-dev/pi.nix/3f392b014764faf4f0aaa611b6c5d082175ad81c";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

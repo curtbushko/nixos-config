@@ -1,0 +1,43 @@
+version: v1alpha1
+title: Independent review
+description: Start a fresh reviewer with goal, repository state, diff, and verification evidence.
+inputs:
+  task:
+    type: text
+    description: Goal or task the implementation must satisfy.
+    min_length: 1
+  verification:
+    type: text
+    description: Useful verification results from the implementation.
+    default: Not supplied.
+steps:
+  - id: status
+    run: [git, status, --short]
+  - id: diff
+    run: [git, diff, --no-ext-diff, HEAD]
+  - id: review
+    agent: |
+      Use the existing review skill appropriate to this repository. Review independently.
+
+      Goal:
+      {{inputs.task}}
+
+      Repository state:
+      {{steps.status.stdout}}
+
+      Verification evidence:
+      {{inputs.verification}}
+
+      Resulting diff:
+      {{steps.diff.stdout}}
+
+      Report blocking findings with file and line references. End with exactly APPROVED or CHANGES_NEEDED.
+    using: independent-review
+    pane:
+      open: beside
+      close: success
+    expect:
+      one_of: [APPROVED, CHANGES_NEEDED]
+returns:
+  review: "{{steps.review.response}}"
+  verdict: "{{steps.review.verdict}}"

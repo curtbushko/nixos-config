@@ -1,0 +1,8 @@
+version: v1alpha1
+title: Preflight
+description: Record repository state without rejecting a legitimate dirty worktree.
+steps:
+  - id: preflight
+    run: [agent-quality, preflight]
+returns:
+  output: "{{steps.preflight.stdout}}"
