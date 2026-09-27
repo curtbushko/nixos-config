@@ -1,6 +1,6 @@
 ---
 name: zig-team
-description: Implements phases defined in .phases/ directory for Zig projects. Reads current phase from index.yaml, breaks down into tasks, then executes Builder -> Reviewer for each task. All Zig projects follow hexagonal architecture with compile-time boundary enforcement via build.zig modules.
+description: Use when implementing Zig phases from .phases/ through a Task Manager, TDD Builder, and independent code, comment, architecture, and test reviewers.
 ---
 
 # Zig Team - Coordinated Agent Workflow
@@ -9,7 +9,7 @@ description: Implements phases defined in .phases/ directory for Zig projects. R
 
 **Follow the orchestration procedure in `references/orchestration.md`.**
 
-**DO NOT read** `references/examples.md` or the sibling `zig-builder`/`zig-reviewer` skills. Those are read by subagents only.
+**DO NOT read** `references/examples.md` or sibling Builder/Reviewer skills. Those are read by subagents only.
 
 ---
 
@@ -27,7 +27,7 @@ flowchart TD
 
     BUILDER["ZIG BUILDER (subagent)<br/>- Reads: task spec + builder-context.md<br/>- Follows TDD: RED → GREEN → REFACTOR<br/>- Writes to result-build.yaml<br/>- Returns status + 1-line summary"]
 
-    REVIEWER["ZIG REVIEWER (subagent)<br/>- Reads: task spec + build results<br/>- Reviews: spec compliance THEN quality<br/>- Writes to result-review.yaml<br/>- Returns verdict + issue count"]
+    REVIEWS["FOUR REVIEWERS (parallel subagents)<br/>- Code and style<br/>- Comments and intent<br/>- Architecture<br/>- Tests and evidence"]
 
     APPROVED["APPROVED<br/>Next task"]
     CHANGES["CHANGES<br/>NEEDED"]
@@ -36,11 +36,11 @@ flowchart TD
     PLANS --> TASK_MGR
     TASK_MGR --> LOOP
     LOOP --> BUILDER
-    BUILDER --> REVIEWER
-    REVIEWER --> APPROVED
-    REVIEWER --> CHANGES
+    BUILDER --> REVIEWS
+    REVIEWS --> APPROVED
+    REVIEWS --> CHANGES
     CHANGES --> FIX
-    FIX --> REVIEWER
+    FIX --> REVIEWS
 ```
 
 ### Context-Saving Design
@@ -68,7 +68,7 @@ for implementation:
 - Orchestrator: cheaper/faster model (session model)
 - Task Manager: cheaper/faster model
 - Builder: strongest available coding model
-- Reviewer: strongest available coding model
+- Four Reviewers: strongest available coding model
 
 
 ## Arguments
@@ -138,11 +138,16 @@ phases:
 | Skill                 | Purpose                                                                    |
 |-----------------------|----------------------------------------------------------------------------|
 | **`zig-builder`**     | Team-workflow builder skill — TDD loop, focused-test parallelism, `result-*-build.yaml` schema |
-| **`zig-reviewer`**    | Team-workflow reviewer skill — four-stage review, verdict, `result-*-review.yaml` schema |
+| **`zig-reviewer`**    | Shared read-only review contract, verdict rules, evidence, and result schema |
+| **`zig-code-reviewer`** | Specification, correctness, safety, idiomatic Zig, and maintainable style |
+| **`zig-comment-reviewer`** | Human-facing intent, rationale, constraints, and verified references |
+| **`zig-architecture-reviewer`** | Hexagonal boundaries, composition, lifecycle, and mechanical enforcement |
+| **`zig-test-reviewer`** | Behavioral coverage, regression strength, failure paths, and test evidence |
 | **`zig`**             | Language idioms, TDD, hexagonal architecture, `build.zig` module boundaries, testing patterns |
 | **`zig-code-review`** | Memory safety, resource leaks, allocator misuse, architecture violations, semantic dead code |
 
-The Zig Builder subagent reads `zig-builder` (which references `zig`). The Zig Reviewer subagent reads `zig-reviewer` (which references `zig-code-review`).
+The Zig Builder reads `zig-builder` and `zig`. Every Reviewer reads `zig-reviewer`
+plus its specialty skill. The Code Reviewer also reads `zig-code-review`.
 
 ---
 
@@ -166,7 +171,10 @@ Each agent is a subagent dispatched by the orchestrator. The orchestrator does N
 |-------|------|----------------|
 | **Task Manager** | Parses phase file, explores codebase, creates task breakdown | `.phases/phase-*.md` directly |
 | **Zig Builder** | Implements tasks following TDD, hexagonal architecture, Zig best practices | `zig-builder` skill (which references `zig`) |
-| **Zig Reviewer** | Combined review: spec + architecture + code quality + dead code | `zig-reviewer` skill (which references `zig-code-review`) |
+| **Code Reviewer** | Spec, correctness, Zig safety, dead code, and style | `zig-reviewer`, `zig-code-reviewer`, `zig-code-review` |
+| **Comment Reviewer** | Intent, rationale, constraints, and external references | `zig-reviewer`, `zig-comment-reviewer` |
+| **Architecture Reviewer** | Boundaries, composition, lifecycle, and enforcement | `zig-reviewer`, `zig-architecture-reviewer` |
+| **Test Reviewer** | Behavioral proof, regression quality, and failure coverage | `zig-reviewer`, `zig-test-reviewer` |
 
 See `references/orchestration.md` for exact dispatch templates and the coordination loop.
 See `references/examples.md` for worked usage examples.
@@ -180,7 +188,9 @@ See `references/examples.md` for worked usage examples.
 - Orchestrator echoing or summarizing full subagent output (wastes context)
 - Inlining phase content into dispatch prompts (reference by file path instead)
 - Dispatching multiple builders in parallel (causes conflicts)
-- Proceeding with CHANGES_NEEDED status
+- Proceeding without explicit `APPROVED` verdicts from all four reviewers
+- Letting reviewers edit files or the coordinator override a verdict
+- Serializing initial independent reviews when parallel slots are available
 - Ignoring memory safety issues
 - Marking task complete with failing tests
 - Putting business logic in adapters (adapters only translate between external formats and domain types)
@@ -192,6 +202,7 @@ See `references/examples.md` for worked usage examples.
 ## Integration with Other Skills
 
 - **`zig`**: Language, architecture, testing — read by the Zig Builder
-- **`zig-code-review`**: Pattern reference + Dead Code Review — read by the Zig Reviewer
+- **Reviewer skills**: Shared contract plus four independent specialty reviews
+- **`zig-code-review`**: Zig safety and Dead Code Review patterns — read by the Code Reviewer
 - **`to-phases`**: Create the `.phases/` structure before running `zig-team`
 - **`prd`/`rfc`**: Write the feature specification before implementing

@@ -1,11 +1,13 @@
 ---
 name: zig-code-review
-description: Auto-review Zig code for memory safety, resource leaks, error handling gaps, undefined behavior, allocator misuse, and hexagonal-architecture violations. Enforces std.testing.allocator, comptime-generic ports, and semantic dead-code detection.
+description: Use when reviewing Zig code for memory safety, resource leaks, error handling gaps, undefined behavior, allocator misuse, and semantic dead code.
 ---
 
 # Zig Code Review Skill
 
-Auto-triggers when reviewing Zig code. Catches memory-safety, resource, error-handling, and architectural mistakes plus semantic dead code.
+Auto-triggers when reviewing Zig code. Catches memory-safety, resource,
+error-handling, allocator, undefined-behavior, and semantic dead-code mistakes.
+The independent `zig-architecture-reviewer` owns architectural verdicts.
 
 ## Critical Rule
 
@@ -36,7 +38,6 @@ Auto-triggers when reviewing Zig code. Catches memory-safety, resource, error-ha
 
 - Allocator misuse: mismatched allocator on `free`, allocator stored in domain type, `page_allocator` in tests
 - API design: hidden allocations without allocator param, returning references to stack memory
-- Architecture: `std.net` / `std.fs` / `@cImport` in domain, adapters holding business logic, `build.zig` granting a layer more modules than the rules allow
 - Comptime misuse: runtime values where comptime required, side effects in comptime blocks
 - Slice safety: unchecked indexing, unbounded slices from raw pointers
 

@@ -142,7 +142,7 @@ If the phase is partially complete and you want to run just task 3:
 Use the zig-team skill for phase 2 task 3.
 ```
 
-The orchestrator will skip planning if `.tasks/status.yaml` is already present for phase 2 and dispatch the Builder → Reviewer loop for task 3 only.
+The orchestrator will skip planning if `.tasks/status.yaml` is already present for phase 2 and dispatch the Builder → four-reviewer loop for task 3 only.
 
 ---
 
@@ -189,7 +189,7 @@ verdict: CHANGES_NEEDED
 issues: 2
 ```
 
-Full detail is written to `.tasks/result-{id}-review.yaml` — for example:
+Full detail is written to the four `.tasks/result-{id}-*-review.yaml` artifacts — for example:
 
 ```yaml
 changes_required:
@@ -203,7 +203,7 @@ changes_required:
 
 ### Builder fix cycle
 
-The Builder reads `result-{id}-review.yaml`, fixes each issue, re-runs the focused test, writes `result-{id}-fix-1.yaml`, and returns:
+The Builder reads all `result-{id}-*-review.yaml` artifacts, fixes each blocking issue, re-runs the focused test, writes `result-{id}-fix-1.yaml`, and returns:
 
 ```
 status: complete

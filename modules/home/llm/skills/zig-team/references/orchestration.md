@@ -66,7 +66,7 @@ continue from `.tasks/` state.
 ### You MUST:
 - Read `.phases/index.yaml` for status overview (Step 1)
 - Dispatch subagents using the host's subagent mechanism
-- Extract ONLY: `status` and `verdict` from subagent output (1-2 lines)
+- Extract ONLY: Builder `status` and each Reviewer `verdict` (1-2 lines per agent)
 - Track task progress via `.tasks/status.yaml`
 - Update `.phases/` files when tasks complete (Step 3c)
 - Report summary to user
@@ -75,7 +75,7 @@ continue from `.tasks/` state.
 
 ### You MUST NOT:
 - Read source code files
-- Read the `zig-builder`, `zig-reviewer`, or `examples.md` files
+- Read Builder/Reviewer skills or `examples.md`
 - Read `.tasks/task-*.yaml` or `.tasks/result-*.yaml` detail files
 - Read `.phases/phase-*.md` files (Task Manager reads these)
 - Write or edit any source code
@@ -91,11 +91,14 @@ Subagents read their own context. You do NOT read these:
 
 | Agent | Reads | Path |
 |-------|-------|------|
-| Zig Builder | Team workflow + language patterns | `~/.claude/skills/zig-builder/SKILL.md` + `~/.claude/skills/zig/SKILL.md` |
+| Zig Builder | Team workflow + language patterns | `zig-builder` + `zig` skills |
 | Zig Builder | Task details | `.tasks/task-{id}.yaml` |
-| Zig Reviewer | Team workflow + review patterns | `~/.claude/skills/zig-reviewer/SKILL.md` + `~/.claude/skills/zig-code-review/SKILL.md` |
-| Zig Reviewer | Task details | `.tasks/task-{id}.yaml` |
-| Zig Reviewer | Build results | `.tasks/result-{id}-build.yaml` |
+| All Reviewers | Shared contract | `zig-reviewer` skill |
+| Code Reviewer | Correctness and style | `zig-code-reviewer` + `zig-code-review` skills |
+| Comment Reviewer | Intent and references | `zig-comment-reviewer` skill |
+| Architecture Reviewer | Boundaries and enforcement | `zig-architecture-reviewer` skill |
+| Test Reviewer | Behavioral evidence | `zig-test-reviewer` skill |
+| All Reviewers | Task and build evidence | `.tasks/task-{id}.yaml` + `.tasks/result-{id}-build.yaml` |
 | Task Manager | Phase details | `.phases/phase-*.md` |
 
 ---
@@ -266,17 +269,39 @@ For each task (following execution_order, skip completed):
   # Builder writes results to .tasks/result-{id}-build.yaml
   # Builder returns only: "status: complete|blocked, summary: [1 line]"
 
-  # 3b: Combined Review (spec + quality in one pass)
+  # 3b: Four independent reviews
   for cycle in 1..MAX_REVIEW_CYCLES:
-    dispatch_reviewer(task)
-    # Reviewer writes results to .tasks/result-{id}-review.yaml
-    # Reviewer returns only: "verdict: APPROVED|CHANGES_NEEDED, issues: [count]"
+    On the initial cycle, Dispatch all four initial reviewers in parallel:
+      dispatch_code_reviewer(task)
+      dispatch_comment_reviewer(task)
+      dispatch_architecture_reviewer(task)
+      dispatch_test_reviewer(task)
 
-    if verdict == "APPROVED": break
+    # Reviewers write these independent artifacts:
+    # .tasks/result-{id}-code-review.yaml
+    # .tasks/result-{id}-comment-review.yaml
+    # .tasks/result-{id}-architecture-review.yaml
+    # .tasks/result-{id}-test-review.yaml
+    # Each returns only: "verdict: APPROVED|CHANGES_NEEDED, issues: [count]"
+
+    if any result sets user_decision_required: true:
+      Present evidence, scope, risks, options, and the reviewer's recommended path
+      Ask the user before dispatching implementation; do not broaden scope implicitly
+
+    if blocking findings conflict:
+      Dispatch the affected reviewers for focused reconciliation
+      If they cannot agree on a compatible result, ask the user with their joint recommendation
+
+    All four reviewers MUST return `APPROVED` before completion
+    if every verdict == "APPROVED": break
 
     dispatch_builder_fix(task, cycle)
-    # Builder reads feedback from .tasks/result-{id}-review.yaml
+    # Builder reads all four review artifacts and fixes every changes_required item
     # Builder returns only: "status: complete|blocked, fixes: [count]"
+
+    Re-dispatch only reviewers whose concerns could be affected by the fix
+    Re-dispatch all four after changes to public behavior, architecture,
+    shared infrastructure, multiple capabilities, or several files substantially
   else: escalate_to_user
 
   # 3c: Complete — update .tasks/ AND .phases/
@@ -348,50 +373,48 @@ Dispatch a subagent:
     ```
 ```
 
-### 3b: Combined Review
+### 3b: Independent Reviews
 
-```
+Dispatch the four initial reviews in parallel. Give each a fresh context, the strongest
+available coding model, and read-only permissions. Substitute the specialty values from
+the table into the common template.
+
+| specialty | role | required skills | artifact |
+|-----------|------|-----------------|----------|
+| code | code-reviewer | `zig-reviewer`, `zig-code-reviewer`, `zig-code-review`, `zig` | `.tasks/result-{task.id}-code-review.yaml` |
+| comment | code-reviewer | `zig-reviewer`, `zig-comment-reviewer` | `.tasks/result-{task.id}-comment-review.yaml` |
+| architecture | architecture-reviewer | `zig-reviewer`, `zig-architecture-reviewer`, `zig` | `.tasks/result-{task.id}-architecture-review.yaml` |
+| test | test-reviewer | `zig-reviewer`, `zig-test-reviewer`, `zig` | `.tasks/result-{task.id}-test-review.yaml` |
+
+```text
 Dispatch a subagent:
   model: strongest available coding model
-  role: code-quality-reviewer
-  description: "Review task {task.id}"
+  role: {role}
+  description: "{specialty} review task {task.id}"
   prompt: |
-    ## Combined Review: Task {task.id} - {task.name}
+    ## {specialty} Review: Task {task.id} - {task.name}
 
-    Read and EXECUTE ALL review procedures from these files:
+    Read and follow:
     1. Task acceptance criteria: `.tasks/task-{task.id}.yaml`
     2. Build results: `.tasks/result-{task.id}-build.yaml`
-    3. The `zig-reviewer` skill (MANDATORY): `~/.claude/skills/zig-reviewer/SKILL.md` — team workflow
-    4. The `zig-code-review` skill (MANDATORY): `~/.claude/skills/zig-code-review/SKILL.md` — patterns + Dead Code Review
+    3. The `zig-reviewer` shared contract
+    4. Every specialty skill listed for this review in the dispatch table
 
-    Perform ALL review stages in a single pass:
-    - Stage 1: Spec compliance (requirements met? under/over-building?)
-    - Stage 2: Architecture compliance (hexagonal boundaries, dependency flow, build.zig enforcement)
-    - Stage 3: Code quality (only if Stage 1 and 2 pass)
-    - Stage 4: Dead Code Review (only if Stage 3 passes — six-check rule from zig-code-review)
+    Remain strictly read-only. Independently inspect the source, diff, and necessary
+    dependency context. Verify Builder evidence and run the narrowest specialty checks
+    required by the skills. Do not assume approval is expected.
 
-    ## MANDATORY VERIFICATION - NON-NEGOTIABLE
+    Write the full result to: {artifact}
 
-    You MUST verify that the standard build and full suite passed in the build results:
-
-    ```bash
-    zig build
-    zig build test -j"$ZIG_TEAM_TEST_JOBS"
-    ```
-
-    If build results show failures, verdict MUST be CHANGES_NEEDED.
-
-    Read the source files listed in the build results and review them.
-
-    Write your full results to: `.tasks/result-{task.id}-review.yaml`
-    (format defined in the `zig-reviewer` skill — include verification status)
-
-    **IMPORTANT**: Return ONLY this to the orchestrator (2 lines max):
-    ```
+    Return ONLY:
     verdict: APPROVED|CHANGES_NEEDED
     issues: [count of changes_required]
-    ```
 ```
+
+An `APPROVED` result may include `NON_BLOCKING_SUGGESTIONS`. Suggestions never replace
+blocking findings and never delay task completion. Preserve deferred suggestions in the
+phase follow-up ledger. If the Builder adopts one and materially changes reviewed code,
+re-run every specialty that could be affected.
 
 ### 3c: Builder Fix
 
@@ -405,9 +428,9 @@ Dispatch a subagent:
 
     Read and FOLLOW ALL procedures in these files:
     1. Task spec: `.tasks/task-{task.id}.yaml`
-    2. Review feedback: `.tasks/result-{task.id}-review.yaml`
-    3. The `zig-builder` skill (MANDATORY): `~/.claude/skills/zig-builder/SKILL.md` — team workflow + fix mode
-    4. The `zig` skill (MANDATORY): `~/.claude/skills/zig/SKILL.md` — language, architecture, testing
+    2. Review feedback: `.tasks/result-{task.id}-*-review.yaml`
+    3. The `zig-builder` skill (MANDATORY) — team workflow + fix mode
+    4. The `zig` skill (MANDATORY) — language, architecture, testing
 
     Fix each issue listed in `changes_required` in priority order.
 
