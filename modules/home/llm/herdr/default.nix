@@ -82,7 +82,7 @@ in {
       };
       ".config/herdr/plugins/config/herdr-workflows/config.yaml".source = ./workflows-config.yaml;
       ".config/herdr/plugins/config/herdr-routines/routines.toml".source = ./routines.toml;
-      ".codex/hooks.json".text = builtins.toJSON {
+      ".codex/hooks.json".source = pkgs.writeText "herdr-codex-hooks.json" (builtins.toJSON {
         hooks.SessionStart = [
           {
             hooks = [
@@ -94,7 +94,7 @@ in {
             ];
           }
         ];
-      };
+      });
       ".copilot/settings.json".text = builtins.toJSON {
         hooks.SessionStart = [
           {

@@ -36,6 +36,7 @@ for personal_home in "${personal_homes[@]}"; do
 done
 assert_contains "$module" 'for integration in pi claude codex copilot; do'
 assert_contains "$module" "integration install \"\$integration\""
+assert_contains "$module" '".codex/hooks.json".source = pkgs.writeText'
 for workflow in preflight verify-fast verify-full review implement-review; do
 	if [[ ! -f "$repo_root/modules/home/llm/herdr/workflows/${workflow}.yaml" ]]; then
 		printf 'missing global workflow: %s\n' "$workflow" >&2
