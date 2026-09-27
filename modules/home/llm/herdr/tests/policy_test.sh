@@ -30,11 +30,20 @@ assert_contains "$pi_module" '".pi/agent/skills".source = ../skills;'
 assert_contains "$pi_module" '@andrewjacop/pi-herdr'
 assert_contains "$pi_module" 'enabledModels = cfg.pi.enabledModels;'
 assert_contains "$work_home" 'enabledModels = ["github-copilot/*"];'
+assert_contains "$work_home" 'copilot.enable = true;'
 for personal_home in "${personal_homes[@]}"; do
 	assert_contains "$personal_home" '"anthropic/*"'
 	assert_contains "$personal_home" '"openai-codex/*"'
+	if grep -Fq -- '"local/*"' "$personal_home" || grep -Fq -- '"gamingrig/*"' "$personal_home"; then
+		printf 'personal home must expose only Claude and Codex models: %s\n' "$personal_home" >&2
+		exit 1
+	fi
+	if grep -Fq -- 'copilot.enable = true;' "$personal_home"; then
+		printf 'personal home must not enable Copilot: %s\n' "$personal_home" >&2
+		exit 1
+	fi
 done
-assert_contains "$module" 'for integration in pi claude codex copilot; do'
+assert_contains "$module" 'herdrIntegrations = ["pi" "claude" "codex"] ++ lib.optionals cfg.copilot.enable ["copilot"];'
 assert_contains "$module" "integration install \"\$integration\""
 assert_contains "$module" '".codex/hooks.json".source = pkgs.writeText'
 for workflow in preflight verify-fast verify-full review implement-review; do

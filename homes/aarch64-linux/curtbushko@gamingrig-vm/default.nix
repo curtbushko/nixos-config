@@ -24,8 +24,6 @@
       pi.enabledModels = [
         "anthropic/*"
         "openai-codex/*"
-        "local/*"
-        "gamingrig/*"
       ];
     };
     programming.enable = true;

@@ -31,6 +31,7 @@
       enable = true;
       opencode.serve.enable = true;
       pi.enabledModels = ["github-copilot/*"];
+      copilot.enable = true;
     };
     wm.rectangle.enable = true;
     # Theme colors managed by flair: run `flair select <theme>`

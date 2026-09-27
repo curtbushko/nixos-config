@@ -30,8 +30,8 @@ used by Claude Code and Codex. Pi-specific copies are intentionally not created.
 
 `ns.llm.pi.enabledModels` controls Pi's scoped model list with provider/model
 globs. The work Mac exposes `github-copilot/*`. Personal LLM machines expose
-`anthropic/*`, `openai-codex/*`, and the existing `local/*` and `gamingrig/*`
-providers. Authentication remains local to each machine.
+only `anthropic/*` and `openai-codex/*`. Authentication remains local to each
+machine.
 
 ### Custom Local Extensions
 - `pi-vim-ex` - Custom vim extension with ex command support (`:q`, `:w`, `:wq`)

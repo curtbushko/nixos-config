@@ -36,8 +36,6 @@
       pi.enabledModels = [
         "anthropic/*"
         "openai-codex/*"
-        "local/*"
-        "gamingrig/*"
       ];
 
       # Model configuration

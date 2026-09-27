@@ -66,6 +66,14 @@
     runtimeInputs = [pkgs.git pkgs.go-task];
     text = builtins.readFile ./agent-quality.sh;
   };
+  herdrIntegrations = ["pi" "claude" "codex"] ++ lib.optionals cfg.copilot.enable ["copilot"];
+  copilotWorkflowProfile = "  copilot:\n    kind: copilot\n";
+  workflowsConfig = pkgs.writeText "herdr-workflows-config.yaml" (
+    builtins.replaceStrings
+    [copilotWorkflowProfile]
+    [(lib.optionalString cfg.copilot.enable copilotWorkflowProfile)]
+    (builtins.readFile ./workflows-config.yaml)
+  );
 in {
   config = mkIf cfg.enable {
     home.packages = [
@@ -75,36 +83,39 @@ in {
       pkgs.python3
     ];
 
-    home.file = {
-      ".hwf/workflows" = {
-        source = ./workflows;
-        recursive = true;
+    home.file =
+      {
+        ".hwf/workflows" = {
+          source = ./workflows;
+          recursive = true;
+        };
+        ".config/herdr/plugins/config/herdr-workflows/config.yaml".source = workflowsConfig;
+        ".config/herdr/plugins/config/herdr-routines/routines.toml".source = ./routines.toml;
+        ".codex/hooks.json".source = pkgs.writeText "herdr-codex-hooks.json" (builtins.toJSON {
+          hooks.SessionStart = [
+            {
+              hooks = [
+                {
+                  type = "command";
+                  command = "bash '${config.home.homeDirectory}/.codex/herdr-agent-state.sh' session";
+                  timeout = 10;
+                }
+              ];
+            }
+          ];
+        });
+      }
+      // lib.optionalAttrs cfg.copilot.enable {
+        ".copilot/settings.json".text = builtins.toJSON {
+          hooks.SessionStart = [
+            {
+              type = "command";
+              bash = "bash '${config.home.homeDirectory}/.copilot/hooks/herdr-agent-state.sh'";
+              timeoutSec = 10;
+            }
+          ];
+        };
       };
-      ".config/herdr/plugins/config/herdr-workflows/config.yaml".source = ./workflows-config.yaml;
-      ".config/herdr/plugins/config/herdr-routines/routines.toml".source = ./routines.toml;
-      ".codex/hooks.json".source = pkgs.writeText "herdr-codex-hooks.json" (builtins.toJSON {
-        hooks.SessionStart = [
-          {
-            hooks = [
-              {
-                type = "command";
-                command = "bash '${config.home.homeDirectory}/.codex/herdr-agent-state.sh' session";
-                timeout = 10;
-              }
-            ];
-          }
-        ];
-      });
-      ".copilot/settings.json".text = builtins.toJSON {
-        hooks.SessionStart = [
-          {
-            type = "command";
-            bash = "bash '${config.home.homeDirectory}/.copilot/hooks/herdr-agent-state.sh'";
-            timeoutSec = 10;
-          }
-        ];
-      };
-    };
 
     home.activation.configureHerdr =
       config.lib.dag.entryAfter ["writeBoundary"]
@@ -118,13 +129,15 @@ in {
         $DRY_RUN_CMD ${pkgs.coreutils}/bin/mkdir -p \
           "$integration_home/.pi/agent/extensions" \
           "$integration_home/.claude" \
-          "$integration_home/.codex" \
-          "$integration_home/.copilot"
+          "$integration_home/.codex"
         $DRY_RUN_CMD ${pkgs.coreutils}/bin/printf '{}\n' > "$integration_home/.claude/settings.json"
         $DRY_RUN_CMD ${pkgs.coreutils}/bin/printf '\n' > "$integration_home/.codex/config.toml"
-        $DRY_RUN_CMD ${pkgs.coreutils}/bin/printf '{}\n' > "$integration_home/.copilot/settings.json"
+        ${lib.optionalString cfg.copilot.enable ''
+          $DRY_RUN_CMD ${pkgs.coreutils}/bin/mkdir -p "$integration_home/.copilot"
+          $DRY_RUN_CMD ${pkgs.coreutils}/bin/printf '{}\n' > "$integration_home/.copilot/settings.json"
+        ''}
 
-        for integration in pi claude codex copilot; do
+        for integration in ${lib.concatStringsSep " " herdrIntegrations}; do
           $DRY_RUN_CMD ${pkgs.coreutils}/bin/env -u CODEX_HOME \
             HOME="$integration_home" \
             XDG_CONFIG_HOME="$integration_home/.config" \
@@ -134,8 +147,7 @@ in {
         $DRY_RUN_CMD ${pkgs.coreutils}/bin/mkdir -p \
           "$HOME/.pi/agent/extensions" \
           "$HOME/.claude/hooks" \
-          "$HOME/.codex" \
-          "$HOME/.copilot/hooks"
+          "$HOME/.codex"
         $DRY_RUN_CMD ${pkgs.coreutils}/bin/install -m 0644 \
           "$integration_home/.pi/agent/extensions/herdr-agent-state.ts" \
           "$HOME/.pi/agent/extensions/herdr-agent-state.ts"
@@ -145,9 +157,20 @@ in {
         $DRY_RUN_CMD ${pkgs.coreutils}/bin/install -m 0755 \
           "$integration_home/.codex/herdr-agent-state.sh" \
           "$HOME/.codex/herdr-agent-state.sh"
-        $DRY_RUN_CMD ${pkgs.coreutils}/bin/install -m 0755 \
-          "$integration_home/.copilot/hooks/herdr-agent-state.sh" \
-          "$HOME/.copilot/hooks/herdr-agent-state.sh"
+        ${lib.optionalString cfg.copilot.enable ''
+          $DRY_RUN_CMD ${pkgs.coreutils}/bin/mkdir -p "$HOME/.copilot/hooks"
+          $DRY_RUN_CMD ${pkgs.coreutils}/bin/install -m 0755 \
+            "$integration_home/.copilot/hooks/herdr-agent-state.sh" \
+            "$HOME/.copilot/hooks/herdr-agent-state.sh"
+        ''}
+        ${lib.optionalString (!cfg.copilot.enable) ''
+          if [ -f "$HOME/.copilot/hooks/herdr-agent-state.sh" ]; then
+            $DRY_RUN_CMD ${pkgs.coreutils}/bin/mkdir -p "$HOME/.trash/herdr-copilot"
+            $DRY_RUN_CMD ${pkgs.coreutils}/bin/mv --backup=numbered \
+              "$HOME/.copilot/hooks/herdr-agent-state.sh" \
+              "$HOME/.trash/herdr-copilot/"
+          fi
+        ''}
       '';
   };
 }

@@ -75,8 +75,9 @@ isolated changes when appropriate.
 Home Manager runs the pinned HerdR integration installer in an isolated staging
 home, then installs its versioned hook assets. Harness hook configuration remains
 declarative. This avoids asking the installer to edit Home Manager symlinks while
-still using the official integration generator. The configured integrations are
-Pi, Claude Code, Codex, and GitHub Copilot CLI.
+still using the official integration generator. Pi, Claude Code, and Codex are
+configured on every LLM-enabled machine. GitHub Copilot CLI is configured only
+on the work Mac.
 
 After a rebuild, use `herdr integration status`. Authentication is deliberately
 not managed here; log into each CLI normally on each machine.
@@ -137,7 +138,8 @@ duplicating their commands.
 The following are intentionally live checks after `task switch`; they create
 panes, agent sessions, or worktrees and therefore are not run during a Nix build:
 
-1. Start Pi, Claude, Codex, and Copilot in HerdR and confirm agent recognition.
+1. Start Pi, Claude, and Codex in HerdR and confirm agent recognition. On the
+   work Mac, also start Copilot.
 2. From Pi, delegate one Pi, one Codex, and one Claude worker; run two concurrently,
    collect their results, and inspect their panes.
 3. Repeat one delegation in a HerdR-created worktree.
