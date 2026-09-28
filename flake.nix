@@ -40,10 +40,7 @@
       url = "github:ghostty-org/ghostty";
     };
 
-    herdr = {
-      url = "github:herdrdev/herdr/preview-2026-09-28-80c0c07250d2";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    herdr-nixpkgs.url = "github:nixos/nixpkgs/419fe0f449b3fbe3bdd53d9840288db4509ec32e";
 
     herdr-workflows = {
       url = "github:aorumbayev/herdr-workflows/v0.15.1";

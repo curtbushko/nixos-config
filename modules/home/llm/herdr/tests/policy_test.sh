@@ -24,7 +24,12 @@ assert_contains() {
 	fi
 }
 
-assert_contains "$flake" 'github:herdrdev/herdr/v0.9.1'
+assert_contains "$flake" 'herdr-nixpkgs.url = "github:nixos/nixpkgs/'
+assert_contains "$module" "herdrPackage = inputs.herdr-nixpkgs.legacyPackages.\${system}.herdr;"
+if grep -Fq 'github:herdrdev/herdr/' "$flake" || grep -Fq 'inputs.herdr.packages.' "$module"; then
+	printf 'HerdR must come from nixpkgs, not a separate flake input\n' >&2
+	exit 1
+fi
 assert_contains "$flake" 'github:aorumbayev/herdr-workflows/v0.15.1'
 assert_contains "$flake" 'github:mrcndz/herdr-routines/cd504512d2f1976d39668fbdc0fe9b86cf3eff85'
 assert_contains "$pi_module" '".pi/agent/skills".source = ../skills;'

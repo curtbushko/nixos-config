@@ -718,28 +718,6 @@
         "type": "github"
       }
     },
-    "herdr": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ],
-        "rust-overlay": "rust-overlay"
-      },
-      "locked": {
-        "lastModified": 1790601582,
-        "narHash": "sha256-FkrphhVAMzRQ8n/bgd1cTjexqQWAqLKC0GZCNtG7fDI=",
-        "owner": "herdrdev",
-        "repo": "herdr",
-        "rev": "80c0c07250d22f69d3fa05cb1700302d66180eb8",
-        "type": "github"
-      },
-      "original": {
-        "owner": "herdrdev",
-        "ref": "preview-2026-09-28-80c0c07250d2",
-        "repo": "herdr",
-        "type": "github"
-      }
-    },
     "herdr-auto-title": {
       "flake": false,
       "locked": {
@@ -770,6 +748,22 @@
         "owner": "makyinmars",
         "ref": "v0.5.0",
         "repo": "herdr-context.nvim",
+        "type": "github"
+      }
+    },
+    "herdr-nixpkgs": {
+      "locked": {
+        "lastModified": 1790570722,
+        "narHash": "sha256-Avcz96Q+8OkfUIUXipBBVsQn19L622BtKP7mk6M+uls=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "419fe0f449b3fbe3bdd53d9840288db4509ec32e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "419fe0f449b3fbe3bdd53d9840288db4509ec32e",
         "type": "github"
       }
     },
@@ -1439,9 +1433,9 @@
         "firefox-addons": "firefox-addons",
         "flair": "flair",
         "ghostty": "ghostty",
-        "herdr": "herdr",
         "herdr-auto-title": "herdr-auto-title",
         "herdr-context-nvim": "herdr-context-nvim",
+        "herdr-nixpkgs": "herdr-nixpkgs",
         "herdr-nvim": "herdr-nvim",
         "herdr-routines": "herdr-routines",
         "herdr-workflows": "herdr-workflows",
@@ -1483,27 +1477,6 @@
       }
     },
     "rust-overlay": {
-      "inputs": {
-        "nixpkgs": [
-          "herdr",
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1783577481,
-        "narHash": "sha256-EWMxOWrJ031f8f/lrcEmhTRs4npw1/5N3Hcjin846c8=",
-        "owner": "oxalica",
-        "repo": "rust-overlay",
-        "rev": "4cdea398dc491b082dccdce0fad1ed0b75fa3394",
-        "type": "github"
-      },
-      "original": {
-        "owner": "oxalica",
-        "repo": "rust-overlay",
-        "type": "github"
-      }
-    },
-    "rust-overlay_2": {
       "inputs": {
         "nixpkgs": [
           "worktrunk",
@@ -2047,7 +2020,7 @@
         "nixpkgs": [
           "nixpkgs"
         ],
-        "rust-overlay": "rust-overlay_2"
+        "rust-overlay": "rust-overlay"
       },
       "locked": {
         "lastModified": 1781079524,

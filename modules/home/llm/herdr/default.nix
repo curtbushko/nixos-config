@@ -8,6 +8,7 @@
 }: let
   inherit (lib) mkIf;
   cfg = config.ns.llm;
+  herdrPackage = inputs.herdr-nixpkgs.legacyPackages.${system}.herdr;
 
   workflowRelease = {
     x86_64-linux = {
@@ -44,7 +45,7 @@
       tar -xzf ${workflowArchive} -C "$out/bin"
       chmod +x "$out/bin/herdr-workflows"
       wrapProgram "$out/bin/herdr-workflows" \
-        --prefix PATH : ${lib.makeBinPath [inputs.herdr.packages.${system}.default pkgs.git]}
+        --prefix PATH : ${lib.makeBinPath [herdrPackage pkgs.git]}
       runHook postInstall
     '';
   };
@@ -81,7 +82,7 @@
     nativeBuildInputs = [pkgs.makeWrapper];
     postBuild = ''
       wrapProgram $out/bin/whichkey \
-        --set HERDR_BIN_PATH ${inputs.herdr.packages.${system}.default}/bin/herdr
+        --set HERDR_BIN_PATH ${herdrPackage}/bin/herdr
     '';
   };
   whichkeyPlugin = pkgs.runCommand "herdr-whichkey-plugin" {} ''
@@ -288,7 +289,7 @@
 in {
   config = mkIf cfg.enable {
     home.packages = [
-      inputs.herdr.packages.${system}.default
+      herdrPackage
       (pkgs.runCommand "herdr-workflows-bin" {} ''
         mkdir -p $out
         cp -R ${herdrWorkflows}/bin $out/bin
@@ -346,7 +347,7 @@ in {
     home.activation.configureHerdr =
       config.lib.dag.entryAfter ["writeBoundary"]
       ''
-        herdr_bin=${inputs.herdr.packages.${system}.default}/bin/herdr
+        herdr_bin=${herdrPackage}/bin/herdr
 
         $DRY_RUN_CMD "$herdr_bin" plugin link ${herdrWorkflows}
         $DRY_RUN_CMD "$herdr_bin" plugin link ${herdrRoutines}

@@ -25,15 +25,15 @@ process sequencing; pi-herdr does not duplicate that workflow logic.
 
 | Component | Pin |
 | --- | --- |
-| HerdR | `v0.9.1` flake |
+| HerdR | `herdr` from the dedicated `herdr-nixpkgs` pin (`0.9.1`) |
 | Pi | `pi.nix` revision `3f392b014764faf4f0aaa611b6c5d082175ad81c` |
 | pi-herdr | npm `0.5.0` tarball with a fixed hash |
 | herdr-workflows | `v0.15.1` source plus matching release binary and hash |
 | herdr-routines | revision `cd504512d2f1976d39668fbdc0fe9b86cf3eff85` |
 
 Nix owns upgrades. Do not run `herdr update` or `hwf update`. To upgrade, change
-the explicit version/revision and fixed hashes, run `nix flake lock` for only the
-changed input, validate, rebuild, and commit `flake.nix` with `flake.lock`.
+the relevant input pin and fixed hashes, update only that flake input, validate,
+rebuild, and commit `flake.nix` with `flake.lock` when the inputs change.
 
 ## Install and start
 
