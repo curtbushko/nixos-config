@@ -30,6 +30,7 @@ export class VimEditor extends CustomEditor {
   private redoStack: Array<{ lines: string[]; cursorLine: number; cursorCol: number }> = [];
   private wrapAutocomplete: ((provider: AutocompleteProvider) => AutocompleteProvider) | undefined;
   private commandDraft: string | null = null;
+  private commandPrefix: ":" | "!" = ":";
   private tui: TUI;
 
   constructor(
@@ -98,6 +99,12 @@ export class VimEditor extends CustomEditor {
         return;
       }
     }
+    if (this.isReturn(data) && this.getText().startsWith("!")) {
+      if (this.handleLeadingBangCommand()) {
+        this.tui.requestRender();
+        return;
+      }
+    }
 
     const { vimState } = this;
     const modeBefore = vimState.mode;
@@ -123,6 +130,7 @@ export class VimEditor extends CustomEditor {
         break;
 
       case "command-line":
+      case "shell":
         this.handleCommandLine(data);
         break;
 
@@ -176,17 +184,34 @@ export class VimEditor extends CustomEditor {
     return true;
   }
 
-  private beginExCommand(): void {
+  private beginExCommand(prefix: ":" | "!" = ":"): void {
     this.commandDraft = this.getText();
-    this.setText(":");
-    this.vimState.mode = "command-line";
+    this.commandPrefix = prefix;
+    this.setText(prefix);
+    this.vimState.mode = prefix === "!" ? "shell" : "command-line";
     this.vimState.visualAnchor = null;
   }
 
   private finishExCommand(): void {
     this.setText(this.commandDraft ?? "");
     this.commandDraft = null;
+    this.commandPrefix = ":";
     this.vimState.mode = "normal";
+  }
+
+  private handleLeadingBangCommand(): boolean {
+    const command = this.getText().slice(1).trim();
+    const draft = this.commandDraft;
+    this.commandDraft = null;
+    this.commandPrefix = ":";
+    if (draft !== null) this.vimState.mode = "normal";
+    if (!command) {
+      this.setText(draft ?? "");
+      return true;
+    }
+    this.submitSlashCommand(`shell ${command}`);
+    if (draft !== null) this.setText(draft);
+    return true;
   }
 
   private submitSlashCommand(command: string): void {
@@ -224,7 +249,12 @@ export class VimEditor extends CustomEditor {
     }
 
     if (data === ":") {
-      this.beginExCommand();
+      this.beginExCommand(":");
+      return;
+    }
+
+    if (data === "!") {
+      this.beginExCommand("!");
       return;
     }
 
@@ -245,12 +275,14 @@ export class VimEditor extends CustomEditor {
     const searchState = getSearchState();
 
     if (this.commandDraft !== null) {
+      const prefix = this.commandPrefix;
       if (matchesKey(data, "escape")) {
         this.finishExCommand();
-      } else if (this.getText() === ":" && matchesKey(data, "backspace")) {
+      } else if (this.getText() === prefix && matchesKey(data, "backspace")) {
         this.finishExCommand();
       } else if (this.isReturn(data)) {
-        if (this.getText().startsWith(":")) this.handleLeadingColonCommand();
+        if (prefix === "!" && this.getText().startsWith("!")) this.handleLeadingBangCommand();
+        else if (this.getText().startsWith(":")) this.handleLeadingColonCommand();
         else this.finishExCommand();
       } else {
         super.handleInput(data);
@@ -277,7 +309,12 @@ export class VimEditor extends CustomEditor {
 
   private handleVisual(data: string): void {
     if (data === ":") {
-      this.beginExCommand();
+      this.beginExCommand(":");
+      return;
+    }
+
+    if (data === "!") {
+      this.beginExCommand("!");
       return;
     }
 
@@ -319,29 +356,39 @@ export class VimEditor extends CustomEditor {
 
   render(width: number): string[] {
     // Mode colors (RGB values from flair theme)
-    const GREEN = "\x1b[38;2;159;201;117m";   // INSERT - base0B
-    const BLUE = "\x1b[38;2;125;174;163m";    // NORMAL - base0D
-    const ORANGE = "\x1b[38;2;231;138;78m";   // VISUAL - base09
-    const YELLOW = "\x1b[38;2;216;166;87m";   // COMMAND-LINE - base0A
+    // Color triples are substituted from flair's active theme at build time
+    // by modules/home/llm/pi/default.nix. See placeholders below.
+    const GREEN = "\x1b[38;2;@base0B_rgb@m";  // INSERT - base0B
+    const BLUE = "\x1b[38;2;@base0D_rgb@m";   // NORMAL - base0D
+    const ORANGE = "\x1b[38;2;@base09_rgb@m"; // VISUAL / REPLACE / COMMAND-LINE - base09
+    const RED = "\x1b[38;2;@base08_rgb@m";    // SHELL - base08
     const RESET = "\x1b[0m";
 
     // Use the same accent for the prompt label, rail, and command prefix.
+    // Leading `!` / `:` in the buffer overrides the mode color so INSERT-mode
+    // typing of `!ls` or `:help` reads as SHELL/COMMAND.
     let railColor = BLUE;
-    if (this.vimState.mode === "insert") {
+    if (this.getText().startsWith("!") || this.vimState.mode === "shell") {
+      railColor = RED;
+    } else if (this.getText().startsWith(":") || this.vimState.mode === "command-line") {
+      railColor = ORANGE;
+    } else if (this.vimState.mode === "insert") {
       railColor = GREEN;
     } else if (this.vimState.mode === "visual" || this.vimState.mode === "visual-line") {
       railColor = ORANGE;
     } else if (this.vimState.mode === "replace") {
       railColor = ORANGE;
-    } else if (this.vimState.mode === "command-line" || this.getText().startsWith(":")) {
-      railColor = YELLOW;
     }
 
     // Rail: "│ " (2 chars)
     const railWidth = 2;
     const contentWidth = Math.max(1, width - railWidth);
 
-    const modeLabel = this.getText().startsWith(":") ? "COMMAND" : modeDisplayName(this.vimState.mode);
+    const modeLabel = this.getText().startsWith("!")
+      ? "SHELL"
+      : this.getText().startsWith(":")
+        ? "COMMAND"
+        : modeDisplayName(this.vimState.mode);
     const borderLabel = ` ${modeLabel} `;
 
     const renderBorder = (label?: string) => {

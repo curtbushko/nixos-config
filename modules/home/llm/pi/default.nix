@@ -78,6 +78,36 @@
     b_fg = colors."statusline-b-fg";
     c_bg = colors."statusline-c-bg";
     c_fg = colors."statusline-c-fg";
+
+    # Convert "#RRGGBB" → "R;G;B" for ANSI 24-bit escapes.
+    hexDigit = c: let
+      digits = {
+        "0" = 0; "1" = 1; "2" = 2; "3" = 3; "4" = 4;
+        "5" = 5; "6" = 6; "7" = 7; "8" = 8; "9" = 9;
+        "a" = 10; "b" = 11; "c" = 12; "d" = 13; "e" = 14; "f" = 15;
+        "A" = 10; "B" = 11; "C" = 12; "D" = 13; "E" = 14; "F" = 15;
+      };
+    in digits.${c};
+    hexPair = s:
+      hexDigit (builtins.substring 0 1 s) * 16
+      + hexDigit (builtins.substring 1 1 s);
+    hexToRgb = hex: let
+      h = builtins.substring 1 6 hex;
+    in
+      "${toString (hexPair (builtins.substring 0 2 h))};"
+      + "${toString (hexPair (builtins.substring 2 2 h))};"
+      + "${toString (hexPair (builtins.substring 4 2 h))}";
+
+    # Build pi-vim-ex with flair colors baked into vim-editor.ts.
+    piVimEx = pkgs.runCommand "pi-vim-ex" {} ''
+      cp -r ${./extensions/pi-vim-ex} $out
+      chmod -R +w $out
+      substituteInPlace $out/vim-editor.ts \
+        --replace-fail "@base08_rgb@" "${hexToRgb colors.base08}" \
+        --replace-fail "@base09_rgb@" "${hexToRgb colors.base09}" \
+        --replace-fail "@base0B_rgb@" "${hexToRgb colors.base0B}" \
+        --replace-fail "@base0D_rgb@" "${hexToRgb colors.base0D}"
+    '';
   in
     mkIf cfg.enable {
       home.packages = [
@@ -268,7 +298,7 @@
         # Custom vim extension with ex command support
         # Based on @burneikis/pi-vim with added :q/:w/:wq commands
         ".pi/agent/extensions/pi-vim-ex" = {
-          source = ./extensions/pi-vim-ex;
+          source = piVimEx;
           recursive = true;
         };
 

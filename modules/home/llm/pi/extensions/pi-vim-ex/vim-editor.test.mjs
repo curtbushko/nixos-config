@@ -91,13 +91,55 @@ test("colon typed into an insert-mode prompt still dispatches Pi commands", () =
   assert.equal(submitted, "/help");
 });
 
+// Prompt-accent colors are substituted from flair's active theme at build time
+// (see modules/home/llm/pi/default.nix). Tests here run against the raw source,
+// so we only assert the mode label is present with SOME 24-bit color escape.
 test("prompt accents follow insert, normal, visual and command modes", () => {
   const e = editor();
-  assert.match(label(e), /\x1b\[38;2;159;201;117m─+ INSERT /);
+  assert.match(label(e), /\x1b\[38;2;[^m]+m─+ INSERT /);
   e.handleInput("\x1b");
-  assert.match(label(e), /\x1b\[38;2;125;174;163m─+ NORMAL /);
+  assert.match(label(e), /\x1b\[38;2;[^m]+m─+ NORMAL /);
   e.handleInput("v");
-  assert.match(label(e), /\x1b\[38;2;231;138;78m─+ VISUAL /);
+  assert.match(label(e), /\x1b\[38;2;[^m]+m─+ VISUAL /);
   e.handleInput(":");
-  assert.match(label(e), /\x1b\[38;2;216;166;87m─+ COMMAND /);
+  assert.match(label(e), /\x1b\[38;2;[^m]+m─+ COMMAND /);
+});
+
+test("normal-mode bang opens shell mode, cancels and restores the draft", () => {
+  const e = editor();
+  e.setText("draft");
+  e.handleInput("\x1b");
+  e.handleInput("!");
+  assert.equal(e.vimState.mode, "shell");
+  assert.equal(e.getText(), "!");
+  type(e, "ls");
+  assert.equal(e.getText(), "!ls");
+  e.handleInput("\x1b");
+  assert.equal(e.getText(), "draft");
+  assert.equal(e.vimState.mode, "normal");
+  e.handleInput("!");
+  e.handleInput("\x7f");
+  assert.equal(e.getText(), "draft");
+  assert.equal(e.vimState.mode, "normal");
+});
+
+test("shell mode dispatches its buffer as a /shell slash command", () => {
+  const e = editor();
+  e.handleInput("\x1b");
+  e.setText("draft");
+  e.handleInput("!");
+  type(e, "ls -la");
+  let submitted;
+  e.onSubmit = (text) => { submitted = text; };
+  e.handleInput("\r");
+  assert.equal(submitted, "/shell ls -la");
+  assert.equal(e.getText(), "draft");
+  assert.equal(e.vimState.mode, "normal");
+});
+
+test("shell mode label uses the SHELL accent color", () => {
+  const e = editor();
+  e.handleInput("\x1b");
+  e.handleInput("!");
+  assert.match(label(e), /\x1b\[38;2;[^m]+m─+ SHELL /);
 });
