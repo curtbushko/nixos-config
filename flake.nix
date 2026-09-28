@@ -41,7 +41,7 @@
     };
 
     herdr = {
-      url = "github:herdrdev/herdr/v0.9.1";
+      url = "github:herdrdev/herdr/preview-2026-09-28-80c0c07250d2";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -52,6 +52,21 @@
 
     herdr-routines = {
       url = "github:mrcndz/herdr-routines/cd504512d2f1976d39668fbdc0fe9b86cf3eff85";
+      flake = false;
+    };
+
+    herdr-nvim = {
+      url = "github:ChmaraX/herdr-nvim";
+      flake = false;
+    };
+
+    herdr-context-nvim = {
+      url = "github:makyinmars/herdr-context.nvim/v0.5.0";
+      flake = false;
+    };
+
+    herdr-auto-title = {
+      url = "github:kryptamine/herdr-auto-title";
       flake = false;
     };
 
@@ -85,7 +100,7 @@
     };
 
     pi = {
-      url = "github:lukasl-dev/pi.nix/3f392b014764faf4f0aaa611b6c5d082175ad81c";
+      url = "github:lukasl-dev/pi.nix/467fecc25934b00ec3d5fe0559e4a60fccea528a";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
