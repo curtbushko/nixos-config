@@ -66,6 +66,217 @@
     runtimeInputs = [pkgs.git pkgs.go-task];
     text = builtins.readFile ./agent-quality.sh;
   };
+
+  whichkeyVendorHash = "sha256-ykx/GZcbWmir8TaDELIo2rm8DbEll6ccQDT9jhknZog=";
+  whichkeyUnwrapped = pkgs.buildGoModule {
+    pname = "herdr-whichkey";
+    version = "0.1.0";
+    src = ./whichkey;
+    vendorHash = whichkeyVendorHash;
+    doCheck = false;
+  };
+  whichkeyBin = pkgs.symlinkJoin {
+    name = "herdr-whichkey-wrapped";
+    paths = [whichkeyUnwrapped];
+    nativeBuildInputs = [pkgs.makeWrapper];
+    postBuild = ''
+      wrapProgram $out/bin/whichkey \
+        --set HERDR_BIN_PATH ${inputs.herdr.packages.${system}.default}/bin/herdr
+    '';
+  };
+  whichkeyPlugin = pkgs.runCommand "herdr-whichkey-plugin" {} ''
+    mkdir -p "$out"
+    ${pkgs.gnused}/bin/sed \
+      -e "s|@WHICHKEY_BIN@|${whichkeyBin}/bin/whichkey|g" \
+      ${./whichkey/herdr-plugin.toml.in} > "$out/herdr-plugin.toml"
+  '';
+
+  herdrNvim = pkgs.rustPlatform.buildRustPackage {
+    pname = "herdr-nvim";
+    version = "1.1.0";
+    src = inputs.herdr-nvim;
+    cargoHash = "sha256-pImtQ1YiM47VvA8u9ER/lXtDVsZhQy38fkCbzmT/gc4=";
+    doCheck = false;
+
+    installPhase = ''
+      runHook preInstall
+      mkdir -p "$out/bin"
+      install -m 0755 target/${pkgs.stdenv.hostPlatform.rust.cargoShortTarget}/release/herdr-nvim "$out/bin/herdr-nvim"
+      cp herdr-plugin.toml "$out/herdr-plugin.toml"
+      cp -R doc lua plugin "$out/"
+      runHook postInstall
+    '';
+  };
+  herdrNvimConfig = pkgs.writeText "herdr-nvim-config.toml" ''
+    [sidebar]
+    nvim_bin = "${inputs.neovim.packages.${system}.default}/bin/nvim"
+  '';
+
+  herdrContext = pkgs.stdenvNoCC.mkDerivation {
+    pname = "herdr-context-nvim-plugin";
+    version = "0.5.0";
+    src = inputs.herdr-context-nvim;
+    nativeBuildInputs = [pkgs.makeWrapper];
+    dontBuild = true;
+    dontConfigure = true;
+    doCheck = false;
+    installPhase = ''
+      runHook preInstall
+      mkdir -p "$out"
+      cp -R . "$out/"
+      chmod -R u+w "$out"
+      patchShebangs "$out/scripts"
+      for script in "$out"/scripts/*.sh; do
+        wrapProgram "$script" \
+          --prefix PATH : ${lib.makeBinPath [pkgs.jq pkgs.bash pkgs.coreutils]}
+      done
+      runHook postInstall
+    '';
+  };
+
+  herdrAutoTitle = pkgs.buildGoModule {
+    pname = "herdr-auto-title";
+    version = "0.9.1";
+    src = inputs.herdr-auto-title;
+    vendorHash = "sha256-QxFp1b7pf7bn3Hh0hyaj8ke5Z61N+WwjhHt3pFiapTs=";
+    subPackages = ["cmd/herdr-auto-title"];
+    doCheck = false;
+
+    postInstall = ''
+      cp "$out/bin/herdr-auto-title" "$out/herdr-auto-title"
+      cp herdr-plugin.toml "$out/herdr-plugin.toml"
+    '';
+  };
+  herdrAutoTitleConfig = pkgs.writeText "herdr-auto-title-config.env" ''
+    HERDR_AUTO_TITLE_WORKSPACES=true
+  '';
+
+  flairStylePath = "${config.home.homeDirectory}/.config/flair/style.json";
+  defaultFlairColors = {
+    "accent-primary" = "#7fbbb3";
+    "surface-bg" = "#2d353b";
+    "surface-bg-sidebar" = "#2d353b";
+    "surface-bg-raised" = "#232a2e";
+    "surface-bg-highlight" = "#343f44";
+    "surface-bg-selection" = "#465d5f";
+    "surface-bg-darkest" = "#232a2e";
+    "border-focus" = "#66938f";
+    "text-primary" = "#d3c6aa";
+    "text-secondary" = "#9da9a0";
+    "text-muted" = "#859289";
+    "text-subtle" = "#596462";
+    "terminal-green" = "#a7c080";
+    "terminal-yellow" = "#dbbc7f";
+    "terminal-red" = "#e67e80";
+    "terminal-blue" = "#7fbbb3";
+    "terminal-cyan" = "#83c092";
+    "terminal-magenta" = "#d0a4de";
+    "syntax-constant" = "#e69875";
+  };
+  flairColors =
+    if builtins.pathExists flairStylePath
+    then builtins.fromJSON (builtins.readFile flairStylePath)
+    else defaultFlairColors;
+  herdrConfig = pkgs.writeText "herdr-config.toml" ''
+    onboarding = false
+
+    [ui.sound]
+    enabled = false
+
+    [theme]
+    name = "terminal"
+
+    [theme.custom]
+    accent = "${flairColors."accent-primary"}"
+    panel_bg = "${flairColors."surface-bg"}"
+    sidebar_bg = "reset"
+    active_row_bg = "${flairColors."surface-bg-highlight"}"
+    selection_bg = "${flairColors."surface-bg-selection"}"
+    surface0 = "${flairColors."surface-bg-raised"}"
+    surface1 = "${flairColors."surface-bg-highlight"}"
+    surface_dim = "${flairColors."border-focus"}"
+    overlay0 = "${flairColors."text-subtle"}"
+    overlay1 = "${flairColors."text-muted"}"
+    text = "${flairColors."text-primary"}"
+    subtext0 = "${flairColors."text-secondary"}"
+    mauve = "${flairColors."terminal-magenta"}"
+    green = "${flairColors."terminal-green"}"
+    yellow = "${flairColors."terminal-yellow"}"
+    red = "${flairColors."terminal-red"}"
+    blue = "${flairColors."terminal-blue"}"
+    teal = "${flairColors."terminal-cyan"}"
+    peach = "${flairColors."syntax-constant"}"
+
+    [keys]
+    prefix = "ctrl+b"
+
+    detach = "prefix+d"
+
+    # Splits (tmux: M-n split right, M-m split down)
+    split_vertical = ["prefix+v", "alt+n"]
+    split_horizontal = ["prefix+minus", "alt+m"]
+
+    # Pane focus (tmux: M-h/j/k/l and M-arrows)
+    focus_pane_left = ["prefix+h", "alt+h", "alt+left"]
+    focus_pane_down = ["prefix+j", "alt+j", "alt+down"]
+    focus_pane_up = ["prefix+k", "alt+k", "alt+up"]
+    focus_pane_right = ["prefix+l", "alt+l", "alt+right"]
+
+    # Tab navigation (ctrl+tab/ctrl+shift+tab do not survive ssh; use alt bracket)
+    previous_tab = "alt+["
+    next_tab = "alt+]"
+
+    # Pane resize (tmux: M-= grow up, M-- shrink down)
+    resize_pane_up = "alt+="
+    resize_pane_down = "alt+-"
+
+    # Zoom pane (tmux: M-p)
+    zoom = ["prefix+z", "alt+p"]
+
+    # Tab switching (tmux: M-1..9)
+    switch_tab = ["prefix+1..9", "alt+1..9"]
+
+    [[keys.command]]
+    key = "prefix+space"
+    type = "popup"
+    command = "${whichkeyBin}/bin/whichkey"
+    description = "which-key menu"
+    width = "50%"
+    height = 16
+
+    [[keys.command]]
+    key = "alt+space"
+    type = "popup"
+    command = "${whichkeyBin}/bin/whichkey"
+    description = "which-key menu"
+    width = "50%"
+    height = 16
+
+    [[keys.command]]
+    key = "prefix+e"
+    type = "plugin_action"
+    command = "chmarax.herdr-nvim.toggle"
+    description = "nvim sidebar"
+
+    [[keys.command]]
+    key = "prefix+o"
+    type = "plugin_action"
+    command = "chmarax.herdr-nvim.pick-file"
+    description = "open file from agent output"
+
+    [[keys.command]]
+    key = "prefix+t"
+    type = "plugin_action"
+    command = "herdr-context.pin-target"
+    description = "pin herdr-context target"
+
+    [[keys.command]]
+    key = "prefix+R"
+    type = "plugin_action"
+    command = "herdr.auto-title.restart"
+    description = "restart auto title"
+  '';
+
   herdrIntegrations = ["pi" "claude" "codex"] ++ lib.optionals cfg.copilot.enable ["copilot"];
   copilotWorkflowProfile = "  copilot:\n    kind: copilot\n";
   workflowsConfig = pkgs.writeText "herdr-workflows-config.yaml" (
@@ -78,7 +289,18 @@ in {
   config = mkIf cfg.enable {
     home.packages = [
       inputs.herdr.packages.${system}.default
-      herdrWorkflows
+      (pkgs.runCommand "herdr-workflows-bin" {} ''
+        mkdir -p $out
+        cp -R ${herdrWorkflows}/bin $out/bin
+      '')
+      (pkgs.runCommand "herdr-nvim-bin" {} ''
+        mkdir -p $out
+        cp -R ${herdrNvim}/bin $out/bin
+      '')
+      (pkgs.runCommand "herdr-auto-title-bin" {} ''
+        mkdir -p $out
+        cp -R ${herdrAutoTitle}/bin $out/bin
+      '')
       agentQuality
       pkgs.python3
     ];
@@ -89,8 +311,12 @@ in {
           source = ./workflows;
           recursive = true;
         };
+        ".config/herdr/config.toml".source = herdrConfig;
+        ".config/herdr-nvim/config.toml".source = herdrNvimConfig;
+        ".config/herdr-auto-title/config.env".source = herdrAutoTitleConfig;
         ".config/herdr/plugins/config/herdr-workflows/config.yaml".source = workflowsConfig;
         ".config/herdr/plugins/config/herdr-routines/routines.toml".source = ./routines.toml;
+        ".config/herdr/plugins/config/whichkey/menu.toml".source = ./whichkey/menu.toml;
         ".codex/hooks.json".source = pkgs.writeText "herdr-codex-hooks.json" (builtins.toJSON {
           hooks.SessionStart = [
             {
@@ -124,6 +350,10 @@ in {
 
         $DRY_RUN_CMD "$herdr_bin" plugin link ${herdrWorkflows}
         $DRY_RUN_CMD "$herdr_bin" plugin link ${herdrRoutines}
+        $DRY_RUN_CMD "$herdr_bin" plugin link ${whichkeyPlugin}
+        $DRY_RUN_CMD "$herdr_bin" plugin link ${herdrNvim}
+        $DRY_RUN_CMD "$herdr_bin" plugin link ${herdrContext}
+        $DRY_RUN_CMD "$herdr_bin" plugin link ${herdrAutoTitle}
 
         integration_home="$(${pkgs.coreutils}/bin/mktemp -d)"
         $DRY_RUN_CMD ${pkgs.coreutils}/bin/mkdir -p \

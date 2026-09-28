@@ -1,0 +1,92 @@
+[[item]]
+key = "w"
+title = "Workspace"
+
+  [[item.item]]
+  key = "n"
+  title = "New workspace"
+  run = "{HERDR} workspace create"
+
+  [[item.item]]
+  key = "s"
+  title = "Switch workspace"
+  source = "workspaces"
+
+  [[item.item]]
+  key = "h"
+  title = "Previous workspace"
+  action = "workspace_prev"
+
+  [[item.item]]
+  key = "l"
+  title = "Next workspace"
+  action = "workspace_next"
+
+  [[item.item]]
+  key = "r"
+  title = "Rename workspace"
+  action = "workspace_rename"
+
+  [[item.item]]
+  key = "x"
+  title = "Close workspace"
+  action = "workspace_close"
+
+  [[item.item]]
+  key = "w"
+  title = "New worktree"
+  action = "worktree_new"
+
+  [[item.item]]
+  key = "o"
+  title = "Open worktree"
+  action = "worktree_open"
+
+[[item]]
+key = "t"
+title = "Tab"
+
+  [[item.item]]
+  key = "n"
+  title = "New tab"
+  run = "{HERDR} tab create"
+
+  [[item.item]]
+  key = "s"
+  title = "Switch tab"
+  source = "tabs"
+
+  [[item.item]]
+  key = "h"
+  title = "Previous tab"
+  action = "tab_prev"
+
+  [[item.item]]
+  key = "l"
+  title = "Next tab"
+  action = "tab_next"
+
+  [[item.item]]
+  key = "r"
+  title = "Rename tab"
+  action = "tab_rename"
+
+  [[item.item]]
+  key = "x"
+  title = "Close tab"
+  action = "tab_close"
+
+[[item]]
+key = "v"
+title = "Split right"
+run = "{HERDR} pane split --direction right"
+
+[[item]]
+key = "s"
+title = "Split down"
+run = "{HERDR} pane split --direction down"
+
+[[item]]
+key = "z"
+title = "Zoom pane"
+run = "{HERDR} pane zoom"
