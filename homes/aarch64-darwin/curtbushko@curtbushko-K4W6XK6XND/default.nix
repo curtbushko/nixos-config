@@ -45,7 +45,7 @@
     pkgs.cachix
     inputs.neovim.packages.${pkgs.stdenv.hostPlatform.system}.default
     pkgs.podman
-    pkgs.python312
+    pkgs.python3
     pkgs.python3Packages.pip
     pkgs.python3Packages.virtualenv
     pkgs.pre-commit
