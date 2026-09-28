@@ -5,6 +5,7 @@ set -euo pipefail
 repo_root="$(git rev-parse --show-toplevel)"
 flake="$repo_root/flake.nix"
 module="$repo_root/modules/home/llm/herdr/default.nix"
+codex_module="$repo_root/modules/home/llm/codex.nix"
 pi_module="$repo_root/modules/home/llm/pi/default.nix"
 work_home="$repo_root/homes/aarch64-darwin/curtbushko@curtbushko-K4W6XK6XND/default.nix"
 personal_homes=(
@@ -32,10 +33,10 @@ assert_contains "$pi_module" 'enabledModels = cfg.pi.enabledModels;'
 assert_contains "$work_home" 'enabledModels = ["github-copilot/*"];'
 assert_contains "$work_home" 'copilot.enable = true;'
 for personal_home in "${personal_homes[@]}"; do
-	assert_contains "$personal_home" '"anthropic/*"'
+	assert_contains "$personal_home" '"openai-codex/gpt-6-sol"'
 	assert_contains "$personal_home" '"openai-codex/*"'
-	if grep -Fq -- '"local/*"' "$personal_home" || grep -Fq -- '"gamingrig/*"' "$personal_home"; then
-		printf 'personal home must expose only Claude and Codex models: %s\n' "$personal_home" >&2
+	if grep -Fq -- '"anthropic/*"' "$personal_home" || grep -Fq -- '"local/*"' "$personal_home" || grep -Fq -- '"gamingrig/*"' "$personal_home"; then
+		printf 'personal home must expose only visible Codex models: %s\n' "$personal_home" >&2
 		exit 1
 	fi
 	if grep -Fq -- 'copilot.enable = true;' "$personal_home"; then
@@ -44,8 +45,12 @@ for personal_home in "${personal_homes[@]}"; do
 	fi
 done
 assert_contains "$module" 'herdrIntegrations = ["pi" "claude" "codex"] ++ lib.optionals cfg.copilot.enable ["copilot"];'
+assert_contains "$module" '[ui.sound]'
+assert_contains "$module" 'enabled = false'
 assert_contains "$module" "integration install \"\$integration\""
 assert_contains "$module" '".codex/hooks.json".source = pkgs.writeText'
+assert_contains "$codex_module" "[hooks.state.\"\${config.home.homeDirectory}/.codex/hooks.json:session_start:0:0\"]"
+assert_contains "$codex_module" "trusted_hash = \"sha256:\${herdrSessionStartHookHash}\""
 for workflow in preflight verify-fast verify-full review implement-review; do
 	if [[ ! -f "$repo_root/modules/home/llm/herdr/workflows/${workflow}.yaml" ]]; then
 		printf 'missing global workflow: %s\n' "$workflow" >&2

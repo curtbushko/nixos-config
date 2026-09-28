@@ -29,7 +29,6 @@
     tools.enable = true;
     llm = {
       enable = true;
-      opencode.serve.enable = true;
       pi.enabledModels = ["github-copilot/*"];
       copilot.enable = true;
     };

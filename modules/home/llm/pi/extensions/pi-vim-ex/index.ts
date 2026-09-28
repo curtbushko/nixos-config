@@ -28,7 +28,7 @@ export default function (pi: ExtensionAPI) {
 
   pi.on("session_start", (_event, ctx) => {
     ctx.ui.setEditorComponent((tui, theme, keybindings) =>
-      new VimEditor(tui, theme, keybindings, undefined, wrapAutocomplete, ctx)
+      new VimEditor(tui, theme, keybindings, undefined, wrapAutocomplete)
     );
   });
 }

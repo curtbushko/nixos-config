@@ -22,7 +22,7 @@
     llm = {
       enable = true;
       pi.enabledModels = [
-        "anthropic/*"
+        "openai-codex/gpt-6-sol"
         "openai-codex/*"
       ];
     };

@@ -3,17 +3,18 @@
  * Routes input to mode-specific handlers and renders mode indicator.
  */
 
-import { CustomEditor, type ExtensionContext } from "@earendil-works/pi-coding-agent";
+import { CustomEditor } from "@earendil-works/pi-coding-agent";
 import {
   matchesKey,
   truncateToWidth,
   visibleWidth,
+  wrapTextWithAnsi,
 } from "@earendil-works/pi-tui";
 import type { TUI, EditorOptions, EditorTheme, AutocompleteProvider } from "@earendil-works/pi-tui";
 import { createInitialState, modeDisplayName, type VimState } from "./state.js";
 import { handleNormalMode, type NormalModeContext } from "./modes/normal.js";
 import { handleInsertMode, type InsertModeContext } from "./modes/insert.js";
-import { handleReplaceMode, resetReplaceState, type ReplaceModeContext } from "./modes/replace.js";
+import { handleReplaceMode, type ReplaceModeContext } from "./modes/replace.js";
 import { handleVisualMode, getVisualRange, type VisualModeContext } from "./modes/visual.js";
 import { ESCAPE_SEQS } from "./keys.js";
 import {
@@ -22,18 +23,13 @@ import {
   getSearchState,
   executeSearchMotion,
 } from "./search.js";
-import {
-  handleExCommandInput,
-  getExCommandPrompt,
-  getExCommandState,
-  executeExCommand,
-} from "./ex-commands.js";
+import { executeExCommand } from "./ex-commands.js";
 
 export class VimEditor extends CustomEditor {
   public vimState: VimState;
   private redoStack: Array<{ lines: string[]; cursorLine: number; cursorCol: number }> = [];
   private wrapAutocomplete: ((provider: AutocompleteProvider) => AutocompleteProvider) | undefined;
-  private ctx?: ExtensionContext;
+  private commandDraft: string | null = null;
   private tui: TUI;
 
   constructor(
@@ -42,75 +38,11 @@ export class VimEditor extends CustomEditor {
     keybindings: any,
     options?: EditorOptions,
     wrapAutocomplete?: (provider: AutocompleteProvider) => AutocompleteProvider,
-    ctx?: ExtensionContext,
   ) {
     super(tui, theme, keybindings, options);
     this.tui = tui;
     this.vimState = createInitialState();
     this.wrapAutocomplete = wrapAutocomplete;
-    this.ctx = ctx;
-  }
-
-  /**
-   * Show ex command popup using overlay (positioned at top)
-   */
-  private async showExCommandPopup(): Promise<void> {
-    if (!this.ctx) return;
-
-    const cmd = await this.ctx.ui.custom<string | undefined>(
-      (tui, _theme, _kb, done) => {
-        let inputBuffer = "";
-
-        const component = {
-          render: (width: number) => {
-            const ORANGE = "\x1b[38;2;231;138;78m";
-            const RESET = "\x1b[0m";
-
-            const titleW = 7; // "CmdLine"
-            const innerW = width - 2;
-            const leftDash = Math.floor((innerW - titleW) / 2);
-            const rightDash = innerW - titleW - leftDash;
-
-            // Rounded corners
-            const topBorder = `${ORANGE}╭${"─".repeat(leftDash)}CmdLine${"─".repeat(rightDash)}╮${RESET}`;
-            const content = `> :${inputBuffer}█`;
-            const contentPad = " ".repeat(Math.max(0, innerW - visibleWidth(content)));
-            const middleLine = `${ORANGE}│${RESET}${content}${contentPad}${ORANGE}│${RESET}`;
-            const bottomBorder = `${ORANGE}╰${"─".repeat(innerW)}╯${RESET}`;
-
-            return [topBorder, middleLine, bottomBorder];
-          },
-          handleInput: (data: string) => {
-            if (data === "\x1b") { tui.hideOverlay(); done(undefined); return; }
-            if (data === "\r" || data === "\n") { tui.hideOverlay(); done(inputBuffer); return; }
-            if (data === "\x7f" || data === "\b") { inputBuffer = inputBuffer.slice(0, -1); tui.invalidate(); return; }
-            if (data.length === 1 && data >= " " && data <= "~") { inputBuffer += data; tui.invalidate(); }
-          },
-          focused: true,
-          dispose: () => {},
-        };
-        return component;
-      },
-      {
-        overlay: true,
-        overlayOptions: {
-          anchor: "center",
-          width: 40,
-          maxHeight: 3,
-        },
-      }
-    );
-
-    if (cmd) {
-      const result = executeExCommand(cmd);
-      if (result === "exit") {
-        // Wait for TUI to finish cleaning up the overlay
-        await new Promise(resolve => setTimeout(resolve, 100));
-        // Inject /quit command to use Pi's built-in quit handling
-        "/quit".split("").forEach(char => super.handleInput(char));
-        super.handleInput("\r"); // Enter key
-      }
-    }
   }
 
 
@@ -160,7 +92,15 @@ export class VimEditor extends CustomEditor {
   }
 
   handleInput(data: string): void {
+    if (this.isReturn(data) && this.getText().startsWith(":")) {
+      if (this.handleLeadingColonCommand()) {
+        this.tui.requestRender();
+        return;
+      }
+    }
+
     const { vimState } = this;
+    const modeBefore = vimState.mode;
     const textBefore = this.getText();
     const redoStackBefore = this.redoStack.length;
 
@@ -197,6 +137,62 @@ export class VimEditor extends CustomEditor {
     if (this.redoStack.length === redoStackBefore && this.getText() !== textBefore) {
       this.redoStack.length = 0;
     }
+    if (vimState.mode !== modeBefore || this.getText() !== textBefore) {
+      this.tui.requestRender();
+    }
+  }
+
+  private isReturn(data: string): boolean {
+    return matchesKey(data, "return") || data === "\r" || data === "\n";
+  }
+
+  /**
+   * Treat a submitted prompt beginning with ':' as command input.
+   *
+   * Vim ex commands such as :q are interpreted locally. Unknown ex commands are
+   * forwarded to Pi as slash commands, so typing `:model`, `:help`, etc. in the
+   * normal text input behaves like `/model`, `/help`, and so on.
+   */
+  private handleLeadingColonCommand(): boolean {
+    const command = this.getText().slice(1).trim();
+    if (!command) {
+      if (this.commandDraft === null) return false;
+      this.finishExCommand();
+      return true;
+    }
+
+    const exResult = executeExCommand(command);
+    const draft = this.commandDraft;
+    this.commandDraft = null;
+    if (draft !== null) this.vimState.mode = "normal";
+    if (exResult === "exit") {
+      this.submitSlashCommand("quit");
+    } else if (exResult === "continue") {
+      this.setText(draft ?? "");
+    } else {
+      this.submitSlashCommand(command);
+      if (draft !== null) this.setText(draft);
+    }
+    return true;
+  }
+
+  private beginExCommand(): void {
+    this.commandDraft = this.getText();
+    this.setText(":");
+    this.vimState.mode = "command-line";
+    this.vimState.visualAnchor = null;
+  }
+
+  private finishExCommand(): void {
+    this.setText(this.commandDraft ?? "");
+    this.commandDraft = null;
+    this.vimState.mode = "normal";
+  }
+
+  private submitSlashCommand(command: string): void {
+    const normalized = command.startsWith("/") ? command : `/${command}`;
+    this.setText(normalized);
+    super.handleInput("\r");
   }
 
   private handleInsert(data: string): void {
@@ -227,9 +223,8 @@ export class VimEditor extends CustomEditor {
       return;
     }
 
-    // Show ex command popup when ":" is pressed
     if (data === ":") {
-      this.showExCommandPopup();
+      this.beginExCommand();
       return;
     }
 
@@ -248,25 +243,18 @@ export class VimEditor extends CustomEditor {
 
   private handleCommandLine(data: string): void {
     const searchState = getSearchState();
-    const exState = getExCommandState();
 
-    // Check which command-line mode we're in
-    if (exState.active) {
-      // Handle ex command input
-      const result = handleExCommandInput(data);
-
-      if (result === "confirm") {
-        // Execute the ex command
-        const cmdResult = executeExCommand(exState.inputBuffer);
-        if (cmdResult === "exit") {
-          process.exit(0);
-        }
-        this.vimState.mode = exState.returnMode;
-      } else if (result === "cancel") {
-        this.vimState.mode = "normal";
-        this.vimState.visualAnchor = null;
+    if (this.commandDraft !== null) {
+      if (matchesKey(data, "escape")) {
+        this.finishExCommand();
+      } else if (this.getText() === ":" && matchesKey(data, "backspace")) {
+        this.finishExCommand();
+      } else if (this.isReturn(data)) {
+        if (this.getText().startsWith(":")) this.handleLeadingColonCommand();
+        else this.finishExCommand();
+      } else {
+        super.handleInput(data);
       }
-      // "continue" → stay in command-line mode
     } else if (searchState.active) {
       // Handle search input
       const returnMode = searchState.returnMode;
@@ -288,9 +276,8 @@ export class VimEditor extends CustomEditor {
   }
 
   private handleVisual(data: string): void {
-    // Show ex command popup when ":" is pressed
     if (data === ":") {
-      this.showExCommandPopup();
+      this.beginExCommand();
       return;
     }
 
@@ -338,18 +325,15 @@ export class VimEditor extends CustomEditor {
     const YELLOW = "\x1b[38;2;216;166;87m";   // COMMAND-LINE - base0A
     const RESET = "\x1b[0m";
 
-    // Muted color for borders and normal mode rail
-    const MUTED = "\x1b[38;2;80;73;69m";
-
-    // Determine rail color based on mode (muted for NORMAL)
-    let railColor = MUTED; // default NORMAL - blends with border
+    // Use the same accent for the prompt label, rail, and command prefix.
+    let railColor = BLUE;
     if (this.vimState.mode === "insert") {
       railColor = GREEN;
     } else if (this.vimState.mode === "visual" || this.vimState.mode === "visual-line") {
       railColor = ORANGE;
     } else if (this.vimState.mode === "replace") {
       railColor = ORANGE;
-    } else if (this.vimState.mode === "command-line") {
+    } else if (this.vimState.mode === "command-line" || this.getText().startsWith(":")) {
       railColor = YELLOW;
     }
 
@@ -357,25 +341,44 @@ export class VimEditor extends CustomEditor {
     const railWidth = 2;
     const contentWidth = Math.max(1, width - railWidth);
 
-    // Horizontal border line
-    const border = MUTED + "─".repeat(width) + RESET;
+    const modeLabel = this.getText().startsWith(":") ? "COMMAND" : modeDisplayName(this.vimState.mode);
+    const borderLabel = ` ${modeLabel} `;
 
-    // Helper to render a line with the colored rail
+    const renderBorder = (label?: string) => {
+      if (!label || width <= visibleWidth(label) + 2) {
+        return railColor + "─".repeat(width) + RESET;
+      }
+
+      const labelWidth = visibleWidth(label);
+      const leftLen = Math.floor((width - labelWidth) / 2);
+      const rightLen = width - labelWidth - leftLen;
+      return railColor + "─".repeat(leftLen) + label + "─".repeat(rightLen) + RESET;
+    };
+
+    const topBorder = renderBorder(borderLabel);
+    const bottomBorder = renderBorder();
+
+    // Helper to render a pre-wrapped line with the colored rail.
+    // Pi TUI requires each rendered line to fit within `width`; wrapping here
+    // preserves the custom rail while allowing long prompts to flow naturally.
     const renderLine = (content: string) => {
-      const truncated = truncateToWidth(content, contentWidth, "");
-      const padLen = Math.max(0, contentWidth - visibleWidth(truncated));
-      return railColor + "│" + RESET + " " + truncated + " ".repeat(padLen);
+      const safeContent = truncateToWidth(content, contentWidth, "");
+      const padLen = Math.max(0, contentWidth - visibleWidth(safeContent));
+      return railColor + "│" + RESET + " " + safeContent + " ".repeat(padLen);
+    };
+
+    const renderWrappedLine = (content: string) => {
+      const wrapped = wrapTextWithAnsi(content, contentWidth);
+      const lines = wrapped.length > 0 ? wrapped : [""];
+      return lines.map(renderLine);
     };
 
     // Handle command-line mode prompts (search/ex commands)
     let promptPrefix = "";
     if (this.vimState.mode === "command-line") {
       const searchState = getSearchState();
-      const exState = getExCommandState();
       if (searchState.active) {
-        promptPrefix = YELLOW + getSearchPrompt() + RESET + " ";
-      } else if (exState.active) {
-        promptPrefix = YELLOW + getExCommandPrompt() + RESET + " ";
+        promptPrefix = railColor + getSearchPrompt() + RESET + " ";
       }
     }
 
@@ -394,7 +397,7 @@ export class VimEditor extends CustomEditor {
     const output: string[] = [];
 
     // Top border
-    output.push(border);
+    output.push(topBorder);
 
     // Get visual selection range if in visual mode
     let visualRange: { start: { line: number; col: number }; end: { line: number; col: number }; linewise: boolean } | null = null;
@@ -429,11 +432,11 @@ export class VimEditor extends CustomEditor {
         line = promptPrefix + line;
       }
 
-      output.push(renderLine(line));
+      output.push(...renderWrappedLine(line));
     }
 
     // Bottom border
-    output.push(border);
+    output.push(bottomBorder);
 
     return output;
   }

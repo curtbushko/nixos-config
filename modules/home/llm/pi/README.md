@@ -30,8 +30,8 @@ used by Claude Code and Codex. Pi-specific copies are intentionally not created.
 
 `ns.llm.pi.enabledModels` controls Pi's scoped model list with provider/model
 globs. The work Mac exposes `github-copilot/*`. Personal LLM machines expose
-only `anthropic/*` and `openai-codex/*`. Authentication remains local to each
-machine.
+the visible OpenAI Codex catalog with `openai-codex/gpt-6-sol` first so Pi
+starts on GPT Sol. Authentication remains local to each machine.
 
 ### Custom Local Extensions
 - `pi-vim-ex` - Custom vim extension with ex command support (`:q`, `:w`, `:wq`)
@@ -51,7 +51,7 @@ Integrates with flair/stylix for consistent theming using base16 color scheme.
 
 ### Configuration Files
 All configuration files are managed declaratively:
-- `settings.json` - Core pi settings (no default provider for OAuth)
+- `settings.json` - Core pi settings with OpenAI Codex/GPT Sol as the default
 - `models.json` - Empty for OAuth providers (auto-configured after `/login`)
 - `theme.json` - Custom theme using flair colors (base16 Gruvbox Material)
 - `extensions/pi-vim-ex/` - Custom vim extension

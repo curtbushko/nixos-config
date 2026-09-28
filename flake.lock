@@ -1373,27 +1373,6 @@
         "type": "github"
       }
     },
-    "opencode": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1790275719,
-        "narHash": "sha256-lWGLnfFKgnbplJXNRahkac0BRH6XZHwx11UIkIpj4vo=",
-        "owner": "anomalyco",
-        "repo": "opencode",
-        "rev": "20610e6645e77fff293354bec03d6872ae4bcedb",
-        "type": "github"
-      },
-      "original": {
-        "owner": "anomalyco",
-        "ref": "v2",
-        "repo": "opencode",
-        "type": "github"
-      }
-    },
     "pi": {
       "inputs": {
         "bun2nix": "bun2nix_3",
@@ -1474,7 +1453,6 @@
         "neovim": "neovim",
         "niri": "niri",
         "nixpkgs": "nixpkgs_5",
-        "opencode": "opencode",
         "pi": "pi",
         "snowfall-lib": "snowfall-lib",
         "sops-nix": "sops-nix",

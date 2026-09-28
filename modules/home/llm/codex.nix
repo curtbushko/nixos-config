@@ -10,6 +10,18 @@
   codexPkgs = inputs.codex-nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system};
   isDarwin = pkgs.stdenv.isDarwin;
   isLinux = pkgs.stdenv.isLinux;
+  herdrSessionStartHookCommand = "bash '${config.home.homeDirectory}/.codex/herdr-agent-state.sh' session";
+  herdrSessionStartHookHash = builtins.hashString "sha256" (builtins.toJSON {
+    event_name = "session_start";
+    hooks = [
+      {
+        async = false;
+        command = herdrSessionStartHookCommand;
+        timeout = 10;
+        type = "command";
+      }
+    ];
+  });
 
   codexPruneScript = pkgs.writeShellScript "codex-prune-sessions" ''
     set -eu
@@ -77,6 +89,7 @@ in {
       approval_policy = "never"
       sandbox_mode    = "danger-full-access"
       file_opener     = "none"
+      model = "gpt-5.5"
       reasoning_effort = "medium"
       commit_attribution = ""
       web_search = "live"
@@ -84,6 +97,9 @@ in {
       [features]
       memories = true
       hooks = true
+
+      [hooks.state."${config.home.homeDirectory}/.codex/hooks.json:session_start:0:0"]
+      trusted_hash = "sha256:${herdrSessionStartHookHash}"
 
       # Codex currently supports built-in status-line items only. Command-backed
       # status lines and ANSI styling are tracked upstream in openai/codex#17827.

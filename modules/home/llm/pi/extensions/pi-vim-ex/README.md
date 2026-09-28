@@ -30,7 +30,7 @@ All standard vim motions including:
 
 ## Usage
 
-The extension is automatically loaded by Pi. Start typing in insert mode or press `Esc` to enter normal mode.
+The extension is automatically loaded by Pi. Start typing in insert mode or press `Esc` to enter normal mode. Press `:` in normal or visual mode to type a command in the input box; `Esc` cancels it and restores the draft. Unknown ex commands (such as `:help`) are forwarded as Pi slash commands.
 
 ## Credits
 

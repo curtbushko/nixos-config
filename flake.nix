@@ -79,11 +79,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    opencode = {
-      url = "github:anomalyco/opencode/v2";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     minecraft-servers = {
       url = "github:curtbushko/minecraft-servers";
       inputs.nixpkgs.follows = "nixpkgs";

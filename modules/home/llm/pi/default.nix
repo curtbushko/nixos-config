@@ -100,8 +100,9 @@
       home.file = {
         # Pi settings - core configuration
         ".pi/agent/settings.json".source = pkgs.writeText "pi-settings.json" (builtins.toJSON {
-          # defaultProvider and defaultModel removed to allow OAuth login
-          # Will be set after /login completes
+          defaultProvider = "openai-codex";
+          defaultModel = "gpt-6-sol";
+          defaultThinkingLevel = "medium";
           checkForUpdates = false;
           telemetry = false;
           quietStartup = true;

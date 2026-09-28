@@ -192,7 +192,6 @@ in {
     ./codex.nix
     ./herdr
     ./llmfit.nix
-    ./opencode.nix
     ./openchamber.nix
     ./pi
     ./models/qwen.nix
