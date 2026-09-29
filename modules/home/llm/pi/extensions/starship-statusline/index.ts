@@ -153,10 +153,9 @@ function renderFramedMessage(instance: PatchablePrototype, width: number): strin
   const accentColor = COLORS.c_fg; // Use statusline accent color for rail
   const borderColor = COLORS.b_bg; // Use muted color for border
 
-  // Rail character with color
-  const rail = fg(accentColor) + "│" + RESET + " ";
-  const railWidth = 2; // "│ "
-  const contentWidth = Math.max(1, width - railWidth);
+  const marker = "| ";
+  const markerWidth = visibleWidth(marker);
+  const contentWidth = Math.max(1, width - markerWidth);
 
   // Render markdown content
   const renderer = new Markdown(text, 0, 0, makeMarkdownTheme(theme), {
@@ -171,7 +170,7 @@ function renderFramedMessage(instance: PatchablePrototype, width: number): strin
   // Build framed output
   const renderLine = (line: string) => {
     const padded = fillLine(line, contentWidth);
-    return fg(accentColor) + "│" + RESET + " " + padded;
+    return truncateToWidth(fg(accentColor) + marker + RESET + padded, width, "");
   };
 
   return [

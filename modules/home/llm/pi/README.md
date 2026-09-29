@@ -53,7 +53,7 @@ Integrates with flair/stylix for consistent theming using base16 color scheme.
 All configuration files are managed declaratively:
 - `settings.json` - Core pi settings with OpenAI Codex/GPT Sol as the default
 - `models.json` - Empty for OAuth providers (auto-configured after `/login`)
-- `theme.json` - Custom theme using flair colors (base16 Gruvbox Material)
+- `themes/flair.json` - Selected Pi theme using flair colors (base16 Gruvbox Material)
 - `extensions/pi-vim-ex/` - Custom vim extension
 - `extensions/starship-statusline/` - Custom statusline extension
 

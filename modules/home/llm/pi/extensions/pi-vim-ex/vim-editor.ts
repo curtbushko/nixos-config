@@ -209,7 +209,8 @@ export class VimEditor extends CustomEditor {
       this.setText(draft ?? "");
       return true;
     }
-    this.submitSlashCommand(`shell ${command}`);
+    // Pi handles ! and !! submissions itself; do not rewrite them as slash commands.
+    super.handleInput("\r");
     if (draft !== null) this.setText(draft);
     return true;
   }
@@ -380,7 +381,19 @@ export class VimEditor extends CustomEditor {
       railColor = ORANGE;
     }
 
-    // Rail: "│ " (2 chars)
+    // Like Starship's Vim prompt, the rail shows the current mode at a glance.
+    const railSymbol = this.getText().startsWith("!") ? "!"
+      : this.getText().startsWith(":") ? ":"
+        : {
+            normal: "❮",
+            insert: "❯",
+            visual: "v",
+            "visual-line": "V",
+            replace: "R",
+            "command-line": ":",
+            shell: "!",
+            "operator-pending": "o",
+          }[this.vimState.mode];
     const railWidth = 2;
     const contentWidth = Math.max(1, width - railWidth);
 
@@ -411,7 +424,7 @@ export class VimEditor extends CustomEditor {
     const renderLine = (content: string) => {
       const safeContent = truncateToWidth(content, contentWidth, "");
       const padLen = Math.max(0, contentWidth - visibleWidth(safeContent));
-      return railColor + "│" + RESET + " " + safeContent + " ".repeat(padLen);
+      return railColor + railSymbol + RESET + " " + safeContent + " ".repeat(padLen);
     };
 
     const renderWrappedLine = (content: string) => {

@@ -1,0 +1,136 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+for command in herdr jq; do
+	if ! command -v "$command" >/dev/null 2>&1; then
+		printf '%s is required for Herdr navigation\n' "$command" >&2
+		exit 1
+	fi
+done
+
+if [[ $# -ne 1 || ("$1" != left && "$1" != right) ]]; then
+	printf 'usage: herdr-smart-focus left|right\n' >&2
+	exit 2
+fi
+
+# Herdr focuses spatial neighbors. Find a route when two consecutive panes
+# in reading order are not adjacent (e.g. a split on the right is below us).
+focus_target() {
+	local source="$1" target="$2" head=0 pane path step direction next route=""
+	local -a queue=("$source") paths=("") steps
+	local seen=" $source "
+	[[ "$source" != "$target" ]] || return 0
+	# If exactly one pane touches this edge, focus it without probing neighbors.
+	local direct
+	direct="$(jq -r --arg source "$source" --arg target "$target" '
+      (.panes[] | select(.pane_id == $source).rect) as $s
+      | (.panes[] | select(.pane_id == $target).rect) as $t
+      | [.panes[] | select(.pane_id != $source) | .rect] as $rects
+      | def vertical($a; $b): $a.y < $b.y + $b.height and $b.y < $a.y + $a.height;
+        def horizontal($a; $b): $a.x < $b.x + $b.width and $b.x < $a.x + $a.width;
+        if $t.x == $s.x + $s.width and vertical($s; $t) then
+          if ([$rects[] | select(.x == $s.x + $s.width and vertical($s; .))] | length) == 1 then "right" else "probe:right" end
+        elif $s.x == $t.x + $t.width and vertical($s; $t) then
+          if ([$rects[] | select(.x + .width == $s.x and vertical($s; .))] | length) == 1 then "left" else "probe:left" end
+        elif $t.y == $s.y + $s.height and horizontal($s; $t) then
+          if ([$rects[] | select(.y == $s.y + $s.height and horizontal($s; .))] | length) == 1 then "down" else "probe:down" end
+        elif $s.y == $t.y + $t.height and horizontal($s; $t) then
+          if ([$rects[] | select(.y + .height == $s.y and horizontal($s; .))] | length) == 1 then "up" else "probe:up" end
+        else empty end
+    ' <<<"$layout")"
+	if [[ "$direct" == probe:* ]]; then
+		direct="${direct#probe:}"
+		next="$(herdr pane neighbor --direction "$direct" --pane "$source" | jq -r '.result.neighbor.neighbor_pane_id // empty')"
+		if [[ "$next" != "$target" ]]; then direct=""; fi
+	fi
+	if [[ -n "$direct" ]]; then
+		herdr pane focus --direction "$direct" --pane "$source" >/dev/null
+		return 0
+	fi
+	while ((head < ${#queue[@]})); do
+		pane="${queue[head]}"
+		path="${paths[head]}"
+		((head += 1))
+		for direction in left right up down; do
+			next="$(herdr pane neighbor --direction "$direction" --pane "$pane" | jq -r '.result.neighbor.neighbor_pane_id // empty')"
+			[[ -n "$next" && "$seen" != *" $next "* ]] || continue
+			step="$pane,$direction"
+			if [[ "$next" == "$target" ]]; then
+				route="$path $step"
+				break 2
+			fi
+			seen+="$next "
+			queue+=("$next")
+			paths+=("$path $step")
+		done
+	done
+	if [[ -z "$route" ]]; then
+		printf 'cannot reach pane %s from %s\n' "$target" "$source" >&2
+		return 1
+	fi
+	read -r -a steps <<<"$route"
+	for step in "${steps[@]}"; do
+		IFS=, read -r pane direction <<<"$step"
+		herdr pane focus --direction "$direction" --pane "$pane" >/dev/null
+	done
+}
+
+pane_ids() {
+	jq -r '.panes | sort_by(.rect.x, .rect.y) | .[].pane_id' <<<"$1"
+}
+
+direction="$1"
+neighbor="$(herdr pane neighbor --direction "$direction")"
+layout="$(jq -c '.result.neighbor.layout' <<<"$neighbor")"
+current_id="$(jq -r '.focused_pane_id' <<<"$layout")"
+workspace_id="$(jq -r '.workspace_id' <<<"$layout")"
+ids=()
+while IFS= read -r id; do ids+=("$id"); done < <(pane_ids "$layout")
+index=-1
+for ((i = 0; i < ${#ids[@]}; i++)); do
+	if [[ "${ids[i]}" == "$current_id" ]]; then
+		index="$i"
+		break
+	fi
+done
+if ((index < 0)); then
+	printf 'focused pane not found in layout\n' >&2
+	exit 1
+fi
+
+if [[ "$direction" == right ]]; then
+	next_index=$((index + 1))
+else
+	next_index=$((index - 1))
+fi
+if ((next_index >= 0 && next_index < ${#ids[@]})); then
+	focus_target "$current_id" "${ids[next_index]}"
+	exit 0
+fi
+
+tabs="$(herdr tab list --workspace "$workspace_id")"
+target="$(jq -r --arg direction "$direction" '
+  (.result.tabs | map(.tab_id)) as $ids
+  | (.result.tabs | map(.focused) | index(true)) as $index
+  | if $index == null or ($ids | length) < 2 then empty
+    else $ids[($index + (if $direction == "left" then -1 else 1 end) + ($ids | length)) % ($ids | length)]
+    end
+' <<<"$tabs")"
+if [[ -n "$target" ]]; then
+	herdr tab focus "$target" >/dev/null
+	panes="$(herdr pane list --workspace "$workspace_id")"
+	seed="$(jq -r --arg tab "$target" '[.result.panes[] | select(.tab_id == $tab) | .pane_id][0] // empty' <<<"$panes")"
+	if [[ -n "$seed" ]]; then
+		layout="$(herdr pane layout --pane "$seed" | jq -c '.result.layout')"
+		current_id="$(jq -r '.focused_pane_id' <<<"$layout")"
+		ids=()
+		while IFS= read -r id; do ids+=("$id"); done < <(pane_ids "$layout")
+		if ((${#ids[@]} > 0)); then
+			if [[ "$direction" == right ]]; then
+				focus_target "$current_id" "${ids[0]}"
+			else
+				focus_target "$current_id" "${ids[${#ids[@]} - 1]}"
+			fi
+		fi
+	fi
+fi

@@ -718,39 +718,6 @@
         "type": "github"
       }
     },
-    "herdr-auto-title": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1790353895,
-        "narHash": "sha256-Spe06u81t2YbB8tgrwTblPkMGwUR7spCgpJOKtgXQyg=",
-        "owner": "kryptamine",
-        "repo": "herdr-auto-title",
-        "rev": "bb74c548c3a9f8efb7b898809a29145c2729dac2",
-        "type": "github"
-      },
-      "original": {
-        "owner": "kryptamine",
-        "repo": "herdr-auto-title",
-        "type": "github"
-      }
-    },
-    "herdr-context-nvim": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1787715323,
-        "narHash": "sha256-mKkUxZMfad2RLR3yzqSupMWSgd50dYihHClLoC9onbE=",
-        "owner": "makyinmars",
-        "repo": "herdr-context.nvim",
-        "rev": "7494c88425fa00cfd54470c92cdee2f63b7bacac",
-        "type": "github"
-      },
-      "original": {
-        "owner": "makyinmars",
-        "ref": "v0.5.0",
-        "repo": "herdr-context.nvim",
-        "type": "github"
-      }
-    },
     "herdr-nixpkgs": {
       "locked": {
         "lastModified": 1790570722,
@@ -1003,15 +970,15 @@
         "neovim-nightly-overlay": "neovim-nightly-overlay",
         "nixpkgs": "nixpkgs_4",
         "nixvim": "nixvim",
-        "plugin-herdr-context": "plugin-herdr-context",
+        "plugin-herdr-nvim": "plugin-herdr-nvim",
         "plugin-wayfinder": "plugin-wayfinder"
       },
       "locked": {
-        "lastModified": 1790608986,
-        "narHash": "sha256-5Ccat/j6GM9+SnEM5JfijgOtyo1kCH59UjuzjFViMAs=",
+        "lastModified": 1790684364,
+        "narHash": "sha256-LoX5gRSbfA9CpvRgdiF4sVmOICwjkWdz7frLCsrxAf8=",
         "owner": "curtbushko",
         "repo": "neovim-flake",
-        "rev": "4cfb26499bfb8acf7deed168111444c14a65571a",
+        "rev": "7cb14692699996bc462652aeb7be66c5260a5ad6",
         "type": "github"
       },
       "original": {
@@ -1393,19 +1360,19 @@
         "type": "github"
       }
     },
-    "plugin-herdr-context": {
+    "plugin-herdr-nvim": {
       "flake": false,
       "locked": {
-        "lastModified": 1789605470,
-        "narHash": "sha256-jC9uasWEfO4AhnCOGa1GlA/FvhLO1l9VpEpLaozuU3A=",
-        "owner": "makyinmars",
-        "repo": "herdr-context.nvim",
-        "rev": "2e99ef05c52e1a8ee71b630612a0f8ac18a9638e",
+        "lastModified": 1790596713,
+        "narHash": "sha256-BdZygw+OdfNlcEmb6v6ic9HV8ImxU3bDCq+28qu8Er0=",
+        "owner": "ChmaraX",
+        "repo": "herdr-nvim",
+        "rev": "5e849b5377fd409d2fd4be159c9c9fa36c251f7a",
         "type": "github"
       },
       "original": {
-        "owner": "makyinmars",
-        "repo": "herdr-context.nvim",
+        "owner": "ChmaraX",
+        "repo": "herdr-nvim",
         "type": "github"
       }
     },
@@ -1433,8 +1400,6 @@
         "firefox-addons": "firefox-addons",
         "flair": "flair",
         "ghostty": "ghostty",
-        "herdr-auto-title": "herdr-auto-title",
-        "herdr-context-nvim": "herdr-context-nvim",
         "herdr-nixpkgs": "herdr-nixpkgs",
         "herdr-nvim": "herdr-nvim",
         "herdr-routines": "herdr-routines",

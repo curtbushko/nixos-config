@@ -105,6 +105,28 @@ test("prompt accents follow insert, normal, visual and command modes", () => {
   assert.match(label(e), /\x1b\[38;2;[^m]+m─+ COMMAND /);
 });
 
+test("prompt rail changes symbols with Vim mode and command prefixes", () => {
+  const e = editor();
+  const rail = () => e.render(40)[1].match(/^\x1b\[38;2;[^m]+m(.)\x1b\[0m /)?.[1];
+
+  for (const [mode, symbol] of [
+    ["insert", "❯"], ["normal", "❮"], ["visual", "v"],
+    ["visual-line", "V"], ["replace", "R"],
+    ["command-line", ":"], ["shell", "!"], ["operator-pending", "o"],
+  ]) {
+    e.vimState.mode = mode;
+    assert.equal(rail(), symbol, mode);
+  }
+
+  e.vimState.mode = "insert";
+  e.setText(":help");
+  assert.equal(rail(), ":");
+  e.setText("!ls");
+  assert.equal(rail(), "!");
+  e.setText("");
+  assert.equal(rail(), "❯");
+});
+
 test("normal-mode bang opens shell mode, cancels and restores the draft", () => {
   const e = editor();
   e.setText("draft");
@@ -123,18 +145,29 @@ test("normal-mode bang opens shell mode, cancels and restores the draft", () => 
   assert.equal(e.vimState.mode, "normal");
 });
 
-test("shell mode dispatches its buffer as a /shell slash command", () => {
+test("shell mode submits native Pi shell commands and restores the draft", () => {
+  for (const command of ["!ls -la", "!!make"]) {
+    const e = editor();
+    e.handleInput("\x1b");
+    e.setText("draft");
+    e.handleInput("!");
+    type(e, command.slice(1));
+    let submitted;
+    e.onSubmit = (text) => { submitted = text; };
+    e.handleInput("\r");
+    assert.equal(submitted, command);
+    assert.equal(e.getText(), "draft");
+    assert.equal(e.vimState.mode, "normal");
+  }
+});
+
+test("insert-mode bang submits a native Pi shell command", () => {
   const e = editor();
-  e.handleInput("\x1b");
-  e.setText("draft");
-  e.handleInput("!");
-  type(e, "ls -la");
   let submitted;
   e.onSubmit = (text) => { submitted = text; };
+  type(e, "!make");
   e.handleInput("\r");
-  assert.equal(submitted, "/shell ls -la");
-  assert.equal(e.getText(), "draft");
-  assert.equal(e.vimState.mode, "normal");
+  assert.equal(submitted, "!make");
 });
 
 test("shell mode label uses the SHELL accent color", () => {

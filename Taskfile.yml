@@ -322,8 +322,9 @@ tasks:
     cmds:
       - alejandra --check .
       - bash modules/home/llm/herdr/tests/policy_test.sh
-      - shellcheck modules/home/llm/herdr/agent-quality.sh modules/home/llm/herdr/tests/policy_test.sh
-      - shfmt -d modules/home/llm/herdr/agent-quality.sh modules/home/llm/herdr/tests/policy_test.sh
+      - bash modules/home/llm/pi/tests/theme_test.sh
+      - shellcheck modules/home/llm/herdr/agent-quality.sh modules/home/llm/herdr/tests/policy_test.sh modules/home/llm/pi/tests/theme_test.sh
+      - shfmt -d modules/home/llm/herdr/agent-quality.sh modules/home/llm/herdr/tests/policy_test.sh modules/home/llm/pi/tests/theme_test.sh
 
   agent-verify-full:
     desc: Run the complete deterministic checks for an agent workflow

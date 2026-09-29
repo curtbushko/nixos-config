@@ -4,7 +4,7 @@ Custom Starship-style statusline for Pi coding agent, based on [@elianiva/pi-sta
 
 ## Features
 
-- **Framed user messages**: Messages displayed with border frames and accent rails (zentui-inspired)
+- **Framed user messages**: Messages displayed with border frames and an accent marker (zentui-inspired)
 - **Starship-style prompt**: Clean `❯` prompt with no borders
 - **Vim-style ex commands**: Type `:` to enter command mode
   - `:q` or `:quit` - Exit Pi (when editor is empty)
@@ -28,15 +28,13 @@ This extension is automatically installed via the Nix configuration. It auto-loa
 ### User Message Styling
 Inspired by pi-zentui, user messages are rendered with:
 - Horizontal border lines (`─`) above and below
-- Vertical accent rail (`│`) on the left
-- Padding lines for visual breathing room
+- Accent marker (`| `) on the left
+- Padding for visual breathing room
 - Theme-aware colors from flair/stylix
 
 ```
 ────────────────────────────────
-│
-│ Your message content here
-│
+| Your message content here
 ────────────────────────────────
 ```
 

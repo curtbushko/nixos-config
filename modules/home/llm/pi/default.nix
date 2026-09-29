@@ -82,14 +82,34 @@
     # Convert "#RRGGBB" → "R;G;B" for ANSI 24-bit escapes.
     hexDigit = c: let
       digits = {
-        "0" = 0; "1" = 1; "2" = 2; "3" = 3; "4" = 4;
-        "5" = 5; "6" = 6; "7" = 7; "8" = 8; "9" = 9;
-        "a" = 10; "b" = 11; "c" = 12; "d" = 13; "e" = 14; "f" = 15;
-        "A" = 10; "B" = 11; "C" = 12; "D" = 13; "E" = 14; "F" = 15;
+        "0" = 0;
+        "1" = 1;
+        "2" = 2;
+        "3" = 3;
+        "4" = 4;
+        "5" = 5;
+        "6" = 6;
+        "7" = 7;
+        "8" = 8;
+        "9" = 9;
+        "a" = 10;
+        "b" = 11;
+        "c" = 12;
+        "d" = 13;
+        "e" = 14;
+        "f" = 15;
+        "A" = 10;
+        "B" = 11;
+        "C" = 12;
+        "D" = 13;
+        "E" = 14;
+        "F" = 15;
       };
-    in digits.${c};
+    in
+      digits.${c};
     hexPair = s:
-      hexDigit (builtins.substring 0 1 s) * 16
+      hexDigit (builtins.substring 0 1 s)
+      * 16
       + hexDigit (builtins.substring 1 1 s);
     hexToRgb = hex: let
       h = builtins.substring 1 6 hex;
@@ -137,6 +157,7 @@
           telemetry = false;
           quietStartup = true;
           notifications = true;
+          theme = "flair";
           enabledModels = cfg.pi.enabledModels;
           # Pi shells out to npm for `pi install npm:...`. Under Nix, the
           # default global prefix points into the read-only Node store path, so
@@ -221,7 +242,7 @@
 
         # Custom theme using flair/stylix colors (base16 scheme)
         # Pi requires ALL 51 color tokens to be defined
-        ".pi/agent/theme.json".text = builtins.toJSON {
+        ".pi/agent/themes/flair.json".source = pkgs.writeText "pi-flair.json" (builtins.toJSON {
           "$schema" = "https://raw.githubusercontent.com/earendil-works/pi/main/packages/coding-agent/src/modes/interactive/theme/theme-schema.json";
           name = "flair";
           colors = {
@@ -240,7 +261,7 @@
 
             # Backgrounds
             selectedBg = colors.base02;
-            userMessageBg = colors.base01; # Slightly elevated background
+            userMessageBg = colors.base00;
             userMessageText = colors.base05;
             customMessageBg = colors.base01; # Slightly elevated background
             customMessageText = colors.base05;
@@ -290,7 +311,7 @@
             # Editor
             bashMode = colors.base00; # Match background to hide
           };
-        };
+        });
 
         # Vim-style ex commands are implemented in the starship-statusline extension
         # No keybindings.json needed - commands are handled by StarshipEditor

@@ -67,6 +67,11 @@
     runtimeInputs = [pkgs.git pkgs.go-task];
     text = builtins.readFile ./agent-quality.sh;
   };
+  herdrSmartFocus = pkgs.writeShellApplication {
+    name = "herdr-smart-focus";
+    runtimeInputs = [herdrPackage pkgs.jq];
+    text = builtins.readFile ../../scripts/herdr-smart-focus;
+  };
 
   whichkeyVendorHash = "sha256-ykx/GZcbWmir8TaDELIo2rm8DbEll6ccQDT9jhknZog=";
   whichkeyUnwrapped = pkgs.buildGoModule {
@@ -111,45 +116,6 @@
   herdrNvimConfig = pkgs.writeText "herdr-nvim-config.toml" ''
     [sidebar]
     nvim_bin = "${inputs.neovim.packages.${system}.default}/bin/nvim"
-  '';
-
-  herdrContext = pkgs.stdenvNoCC.mkDerivation {
-    pname = "herdr-context-nvim-plugin";
-    version = "0.5.0";
-    src = inputs.herdr-context-nvim;
-    nativeBuildInputs = [pkgs.makeWrapper];
-    dontBuild = true;
-    dontConfigure = true;
-    doCheck = false;
-    installPhase = ''
-      runHook preInstall
-      mkdir -p "$out"
-      cp -R . "$out/"
-      chmod -R u+w "$out"
-      patchShebangs "$out/scripts"
-      for script in "$out"/scripts/*.sh; do
-        wrapProgram "$script" \
-          --prefix PATH : ${lib.makeBinPath [pkgs.jq pkgs.bash pkgs.coreutils]}
-      done
-      runHook postInstall
-    '';
-  };
-
-  herdrAutoTitle = pkgs.buildGoModule {
-    pname = "herdr-auto-title";
-    version = "0.9.1";
-    src = inputs.herdr-auto-title;
-    vendorHash = "sha256-QxFp1b7pf7bn3Hh0hyaj8ke5Z61N+WwjhHt3pFiapTs=";
-    subPackages = ["cmd/herdr-auto-title"];
-    doCheck = false;
-
-    postInstall = ''
-      cp "$out/bin/herdr-auto-title" "$out/herdr-auto-title"
-      cp herdr-plugin.toml "$out/herdr-plugin.toml"
-    '';
-  };
-  herdrAutoTitleConfig = pkgs.writeText "herdr-auto-title-config.env" ''
-    HERDR_AUTO_TITLE_WORKSPACES=true
   '';
 
   flairStylePath = "${config.home.homeDirectory}/.config/flair/style.json";
@@ -218,10 +184,10 @@
     split_horizontal = ["prefix+minus", "alt+m"]
 
     # Pane focus (tmux: M-h/j/k/l and M-arrows)
-    focus_pane_left = ["prefix+h", "alt+h", "alt+left"]
+    focus_pane_left = ["prefix+h", "alt+left"]
     focus_pane_down = ["prefix+j", "alt+j", "alt+down"]
     focus_pane_up = ["prefix+k", "alt+k", "alt+up"]
-    focus_pane_right = ["prefix+l", "alt+l", "alt+right"]
+    focus_pane_right = ["prefix+l", "alt+right"]
 
     # Tab navigation (ctrl+tab/ctrl+shift+tab do not survive ssh; use alt bracket)
     previous_tab = "alt+["
@@ -236,6 +202,18 @@
 
     # Tab switching (tmux: M-1..9)
     switch_tab = ["prefix+1..9", "alt+1..9"]
+
+    [[keys.command]]
+    key = "alt+h"
+    type = "shell"
+    command = "${herdrSmartFocus}/bin/herdr-smart-focus left"
+    description = "focus left pane or previous tab"
+
+    [[keys.command]]
+    key = "alt+l"
+    type = "shell"
+    command = "${herdrSmartFocus}/bin/herdr-smart-focus right"
+    description = "focus right pane or next tab"
 
     [[keys.command]]
     key = "prefix+space"
@@ -265,17 +243,6 @@
     command = "chmarax.herdr-nvim.pick-file"
     description = "open file from agent output"
 
-    [[keys.command]]
-    key = "prefix+t"
-    type = "plugin_action"
-    command = "herdr-context.pin-target"
-    description = "pin herdr-context target"
-
-    [[keys.command]]
-    key = "prefix+R"
-    type = "plugin_action"
-    command = "herdr.auto-title.restart"
-    description = "restart auto title"
   '';
 
   herdrIntegrations = ["pi" "claude" "codex"] ++ lib.optionals cfg.copilot.enable ["copilot"];
@@ -298,10 +265,6 @@ in {
         mkdir -p $out
         cp -R ${herdrNvim}/bin $out/bin
       '')
-      (pkgs.runCommand "herdr-auto-title-bin" {} ''
-        mkdir -p $out
-        cp -R ${herdrAutoTitle}/bin $out/bin
-      '')
       agentQuality
       pkgs.python3
     ];
@@ -314,7 +277,6 @@ in {
         };
         ".config/herdr/config.toml".source = herdrConfig;
         ".config/herdr-nvim/config.toml".source = herdrNvimConfig;
-        ".config/herdr-auto-title/config.env".source = herdrAutoTitleConfig;
         ".config/herdr/plugins/config/herdr-workflows/config.yaml".source = workflowsConfig;
         ".config/herdr/plugins/config/herdr-routines/routines.toml".source = ./routines.toml;
         ".config/herdr/plugins/config/whichkey/menu.toml".source = ./whichkey/menu.toml;
@@ -352,9 +314,16 @@ in {
         $DRY_RUN_CMD "$herdr_bin" plugin link ${herdrWorkflows}
         $DRY_RUN_CMD "$herdr_bin" plugin link ${herdrRoutines}
         $DRY_RUN_CMD "$herdr_bin" plugin link ${whichkeyPlugin}
+        if "$herdr_bin" plugin list | ${pkgs.gnugrep}/bin/grep -q '^- herdr-context '; then
+          $DRY_RUN_CMD "$herdr_bin" plugin unlink herdr-context
+        fi
         $DRY_RUN_CMD "$herdr_bin" plugin link ${herdrNvim}
-        $DRY_RUN_CMD "$herdr_bin" plugin link ${herdrContext}
-        $DRY_RUN_CMD "$herdr_bin" plugin link ${herdrAutoTitle}
+        if "$herdr_bin" plugin list | ${pkgs.gnugrep}/bin/grep -q '^- herdr.auto-title '; then
+          $DRY_RUN_CMD "$herdr_bin" plugin unlink herdr.auto-title
+        fi
+        if "$herdr_bin" plugin list | ${pkgs.gnugrep}/bin/grep -q '^- blurname.git-tab-name '; then
+          $DRY_RUN_CMD "$herdr_bin" plugin unlink blurname.git-tab-name
+        fi
 
         integration_home="$(${pkgs.coreutils}/bin/mktemp -d)"
         $DRY_RUN_CMD ${pkgs.coreutils}/bin/mkdir -p \

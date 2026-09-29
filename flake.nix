@@ -57,16 +57,6 @@
       flake = false;
     };
 
-    herdr-context-nvim = {
-      url = "github:makyinmars/herdr-context.nvim/v0.5.0";
-      flake = false;
-    };
-
-    herdr-auto-title = {
-      url = "github:kryptamine/herdr-auto-title";
-      flake = false;
-    };
-
     llm-agents = {
       url = "github:numtide/llm-agents.nix";
     };
