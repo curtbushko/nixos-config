@@ -108,6 +108,14 @@ for workflow in preflight verify-fast verify-full review implement-review; do
 done
 assert_contains "$repo_root/modules/home/llm/herdr/routines.toml" 'enabled = false'
 
+whichkey_menu="$repo_root/modules/home/llm/herdr/whichkey/menu.toml"
+assert_contains "$whichkey_menu" 'title = "Move pane"'
+for direction in left down up right; do
+	assert_contains "$whichkey_menu" "pane swap --direction $direction --pane \"\$HERDR_PANE_ID\""
+done
+assert_contains "$whichkey_menu" "pane move \"\$HERDR_PANE_ID\" --new-tab --focus"
+assert_contains "$whichkey_menu" "pane move \"\$HERDR_PANE_ID\" --new-workspace --focus"
+
 if grep -Rq --exclude='policy_test.sh' --exclude='README.md' 'herdr update\|hwf update' "$repo_root/modules/home/llm/herdr"; then
 	printf 'Nix-managed HerdR components must not use mutable self-updaters\n' >&2
 	exit 1

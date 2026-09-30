@@ -87,6 +87,40 @@ title = "Split down"
 run = "{HERDR} pane split --direction down"
 
 [[item]]
+key = "m"
+title = "Move pane"
+
+  [[item.item]]
+  key = "h"
+  title = "Swap left"
+  run = '{HERDR} pane swap --direction left --pane "$HERDR_PANE_ID"'
+
+  [[item.item]]
+  key = "j"
+  title = "Swap down"
+  run = '{HERDR} pane swap --direction down --pane "$HERDR_PANE_ID"'
+
+  [[item.item]]
+  key = "k"
+  title = "Swap up"
+  run = '{HERDR} pane swap --direction up --pane "$HERDR_PANE_ID"'
+
+  [[item.item]]
+  key = "l"
+  title = "Swap right"
+  run = '{HERDR} pane swap --direction right --pane "$HERDR_PANE_ID"'
+
+  [[item.item]]
+  key = "n"
+  title = "Move to new tab"
+  run = '{HERDR} pane move "$HERDR_PANE_ID" --new-tab --focus'
+
+  [[item.item]]
+  key = "w"
+  title = "Move to new workspace"
+  run = '{HERDR} pane move "$HERDR_PANE_ID" --new-workspace --focus'
+
+[[item]]
 key = "z"
 title = "Zoom pane"
 run = "{HERDR} pane zoom"
