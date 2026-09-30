@@ -30,8 +30,8 @@ used by Claude Code and Codex. Pi-specific copies are intentionally not created.
 
 `ns.llm.pi.enabledModels` controls Pi's scoped model list with provider/model
 globs. The work Mac exposes `github-copilot/*`. Personal LLM machines expose
-the visible OpenAI Codex catalog with `openai-codex/gpt-6-sol` first so Pi
-starts on GPT Sol. Authentication remains local to each machine.
+`openai-codex/gpt-6.1-sol` and the three GPT 5.6 models (Luna, Sol, Terra),
+with GPT 6.1 Sol as Pi's default. Authentication remains local to each machine.
 
 ### Custom Local Extensions
 - `pi-vim-ex` - Custom vim extension with ex command support (`:q`, `:w`, `:wq`)

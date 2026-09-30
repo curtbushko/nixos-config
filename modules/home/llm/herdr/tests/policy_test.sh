@@ -7,6 +7,7 @@ flake="$repo_root/flake.nix"
 module="$repo_root/modules/home/llm/herdr/default.nix"
 codex_module="$repo_root/modules/home/llm/codex.nix"
 pi_module="$repo_root/modules/home/llm/pi/default.nix"
+maki_module="$repo_root/modules/home/llm/maki.nix"
 work_home="$repo_root/homes/aarch64-darwin/curtbushko@curtbushko-K4W6XK6XND/default.nix"
 personal_homes=(
 	"$repo_root/homes/aarch64-darwin/curtbushko@m4-pro/default.nix"
@@ -53,11 +54,23 @@ fi
 assert_contains "$pi_module" '".pi/agent/skills".source = ../skills;'
 assert_contains "$pi_module" '@andrewjacop/pi-herdr'
 assert_contains "$pi_module" 'enabledModels = cfg.pi.enabledModels;'
+assert_contains "$pi_module" 'defaultModel = "gpt-6.1-sol";'
+if [[ -e "$maki_module" ]] || grep -Fq 'maki' "$flake" "$repo_root/flake.lock" "$repo_root/modules/home/llm/default.nix"; then
+	printf 'Maki must not be installed or configured\n' >&2
+	exit 1
+fi
+assert_contains "$codex_module" 'model = "gpt-6.1-sol"'
 assert_contains "$work_home" 'enabledModels = ["github-copilot/*"];'
 assert_contains "$work_home" 'copilot.enable = true;'
 for personal_home in "${personal_homes[@]}"; do
-	assert_contains "$personal_home" '"openai-codex/gpt-6-sol"'
-	assert_contains "$personal_home" '"openai-codex/*"'
+	assert_contains "$personal_home" '"openai-codex/gpt-6.1-sol"'
+	assert_contains "$personal_home" '"openai-codex/gpt-5.6-luna"'
+	assert_contains "$personal_home" '"openai-codex/gpt-5.6-sol"'
+	assert_contains "$personal_home" '"openai-codex/gpt-5.6-terra"'
+	if grep -Fq -- '"openai-codex/*"' "$personal_home" || grep -Fq -- '"openai-codex/gpt-6-luna"' "$personal_home" || grep -Fq -- '"openai-codex/gpt-6-terra"' "$personal_home"; then
+		printf 'personal home must expose only the four requested GPT models: %s\n' "$personal_home" >&2
+		exit 1
+	fi
 	if grep -Fq -- '"anthropic/*"' "$personal_home" || grep -Fq -- '"local/*"' "$personal_home" || grep -Fq -- '"gamingrig/*"' "$personal_home"; then
 		printf 'personal home must expose only visible Codex models: %s\n' "$personal_home" >&2
 		exit 1

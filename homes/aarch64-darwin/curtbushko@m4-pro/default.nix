@@ -22,8 +22,10 @@
     llm = {
       enable = true;
       pi.enabledModels = [
-        "openai-codex/gpt-6-sol"
-        "openai-codex/*"
+        "openai-codex/gpt-6.1-sol"
+        "openai-codex/gpt-5.6-luna"
+        "openai-codex/gpt-5.6-sol"
+        "openai-codex/gpt-5.6-terra"
       ];
       # Model configuration for Qwen (GGUF for llama-cpp)
       models.qwen = {

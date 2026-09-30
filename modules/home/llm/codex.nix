@@ -89,7 +89,7 @@ in {
       approval_policy = "never"
       sandbox_mode    = "danger-full-access"
       file_opener     = "none"
-      model = "gpt-5.5"
+      model = "gpt-6.1-sol"
       reasoning_effort = "medium"
       commit_attribution = ""
       web_search = "live"

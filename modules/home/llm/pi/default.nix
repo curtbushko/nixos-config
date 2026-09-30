@@ -151,7 +151,7 @@
         # Pi settings - core configuration
         ".pi/agent/settings.json".source = pkgs.writeText "pi-settings.json" (builtins.toJSON {
           defaultProvider = "openai-codex";
-          defaultModel = "gpt-6-sol";
+          defaultModel = "gpt-6.1-sol";
           defaultThinkingLevel = "medium";
           checkForUpdates = false;
           telemetry = false;
