@@ -974,11 +974,11 @@
         "plugin-wayfinder": "plugin-wayfinder"
       },
       "locked": {
-        "lastModified": 1790684364,
-        "narHash": "sha256-LoX5gRSbfA9CpvRgdiF4sVmOICwjkWdz7frLCsrxAf8=",
+        "lastModified": 1790788359,
+        "narHash": "sha256-S0Q19rcO8FTmU+iQWD9E4ytBqkTCDwekVAuz7J1gSdA=",
         "owner": "curtbushko",
         "repo": "neovim-flake",
-        "rev": "7cb14692699996bc462652aeb7be66c5260a5ad6",
+        "rev": "82225b256ddc68a8e163f49e281920dd9a936618",
         "type": "github"
       },
       "original": {
@@ -1361,17 +1361,22 @@
       }
     },
     "plugin-herdr-nvim": {
-      "flake": false,
+      "inputs": {
+        "nixpkgs": [
+          "neovim",
+          "nixpkgs"
+        ]
+      },
       "locked": {
-        "lastModified": 1790596713,
-        "narHash": "sha256-BdZygw+OdfNlcEmb6v6ic9HV8ImxU3bDCq+28qu8Er0=",
-        "owner": "ChmaraX",
+        "lastModified": 1790787772,
+        "narHash": "sha256-FFNkLtZwoi+0TN/VmSzVF960ibV8rKbmFWcf5hiRflE=",
+        "owner": "curtbushko",
         "repo": "herdr-nvim",
-        "rev": "5e849b5377fd409d2fd4be159c9c9fa36c251f7a",
+        "rev": "3cfc7bbf80bd9ea10647cee4229d2bab6d2b8fe7",
         "type": "github"
       },
       "original": {
-        "owner": "ChmaraX",
+        "owner": "curtbushko",
         "repo": "herdr-nvim",
         "type": "github"
       }
