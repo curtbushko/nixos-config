@@ -39,7 +39,10 @@
     shells.enable = true;
     terminals.enable = true;
     tools.enable = true;
-    wm.rectangle.enable = true;
+    wm = {
+      rectangle.enable = false;
+      omniwm.enable = true;
+    };
     # Theme colors managed by flair: run `flair select <theme>`
     theme.wallpaper = "cyberpunk_2077_phantom_liberty_katana.jpg";
   };

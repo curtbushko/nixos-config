@@ -320,7 +320,7 @@ tasks:
   agent-verify-fast:
     desc: Run fast deterministic checks for an agent workflow
     cmds:
-      - alejandra --check .
+      - alejandra --check --quiet .
       - bash modules/home/llm/herdr/tests/policy_test.sh
       - bash modules/home/llm/pi/tests/theme_test.sh
       - shellcheck modules/home/llm/herdr/agent-quality.sh modules/home/llm/herdr/tests/policy_test.sh modules/home/llm/pi/tests/theme_test.sh

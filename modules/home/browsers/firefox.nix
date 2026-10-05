@@ -9,7 +9,10 @@
   cfg = config.ns.browsers;
 in {
   config = mkIf cfg.enable {
-    stylix.targets.firefox.profileNames = ["default"];
+    stylix.targets.firefox = {
+      profileNames = ["default"];
+      colorTheme.enable = false; # Use palette-derived userChrome on both platforms.
+    };
     programs.firefox = {
       enable = true;
       # Keep legacy path for stateVersion < 26.05 on Linux;
@@ -87,6 +90,7 @@ in {
       };
 
       profiles.default = {
+        userChrome = lib.mkAfter (import ./firefox-theme.nix config.lib.stylix.colors.withHashtag);
         id = 0;
         name = "default";
         extensions = {

@@ -4,6 +4,7 @@
   ...
 }: {
   ns.user.name = "curtbushko";
+  ns.wm.omniwm.enable = true;
 
   # Ensure the native macOS menu bar is visible.
   system.defaults.NSGlobalDomain._HIHideMenuBar = false;
@@ -157,6 +158,7 @@
   # Homebrew for packages not in nixpkgs
   homebrew = {
     enable = true;
+    casks = ["omniwm"];
     onActivation = {
       autoUpdate = false;
       cleanup = "none";

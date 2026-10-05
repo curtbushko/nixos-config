@@ -107,11 +107,15 @@
   system.activationScripts.postActivation.text = ''
     CURRENT_USER=$(/usr/bin/stat -f %Su /dev/console)
 
-    # Keyboard shortcuts - Cmd+Left/Right arrow to switch desktops
+    # OmniWM owns Cmd+arrows; retain native Space shortcuts on the other Macs.
     # Uses defaults write with nested plist dicts which CustomUserPreferences can't handle
     /usr/bin/sudo -u "$CURRENT_USER" /usr/bin/defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 79 '
       <dict>
-        <key>enabled</key><true/>
+        <key>enabled</key><${
+      if config.ns.wm.omniwm.enable
+      then "false"
+      else "true"
+    }/>
         <key>value</key><dict>
           <key>parameters</key><array>
             <integer>65535</integer><integer>123</integer><integer>1048576</integer>
@@ -121,7 +125,11 @@
       </dict>'
     /usr/bin/sudo -u "$CURRENT_USER" /usr/bin/defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 80 '
       <dict>
-        <key>enabled</key><true/>
+        <key>enabled</key><${
+      if config.ns.wm.omniwm.enable
+      then "false"
+      else "true"
+    }/>
         <key>value</key><dict>
           <key>parameters</key><array>
             <integer>65535</integer><integer>123</integer><integer>1179648</integer>
@@ -131,7 +139,11 @@
       </dict>'
     /usr/bin/sudo -u "$CURRENT_USER" /usr/bin/defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 81 '
       <dict>
-        <key>enabled</key><true/>
+        <key>enabled</key><${
+      if config.ns.wm.omniwm.enable
+      then "false"
+      else "true"
+    }/>
         <key>value</key><dict>
           <key>parameters</key><array>
             <integer>65535</integer><integer>124</integer><integer>1048576</integer>
@@ -141,7 +153,11 @@
       </dict>'
     /usr/bin/sudo -u "$CURRENT_USER" /usr/bin/defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 82 '
       <dict>
-        <key>enabled</key><true/>
+        <key>enabled</key><${
+      if config.ns.wm.omniwm.enable
+      then "false"
+      else "true"
+    }/>
         <key>value</key><dict>
           <key>parameters</key><array>
             <integer>65535</integer><integer>124</integer><integer>1179648</integer>

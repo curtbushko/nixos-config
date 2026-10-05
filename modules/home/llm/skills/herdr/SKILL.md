@@ -106,21 +106,21 @@ Both installations must support machine API forwarding, and the remote server mu
 
 ## Start and coordinate an agent
 
-Default to a sibling pane in the current tab and the current working directory. Do not create a workspace, tab, worktree, or different cwd unless the user explicitly requests that topology or location.
+Default to one subagent per separate tab in the current workspace and working directory. Never split the main tab for delegation unless the user explicitly requests it. Creating subagent tabs is authorized by this policy; do not create another workspace, worktree, or different cwd without an explicit request.
 
-Honor a direction requested by the user. Otherwise inspect the caller pane:
+Label Pi subagent tabs `π - <skill-role>`, for example `π - builder`, `π - code-reviewer`, or `π - test-reviewer`. Use the role of the assigned skill, not a generic agent number. When multiple agents share a role, append a distinguishing suffix such as `π - builder 2`.
 
-```bash
-herdr pane layout --pane "$HERDR_PANE_ID"
-```
+At most 10 live subagents may exist for one orchestration, excluding the parent. Count idle, working, blocked, and starting subagents toward this limit. Reserve a slot before starting an agent; queue excess work and reuse idle agents rather than exceeding the limit. Subagents must not spawn additional agents; include that restriction in every delegation prompt.
 
-Split a wide pane to the right and a narrow or tall pane down. Avoid repeated same-direction splits that create unusably narrow columns or short rows. Keep the user's focus in the calling pane and explicitly preserve the caller's working directory:
+Before creating a tab, check for an idle subagent owned by this orchestration that can be reused. When reassigning its role, rename its tab to match. Keep the user's focus unchanged and explicitly preserve the caller's working directory:
 
 ```bash
-herdr pane split --current --direction right --cwd "$PWD" --no-focus
+herdr tab create --workspace "$HERDR_WORKSPACE_ID" --cwd "$PWD" --label "π - builder" --no-focus
 ```
 
-Replace `right` with `down` when appropriate. Read the new pane ID from `.result.pane.pane_id`.
+Read the tab ID from `.result.tab.tab_id` and its existing root pane ID from `.result.root_pane.pane_id`. When using the CLI, start the agent directly in that root pane rather than splitting it. With tools, create the tab first, then pass its ID as `tabId` to `herdr_start_agent` or `herdr_delegate`; never invoke those tools without a destination tab for delegation. If a wrapper adds a pane inside that tab, keep it confined to that subagent's tab, never the main tab.
+
+Collect results before cleanup. Reuse completed idle agents while work remains; close only subagent tabs created by this orchestration when they are no longer needed. Never close the user's main tab or unrelated tabs.
 
 An available shell pane must be at its interactive prompt, with the shell itself in the foreground and no foreground command, editor, or agent running. Start a supported agent in that pane with a useful unique name:
 
@@ -172,7 +172,7 @@ If a wait fails or returns `blocked`, inspect `agent get` and `agent read` befor
 
 ## Run an ordinary command in another pane
 
-Create a sibling pane with the same geometry rule, preserve the caller's working directory, and keep user focus unchanged:
+The separate-tab policy applies to subagents. For an ordinary command, a sibling pane is allowed: honor the requested direction, otherwise split wide panes right and narrow or tall panes down. Avoid repeated splits that make text unreadable, preserve the caller's working directory, and keep user focus unchanged:
 
 ```bash
 herdr pane split --current --direction right --cwd "$PWD" --no-focus

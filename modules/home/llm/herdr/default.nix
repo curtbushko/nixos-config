@@ -147,6 +147,9 @@
   herdrConfig = pkgs.writeText "herdr-config.toml" ''
     onboarding = false
 
+    [ui]
+    pane_scrollbars = false
+
     [ui.sound]
     enabled = false
 

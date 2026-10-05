@@ -1,0 +1,197 @@
+{
+  "monitorBarOverrides": [],
+  "monitorDwindleOverrides": [],
+  "monitorGapOverrides": [],
+  "monitorNiriOverrides": [],
+  "monitorOrientationOverrides": [],
+  "schemaVersion": 4,
+  "appearance": {
+    "mode": "dark",
+    "tabRailAppIcons": false
+  },
+  "borders": {
+    "enabled": true,
+    "width": 5.0,
+    "color": {
+      "alpha": 1.0,
+      "blue": 0.979300037944676,
+      "green": 1.0,
+      "red": 0.08458520228437894
+    }
+  },
+  "clipboard": {
+    "historyEnabled": false,
+    "ignoredTypes": [],
+    "maxItemBytes": 8388608,
+    "maxItems": 200,
+    "maxTotalBytes": 67108864
+  },
+  "dwindle": {
+    "defaultSplitRatio": 1.0,
+    "moveToRootStable": true,
+    "singleWindowFit": "fill",
+    "smartSplit": false,
+    "splitWidthMultiplier": 1.0,
+    "useGlobalGaps": true
+  },
+  "focus": {
+    "crossesMonitorAtEdge": false,
+    "followsMouse": false,
+    "followsWindowToMonitor": false,
+    "lockModifier": "off",
+    "moveCrossesMonitorAtEdge": false,
+    "moveMouseToFocusedWindow": false,
+    "raiseOnMouseFocus": false
+  },
+  "gaps": {
+    "fullscreenUsesOuterGaps": false,
+    "size": 16.0,
+    "outer": {
+      "bottom": 0.0,
+      "left": 0.0,
+      "right": 0.0,
+      "top": 0.0
+    }
+  },
+  "general": {
+    "animationsEnabled": true,
+    "defaultLayoutType": "niri",
+    "hotkeysEnabled": true,
+    "hyperKeyModifiers": "Control+Option+Shift+Command",
+    "ipcEnabled": false,
+    "preventSleepEnabled": false,
+    "systemHyperTrigger": "None",
+    "updateChecksEnabled": true
+  },
+  "gestures": {
+    "fingerCount": 3,
+    "invertDirection": true,
+    "mouseMoveModifierKey": "option",
+    "mouseResizeModifierKey": "option",
+    "overviewGestureEnabled": false,
+    "overviewGestureFingerCount": 4,
+    "scrollEnabled": true,
+    "scrollModifierKey": "optionShift",
+    "scrollSensitivity": 5.0,
+    "trackpadScrollStyle": "snap",
+    "windowGestureSensitivity": 1.0,
+    "windowMoveEnabled": false,
+    "windowMoveFingerCount": 4,
+    "windowResizeEnabled": false,
+    "windowResizeFingerCount": 3,
+    "workspaceSwipeAxis": "vertical",
+    "workspaceSwipeEnabled": false,
+    "workspaceSwipeFingerCount": 3
+  },
+  "hiddenBar": {
+    "enabled": true,
+    "hiddenBundleIDs": [],
+    "rehideIntervalSeconds": 5.0
+  },
+  "mouseWarp": {
+    "constrainToArrangement": false,
+    "enabled": true,
+    "margin": 1
+  },
+  "niri": {
+    "alwaysCenterSingleColumn": false,
+    "centerFocusedColumn": "never",
+    "containerPrimarySpanPresets": [
+      0.3333333333333333,
+      0.5,
+      0.6666666666666666
+    ],
+    "defaultContainerPrimarySpan": 0.5,
+    "edgeGaps": true,
+    "infiniteLoop": false,
+    "resizeStepPercent": 5,
+    "singleWindowFit": "fill",
+    "visibleContainerCount": 2
+  },
+  "overview": {
+    "enabled": true,
+    "invertScrollDirection": false,
+    "matchFocusBorder": true,
+    "mouseScrollSpeed": 1.0,
+    "zoom": 1.0,
+    "backdrop": {
+      "alpha": 0.0,
+      "blue": 0.08,
+      "green": 0.05,
+      "red": 0.05
+    },
+    "windowBorders": {
+      "hovered": {
+        "alpha": 1.0,
+        "blue": 1.0,
+        "green": 0.6,
+        "red": 0.4
+      },
+      "normal": {
+        "alpha": 0.5,
+        "blue": 0.35,
+        "green": 0.3,
+        "red": 0.3
+      },
+      "selected": {
+        "alpha": 1.0,
+        "blue": 0.4,
+        "green": 0.8,
+        "red": 0.3
+      }
+    }
+  },
+  "quakeTerminal": {
+    "animationDuration": 0.2,
+    "autoHide": false,
+    "backgroundBlurRadius": 0,
+    "backgroundEffect": "standardBlur",
+    "enabled": true,
+    "heightPercent": 50.0,
+    "monitorMode": "focusedWindow",
+    "opacity": 1.0,
+    "position": "center",
+    "widthPercent": 50.0
+  },
+  "routing": {
+    "arrangements": [],
+    "mode": "macOS"
+  },
+  "scratchpads": {
+    "labels": {}
+  },
+  "statusBar": {
+    "showAppNames": false,
+    "showWorkspaceName": false,
+    "useWorkspaceId": false
+  },
+  "workspaceBar": {
+    "backgroundOpacity": 0.1,
+    "deduplicateAppIcons": false,
+    "enabled": true,
+    "excludedBundleIDs": [],
+    "height": 24.0,
+    "hideEmptyWorkspaces": false,
+    "hideInNativeFullscreen": false,
+    "hoverPreviewsEnabled": true,
+    "notchActiveZoneWidth": 180.0,
+    "notchMode": "moveBelowMenuBar",
+    "position": "overlappingMenuBar",
+    "reserveLayoutSpace": false,
+    "revealHoldMilliseconds": 200.0,
+    "revealModifier": "off",
+    "showAccentHighlights": true,
+    "showFloatingWindows": false,
+    "showItemBackgrounds": true,
+    "showLabels": true,
+    "solidBlackBackground": false,
+    "systemStatsButton": false,
+    "transparentBackground": false,
+    "windowLevel": "popup",
+    "xOffset": 0.0,
+    "yOffset": 0.0,
+    "iconOverrides": {}
+  },
+  "appRules": [],
+  "workspaces": []
+}
