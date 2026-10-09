@@ -38,7 +38,7 @@ in
       // {
         visibleContainerCount = 3;
         containerPrimarySpanPresets = [0.33333 0.5 0.66667];
-        defaultContainerPrimarySpan = 0.33333;
+        defaultContainerPrimarySpan = 1.0;
         resizeStepPercent = 10;
         singleWindowFit = "container_primary_span";
       };
@@ -84,7 +84,7 @@ in
       {
         id = "00000000-0000-4000-9000-000000000001";
         bundleId = "md.obsidian";
-        initialContainerPrimarySpan = 0.4;
+        initialContainerPrimarySpan = 1.0;
       }
       {
         id = "00000000-0000-4000-9000-000000000002";

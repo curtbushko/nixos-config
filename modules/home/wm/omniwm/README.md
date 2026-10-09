@@ -63,7 +63,9 @@ The trial uses one workspace (1), with the workspace bar disabled.
 
 The trial uses 6-point inner and outer gaps on all sides (also in managed
 fullscreen), focus-follows-mouse,
-pointer warping, one-third initial widths, and Obsidian at 40%. OmniWM's
+pointer warping, and full-width initial tiled columns, including Obsidian.
+New windows stay in the scrolling layout rather than entering fullscreen.
+The one-third, one-half and two-thirds width presets remain available. OmniWM's
 1-point green focus border is enabled. Its outline can mismatch macOS 27's
 rounded window corners; native corners are left unchanged.
 Picture-in-picture/popout windows float. macOS minimum window sizes can

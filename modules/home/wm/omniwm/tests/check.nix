@@ -59,7 +59,8 @@ in
   assert settings.general.defaultLayoutType == "niri";
   assert settings.general.ipcEnabled;
   assert !settings.general.hotkeysEnabled;
-  assert settings.niri.defaultContainerPrimarySpan == 0.33333;
+  assert settings.niri.defaultContainerPrimarySpan == 1.0;
+  assert builtins.all (rule: (rule.initialContainerPrimarySpan or 1.0) == 1.0) settings.appRules;
   assert settings.niri.containerPrimarySpanPresets == [0.33333 0.5 0.66667];
   assert settings.niri.resizeStepPercent == 10;
   assert settings.gaps.size == 6;
