@@ -660,6 +660,22 @@
         "type": "github"
       }
     },
+    "gh-nixpkgs": {
+      "locked": {
+        "lastModified": 1791487292,
+        "narHash": "sha256-tqM7xDEsaeK1p6VvRygeZ9LkQRpUUkbRT02BHv6hnTM=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "8edc0c72e3a38faf5434e40d1f19431125fe4b30",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "8edc0c72e3a38faf5434e40d1f19431125fe4b30",
+        "type": "github"
+      }
+    },
     "ghostty": {
       "inputs": {
         "flake-compat": "flake-compat",
@@ -1404,6 +1420,7 @@
         "darwin": "darwin",
         "firefox-addons": "firefox-addons",
         "flair": "flair",
+        "gh-nixpkgs": "gh-nixpkgs",
         "ghostty": "ghostty",
         "herdr-nixpkgs": "herdr-nixpkgs",
         "herdr-nvim": "herdr-nvim",

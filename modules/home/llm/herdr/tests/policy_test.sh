@@ -34,6 +34,13 @@ fi
 assert_contains "$flake" 'github:aorumbayev/herdr-workflows/v0.15.1'
 assert_contains "$flake" 'github:mrcndz/herdr-routines/cd504512d2f1976d39668fbdc0fe9b86cf3eff85'
 assert_contains "$flake" 'github:ChmaraX/herdr-nvim'
+assert_contains "$module" 'pname = "herdr-orchestrator";'
+assert_contains "$module" "orchestratord_v\${orchestratorVersion}_\${orchestratorPlatform.platform}.tar.gz"
+assert_contains "$module" "--prefix PATH : \${lib.makeBinPath [herdrPackage pkgs.git pkgs.gh]}"
+assert_contains "$module" $'      herdrOrchestrator\n'
+for platform in linux_amd64 linux_arm64 darwin_amd64 darwin_arm64; do
+	assert_contains "$module" "platform = \"$platform\";"
+done
 assert_contains "$module" 'plugin unlink herdr.auto-title'
 assert_contains "$module" 'plugin unlink blurname.git-tab-name'
 if grep -Fq 'github:blurname/herdr-git-tab-name' "$flake" || grep -Fq 'inputs.herdr-git-tab-name' "$module" || grep -Fq 'herdrGitTabName' "$module" || grep -Fq 'blurname.git-tab-name.refresh' "$module" || grep -Fq 'herdr-git-tab-name' "$repo_root/flake.lock"; then

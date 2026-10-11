@@ -6,7 +6,8 @@
 
 ## Architecture and ownership
 
-Nix installs HerdR, Pi, pi-herdr, herdr-workflows, and herdr-routines. It also
+Nix installs HerdR, Pi, pi-herdr, herdr-workflows, herdr-routines, and
+[herdr-orchestrator](https://github.com/sean1588/herdr-orchestrator). It also
 manages stable configuration, global workflows, disabled routine infrastructure,
 and the shared skill link. Provider credentials, login state, conversations,
 HerdR sessions, plugin databases, worktrees, repositories, and transcripts remain
@@ -29,11 +30,52 @@ process sequencing; pi-herdr does not duplicate that workflow logic.
 | Pi | `pi.nix` revision `3f392b014764faf4f0aaa611b6c5d082175ad81c` |
 | pi-herdr | npm `0.5.0` tarball with a fixed hash |
 | herdr-workflows | `v0.15.1` source plus matching release binary and hash |
+| herdr-orchestrator | `v0.1.0` release binaries with fixed hashes for Linux and macOS |
 | herdr-routines | revision `cd504512d2f1976d39668fbdc0fe9b86cf3eff85` |
 
 Nix owns upgrades. Do not run `herdr update` or `hwf update`. To upgrade, change
 the relevant input pin and fixed hashes, update only that flake input, validate,
 rebuild, and commit `flake.nix` with `flake.lock` when the inputs change.
+
+The orchestrator is installed as `orchestratord`, with HerdR, Git, and the GitHub
+CLI on its runtime PATH. It is not a HerdR plugin and is not started automatically.
+
+### Start in the current repository with Codex
+
+With `ns.scripts.enable`, run this inside a HerdR pane:
+
+```bash
+cd /path/to/your/github-checkout
+codex-orchestrator
+```
+
+The wrapper resolves the checkout's `origin` on GitHub and its default branch.
+It scaffolds `.orchestrator/pipeline.yaml` and prompts on first use, configures
+all roles to launch Codex with workspace-write sandboxing and network access,
+and defaults to `dry_run: true` (PRs are not merged automatically). It adds
+`.orchestrator/` to the checkout's local Git exclude file, not the shared
+`.gitignore`. Existing configuration is preserved; a different repository or
+non-Codex role is rejected instead of silently rewritten.
+
+Prerequisites: authenticated `gh` and Codex, plus repository trust already
+accepted by opening `codex` in the checkout once. For GitHub authentication:
+
+```bash
+gh auth login -h github.com -s repo,workflow
+gh auth setup-git
+```
+
+The wrapper creates the pipeline's issue label if missing and runs the full
+`orchestratord doctor` preflight, including a real Codex smoke-test agent. It
+then runs the daemon in the foreground; Ctrl-C stops it. Start only one daemon
+per checkout. Label issues `agent-ready` to queue work (or use the label in your
+pipeline). The database, task contexts, and event log stay in `.orchestrator/`.
+Dry-run tasks stop short of merging and must be merged manually.
+
+The wrapper does not change global Codex trust or permissions, label existing
+issues for you, or register an MCP server. For advanced configuration, see the
+upstream [Tutorial](https://github.com/sean1588/herdr-orchestrator/blob/v0.1.0/TUTORIAL.md).
+Upstream verifies Codex launching but reports end-to-end testing with Claude only.
 
 ## Install and start
 
@@ -56,6 +98,7 @@ Open a new interactive shell so it has the normal Nix profile `PATH`, then check
 herdr --version
 pi --version
 hwf --version
+orchestratord version
 herdr integration status
 herdr plugin list
 ```

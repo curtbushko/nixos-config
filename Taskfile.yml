@@ -323,8 +323,9 @@ tasks:
       - alejandra --check --quiet .
       - bash modules/home/llm/herdr/tests/policy_test.sh
       - bash modules/home/llm/pi/tests/theme_test.sh
-      - shellcheck modules/home/llm/herdr/agent-quality.sh modules/home/llm/herdr/tests/policy_test.sh modules/home/llm/pi/tests/theme_test.sh
-      - shfmt -d modules/home/llm/herdr/agent-quality.sh modules/home/llm/herdr/tests/policy_test.sh modules/home/llm/pi/tests/theme_test.sh
+      - bash modules/home/scripts/tests/codex-orchestrator_test.sh
+      - shellcheck modules/home/llm/herdr/agent-quality.sh modules/home/llm/herdr/tests/policy_test.sh modules/home/llm/pi/tests/theme_test.sh modules/home/scripts/codex-orchestrator modules/home/scripts/tests/codex-orchestrator_test.sh modules/home/scripts/tests/fixtures/codex-orchestrator-command
+      - shfmt -d modules/home/llm/herdr/agent-quality.sh modules/home/llm/herdr/tests/policy_test.sh modules/home/llm/pi/tests/theme_test.sh modules/home/scripts/codex-orchestrator modules/home/scripts/tests/codex-orchestrator_test.sh modules/home/scripts/tests/fixtures/codex-orchestrator-command
 
   agent-verify-full:
     desc: Run the complete deterministic checks for an agent workflow

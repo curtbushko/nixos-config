@@ -10,6 +10,53 @@
   cfg = config.ns.llm;
   herdrPackage = inputs.herdr-nixpkgs.legacyPackages.${system}.herdr;
 
+  orchestratorVersion = "0.1.0";
+  orchestratorRelease = {
+    x86_64-linux = {
+      platform = "linux_amd64";
+      hash = "sha256-8MIvXijdvRsTgeTuut67B6TCyfahnaLB5Lo0D+kcMrI=";
+    };
+    aarch64-linux = {
+      platform = "linux_arm64";
+      hash = "sha256-bauNCPGp/T2lGzAQvmOGM0J4VyRtysofDsKUJ0dsNwc=";
+    };
+    x86_64-darwin = {
+      platform = "darwin_amd64";
+      hash = "sha256-fVdKumM+LKyc4LlzNNhHpWcB0Q+ZjbwCcTmwP/m88U0=";
+    };
+    aarch64-darwin = {
+      platform = "darwin_arm64";
+      hash = "sha256-g8ytV/JlCorLESEK2MQ8OXqw735LhOMjBezwtU1R+rY=";
+    };
+  };
+  orchestratorPlatform = orchestratorRelease.${system};
+  herdrOrchestrator = pkgs.stdenvNoCC.mkDerivation {
+    pname = "herdr-orchestrator";
+    version = orchestratorVersion;
+    src = pkgs.fetchurl {
+      url = "https://github.com/sean1588/herdr-orchestrator/releases/download/v${orchestratorVersion}/orchestratord_v${orchestratorVersion}_${orchestratorPlatform.platform}.tar.gz";
+      inherit (orchestratorPlatform) hash;
+    };
+    nativeBuildInputs = [pkgs.makeWrapper];
+    dontUnpack = true;
+    installPhase = ''
+      runHook preInstall
+      mkdir -p "$out/bin"
+      tar -xzf "$src" -C "$out/bin" orchestratord
+      chmod +x "$out/bin/orchestratord"
+      wrapProgram "$out/bin/orchestratord" \
+        --prefix PATH : ${lib.makeBinPath [herdrPackage pkgs.git pkgs.gh]}
+      runHook postInstall
+    '';
+    meta = {
+      description = "GitHub issue and pull request orchestration using HerdR agents";
+      homepage = "https://github.com/sean1588/herdr-orchestrator";
+      license = lib.licenses.asl20;
+      platforms = builtins.attrNames orchestratorRelease;
+      mainProgram = "orchestratord";
+    };
+  };
+
   workflowRelease = {
     x86_64-linux = {
       asset = "herdr-workflows_0.15.1_linux_amd64.tar.gz";
@@ -260,6 +307,7 @@ in {
   config = mkIf cfg.enable {
     home.packages = [
       herdrPackage
+      herdrOrchestrator
       (pkgs.runCommand "herdr-workflows-bin" {} ''
         mkdir -p $out
         cp -R ${herdrWorkflows}/bin $out/bin

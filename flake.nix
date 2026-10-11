@@ -42,6 +42,9 @@
 
     herdr-nixpkgs.url = "github:nixos/nixpkgs/419fe0f449b3fbe3bdd53d9840288db4509ec32e";
 
+    # Newer GitHub CLI without updating the main package set.
+    gh-nixpkgs.url = "github:nixos/nixpkgs/8edc0c72e3a38faf5434e40d1f19431125fe4b30";
+
     herdr-workflows = {
       url = "github:aorumbayev/herdr-workflows/v0.15.1";
       flake = false;
@@ -259,6 +262,9 @@
 
       overlays = with inputs; [
         zig.overlays.default
+        (_final: prev: {
+          gh = gh-nixpkgs.legacyPackages.${prev.stdenv.hostPlatform.system}.gh;
+        })
       ];
 
       systems.modules.darwin = with inputs; [
