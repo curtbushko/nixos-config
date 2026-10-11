@@ -16,11 +16,12 @@ in
     focus =
       defaults.focus
       // {
-        followsMouse = true;
+        followsMouse = false; # Hovering partially visible columns must not scroll the layout.
         moveMouseToFocusedWindow = true;
-        crossesMonitorAtEdge = true;
+        crossesMonitorAtEdge = false;
         followsWindowToMonitor = true;
       };
+    gestures = defaults.gestures // {scrollEnabled = false;};
     gaps =
       defaults.gaps
       // {

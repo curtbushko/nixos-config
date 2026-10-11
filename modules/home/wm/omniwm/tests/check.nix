@@ -72,8 +72,11 @@ in
     top = 6;
     bottom = 6;
   };
-  assert settings.focus.followsMouse && settings.focus.moveMouseToFocusedWindow;
-  assert settings.focus.crossesMonitorAtEdge;
+  assert !settings.focus.followsMouse;
+  assert settings.focus.moveMouseToFocusedWindow;
+  assert !settings.focus.crossesMonitorAtEdge;
+  assert !settings.gestures.scrollEnabled;
+  assert !settings.gestures.workspaceSwipeEnabled;
   assert settings.borders.enabled;
   assert settings.borders.width == 1;
   assert builtins.all (rule: builtins.isString rule.bundleId) settings.appRules;
