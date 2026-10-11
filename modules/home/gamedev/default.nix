@@ -32,7 +32,14 @@ in {
         godot_4
         lmms
         obs-studio
-        zrythm
+        # Avoid an empty XDG path segment rejected by newer makeWrapper.
+        (pkgs.zrythm.overrideAttrs (old: {
+          preFixup =
+            builtins.replaceStrings
+            ["$XDG_ICON_DIRS:"]
+            ["\${XDG_ICON_DIRS:+$XDG_ICON_DIRS:}"]
+            old.preFixup;
+        }))
         # Vulkan SDK
         vulkan-tools
         vulkan-headers

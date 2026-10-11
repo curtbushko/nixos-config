@@ -54,7 +54,12 @@ if ! grep -Fxq -- "$label" <<<"$labels"; then
 	gh label create "$label" --repo "$repo" --description 'Queued for the orchestrator'
 fi
 
-args=(--config "$config" --repo "$repo_dir" --base "$base" --db "$state_dir/orchestrator.db" --task-dir "$state_dir/tasks")
+# Agents run in task worktrees; verdicts live outside those sandbox roots.
+# Generate beside the source so relative rubric paths still resolve correctly.
+runtime_config="$state_dir/pipeline.runtime.yaml"
+TASK_DIR="$state_dir/tasks" yq '.roles[].launch += ["--add-dir", strenv(TASK_DIR)]' "$config" >"$runtime_config"
+orchestratord validate "$runtime_config"
+args=(--config "$runtime_config" --repo "$repo_dir" --base "$base" --db "$state_dir/orchestrator.db" --task-dir "$state_dir/tasks")
 printf 'Repository: %s\nConfig: %s\nDry-run merging: %s\n' "$repo" "$config" "$(yq '.policies.dry_run' "$config")"
 printf 'Running preflight (includes launching a Codex smoke-test agent).\n'
 orchestratord doctor "${args[@]}"

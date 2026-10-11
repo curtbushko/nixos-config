@@ -17,7 +17,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    codex-nixpkgs.url = "github:nixos/nixpkgs/70ce234312134a463ba7728e94da2486a1d237ac";
+    codex-nixpkgs.url = "github:nixos/nixpkgs/6510408d147d8c5e6d76043e899e9251756f6a75";
 
     yt-dlp-nixpkgs.url = "github:nixos/nixpkgs/5545adfad2e98de106a5544ca7067e03010410bd";
 
@@ -41,9 +41,6 @@
     };
 
     herdr-nixpkgs.url = "github:nixos/nixpkgs/419fe0f449b3fbe3bdd53d9840288db4509ec32e";
-
-    # Newer GitHub CLI without updating the main package set.
-    gh-nixpkgs.url = "github:nixos/nixpkgs/8edc0c72e3a38faf5434e40d1f19431125fe4b30";
 
     herdr-workflows = {
       url = "github:aorumbayev/herdr-workflows/v0.15.1";
@@ -110,7 +107,8 @@
     };
 
     vicinae = {
-      url = "github:vicinaehq/vicinae";
+      # Pin 0.21.6 while newer releases have a numen C++ runtime mismatch.
+      url = "github:vicinaehq/vicinae/0337cb670dcd113b35151f8f0fcfc22900937284";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -262,9 +260,6 @@
 
       overlays = with inputs; [
         zig.overlays.default
-        (_final: prev: {
-          gh = gh-nixpkgs.legacyPackages.${prev.stdenv.hostPlatform.system}.gh;
-        })
       ];
 
       systems.modules.darwin = with inputs; [

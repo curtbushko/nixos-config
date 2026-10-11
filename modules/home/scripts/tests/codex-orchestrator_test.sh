@@ -37,9 +37,15 @@ assert_log 'orchestratord doctor'
 assert_log 'orchestratord daemon'
 assert_log '--base develop'
 assert_log 'project\ with\ spaces'
+runtime_config="$work/project with spaces/.orchestrator/pipeline.runtime.yaml"
+task_dir="$work/project with spaces/.orchestrator/tasks"
+TASK_DIR="$task_dir" yq -e '[.roles[].launch] | all_c(.[-2] == "--add-dir" and .[-1] == strenv(TASK_DIR))' "$runtime_config" >/dev/null
+assert_log 'pipeline.runtime.yaml'
+assert_log '--task-dir'
 grep -Fxq '/.orchestrator/' "$work/project with spaces/.git/info/exclude"
 
 printf '# user customization\n' >>"$config"
+yq -i '.roles.reviewer.launch += ["--model", "test-model"]' "$config"
 export LABEL_EXISTS=true
 run
 if grep -q '^orchestratord init\|^gh label create' "$MOCK_LOG"; then
@@ -47,6 +53,13 @@ if grep -q '^orchestratord init\|^gh label create' "$MOCK_LOG"; then
 	exit 1
 fi
 grep -Fxq '# user customization' "$config"
+# Runtime sandbox access must not rewrite the user's pipeline.
+[[ "$(yq '.roles.implementer.launch | join(" ")' "$config")" == 'codex -a never --sandbox workspace-write -c sandbox_workspace_write.network_access=true' ]]
+TASK_DIR="$task_dir" yq -e '[.roles[].launch] | all_c(.[-2] == "--add-dir" and .[-1] == strenv(TASK_DIR))' "$runtime_config" >/dev/null
+
+[[ "$(yq '.roles.reviewer.launch[-2:] | join(" ")' "$config")" == '--model test-model' ]]
+[[ "$(yq '.roles.reviewer.launch[-4:-2] | join(" ")' "$runtime_config")" == '--model test-model' ]]
+[[ "$(yq '.roles.triager.launch | length' "$runtime_config")" == 9 ]]
 
 export DOCTOR_STATUS=1
 if run; then

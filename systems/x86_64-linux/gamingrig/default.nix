@@ -86,7 +86,7 @@
   '';
 
   # clear out journalctl logs
-  services.journald.extraConfig = "MaxRetentionSec=14day";
+  services.journald.settings.Journal.MaxRetentionSec = "14day";
 
   # Setup auto suspend of gamingrig
   systemd.sleep.settings = {

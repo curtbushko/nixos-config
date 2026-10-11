@@ -12,7 +12,6 @@
   ytDlpPkgs = inputs.yt-dlp-nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system};
 in {
   imports = [
-    inputs.worktrunk.homeModules.default
     ./atuin.nix
     ./bat.nix
     ./direnv.nix
@@ -34,6 +33,8 @@ in {
   };
 
   config = mkIf cfg.enable {
+    programs.worktrunk.package = inputs.worktrunk.packages.${pkgs.stdenv.hostPlatform.system}.default;
+
     home.packages =
       [
         pkgs.age

@@ -57,6 +57,13 @@ and defaults to `dry_run: true` (PRs are not merged automatically). It adds
 `.gitignore`. Existing configuration is preserved; a different repository or
 non-Codex role is rejected instead of silently rewritten.
 
+For each run, the wrapper generates `.orchestrator/pipeline.runtime.yaml` with
+Codex `--add-dir <repo>/.orchestrator/tasks` for every role. Task agents run in
+separate worktrees, so this lets them write verdicts to the shared task directory
+without granting write access to the entire original checkout. Both preflight
+and the daemon use this runtime pipeline; your source pipeline is unchanged.
+Existing agent panes must be relaunched to pick up changed launch arguments.
+
 Prerequisites: authenticated `gh` and Codex, plus repository trust already
 accepted by opening `codex` in the checkout once. For GitHub authentication:
 
@@ -76,6 +83,26 @@ The wrapper does not change global Codex trust or permissions, label existing
 issues for you, or register an MCP server. For advanced configuration, see the
 upstream [Tutorial](https://github.com/sean1588/herdr-orchestrator/blob/v0.1.0/TUTORIAL.md).
 Upstream verifies Codex launching but reports end-to-end testing with Claude only.
+
+### Start in the current repository with Pi
+
+With `ns.scripts.enable`, run `pi-orchestrator` inside a HerdR pane in your GitHub
+checkout. It follows the same init, validation, label, preflight, and foreground
+daemon flow, using `pi --no-approve` for every new role. Pi's global model and
+authentication settings apply; authenticate in Pi before starting the wrapper.
+`--no-approve` skips project-local Pi resources to avoid unattended trust prompts.
+It does not disable tools or sandbox them: Pi runs with your user permissions,
+including access to the repo-local `.orchestrator/tasks` verdict directory.
+New pipelines explicitly set `policies.execution.sandbox: false` and retain
+`dry_run: true` so merging remains manual.
+
+Both wrappers share `.orchestrator/pipeline.yaml` and its database. Run only one
+daemon per checkout. An existing Codex pipeline is rejected rather than converted.
+To switch, stop the daemon, explicitly change every `roles.*.launch` to
+`[pi, --no-approve]` and `policies.execution.sandbox` to `false` in your pipeline,
+and relaunch any existing task agents. Pi roles may include model/provider CLI
+arguments; the wrapper preserves them. An end-to-end Pi task is not covered by
+the wrapper's mocked tests; `orchestratord doctor` checks kickoff delivery locally.
 
 ## Install and start
 

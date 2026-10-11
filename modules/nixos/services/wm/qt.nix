@@ -9,7 +9,8 @@ in {
   config = mkIf cfg.enable {
     qt = {
       enable = true;
-      platformTheme = "gtk2";
+      platformTheme = "gnome";
+      style = "adwaita";
     };
   };
 }

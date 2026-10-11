@@ -146,9 +146,9 @@
 
   herdrNvim = pkgs.rustPlatform.buildRustPackage {
     pname = "herdr-nvim";
-    version = "1.1.0";
+    version = "1.2.0";
     src = inputs.herdr-nvim;
-    cargoHash = "sha256-pImtQ1YiM47VvA8u9ER/lXtDVsZhQy38fkCbzmT/gc4=";
+    cargoHash = "sha256-BK+QmkAbETZBDhyAdHvEdAuT/3mvoQZpwOslDATLBbM=";
     doCheck = false;
 
     installPhase = ''

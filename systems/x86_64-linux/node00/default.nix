@@ -45,15 +45,15 @@
   systemd.coredump.enable = true;
 
   # clear out journalctl logs
-  services.journald.extraConfig = "MaxRetentionSec=14day";
+  services.journald.settings.Journal.MaxRetentionSec = "14day";
 
   # Setup auto suspend
-  systemd.sleep.extraConfig = ''
-    AllowSuspend=yes
-    AllowHibernation=no
-    AllowHybridSleep=no
-    AllowSuspendThenHibernate=yes
-  '';
+  systemd.sleep.settings.Sleep = {
+    AllowSuspend = "yes";
+    AllowHibernation = "no";
+    AllowHybridSleep = "no";
+    AllowSuspendThenHibernate = "yes";
+  };
 
   # Set your time zone.
   time.timeZone = "America/Toronto";

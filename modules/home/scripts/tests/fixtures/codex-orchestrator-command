@@ -14,7 +14,7 @@ gh:label)
 		printf 'agent-ready\n'
 	fi
 	;;
-herdr:status | codex:--version) exit 0 ;;
+herdr:status | codex:--version | pi:--version) exit 0 ;;
 orchestratord:init)
 	mkdir -p "$5/prompts"
 	printf 'policies:\n  dry_run: false\nsources:\n  - type: github_issues\n    repo: owner/project\n    select:\n      label: agent-ready\nroles:\n  triager:\n    launch: [claude]\n  implementer:\n    launch: [claude]\n  reviewer:\n    launch: [claude]\n' >"$5/pipeline.yaml"
