@@ -53,7 +53,7 @@ skhd from seeing keys; check terminal Secure Keyboard Entry if bindings stop.
   Rectangle for future activations; the other Macs are unchanged.
 - For multiple displays, use OmniWM's Monitor Setup assistant; Linux DP/HDMI
   connector names and coordinates cannot be copied to macOS. Assign a workspace
-  to each display and enable edge focus and mouse warp.
+  to each display. Edge focus is disabled; keyboard focus still warps the pointer.
 - Enable Start at Login in OmniWM only after deciding to keep it. The initial
   trial hotkey agent is loaded from a temporary plist for this login session.
   Home Manager will install it persistently on activation; it does not manage
@@ -62,8 +62,10 @@ skhd from seeing keys; check terminal Secure Keyboard Entry if bindings stop.
 The trial uses one workspace (1), with the workspace bar disabled.
 
 The trial uses 6-point inner and outer gaps on all sides (also in managed
-fullscreen), focus-follows-mouse,
-pointer warping, and full-width initial tiled columns, including Obsidian.
+fullscreen), keyboard-driven focus with pointer warping, and full-width initial
+tiled columns, including Obsidian. Focus-follows-mouse and edge focus are disabled
+so hovering edge columns does not scroll the layout. OmniWM's three-finger
+column scrolling is disabled.
 New windows stay in the scrolling layout rather than entering fullscreen.
 The one-third, one-half and two-thirds width presets remain available. OmniWM's
 1-point green focus border is enabled. Its outline can mismatch macOS 27's
@@ -89,8 +91,8 @@ The m4-pro system module auto-hides the Dock (no reserved Dock strip), disables
 Stage Manager, and keeps Displays have separate Spaces on. Native desktop
 hotkeys 79–82 are disabled while OmniWM is enabled, because this repository
 previously mapped them to Cmd+Left/Right and Cmd+Shift+Left/Right. Three- and
-four-finger horizontal native Space swipes are disabled so they do not compete
-with OmniWM's column scrolling. Changes to trackpad settings may need logout.
+four-finger horizontal native Space swipes are disabled along with OmniWM's
+column scrolling. Changes to trackpad settings may need logout.
 Other Macs retain their native navigation settings.
 
 Spotlight's Cmd+Space bindings and Apple's edge/Option tiling were already
