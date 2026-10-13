@@ -95,6 +95,7 @@ in {
       web_search = "live"
 
       [features]
+      daemon_auto_start = false
       memories = true
       hooks = true
 

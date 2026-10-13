@@ -116,7 +116,10 @@ in {
         ];
         input = {
           keyboard.xkb.layout = "us";
-          focus-follows-mouse.enable = true;
+          focus-follows-mouse = {
+            enable = true;
+            max-scroll-amount = "0%";
+          };
           warp-mouse-to-focus.enable = true;
           workspace-auto-back-and-forth = true;
         }; # input

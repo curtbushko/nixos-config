@@ -59,7 +59,15 @@ if grep -Fq 'herdr-context' "$flake" || grep -Fq 'herdrContext' "$module" || gre
 	exit 1
 fi
 assert_contains "$pi_module" '".pi/agent/skills".source = ../skills;'
-assert_contains "$pi_module" '@andrewjacop/pi-herdr'
+assert_contains "$pi_module" 'pname = "pi-herdr-agents";'
+assert_contains "$pi_module" 'pi-herdr-agents-3.2.1.tgz'
+assert_contains "$pi_module" "\"\${piHerdrAgents}\""
+assert_contains "$pi_module" '".pi/agent/herdr-agents/config.json".source'
+assert_contains "$pi_module" 'panes.mode = "tab";'
+if grep -Fq '@andrewjacop/pi-herdr' "$pi_module" || grep -Fq '".pi/agent/extensions/pi-herdr"' "$pi_module"; then
+	printf 'the old pi-herdr extension must not load alongside pi-herdr-agents\n' >&2
+	exit 1
+fi
 assert_contains "$pi_module" 'enabledModels = cfg.pi.enabledModels;'
 assert_contains "$pi_module" 'defaultModel = "gpt-6.1-sol";'
 if [[ -e "$maki_module" ]] || grep -Fq 'maki' "$flake" "$repo_root/flake.lock" "$repo_root/modules/home/llm/default.nix"; then

@@ -118,7 +118,9 @@ Before creating a tab, check for an idle subagent owned by this orchestration th
 herdr tab create --workspace "$HERDR_WORKSPACE_ID" --cwd "$PWD" --label "π - builder" --no-focus
 ```
 
-Read the tab ID from `.result.tab.tab_id` and its existing root pane ID from `.result.root_pane.pane_id`. When using the CLI, start the agent directly in that root pane rather than splitting it. With tools, create the tab first, then pass its ID as `tabId` to `herdr_start_agent` or `herdr_delegate`; never invoke those tools without a destination tab for delegation. If a wrapper adds a pane inside that tab, keep it confined to that subagent's tab, never the main tab.
+Read the tab ID from `.result.tab.tab_id` and its existing root pane ID from `.result.root_pane.pane_id`. When using the CLI, start the agent directly in that root pane rather than splitting it.
+
+With Pi's `pi-herdr-agents` extension, use its `subagent` tool for delegation. The Nix-managed `panes.mode: "tab"` setting creates one tab per ordinary child; do not pre-create an extra tab for this tool. Preserve the current working directory, do not request a managed worktree without user authorization, and follow the extension's bundled skill for result delivery and cleanup. The old `herdr_start_agent` / `herdr_delegate` tools are no longer supplied by this configuration.
 
 Collect results before cleanup. Reuse completed idle agents while work remains; close only subagent tabs created by this orchestration when they are no longer needed. Never close the user's main tab or unrelated tabs.
 

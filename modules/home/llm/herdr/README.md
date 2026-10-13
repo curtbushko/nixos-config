@@ -6,7 +6,7 @@
 
 ## Architecture and ownership
 
-Nix installs HerdR, Pi, pi-herdr, herdr-workflows, herdr-routines, and
+Nix installs HerdR, Pi, pi-herdr-agents, herdr-workflows, herdr-routines, and
 [herdr-orchestrator](https://github.com/sean1588/herdr-orchestrator). It also
 manages stable configuration, global workflows, disabled routine infrastructure,
 and the shared skill link. Provider credentials, login state, conversations,
@@ -18,9 +18,9 @@ Pi reads `~/.pi/agent/skills`, Claude reads `~/.claude/skills`, and Codex reads
 `modules/home/llm/skills` source. Do not copy those skills into a Pi-specific tree.
 
 HerdR is the persistent terminal/session surface. Pi is the default interactive
-agent. The pinned pi-herdr extension delegates Pi, Claude, Codex, and other
-supported workers into visible HerdR panes. HerdR Workflows owns deterministic
-process sequencing; pi-herdr does not duplicate that workflow logic.
+agent. The pinned pi-herdr-agents package delegates Pi subagents into visible
+HerdR tabs, one tab per ordinary child. HerdR Workflows owns deterministic
+process sequencing; pi-herdr-agents does not duplicate that workflow logic.
 
 ## Pinned versions
 
@@ -28,7 +28,7 @@ process sequencing; pi-herdr does not duplicate that workflow logic.
 | --- | --- |
 | HerdR | `herdr` from the dedicated `herdr-nixpkgs` pin (`0.9.1`) |
 | Pi | `pi.nix` revision `3f392b014764faf4f0aaa611b6c5d082175ad81c` |
-| pi-herdr | npm `0.5.0` tarball with a fixed hash |
+| pi-herdr-agents | npm `3.2.1` tarball with a fixed hash |
 | herdr-workflows | `v0.15.1` source plus matching release binary and hash |
 | herdr-orchestrator | `v0.1.0` release binaries with fixed hashes for Linux and macOS |
 | herdr-routines | revision `cd504512d2f1976d39668fbdc0fe9b86cf3eff85` |
@@ -134,11 +134,14 @@ Start HerdR from that shell with `herdr`. This ensures panes inherit Pi, Claude,
 Codex, Copilot, Git, shells, and development tools from the interactive Nix PATH.
 Do not start HerdR as a minimal launchd service.
 
-Inside HerdR, start `pi` in a repository. pi-herdr is discovered from the
-Nix-managed extension directory. Ask Pi to delegate focused work with the desired
-harness, skill, working directory, and isolation requirement. Workers are separate
-processes and remain visible and inspectable in HerdR. Use HerdR worktrees for
-isolated changes when appropriate.
+Inside HerdR, start `pi` in a repository. Pi loads pi-herdr-agents and its bundled
+skills from the Nix-managed package listed in `~/.pi/agent/settings.json`.
+The `subagent` tool launches children; asynchronous results return to the parent.
+`~/.pi/agent/herdr-agents/config.json` sets `panes.mode` to `tab` rather than the
+upstream grouped-pane default. Workers remain visible and inspectable in HerdR.
+Managed worktrees are opt-in. The former pi-herdr extension and its
+`herdr_start_agent` / `herdr_delegate` tools are replaced; use the HerdR CLI for
+other harnesses or direct layout control.
 
 ## Integrations
 

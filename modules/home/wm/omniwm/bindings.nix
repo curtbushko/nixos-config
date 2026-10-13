@@ -7,10 +7,6 @@
   # OmniWM cannot open the palette directly in Clipboard mode. Press Cmd+3 next.
   "cmd + shift - v" = "omniwmctl command open-command-palette";
   "cmd - tab" = "omniwmctl command toggle-overview";
-  "cmd - q" = {
-    firefox = null; # Native Cmd+Q quits Firefox rather than closing its window.
-    "*" = "omniwmctl command close-focused-window";
-  };
   "cmd - m" = "osascript -e 'tell application \"OmniWM\" to quit'";
   "ctrl + alt - 0x75" = "osascript -e 'tell application \"OmniWM\" to quit'";
   "cmd + shift - 0x2C" = ''open -a TextEdit "$HOME/.config/omniwm/KEYBINDINGS.md"'';

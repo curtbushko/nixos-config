@@ -200,6 +200,7 @@
     swayidle
 
     # Gaming
+    pkgs.ns.wfhelper
     steam-run
     vulkan-tools
     # May 17th, 2026 - turning off because it is failing to compile
@@ -207,6 +208,9 @@
     protonup-qt
     #sunshine
   ];
+
+  # WFHelper reads Warframe memory; this permits same-user process inspection.
+  boot.kernel.sysctl."kernel.yama.ptrace_scope" = 0;
 
   # Needed to run things like stylua in neovim on nixos
   programs.nix-ld.enable = true;

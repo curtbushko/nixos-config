@@ -7,10 +7,6 @@ let
     "cmd - space" = ''omniwmctl command open-command-palette && sleep 0.2 && skhd -k "cmd - 5"'';
     "cmd + shift - v" = "omniwmctl command open-command-palette";
     "cmd - tab" = "omniwmctl command toggle-overview";
-    "cmd - q" = {
-      firefox = null; # Pass Cmd+Q through to Firefox's native Quit action.
-      "*" = "omniwmctl command close-focused-window";
-    };
     "cmd - m" = "osascript -e 'tell application \"OmniWM\" to quit'";
     "ctrl + alt - 0x75" = "osascript -e 'tell application \"OmniWM\" to quit'";
     "cmd + shift - 0x2C" = ''open -a TextEdit "$HOME/.config/omniwm/KEYBINDINGS.md"'';
@@ -40,16 +36,11 @@ let
   };
 in
   assert bindings == expected;
+  assert !(bindings ? "cmd - q");
   assert (import ../render-skhd.nix {
-    "cmd - q" = expected."cmd - q";
     "cmd - tab" = expected."cmd - tab";
   })
-  == ''
-    cmd - q [
-      * : omniwmctl command close-focused-window
-      "firefox" ~
-    ]
-    cmd - tab : omniwmctl command toggle-overview'';
+  == "cmd - tab : omniwmctl command toggle-overview";
   assert builtins.length settings.workspaces == 1;
   assert map (workspace: workspace.name) settings.workspaces == ["1"];
   assert !settings.workspaceBar.enabled;

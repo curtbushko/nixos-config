@@ -14,7 +14,7 @@ OmniWM's native hotkeys are disabled to avoid competing defaults.
 | Cmd+Shift+V | Command palette; press Cmd+3 for clipboard history |
 | Cmd+Tab | Overview |
 | Cmd+Shift+/ | Open this cheat sheet |
-| Cmd+Q | Quit Firefox; close the focused window in other applications |
+| Cmd+Q | Native application Quit (not intercepted) |
 | Cmd+M / Ctrl+Option+Forward Delete | Quit OmniWM, not macOS |
 | Cmd+arrows / Cmd+H/J/K/L | Focus left/down/up/right |
 | Cmd+Ctrl+Left/Right / Cmd+Ctrl+H/L | Move whole column |
@@ -28,7 +28,7 @@ Both directions cycle forward, just like the source niri configuration.
 Native media keys retain macOS volume/playback behavior.
 
 **These global bindings replace normal macOS Cmd+H, Cmd+J, Cmd+K, Cmd+L,
-Cmd+T, Cmd+Q (except in Firefox), Cmd+M, Cmd+Space and Cmd+Tab behavior.** Disable the Spotlight
+Cmd+T, Cmd+M, Cmd+Space and Cmd+Tab behavior.** Disable the Spotlight
 Cmd+Space shortcut in System Settings > Keyboard > Keyboard Shortcuts >
 Spotlight if it competes with the launcher. Secure Input in an app can prevent
 skhd from seeing keys; check terminal Secure Keyboard Entry if bindings stop.
@@ -97,9 +97,9 @@ Other Macs retain their native navigation settings.
 
 Spotlight's Cmd+Space bindings and Apple's edge/Option tiling were already
 disabled; those settings are compatible. Existing per-app Cmd+H remaps also
-remain useful. Cmd+Tab, Cmd+Q, Cmd+M and the other documented global bindings
-intentionally override ordinary app/macOS behavior, except Firefox's native
-Cmd+Q quit action. Secure Keyboard Entry can
+remain useful. Cmd+Tab, Cmd+M and the other documented global bindings
+intentionally override ordinary app/macOS behavior. Cmd+Q is not intercepted,
+so applications receive their native Quit shortcut. Secure Keyboard Entry can
 still suppress skhd shortcuts. A full system switch was not used for this trial.
 
 ## Configuration and validation

@@ -18,12 +18,12 @@
       exec ${pkgs.nodejs}/bin/npm "$@"
     '';
 
-    piHerdr = pkgs.stdenvNoCC.mkDerivation {
-      pname = "pi-herdr";
-      version = "0.5.0";
+    piHerdrAgents = pkgs.stdenvNoCC.mkDerivation {
+      pname = "pi-herdr-agents";
+      version = "3.2.1";
       src = pkgs.fetchurl {
-        url = "https://registry.npmjs.org/@andrewjacop/pi-herdr/-/pi-herdr-0.5.0.tgz";
-        hash = "sha256-t4hxyXNx1Bt/ubo5UCYHIBI7M/YyKC1jXU92b6Y7NnA=";
+        url = "https://registry.npmjs.org/pi-herdr-agents/-/pi-herdr-agents-3.2.1.tgz";
+        hash = "sha256-aYHC16EnYqbo0ceriafYsBaKWfYoC7UMDBgpl2sC/Jk=";
       };
       sourceRoot = "package";
       installPhase = ''
@@ -167,6 +167,7 @@
           # Declarative package list. Pi loads extensions from each entry's manifest.
           # We declare packages here directly and install them via activation hooks below.
           packages = [
+            "${piHerdrAgents}"
             "npm:@burneikis/pi-fzfp"
           ];
         });
@@ -220,11 +221,17 @@
         # Pi consumes the exact canonical skill tree used by Claude and Codex.
         ".pi/agent/skills".source = ../skills;
 
-        # Nix owns the pinned pi-herdr package; Pi only discovers the extension.
-        ".pi/agent/extensions/pi-herdr" = {
-          source = piHerdr;
-          recursive = true;
-        };
+        # One ordinary subagent per tab; managed worktrees remain opt-in.
+        ".pi/agent/herdr-agents/config.json".source = pkgs.writeText "pi-herdr-agents-config.json" (builtins.toJSON {
+          status.enabled = true;
+          models.agents = {};
+          persistent.maxAgents = 3;
+          supervision = {
+            forcePolling = false;
+            hangWarningMinutes = 15;
+          };
+          panes.mode = "tab";
+        });
 
         # Minimal system prompt for local models. Used by the `pi-local`
         # wrapper alias to keep the context small so smaller local models
