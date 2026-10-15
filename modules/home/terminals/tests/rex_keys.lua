@@ -103,16 +103,22 @@ assert(not bindings["ctrl+b>d"], "Rex has no detach equivalent")
 assert(not bindings["ctrl+b>o"], "Rex has no agent-output file picker")
 
 local function block(id, x, y)
-	return { block_id = id, rect = { x = x, y = y, w = 1, h = 1 } }
+	return { block_id = id, rect = { x, y, 0.5, 0.5 } }
 end
 local function window(id, focused, blocks)
-	return { window_id = id, focused_block_id = focused, layers = { { blocks = blocks } } }
+	local metadata = {}
+	local layout
+	for _, pane in ipairs(blocks) do
+		metadata[#metadata + 1] = { block_id = pane.block_id }
+		layout = layout and { rect = { 0, 0, 1, 1 }, split = { before = layout, after = pane } } or pane
+	end
+	return { window_id = id, focused_block_id = focused, layers = { { blocks = metadata, layout = layout } } }
 end
-local first = window("first", "b", { block("c", 1, 1), block("b", 1, 0), block("a", 0, 0) })
-local second = window("second", "d", { block("e", 1, 0), block("d", 0, 0) })
+local first = window("first", "b", { block("c", 0.5, 0.5), block("b", 0.5, 0), block("a", 0, 0) })
+local second = window("second", "d", { block("e", 0.5, 0), block("d", 0, 0) })
 local function focus(current_window, current_block, direction, windows)
 	calls = {}
-	view = { focused_window = current_window, windows = windows or { first, second } }
+	view = { active_window_id = current_window.window_id, windows = windows or { first, second } }
 	view_error, focus_error = nil, nil
 	actions.herdr_focus.run({ block_id = current_block }, { direction = direction })
 end
@@ -143,15 +149,22 @@ local empty = window("empty", nil, {})
 focus(first, "c", "right", { first, empty })
 assert(#calls == 2 and calls[1].window_id == "empty")
 assert(calls[2].action == "client.tab.goto" and calls[2].args.index == 2)
+-- Missing block context falls back to the active window's focused pane.
+focus(second, nil, "right")
+assert(#calls == 1 and calls[1].block_id == "e")
 -- Missing context and API errors must not silently switch tabs.
 focus(first, "b", "right")
 calls = {}
+view.active_window_id = "missing"
+assert(not pcall(actions.herdr_focus.run, {}, { direction = "right" }))
+assert(#calls == 0)
+view.active_window_id = first.window_id
 assert(not pcall(actions.herdr_focus.run, { block_id = "missing" }, { direction = "right" }))
 assert(#calls == 0)
 view, view_error = nil, "unavailable"
 local ok, err = pcall(actions.herdr_focus.run, {}, { direction = "right" })
 assert(not ok and tostring(err):find("unavailable", 1, true))
-view, view_error, focus_error = { focused_window = first, windows = { first, second } }, nil, "focus failed"
+view, view_error, focus_error = { active_window_id = first.window_id, windows = { first, second } }, nil, "focus failed"
 ok, err = pcall(actions.herdr_focus.run, { block_id = "b" }, { direction = "right" })
 assert(not ok and tostring(err):find("focus failed", 1, true))
 -- Removed menu operations must fail before changing focus or queuing commands.
@@ -162,7 +175,7 @@ for _, choice in ipairs({ "move_new_tab", "resize_left", "resize_up", "resize_do
 end
 -- Opening the menu creates a focused floating terminal, keeping caller context.
 view_error, focus_error, popup_error = nil, nil, nil
-view = { focused_window = first, windows = { first, second } }
+view = { active_window_id = first.window_id, windows = { first, second } }
 calls = {}
 actions.whichkey.run({ client_id = "app-client", session_id = "session", block_id = "b" }, {})
 assert(#calls == 1, "inherit the theme; do not override it before terminal color queries")

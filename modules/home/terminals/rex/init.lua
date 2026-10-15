@@ -29,19 +29,26 @@ rex.bind("ctrl+b>ctrl+b", "pane.send_key", { key = "ctrl+b" })
 
 local function panes(window)
 	local result = {}
-	for _, layer in ipairs(window.layers or {}) do
-		for _, block in ipairs(layer.blocks or {}) do
-			if block.block_id then
-				result[#result + 1] = block
-			end
+	local function visit(node)
+		if not node then
+			return
+		end
+		if node.block_id then
+			result[#result + 1] = node
+		elseif node.split then
+			visit(node.split.before)
+			visit(node.split.after)
 		end
 	end
+	for _, layer in ipairs(window.layers or {}) do
+		visit(layer.layout)
+	end
 	table.sort(result, function(a, b)
-		if a.rect.x ~= b.rect.x then
-			return a.rect.x < b.rect.x
+		if a.rect[1] ~= b.rect[1] then
+			return a.rect[1] < b.rect[1]
 		end
-		if a.rect.y ~= b.rect.y then
-			return a.rect.y < b.rect.y
+		if a.rect[2] ~= b.rect[2] then
+			return a.rect[2] < b.rect[2]
 		end
 		return a.block_id < b.block_id
 	end)
@@ -66,7 +73,14 @@ rex.action({
 		end
 		local step = args.direction == "right" and 1 or -1
 		local view = checked(rex.session.view({}))
-		local window = assert(view.focused_window, "No focused Rex tab")
+		local window
+		for _, candidate in ipairs(view.windows or {}) do
+			if candidate.window_id == view.active_window_id then
+				window = candidate
+				break
+			end
+		end
+		assert(window, "No focused Rex tab")
 		local blocks = panes(window)
 		local focused = ctx.block_id or window.focused_block_id
 		local index
