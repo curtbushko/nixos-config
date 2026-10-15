@@ -7,7 +7,7 @@
   inherit (lib) mkIf;
   cfg = config.ns.tools;
 in {
-  config = mkIf (cfg.enable && pkgs.stdenv.isLinux) {
+  config = mkIf (cfg.enable && pkgs.stdenv.hostPlatform.isLinux) {
     stylix.targets.yazi.enable = false;
     programs.yazi = {
       enable = true;

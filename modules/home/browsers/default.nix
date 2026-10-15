@@ -7,8 +7,8 @@
 }: let
   inherit (lib) types mkOption mkIf;
   cfg = config.ns.browsers;
-  isDarwin = pkgs.stdenv.isDarwin;
-  isLinux = pkgs.stdenv.isLinux;
+  isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
+  isLinux = pkgs.stdenv.hostPlatform.isLinux;
 in {
   options.ns.browsers = {
     enable = mkOption {

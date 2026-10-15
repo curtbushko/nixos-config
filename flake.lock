@@ -1378,6 +1378,27 @@
         "type": "github"
       }
     },
+    "rex-whichkey": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1792091882,
+        "narHash": "sha256-QPvqN3tV2hDEVsZB5JOlPiSX09ZTm64pGyfG9fyQLQc=",
+        "ref": "main",
+        "rev": "f14ed5fb44ab058e0c6605c4e4ccc854673dc06e",
+        "revCount": 2,
+        "type": "git",
+        "url": "ssh://git@github.com/curtbushko/rex-whichkey.git"
+      },
+      "original": {
+        "ref": "main",
+        "type": "git",
+        "url": "ssh://git@github.com/curtbushko/rex-whichkey.git"
+      }
+    },
     "root": {
       "inputs": {
         "claude-code": "claude-code",
@@ -1399,6 +1420,7 @@
         "niri": "niri",
         "nixpkgs": "nixpkgs_5",
         "pi": "pi",
+        "rex-whichkey": "rex-whichkey",
         "snowfall-lib": "snowfall-lib",
         "sops-nix": "sops-nix",
         "stevenblack-hosts": "stevenblack-hosts",

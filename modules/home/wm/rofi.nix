@@ -4,9 +4,9 @@
   pkgs,
   ...
 }: let
-  inherit (lib) types mkOption mkIf;
+  inherit (lib) types mkOption mkIf mkMerge mkDefault;
   cfg = config.ns.wm.rofi;
-  isLinux = pkgs.stdenv.isLinux;
+  isLinux = pkgs.stdenv.hostPlatform.isLinux;
 in {
   options.ns.wm.rofi = {
     enable = mkOption {
@@ -18,76 +18,85 @@ in {
     };
   };
 
-  config = mkIf cfg.enable {
-    programs.rofi = {
-      enable = isLinux;
-      extraConfig = {
-        modi = "drun,run";
-        show-icons = true;
-        case-sensitive = false;
+  config = mkMerge [
+    {
+      # Stylix still writes the deprecated programs.rofi.font option.
+      stylix.targets.rofi.fonts.enable = false;
+    }
+    (mkIf cfg.enable {
+      programs.rofi = {
+        enable = isLinux;
+        settings = {
+          font =
+            mkIf (config.stylix.enable && config.stylix.targets.rofi.enable)
+            (mkDefault "${config.stylix.fonts.monospace.name} ${toString config.stylix.fonts.sizes.popups}");
+          modi = "drun,run";
+          show-icons = true;
+          case-sensitive = false;
+        };
+        theme = with config.lib.formats.rasi; {
+          "*" = {
+            spacing = 0;
+            width = mkLiteral "800px";
+
+            #bg = mkLiteral "#${bg}";
+            #bg-alt = mkLiteral "#${bg_dark}";
+            #fg = mkLiteral "#${fg}";
+            #fg-alt = mkLiteral "#${fg_dark}";
+            #border-color = mkLiteral "#${blue1}";
+            #background-color = mkLiteral "@bg";
+            #text-color = mkLiteral "@fg";
+          };
+
+          window = {
+            transparency = "real";
+          };
+
+          mainbox = {
+            children = mkLiteral "[inputbar, listview]";
+            border = mkLiteral "1px 1px 1px 1px";
+          };
+
+          inputbar = {
+            #background-color = mkLiteral "@bg-alt";
+            children = mkLiteral "[prompt, entry]";
+          };
+
+          entry = {
+            background-color = mkLiteral "inherit";
+            padding = mkLiteral "12px 3px";
+          };
+
+          prompt = {
+            background-color = mkLiteral "inherit";
+            padding = mkLiteral "12px";
+          };
+
+          listview = {
+            cycle = true;
+            lines = mkLiteral "8";
+            margin = mkLiteral "0 0 -1px 0";
+            scrollbar = false;
+          };
+
+          element = {
+            children = mkLiteral "[element-icon, element-text]";
+          };
+
+          element-icon = {
+            padding = mkLiteral "10px 10px";
+          };
+
+          element-text = {
+            padding = mkLiteral "10px 0";
+            #text-color = mkLiteral "@fg-alt";
+          };
+
+          "element-text selected" = {
+            #text-color = mkLiteral "@fg";
+          };
+        };
       };
-      theme = with config.lib.formats.rasi; {
-        "*" = {
-          spacing = 0;
-          width = mkLiteral "800px";
-
-          #bg = mkLiteral "#${bg}";
-          #bg-alt = mkLiteral "#${bg_dark}";
-          #fg = mkLiteral "#${fg}";
-          #fg-alt = mkLiteral "#${fg_dark}";
-          #border-color = mkLiteral "#${blue1}";
-          #background-color = mkLiteral "@bg";
-          #text-color = mkLiteral "@fg";
-        };
-
-        window = {
-          transparency = "real";
-        };
-
-        mainbox = {
-          children = mkLiteral "[inputbar, listview]";
-          border = mkLiteral "1px 1px 1px 1px";
-        };
-
-        inputbar = {
-          #background-color = mkLiteral "@bg-alt";
-          children = mkLiteral "[prompt, entry]";
-        };
-
-        entry = {
-          background-color = mkLiteral "inherit";
-          padding = mkLiteral "12px 3px";
-        };
-
-        prompt = {
-          background-color = mkLiteral "inherit";
-          padding = mkLiteral "12px";
-        };
-
-        listview = {
-          cycle = true;
-          lines = mkLiteral "8";
-          margin = mkLiteral "0 0 -1px 0";
-          scrollbar = false;
-        };
-
-        element = {
-          children = mkLiteral "[element-icon, element-text]";
-        };
-
-        element-icon = {
-          padding = mkLiteral "10px 10px";
-        };
-
-        element-text = {
-          padding = mkLiteral "10px 0";
-          #text-color = mkLiteral "@fg-alt";
-        };
-
-        "element-text selected" = {
-          #text-color = mkLiteral "@fg";
-        };
-      };
-    };
-  };
+    })
+  ];
 }

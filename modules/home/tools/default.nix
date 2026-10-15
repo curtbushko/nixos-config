@@ -7,8 +7,8 @@
 }: let
   inherit (lib) types mkOption mkIf;
   cfg = config.ns.tools;
-  isDarwin = pkgs.stdenv.isDarwin;
-  isLinux = pkgs.stdenv.isLinux;
+  isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
+  isLinux = pkgs.stdenv.hostPlatform.isLinux;
   ytDlpPkgs = inputs.yt-dlp-nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system};
 in {
   imports = [

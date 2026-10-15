@@ -6,7 +6,7 @@ in {
       type = types.bool;
       default = false;
       description = ''
-        Whether to enable ghostty, zellij, starship, etc
+        Whether to enable Ghostty, Rex (macOS), Starship, and tmux
       '';
     };
   };
@@ -14,6 +14,7 @@ in {
   imports = [
     ./alacritty.nix
     ./ghostty.nix
+    ./rex.nix
     ./starship.nix
     ./tmux.nix
   ];

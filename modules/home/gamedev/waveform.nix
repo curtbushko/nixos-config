@@ -9,7 +9,7 @@
   inherit (lib) types mkOption mkIf mkEnableOption;
   cfg = config.ns.gamedev.waveform;
   gamedevCfg = config.ns.gamedev;
-  isLinux = pkgs.stdenv.isLinux;
+  isLinux = pkgs.stdenv.hostPlatform.isLinux;
 
   # Waveform package definition
   waveformPkg = pkgs.stdenv.mkDerivation rec {

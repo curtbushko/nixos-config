@@ -7,7 +7,7 @@
 }: let
   inherit (lib) mkIf;
   cfg = config.ns.wm.niri;
-  isLinux = pkgs.stdenv.isLinux;
+  isLinux = pkgs.stdenv.hostPlatform.isLinux;
 
   # Dummy input server that does nothing (vicinae's input server needs root privileges)
   dummy-input-server = pkgs.writeShellScriptBin "vicinae-input-server" ''

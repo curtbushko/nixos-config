@@ -43,7 +43,7 @@ in {
         inputs.llm-agents.packages.${system}.ccusage
         pkgs.python3Packages.huggingface-hub
       ]
-      ++ lib.optionals pkgs.stdenv.isDarwin [
+      ++ lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
         ds4
       ];
 

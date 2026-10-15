@@ -6,7 +6,7 @@
 }: let
   inherit (lib) types mkOption mkIf;
   cfg = config.ns.wm.tools;
-  isLinux = pkgs.stdenv.isLinux;
+  isLinux = pkgs.stdenv.hostPlatform.isLinux;
 in {
   imports = [
     ./cliphist.nix

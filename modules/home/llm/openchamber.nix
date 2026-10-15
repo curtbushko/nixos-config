@@ -69,7 +69,7 @@
 in {
   config = lib.mkMerge [
     # Darwin configuration
-    (mkIf (cfg.enable && pkgs.stdenv.isDarwin) {
+    (mkIf (cfg.enable && pkgs.stdenv.hostPlatform.isDarwin) {
       home.packages = [openchamber-darwin];
 
       programs.zsh.shellAliases = {
@@ -78,7 +78,7 @@ in {
     })
 
     # Linux configuration
-    (mkIf (cfg.enable && pkgs.stdenv.isLinux) {
+    (mkIf (cfg.enable && pkgs.stdenv.hostPlatform.isLinux) {
       home.packages = [openchamber-linux];
 
       programs.zsh.shellAliases = {

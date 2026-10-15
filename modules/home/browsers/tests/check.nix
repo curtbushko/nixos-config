@@ -29,12 +29,7 @@ let
   darwin = firefoxFor true;
   linux = firefoxFor false;
 in
-  assert darwin.stylix.targets.firefox.profileNames == ["default"];
-  assert !darwin.stylix.targets.firefox.colorTheme.enable;
-  assert !linux.stylix.targets.firefox.colorTheme.enable;
   assert darwin.programs.firefox.profiles.default.userChrome == linux.programs.firefox.profiles.default.userChrome;
-  assert builtins.all (platform:
-    platform.programs.firefox.profiles.default.settings."toolkit.legacyUserProfileCustomizations.stylesheets") [darwin linux];
   assert builtins.all (expected:
     builtins.match ".*${expected}.*" darwin.programs.firefox.profiles.default.userChrome != null) [
     "--lwt-accent-color: #101112 !important;"

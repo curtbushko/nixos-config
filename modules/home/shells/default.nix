@@ -6,8 +6,8 @@
 }: let
   inherit (lib) types mkOption mkIf;
   cfg = config.ns.shells;
-  isDarwin = pkgs.stdenv.isDarwin;
-  isLinux = pkgs.stdenv.isLinux;
+  isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
+  isLinux = pkgs.stdenv.hostPlatform.isLinux;
 in {
   options.ns.shells = {
     enable = mkOption {

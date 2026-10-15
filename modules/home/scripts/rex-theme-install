@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# -ne 2 ]]; then
+	printf 'usage: rex-theme-install SOURCE DESTINATION\n' >&2
+	exit 2
+fi
+for command in cmp dirname install mkdir mktemp mv; do
+	command -v "$command" >/dev/null || {
+		printf '%s is required\n' "$command" >&2
+		exit 1
+	}
+done
+source="$1"
+destination="$2"
+if [[ ! -f "$source" || ! -r "$source" ]]; then
+	printf 'Rex theme source is not a readable file: %s\n' "$source" >&2
+	exit 1
+fi
+if [[ -d "$destination" ]]; then
+	printf 'Rex theme destination is a directory: %s\n' "$destination" >&2
+	exit 1
+fi
+
+# Even an identical symlink must become a real file for Rex's importer.
+if [[ -f "$destination" && ! -L "$destination" ]] && cmp -s "$source" "$destination"; then
+	exit 0
+fi
+directory="$(dirname "$destination")"
+mkdir -p "$directory/.trash"
+work="$(mktemp -d "$directory/.trash/rex-theme.XXXXXX")"
+# Stage before moving the old file, so a failed copy leaves it untouched.
+install -m 0644 "$source" "$work/new"
+if [[ -e "$destination" || -L "$destination" ]]; then
+	mv "$destination" "$work/previous"
+fi
+mv "$work/new" "$destination"

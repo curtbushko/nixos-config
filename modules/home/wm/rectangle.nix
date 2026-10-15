@@ -6,7 +6,7 @@
 }: let
   inherit (lib) types mkOption mkIf;
   cfg = config.ns.wm.rectangle;
-  isDarwin = pkgs.stdenv.isDarwin;
+  isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
 
   keyCodes = {
     b = 11;

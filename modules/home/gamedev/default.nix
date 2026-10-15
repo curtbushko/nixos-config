@@ -6,7 +6,7 @@
 }: let
   inherit (lib) types mkOption mkIf;
   cfg = config.ns.gamedev;
-  isLinux = pkgs.stdenv.isLinux;
+  isLinux = pkgs.stdenv.hostPlatform.isLinux;
 in {
   options.ns.gamedev = {
     enable = mkOption {

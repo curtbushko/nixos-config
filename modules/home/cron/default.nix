@@ -6,8 +6,8 @@
 }: let
   inherit (lib) mkOption mkIf types;
   cfg = config.ns.cron;
-  isDarwin = pkgs.stdenv.isDarwin;
-  isLinux = pkgs.stdenv.isLinux;
+  isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
+  isLinux = pkgs.stdenv.hostPlatform.isLinux;
 in {
   options.ns.cron = {
     enable = mkOption {

@@ -5,7 +5,7 @@
   ...
 }: let
   inherit (lib) mkIf;
-  isDarwin = pkgs.stdenv.isDarwin;
+  isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
   stylixEnabled = config.stylix.enable or false;
   wallpaper = config.stylix.image;
 in {

@@ -18,7 +18,7 @@ in {
       # Keep legacy path for stateVersion < 26.05 on Linux;
       # on macOS Firefox reads from ~/Library/Application Support/Firefox.
       configPath =
-        if pkgs.stdenv.isDarwin
+        if pkgs.stdenv.hostPlatform.isDarwin
         then "Library/Application Support/Firefox"
         else ".mozilla/firefox";
       policies = {

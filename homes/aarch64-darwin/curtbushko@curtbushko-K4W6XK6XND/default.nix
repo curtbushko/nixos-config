@@ -63,6 +63,5 @@
     LC_ALL = "en_US.UTF-8";
     EDITOR = "nvim";
     PAGER = "less -FirSwX";
-    TERM = "xterm-ghostty";
   };
 }

@@ -8,8 +8,8 @@
   inherit (lib) concatMapStringsSep filterAttrs mkIf;
   cfg = config.ns.llm;
   codexPkgs = inputs.codex-nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system};
-  isDarwin = pkgs.stdenv.isDarwin;
-  isLinux = pkgs.stdenv.isLinux;
+  isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
+  isLinux = pkgs.stdenv.hostPlatform.isLinux;
   herdrSessionStartHookCommand = "bash '${config.home.homeDirectory}/.codex/herdr-agent-state.sh' session";
   herdrSessionStartHookHash = builtins.hashString "sha256" (builtins.toJSON {
     event_name = "session_start";

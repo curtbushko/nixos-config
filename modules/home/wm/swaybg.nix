@@ -6,7 +6,7 @@
 }: let
   inherit (lib) mkIf;
   cfg = config.ns.wm.niri;
-  isLinux = pkgs.stdenv.isLinux;
+  isLinux = pkgs.stdenv.hostPlatform.isLinux;
 
   # Wallpaper SHA256 hashes
   wallpaperHashes = {

@@ -15,7 +15,11 @@
   "cmd - down" = "omniwmctl command focus down";
   "cmd - j" = "omniwmctl command focus down";
   "cmd - up" = "omniwmctl command focus up";
-  "cmd - k" = "omniwmctl command focus up";
+  "cmd - k" = {
+    "*" = "omniwmctl command focus up";
+    "Rex" = null;
+    "Rex Beta" = null;
+  };
   "cmd - right" = "omniwmctl command focus right";
   "cmd - l" = "omniwmctl command focus right";
   "cmd + ctrl - left" = "omniwmctl command move-column left";

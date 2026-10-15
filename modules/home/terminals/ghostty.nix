@@ -32,8 +32,8 @@ in {
         base0D = "#${config.lib.stylix.colors.base0D}";
         base0E = "#${config.lib.stylix.colors.base0E}";
         base0F = "#${config.lib.stylix.colors.base0F}";
-        isLinux = pkgs.stdenv.isLinux;
-        isDarwin = pkgs.stdenv.isDarwin;
+        isLinux = pkgs.stdenv.hostPlatform.isLinux;
+        isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
       in
         ''
           auto-update = off
@@ -116,8 +116,8 @@ in {
           palette = 6=${base0B}
           palette = 14=${base0F}
           # white
-          #palette = 7=${base05}
-          #palette = 15=${base06}
+          palette = 7=${base05}
+          palette = 15=${base06}
         ''
         + (
           lib.optionalString isLinux ''

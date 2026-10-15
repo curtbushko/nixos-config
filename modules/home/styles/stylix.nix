@@ -69,7 +69,7 @@
     url = "https://raw.githubusercontent.com/curtbushko/nixos-wallpapers/main/3440x1440/${config.ns.theme.wallpaper}";
     sha256 = wallpaperHashes.${config.ns.theme.wallpaper} or lib.fakeHash;
   };
-  isLinux = pkgs.stdenv.isLinux;
+  isLinux = pkgs.stdenv.hostPlatform.isLinux;
 in {
   # Base16 guide (https://github.com/chriskempson/base16/blob/main/styling.md)
   # base00 - Default Background

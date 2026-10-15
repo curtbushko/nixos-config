@@ -14,7 +14,7 @@ in {
   config = lib.mkIf cfg.enable {
     assertions = [
       {
-        assertion = pkgs.stdenv.isDarwin;
+        assertion = pkgs.stdenv.hostPlatform.isDarwin;
         message = "OmniWM requires macOS on Apple Silicon.";
       }
       {

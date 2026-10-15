@@ -6,7 +6,7 @@
 }: let
   inherit (lib) types mkOption mkIf;
   cfg = config.ns.scripts;
-  isLinux = pkgs.stdenv.isLinux;
+  isLinux = pkgs.stdenv.hostPlatform.isLinux;
 
   aocgen = pkgs.writeScriptBin "aocgen" (builtins.readFile ./aocgen);
   auto-sleep = pkgs.writeScriptBin "auto-sleep" (builtins.readFile ./auto-sleep);
@@ -68,6 +68,7 @@
   pr-create = pkgs.writeScriptBin "pr-create" (builtins.readFile ./pr-create);
   pr-review = pkgs.writeScriptBin "pr-review" (builtins.readFile ./pr-review);
   pr-view = pkgs.writeScriptBin "pr-view" (builtins.readFile ./pr-view);
+  rex-theme-install = pkgs.writeScriptBin "rex-theme-install" (builtins.readFile ./rex-theme-install);
   snippet = pkgs.writeScriptBin "snippet" (builtins.readFile ./snippet);
   tailssh = pkgs.writeScriptBin "tailssh" (builtins.readFile ./tailssh);
   wake-gamingrig = pkgs.writeScriptBin "wake-gamingrig" (builtins.readFile ./wake-gamingrig);
@@ -138,6 +139,7 @@ in {
         pr-create
         pr-review
         pr-view
+        rex-theme-install
         snippet
         tailssh
         wake-gamingrig

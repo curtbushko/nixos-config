@@ -63,7 +63,7 @@ in {
         pkgs.git-lfs
         sem
       ]
-      ++ lib.optionals pkgs.stdenv.isDarwin [
+      ++ lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
         (lib.hiPrio (pkgs.writeShellScriptBin "hunk" ''
           HUNK_CACHE="$HOME/.cache/hunk-signed"
           HUNK_BINARY="$HUNK_CACHE/hunk"

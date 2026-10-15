@@ -81,6 +81,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    rex-whichkey = {
+      url = "git+ssh://git@github.com/curtbushko/rex-whichkey.git?ref=main";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     pi = {
       url = "github:lukasl-dev/pi.nix/467fecc25934b00ec3d5fe0559e4a60fccea528a";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -174,7 +179,7 @@
               go-task
               make-wrapper
             ]
-            ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
+            ++ pkgs.lib.optionals pkgs.stdenv.hostPlatform.isLinux [
               # Linux specific
               nixos-rebuild
             ];
