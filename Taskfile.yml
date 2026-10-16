@@ -324,6 +324,10 @@ tasks:
       - bash modules/home/llm/herdr/tests/policy_test.sh
       - bash modules/home/llm/pi/tests/theme_test.sh
       - bash modules/home/scripts/tests/codex-orchestrator_test.sh
+      - bash modules/home/scripts/tests/workspace_test.sh
+      - bash modules/home/scripts/tests/worktrunk_clone_test.sh
+      - shellcheck modules/home/scripts/workspace-to-worktrees modules/home/scripts/workspace-sync-main modules/home/scripts/tests/workspace_test.sh modules/home/scripts/tests/worktrunk_clone_test.sh modules/home/scripts/tests/fixtures/workspace-tg
+      - shfmt -d modules/home/scripts/workspace-to-worktrees modules/home/scripts/workspace-sync-main modules/home/scripts/tests/workspace_test.sh modules/home/scripts/tests/worktrunk_clone_test.sh modules/home/scripts/tests/fixtures/workspace-tg
       - shellcheck modules/home/llm/herdr/agent-quality.sh modules/home/llm/herdr/tests/policy_test.sh modules/home/llm/pi/tests/theme_test.sh modules/home/scripts/codex-orchestrator modules/home/scripts/tests/codex-orchestrator_test.sh modules/home/scripts/tests/fixtures/codex-orchestrator-command
       - shfmt -d modules/home/llm/herdr/agent-quality.sh modules/home/llm/herdr/tests/policy_test.sh modules/home/llm/pi/tests/theme_test.sh modules/home/scripts/codex-orchestrator modules/home/scripts/tests/codex-orchestrator_test.sh modules/home/scripts/tests/fixtures/codex-orchestrator-command
 

@@ -68,6 +68,8 @@
   tailssh = pkgs.writeScriptBin "tailssh" (builtins.readFile ./tailssh);
   wake-gamingrig = pkgs.writeScriptBin "wake-gamingrig" (builtins.readFile ./wake-gamingrig);
   ollama-up = pkgs.writeScriptBin "ollama-up" (builtins.readFile ./ollama-up);
+  workspace-to-worktrees = pkgs.writeScriptBin "workspace-to-worktrees" (builtins.readFile ./workspace-to-worktrees);
+  workspace-sync-main = pkgs.writeScriptBin "workspace-sync-main" (builtins.readFile ./workspace-sync-main);
   zigbuildwatcher = pkgs.writeScriptBin "zigbuildwatcher" (builtins.readFile ./zigbuildwatcher);
 in {
   options.ns.scripts = {
@@ -137,6 +139,8 @@ in {
         snippet
         tailssh
         wake-gamingrig
+        workspace-to-worktrees
+        workspace-sync-main
         zigbuildwatcher
       ]
       ++ (lib.optionals isLinux [

@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Directory trees relative to ~/workspace; all repositories beneath are ignored.
+ignore=(github.com/curtbushko)
+root="$HOME/workspace"
+dry_run=false
+case "${1:-}" in
+--dry-run) dry_run=true ;;
+-h | --help)
+	printf 'Usage: workspace-sync-main [--dry-run]\nRecursively pull clean main worktrees under ~/workspace using origin main, fast-forward only.\nBackups, ignored repos, dirty worktrees, and other branches are skipped.\nFailures are reported without stopping updates to other repos.\n'
+	exit 0
+	;;
+'') ;;
+*)
+	printf 'Unknown argument: %s\n' "$1" >&2
+	exit 1
+	;;
+esac
+[[ $# -le 1 ]] || {
+	printf 'Too many arguments\n' >&2
+	exit 1
+}
+for cmd in git find; do
+	command -v "$cmd" >/dev/null || {
+		printf 'Missing command: %s\n' "$cmd" >&2
+		exit 1
+	}
+done
+[[ -d "$root" ]] || {
+	printf 'Workspace not found: %s\n' "$root" >&2
+	exit 1
+}
+status=0
+while IFS= read -r -d '' metadata; do
+	worktree="${metadata%/.git}"
+	[[ "${worktree##*/}" == main ]] || continue
+	repo="${worktree%/main}"
+	ignored=false
+	for entry in "${ignore[@]}"; do
+		if [[ "$repo" == "$root/$entry" || "$repo" == "$root/$entry/"* ]]; then
+			ignored=true
+		fi
+	done
+	"$ignored" && continue
+	if ! git -C "$worktree" remote get-url origin >/dev/null; then
+		printf 'No origin; skipping: %s\n' "$worktree" >&2
+		status=1
+		continue
+	fi
+	if ! branch="$(git -C "$worktree" symbolic-ref --quiet --short HEAD)" || [[ "$branch" != main ]]; then
+		printf 'Not on main; skipping: %s\n' "$worktree"
+		continue
+	fi
+	if ! dirty="$(git -C "$worktree" status --porcelain --untracked-files=normal)"; then
+		status=1
+		continue
+	fi
+	if [[ -n "$dirty" ]]; then
+		printf 'Dirty worktree; skipping: %s\n' "$worktree"
+		continue
+	fi
+	printf 'Sync: %s\n' "$worktree"
+	"$dry_run" && continue
+	if ! git -C "$worktree" -c pull.rebase=false -c pull.autostash=false -c merge.autostash=false pull --ff-only origin main; then
+		printf 'Pull failed: %s\n' "$worktree" >&2
+		status=1
+	fi
+done < <(find "$root" \( -name '*.bak' -o -name .bare \) -prune -o -name .git -print0 -prune)
+exit "$status"

@@ -1,0 +1,109 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Directory trees relative to ~/workspace; all repositories beneath are ignored.
+ignore=(github.com/curtbushko)
+root="$HOME/workspace"
+dry_run=false
+case "${1:-}" in
+--dry-run) dry_run=true ;;
+-h | --help)
+	printf 'Usage: workspace-to-worktrees [--dry-run]\nRecursively convert workspace repos using tg clone (wt clone fallback).\nOriginals, including unpushed work and dirty files, remain in <name>.bak.\nExisting backups and repos with linked worktrees are never moved.\nClone failures leave the backup and any partial clone for manual recovery.\n'
+	exit 0
+	;;
+'') ;;
+*)
+	printf 'Unknown argument: %s\n' "$1" >&2
+	exit 1
+	;;
+esac
+[[ $# -le 1 ]] || {
+	printf 'Too many arguments\n' >&2
+	exit 1
+}
+for cmd in git find mv; do
+	command -v "$cmd" >/dev/null || {
+		printf 'Missing command: %s\n' "$cmd" >&2
+		exit 1
+	}
+done
+# Shell aliases are not inherited by scripts. tg is normally an alias for wt.
+clone_command=tg
+if ! command -v tg >/dev/null; then
+	clone_command=wt
+	if ! "$dry_run" && ! command -v wt >/dev/null; then
+		printf 'tg or wt must be installed\n' >&2
+		exit 1
+	fi
+fi
+[[ -d "$root" ]] || {
+	printf 'Workspace not found: %s\n' "$root" >&2
+	exit 1
+}
+status=0
+while IFS= read -r -d '' metadata; do
+	# A .git file denotes an existing linked worktree, not a standalone repo.
+	[[ -d "$metadata" && ! -L "$metadata" ]] || continue
+	repo="${metadata%/.git}"
+	ignored=false
+	for entry in "${ignore[@]}"; do
+		if [[ "$repo" == "$root/$entry" || "$repo" == "$root/$entry/"* ]]; then
+			ignored=true
+		fi
+	done
+	"$ignored" && continue
+	if ! url="$(git -C "$repo" remote get-url origin)"; then
+		printf 'No origin; skipping: %s\n' "$repo" >&2
+		status=1
+		continue
+	fi
+	# Match the layout and URL formats supported by the existing wt-clone helper.
+	if [[ "$url" =~ ^ssh://([^/@]+@)?([^/:]+)(:[0-9]+)?/([^/]+)/([^/]+)$ ]]; then
+		host="${BASH_REMATCH[2]}"
+		owner="${BASH_REMATCH[4]}"
+		name="${BASH_REMATCH[5]%.git}"
+	elif [[ "$url" =~ ^(https?://|[^/@:]+@)([^/:]+)[/:]([^/]+)/([^/]+)$ ]]; then
+		host="${BASH_REMATCH[2]}"
+		owner="${BASH_REMATCH[3]}"
+		name="${BASH_REMATCH[4]%.git}"
+	else
+		printf 'Unsupported origin; skipping: %s\n' "$repo" >&2
+		status=1
+		continue
+	fi
+	if [[ "$repo" != "$root/$host/$owner/$name" ]]; then
+		printf 'Origin does not match clone destination; skipping: %s\n' "$repo" >&2
+		status=1
+		continue
+	fi
+	if [[ -e "$repo.bak" || -L "$repo.bak" ]]; then
+		printf 'Backup already exists; skipping: %s.bak\n' "$repo" >&2
+		status=1
+		continue
+	fi
+	if ! worktrees="$(git -C "$repo" worktree list --porcelain)"; then
+		status=1
+		continue
+	fi
+	count=0
+	while IFS= read -r line; do
+		[[ "$line" != worktree\ * ]] || count=$((count + 1))
+	done <<<"$worktrees"
+	if [[ "$count" -ne 1 ]]; then
+		printf 'Has linked worktrees; skipping: %s\n' "$repo"
+		continue
+	fi
+	printf 'Convert: %s -> %s.bak; %s clone\n' "$repo" "$repo" "$clone_command"
+	"$dry_run" && continue
+	if ! mv -n "$repo" "$repo.bak" || [[ -e "$repo" ]]; then
+		printf 'Could not create backup: %s\n' "$repo" >&2
+		status=1
+		continue
+	fi
+	# Run outside the moved repo and suppress worktrunk shell cd directives.
+	if ! (cd "$root" && WORKTRUNK_DIRECTIVE_CD_FILE='' "$clone_command" clone "$url"); then
+		printf 'Clone failed. Original preserved at %s.bak; inspect any partial clone before retrying.\n' "$repo" >&2
+		status=1
+	fi
+done < <(find "$root" \( -name '*.bak' -o -name .bare \) -prune -o -name .git -print0 -prune)
+exit "$status"

@@ -26,6 +26,7 @@
       echo "Examples:"
       echo "  wt clone https://github.com/user/repo"
       echo "  wt clone git@github.com:user/repo.git"
+      echo "  wt clone ssh://git@github.com/user/repo.git"
       exit 0
     fi
 
@@ -37,7 +38,11 @@
     fi
 
     # Parse URL to extract HOST, ORG, and REPO
-    if [[ "$URL" =~ ^(https?://|git@)([^/:]+)[/:]([^/]+)/(.+)(\.git)?$ ]]; then
+    if [[ "$URL" =~ ^ssh://([^/@]+@)?([^/:]+)(:[0-9]+)?/([^/]+)/([^/]+)$ ]]; then
+      HOST="''${BASH_REMATCH[2]}"
+      ORG="''${BASH_REMATCH[4]}"
+      REPO="''${BASH_REMATCH[5]%.git}"
+    elif [[ "$URL" =~ ^(https?://|[^/@:]+@)([^/:]+)[/:]([^/]+)/([^/]+)$ ]]; then
       HOST="''${BASH_REMATCH[2]}"
       ORG="''${BASH_REMATCH[3]}"
       REPO="''${BASH_REMATCH[4]}"
