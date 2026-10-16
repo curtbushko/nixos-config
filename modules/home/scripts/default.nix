@@ -42,11 +42,6 @@
     runtimeInputs = [pkgs.git pkgs.gh pkgs.yq-go pkgs.jq pkgs.coreutils pkgs.gnugrep];
     text = builtins.readFile ./codex-orchestrator;
   };
-  pi-orchestrator = pkgs.writeShellApplication {
-    name = "pi-orchestrator";
-    runtimeInputs = [pkgs.git pkgs.gh pkgs.yq-go pkgs.jq pkgs.coreutils pkgs.gnugrep];
-    text = builtins.readFile ./pi-orchestrator;
-  };
   herdr-smart-focus = pkgs.writeScriptBin "herdr-smart-focus" (builtins.readFile ./herdr-smart-focus);
   hyprstart = pkgs.writeScriptBin "hyprstart" (builtins.readFile ./hyprstart);
   jira-ls = pkgs.writeScriptBin "jira-ls" (builtins.readFile ./jira-ls);
@@ -117,7 +112,6 @@ in {
         gotestwatcher
         helm-nuke
         codex-orchestrator
-        pi-orchestrator
         herdr-smart-focus
         jira-ls
         kubewatcher
