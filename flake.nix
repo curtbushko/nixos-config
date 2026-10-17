@@ -87,7 +87,7 @@
     };
 
     pi = {
-      url = "github:lukasl-dev/pi.nix/467fecc25934b00ec3d5fe0559e4a60fccea528a";
+      url = "github:lukasl-dev/pi.nix/a8ce1745fcfae2cbb86b37f9e89f76941893d00e";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
