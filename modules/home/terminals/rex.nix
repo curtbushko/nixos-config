@@ -7,6 +7,7 @@
 }: let
   inherit (lib) mkIf mkOption types;
   cfg = config.ns.terminals.rex;
+  rexCli = "${cfg.appPath}/Contents/Helpers/Rex Server.rex/Contents/MacOS/rex";
   # Reuse Ghostty's rendered colors rather than maintaining a second palette.
   themeLines =
     builtins.filter
@@ -23,8 +24,7 @@
     (lib.splitString "\n" config.xdg.configFile."ghostty/config".text);
   themeFile = pkgs.writeText "rex-flair-theme" (lib.concatStringsSep "\n" themeLines + "\n");
   whichkey = inputs.rex-whichkey.lib.mkPackage {
-    inherit pkgs;
-    rexCli = "${cfg.appPath}/Contents/Helpers/Rex Server.app/Contents/MacOS/rex";
+    inherit pkgs rexCli;
   };
   initLua =
     builtins.replaceStrings
@@ -61,7 +61,7 @@ in {
     home.sessionPath = ["${config.home.homeDirectory}/.local/bin"];
     home.file.".local/bin/rex".source =
       config.lib.file.mkOutOfStoreSymlink
-      "${cfg.appPath}/Contents/Helpers/Rex Server.app/Contents/MacOS/rex";
+      rexCli;
 
     xdg.configFile."rex/init.lua" = {
       text = initLua;
@@ -75,7 +75,7 @@ in {
     '';
     home.activation.rexConfigReload = lib.hm.dag.entryAfter ["linkGeneration" "rexTheme"] ''
       # Reload an existing server without launching Rex during activation.
-      rex_cli=${lib.escapeShellArg "${cfg.appPath}/Contents/Helpers/Rex Server.app/Contents/MacOS/rex"}
+      rex_cli=${lib.escapeShellArg rexCli}
       if [[ -x "$rex_cli" ]] && "$rex_cli" --autostart=false server status >/dev/null 2>&1; then
         run "$rex_cli" --autostart=false config reload
       fi
