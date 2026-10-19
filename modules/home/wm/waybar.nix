@@ -200,16 +200,20 @@ in {
           };
 
           temperature = {
-            hwmon-path = "/sys/class/hwmon/hwmon1/temp1_input";
-            format = "󰍛 {temperatureC}°C";
+            # k10temp Tctl; resolve the hwmon index at runtime.
+            hwmon-path-abs = "/sys/devices/pci0000:00/0000:00:18.3/hwmon";
+            input-filename = "temp1_input";
+            interval = 1;
+            format = "󰍛 CPU {temperatureC}°C";
+            tooltip-format = "CPU Tctl: {temperatureC}°C";
             critical-threshold = 75;
           };
 
           "custom/gpu" = {
             on-click = "coolercontrol";
             exec = "nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits";
-            format = " {}°C";
-            interval = 10;
+            format = " GPU {}°C";
+            interval = 1;
           };
 
           "custom/temperature-system-separator" = {

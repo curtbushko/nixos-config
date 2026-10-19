@@ -59,7 +59,8 @@ in {
         mainMenuWidthRem = 24.1;
         frequencyPrecision = 1;
         customTheme = gruvboxTheme;
-        showOnboarding = false;
+        # Completed tour version in CoolerControl 5.0.1 (not a boolean).
+        showOnboarding = 3;
       };
     };
   };
