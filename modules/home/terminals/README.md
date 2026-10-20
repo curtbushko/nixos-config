@@ -8,6 +8,11 @@ See the [installation documentation](https://www.superlogical.com/rex/docs/insta
 The module does not install the app. It manages `~/.config/rex/init.lua`;
 back up any existing file before activation (Home Manager will not force-overwrite it).
 
+## Font
+
+Home Manager sets Rex's terminal font to **JetBrainsMono Nerd Font**, **Medium**,
+**10 pt**, matching Ghostty. Reopen Rex after activation if it is already running.
+
 ## Ghostty theme
 
 Home Manager activation copies a **regular file** to `$XDG_CONFIG_HOME/rex/themes/flair`
@@ -126,8 +131,8 @@ visual verification on the fixed app.
 Theme queries have a short total timeout, preserve typeahead, and restore terminal
 input settings. Piped output and `NO_COLOR` skip queries. Opening does not
 reselect the tab afterward, which can replace the client's floating-layer focus.
-The helper redraws on resize. Choose a Nerd Font in Rex's terminal font settings
-(for example JetBrainsMono Nerd Font). The helper supports
+The helper redraws on resize. The module configures JetBrainsMono Nerd Font for
+Rex's terminals. The helper supports
 `REX_WHICHKEY_ASCII=1` for plain separators/text icons and `NO_COLOR=1` for uncolored
 output; these must be in the Rex server's environment to affect spawned menus.
 Explicit terminal cell colors keep the menu visible even when the client overrides

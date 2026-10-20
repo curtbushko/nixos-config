@@ -56,7 +56,13 @@ in {
       }
     ];
 
-    targets.darwin.defaults."com.superlogical.rex"."rex.client.remoteControl" = true;
+    targets.darwin.defaults."com.superlogical.rex" = {
+      "rex.client.remoteControl" = true;
+      # Match Ghostty's terminal typography.
+      "Workspace.terminalFontName" = "JetBrainsMono Nerd Font";
+      "Workspace.terminalFontStyle" = "Medium";
+      "Workspace.terminalFontPointSize" = 10.0;
+    };
 
     home.sessionPath = ["${config.home.homeDirectory}/.local/bin"];
     home.file.".local/bin/rex".source =

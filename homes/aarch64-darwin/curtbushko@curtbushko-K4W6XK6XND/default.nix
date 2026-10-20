@@ -25,7 +25,10 @@
     scripts.enable = true;
     secrets.enable = true;
     shells.enable = true;
-    terminals.enable = true;
+    terminals = {
+      enable = true;
+      rex.enable = true;
+    };
     tools.enable = true;
     llm = {
       enable = true;

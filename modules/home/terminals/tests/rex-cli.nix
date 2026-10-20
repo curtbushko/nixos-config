@@ -45,6 +45,9 @@ let
   };
   contains = needle: text: builtins.replaceStrings [needle] [""] text != text;
 in
+  assert module.config.targets.darwin.defaults."com.superlogical.rex"."Workspace.terminalFontName" == "JetBrainsMono Nerd Font";
+  assert module.config.targets.darwin.defaults."com.superlogical.rex"."Workspace.terminalFontStyle" == "Medium";
+  assert module.config.targets.darwin.defaults."com.superlogical.rex"."Workspace.terminalFontPointSize" == 10.0;
   assert module.config.home.file.".local/bin/rex".source == expected;
   assert contains (builtins.toJSON expected) module.config.xdg.configFile."rex/init.lua".text;
   assert contains (builtins.toJSON expected) module.config.home.activation.rexConfigReload; true
