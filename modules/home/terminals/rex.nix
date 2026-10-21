@@ -38,6 +38,19 @@ in {
     description = "Path to the separately installed Rex application bundle.";
   };
 
+  options.ns.terminals.rex.lan = {
+    enable = mkOption {
+      type = types.bool;
+      default = false;
+      description = "Whether to run a persistent Rex server with an unencrypted, anonymous network listener granting full user access.";
+    };
+    listenAddress = mkOption {
+      type = types.str;
+      default = "0.0.0.0:7297";
+      description = "Address and port for Rex's anonymous listener. The default binds all IPv4 interfaces; use only on trusted networks.";
+    };
+  };
+
   options.ns.terminals.rex.enable = mkOption {
     type = types.bool;
     default = config.ns.terminals.enable && pkgs.stdenv.hostPlatform.isDarwin;
@@ -58,10 +71,32 @@ in {
 
     targets.darwin.defaults."com.superlogical.rex" = {
       "rex.client.remoteControl" = true;
+      "rex.server.tailnet-enabled" = false;
+      # launchd owns the LAN server; don't let the app restart it without flags.
+      "rex.server.automatic-restart-enabled" = !cfg.lan.enable;
       # Match Ghostty's terminal typography.
       "Workspace.terminalFontName" = "JetBrainsMono Nerd Font";
       "Workspace.terminalFontStyle" = "Medium";
       "Workspace.terminalFontPointSize" = 10.0;
+    };
+
+    launchd.agents.rex-server = mkIf cfg.lan.enable {
+      enable = true;
+      config = {
+        ProgramArguments = [
+          rexCli
+          "server"
+          "run"
+          "--extra-listen"
+          cfg.lan.listenAddress
+          "--allow-anonymous"
+        ];
+        RunAtLoad = true;
+        KeepAlive = true;
+        ThrottleInterval = 30;
+        StandardOutPath = "${config.home.homeDirectory}/Library/Logs/rex-server.log";
+        StandardErrorPath = "${config.home.homeDirectory}/Library/Logs/rex-server.log";
+      };
     };
 
     home.sessionPath = ["${config.home.homeDirectory}/.local/bin"];

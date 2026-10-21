@@ -27,7 +27,10 @@
     shells.enable = true;
     terminals = {
       enable = true;
-      rex.enable = true;
+      rex = {
+        enable = true;
+        lan.enable = true;
+      };
     };
     tools.enable = true;
     llm = {

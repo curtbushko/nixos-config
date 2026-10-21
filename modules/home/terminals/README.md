@@ -58,6 +58,32 @@ The default bundle is `/Applications/Rex Beta.app`. If it is installed elsewhere
 set `ns.terminals.rex.appPath` to its bundle path (for example `/Applications/Rex.app`).
 Check the Lua configuration with `rex config check`; reload it with `rex config reload`.
 
+## Remote access over the LAN
+
+Set `ns.terminals.rex.lan.enable = true;` to run Rex under a user launchd agent
+with `--extra-listen 0.0.0.0:7297 --allow-anonymous`. This is enabled for
+`curtbushko-K4W6XK6XND` only. The local Unix socket remains available to the app
+and CLI. The module disables built-in Tailscale and the app's automatic server
+restart so launchd can own the server and preserve its listener flags.
+
+**Every connection has full access as your user, with no authentication or
+encryption.** The default listens on every IPv4 interface, not just Wi-Fi or
+Ethernet. Use only on trusted networks, do not port-forward it, and restrict
+access with your firewall. Set `ns.terminals.rex.lan.listenAddress` to a specific
+LAN IP and port if it must not listen on other interfaces. Allow incoming Rex
+connections in the macOS firewall if prompted.
+
+Initial setup requires a server restart. Finish your Rex sessions first:
+`rex server stop` ends every program in them. Quit the Rex app, stop its server,
+then apply the Home Manager configuration and reopen Rex. The launchd agent
+starts the server at login and restarts it on exit. It cannot replace an already
+running server that owns the same socket; Lua config reload alone does not
+change listeners.
+
+From another LAN device, use **Add Remote Host…** with `http://<LAN-IP>:7297`,
+or run `rex -S http://<LAN-IP>:7297 ls`. Confirm it from that other device;
+local status alone does not verify routing or firewall access.
+
 ## HerdR keyboard bindings
 
 `rex/init.lua` matches the explicit bindings in `modules/home/llm/herdr/default.nix`.
