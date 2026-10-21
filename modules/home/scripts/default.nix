@@ -63,6 +63,11 @@
   pr-create = pkgs.writeScriptBin "pr-create" (builtins.readFile ./pr-create);
   pr-review = pkgs.writeScriptBin "pr-review" (builtins.readFile ./pr-review);
   pr-view = pkgs.writeScriptBin "pr-view" (builtins.readFile ./pr-view);
+  rex-env-render = pkgs.writeShellApplication {
+    name = "rex-env-render";
+    runtimeInputs = [pkgs.jq pkgs.coreutils];
+    text = builtins.readFile ./rex-env-render;
+  };
   rex-theme-install = pkgs.writeScriptBin "rex-theme-install" (builtins.readFile ./rex-theme-install);
   snippet = pkgs.writeScriptBin "snippet" (builtins.readFile ./snippet);
   tailssh = pkgs.writeScriptBin "tailssh" (builtins.readFile ./tailssh);
@@ -135,6 +140,7 @@ in {
         pr-create
         pr-review
         pr-view
+        rex-env-render
         rex-theme-install
         snippet
         tailssh

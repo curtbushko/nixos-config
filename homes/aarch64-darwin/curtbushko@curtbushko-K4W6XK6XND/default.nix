@@ -29,7 +29,7 @@
       enable = true;
       rex = {
         enable = true;
-        lan.enable = true;
+        lan.enable = false;
       };
     };
     tools.enable = true;

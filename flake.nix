@@ -81,6 +81,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    rex = {
+      url = "https://pkgs.superlogical.com/rex/nix/snapshot.tar.gz";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     rex-whichkey = {
       url = "git+ssh://git@github.com/curtbushko/rex-whichkey.git?ref=main";
       inputs.nixpkgs.follows = "nixpkgs";

@@ -61,9 +61,10 @@ Check the Lua configuration with `rex config check`; reload it with `rex config 
 ## Remote access over the LAN
 
 Set `ns.terminals.rex.lan.enable = true;` to run Rex under a user launchd agent
-with `--extra-listen 0.0.0.0:7297 --allow-anonymous`. This is enabled for
-`curtbushko-K4W6XK6XND` only. The local Unix socket remains available to the app
-and CLI. The module disables built-in Tailscale and the app's automatic server
+with `--extra-listen 0.0.0.0:7297 --allow-anonymous`. It is disabled on the
+work Mac (`curtbushko-K4W6XK6XND`), which must remain local-only. Enabling
+LAN access on m4-pro is a separate macOS setup step. The local Unix socket
+remains available to the app and CLI. The module disables built-in Tailscale and the app's automatic server
 restart so launchd can own the server and preserve its listener flags.
 
 **Every connection has full access as your user, with no authentication or
@@ -83,6 +84,51 @@ change listeners.
 From another LAN device, use **Add Remote Host…** with `http://<LAN-IP>:7297`,
 or run `rex -S http://<LAN-IP>:7297 ls`. Confirm it from that other device;
 local status alone does not verify routing or firewall access.
+
+## Gamingrig Linux server
+
+Gamingrig enables `ns.services.rex.enable`, importing the pinned upstream Rex
+NixOS login-server module. It starts sessions as `curtbushko`, shared with that
+user's local Rex server on systemd-logind hosts. Run `rex ls` locally; the
+login server itself has a root-only coordination socket.
+
+- **m4-pro over Tailscale:** use **Add Remote Host…** with
+  `https://curtbushko@gamingrig.<tailnet>.ts.net`. HTTPS must be enabled on the
+  tailnet, and gamingrig must already be signed in. The Tailscale identity in
+  SOPS's `TS_USER` entry is mapped to the account.
+- **Work over LAN:** use `http://curtbushko@192.168.2.55:7297`. This listener is
+  anonymous and unencrypted. Every permitted LAN device can run commands as
+  `curtbushko`; it is not a password-authenticated login. Do not port-forward it.
+- **Gamingrig to work:** intentionally not configured; work exposes no server.
+
+Reserve `192.168.2.55` for gamingrig in DHCP. The listener binds that address;
+`ns.services.rex.lanAddress` can override it. A dedicated nftables table allows
+TCP 7297 only from `192.168.2.0/24` on `eno1` (and local loopback), dropping other
+sources including IPv6. It loads before Rex, without enabling the general NixOS
+firewall or flushing Docker's tables. The restriction remains on service stop;
+if retiring Rex, remove it explicitly with `sudo nft delete table inet rex`.
+
+SOPS decrypts the dotenv file to a root-only runtime file. **sops-nix does not
+select individual keys from dotenv files.** `rex-auth.service` uses the tested
+`rex-env-render` helper to parse only `export TS_USER` and
+`export REX_PACKAGE_TOKEN`, without evaluating shell code or logging values.
+It validates the selected values before generating a root-only accounts JSON
+and a mode-0600 netrc owned by `curtbushko` under `/run/rex-auth`. Rex depends
+on successful preparation. Invalid input produces a generic error rather than
+passing the raw dotenv file to Rex. Secret updates restart preparation and Rex.
+Neither identity nor token is embedded in the Nix store.
+
+This uses the existing age key at
+`/home/curtbushko/.config/sops/age/keys.txt`, accessible to root during activation.
+Set `TS_USER` to the exact Tailscale login (including `@github` for GitHub
+accounts), without a `tailscale:` prefix. Nix uses `/run/rex-auth/netrc` on
+gamingrig; an environment export is not needed. Initial bootstrap or another
+machine needs its own private netrc; pass its path with
+`nix flake update rex --option netrc-file /path/to/private/netrc`.
+
+After activation, check `systemctl status rex-auth rex-firewall rex-login-server
+rex-tailscale-serve` and `tailscale serve status`. Verify each remote path from
+the corresponding Mac; successful local evaluation does not prove connectivity.
 
 ## HerdR keyboard bindings
 

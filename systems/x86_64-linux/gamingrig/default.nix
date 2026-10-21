@@ -21,6 +21,7 @@
   };
 
   ns = {
+    services.rex.enable = true;
     hardware.audio.enable = true;
     hardware.cpu.enable = true;
     services.cron.enable = true;
