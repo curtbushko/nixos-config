@@ -135,5 +135,6 @@ rex.bind("alt+h", "herdr_focus", { direction = "left" })
 rex.bind("alt+l", "herdr_focus", { direction = "right" })
 
 -- Plugin defaults include the standard menus. Add spec = { ... } to replace them.
-local whichkey = dofile("@REX_WHICHKEY_PLUGIN@")
+local config_home = os.getenv("XDG_CONFIG_HOME") or (os.getenv("HOME") .. "/.config")
+local whichkey = dofile(config_home .. "/rex/whichkey/plugin.lua")
 whichkey.setup({ position = "center" })

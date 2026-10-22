@@ -2,7 +2,7 @@
 let
   appPath = "/Applications/Rex Beta.app";
   expected = "${appPath}/Contents/Helpers/Rex Server.rex/Contents/MacOS/rex";
-  mkModule = lanEnabled: listenAddress:
+  mkModule = isDarwin: lanEnabled: listenAddress:
     import ../rex.nix {
       config = {
         ns.terminals = {
@@ -27,6 +27,7 @@ let
           then value
           else {};
         mkOption = value: value;
+        mkMerge = builtins.foldl' (acc: next: acc // next) {};
         hm.dag.entryAfter = _: script: script;
         types = {
           str = null;
@@ -39,18 +40,23 @@ let
         makeBinPath = _: "/test/bin";
       };
       pkgs = {
-        stdenv.hostPlatform.isDarwin = true;
+        stdenv.hostPlatform.isDarwin = isDarwin;
         writeText = _: _: "/test/theme";
         coreutils = "/test/coreutils";
         diffutils = "/test/diffutils";
         bash = "/test/bash";
       };
-      # Capture the CLI passed to the plugin package in the rendered init.lua.
-      inputs.rex-whichkey.lib.mkPackage = args: {plugin = args.rexCli;};
+      # A remote popup must not receive the macOS app's CLI path.
+      inputs.rex-whichkey.lib.mkPackage = args:
+        assert !(args ? rexCli); {
+          plugin = "/test/plugin.lua";
+          __toString = _: "/test/whichkey";
+        };
     };
-  module = mkModule true "0.0.0.0:7297";
-  localOnly = mkModule false "0.0.0.0:7297";
-  custom = mkModule true "192.0.2.1:8000";
+  module = mkModule true true "0.0.0.0:7297";
+  localOnly = mkModule true false "0.0.0.0:7297";
+  custom = mkModule true true "192.0.2.1:8000";
+  linux = mkModule false false "0.0.0.0:7297";
   contains = needle: text: builtins.replaceStrings [needle] [""] text != text;
 in
   assert module.config.targets.darwin.defaults."com.superlogical.rex"."Workspace.terminalFontName" == "JetBrainsMono Nerd Font";
@@ -74,5 +80,11 @@ in
   assert localOnly.config.targets.darwin.defaults."com.superlogical.rex"."rex.server.automatic-restart-enabled";
   assert builtins.elem "192.0.2.1:8000" custom.config.launchd.agents.rex-server.config.ProgramArguments;
   assert module.config.home.file.".local/bin/rex".source == expected;
-  assert contains (builtins.toJSON expected) module.config.xdg.configFile."rex/init.lua".text;
+  assert !contains expected module.config.xdg.configFile."rex/init.lua".text;
+  assert module.config.xdg.configFile."rex/whichkey/plugin.lua".source == "/test/plugin.lua";
+  assert module.config.xdg.configFile."rex/whichkey/rex-whichkey".source == "/test/whichkey/bin/rex-whichkey";
+  assert linux.config.xdg.configFile."rex/init.lua".text == module.config.xdg.configFile."rex/init.lua".text;
+  assert linux.config.xdg.configFile."rex/whichkey/plugin.lua".source == "/test/plugin.lua";
+  assert !(linux.config ? targets);
+  assert !(linux.config ? launchd);
   assert contains (builtins.toJSON expected) module.config.home.activation.rexConfigReload; true

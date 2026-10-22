@@ -50,13 +50,14 @@ rex = {
 	},
 }
 
--- Resolve deployment tokens in the raw source without installing a config.
+-- Resolve the installed plugin path and resource tokens without deployment.
 local real_dofile = dofile
 local directory =
 	assert(os.getenv("REX_WHICHKEY_LUA_DIR"), "Set REX_WHICHKEY_LUA_DIR to the pinned plugin input's lua/whichkey")
 local menu_config = real_dofile(directory .. "/config.lua")
 dofile = function(path)
-	if path == "@REX_WHICHKEY_PLUGIN@" then
+	local config_home = os.getenv("XDG_CONFIG_HOME") or (os.getenv("HOME") .. "/.config")
+	if path == config_home .. "/rex/whichkey/plugin.lua" then
 		return real_dofile(directory .. "/plugin.lua")
 	end
 	if path == "@REX_WHICHKEY_DIRECTORY@/config.lua" then
@@ -186,11 +187,11 @@ assert(
 	"bootstrap at the origin; shared areas own subsequent placement"
 )
 assert(
-	math.abs(tonumber(layer.layout.block.options.command[13]) - (layer.bounds.w - layer.bounds.x) / layer.bounds.w)
+	math.abs(tonumber(layer.layout.block.options.command[16]) - (layer.bounds.w - layer.bounds.x) / layer.bounds.w)
 		< 1e-9
 )
 assert(
-	math.abs(tonumber(layer.layout.block.options.command[14]) - (layer.bounds.h - layer.bounds.y) / layer.bounds.h)
+	math.abs(tonumber(layer.layout.block.options.command[17]) - (layer.bounds.h - layer.bounds.y) / layer.bounds.h)
 		< 1e-9
 )
 assert(layer.bounds.x >= 0 and layer.bounds.y >= 0)
@@ -202,13 +203,14 @@ assert(
 	"a popup must not run login initialization or emit a Last login timestamp"
 )
 assert(options.exit.quick_exit_threshold_ms == 0, "even a fast Escape must close the temporary popup")
-assert(options.command[3] == "app-client" and options.command[4] == "session" and options.command[5] == "b")
+assert(options.command[1] == "/bin/sh" and options.command[2] == "-c")
+assert(options.command[6] == "app-client" and options.command[7] == "session" and options.command[8] == "b")
 assert(not options.theme, "inherit the active terminal theme")
-assert(options.command[7] == "#d3c6aa", "retain internal colors only as query fallbacks")
-assert(options.command[15] == "center")
+assert(options.command[10] == "#d3c6aa", "retain internal colors only as query fallbacks")
+assert(options.command[18] == "center")
 calls = {}
 actions.whichkey.run({ client_id = "app-client", session_id = "session", block_id = "b" }, { position = "left" })
-assert(calls[1].layer.layout.block.options.command[15] == "left")
+assert(calls[1].layer.layout.block.options.command[18] == "left")
 -- A tab switch must not create the popup apart from its originating pane.
 calls = {}
 actions.whichkey.run({ client_id = "app-client", session_id = "session", block_id = "d" }, {})

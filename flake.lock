@@ -1402,11 +1402,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792587037,
-        "narHash": "sha256-CVvw7pyMEhTeO+e82QM9/hWjgOojh7zKkYWNzelhBDs=",
+        "lastModified": 1792633010,
+        "narHash": "sha256-gerwm4OSnQYnOUXHGzkufH8OsG/BdhjV2E0XLqLw2RY=",
         "ref": "main",
-        "rev": "2ecb877fdb6e531c2d2ca4b25108298a0569e8e8",
-        "revCount": 5,
+        "rev": "b989ea2455c3aed2a6c1f3d6b07177ac0af1cd61",
+        "revCount": 6,
         "type": "git",
         "url": "ssh://git@github.com/curtbushko/rex-whichkey.git"
       },

@@ -27,6 +27,12 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
+    environment.systemPackages = [
+      (inputs.rex-whichkey.lib.mkPackage {inherit pkgs;})
+    ];
+    # The login server starts a personal server with this account's init.lua.
+    home-manager.users.curtbushko.ns.terminals.rex.enable = true;
+
     sops.age.keyFile = "/home/curtbushko/.config/sops/age/keys.txt";
     # dotenv key selection is not supported by sops-nix. Keep the whole file
     # root-only, and select and validate individual assignments at runtime.

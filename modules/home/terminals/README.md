@@ -168,13 +168,28 @@ remain available.
 [rex-whichkey](https://github.com/curtbushko/rex-whichkey) is a separate plugin,
 consumed through the pinned `rex-whichkey` flake input. The input uses Git over
 SSH while the repository is private; fetching it requires GitHub SSH access.
-`rex.nix` calls the input's `lib.mkPackage`, supplies the installed Rex CLI path,
-and inserts the packaged Lua entry point into `rex/init.lua`.
+`rex.nix` calls the input's `lib.mkPackage` and installs `rex/init.lua`,
+`rex/whichkey/plugin.lua`, and `rex/whichkey/rex-whichkey` under the account's
+XDG config directory on both macOS and Linux. Darwin theme and app settings
+remain macOS-only.
+
+The Linux server module enables this configuration for `curtbushko` and installs
+the native helper alongside Rex. The login server loads that account's
+`~/.config/rex/init.lua` (or `$XDG_CONFIG_HOME/rex/init.lua`). A different server
+config can be selected using `REX_CONFIG` in its environment or
+`rex server run --config PATH`; no override is needed for the default location.
+
+The popup resolves the helper's stable config path on the target host, rather
+than sending a Mac Nix store executable path to Linux. The default `rex` CLI
+resolves through the target terminal's `REX_BIN_DIR`, falling back to `PATH`.
+After deploying on Linux, run `rex config check` and `rex config reload` as that
+account on the server; this setup does not automatically restart its sessions.
 
 `init.lua` configures it with `whichkey.setup({ position = "center" })`.
 The implementation, helper, dependencies, tests, and upstream attribution now
 live in the plugin repository, not in this configuration. Update it with
-`nix flake update rex-whichkey`.
+`nix flake update rex-whichkey`. Publish the matching plugin changes before
+updating this input; both client and server must use the updated plugin.
 The popup reads its inherited terminal theme before painting: OSC 10/11 supply
 foreground/background, with a raised popup surface derived from a 12% foreground
 blend; OSC 4 supplies yellow keys (3), gray borders/help (8),
@@ -234,8 +249,9 @@ Open it with **Ctrl+B, Space** or **Alt+Space**, then press a displayed key:
 require a second **y** confirmation. HerdR-specific worktree and swap actions
 are omitted rather than mapped to unrelated Rex actions. Moving a pane between
 sessions is also omitted: Rex's move API only operates within one session.
-Remote Control must remain enabled for menu dispatch. Activation reloads a
-running server automatically; otherwise Rex loads the config on its next start.
+Remote Control must remain enabled for menu dispatch. On macOS, activation
+reloads a running server automatically; otherwise Rex loads the config on its
+next start. On Linux, reload it manually as the server account.
 
 ## Validation
 
@@ -245,6 +261,8 @@ From the root of this repo, test host bindings against the pinned plugin:
 plugin_source="$(nix eval --impure --raw --expr '(builtins.getFlake (toString ./.)).inputs.rex-whichkey.outPath')"
 REX_WHICHKEY_LUA_DIR="$plugin_source/lua/whichkey" nix develop "path:$plugin_source" -c lua modules/home/terminals/tests/rex_keys.lua
 bash modules/home/scripts/tests/rex-theme-install_test.sh
+nix-instantiate --eval --strict modules/home/terminals/tests/rex-cli.nix
+nix-instantiate --eval --strict modules/nixos/services/rex/tests/config.nix
 rex config check ~/.config/rex/init.lua
 ```
 
