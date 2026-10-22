@@ -122,8 +122,11 @@ This uses the existing age key at
 `/home/curtbushko/.config/sops/age/keys.txt`, accessible to root during activation.
 Set `TS_USER` to the exact Tailscale login (including `@github` for GitHub
 accounts), without a `tailscale:` prefix. Nix uses `/run/rex-auth/netrc` on
-gamingrig; an environment export is not needed. Initial bootstrap or another
-machine needs its own private netrc; pass its path with
+gamingrig; an environment export is not needed. Darwin builds use the separately
+installed macOS app and do not fetch the private Rex package input or need its
+token. Only the Linux module is exposed to Snowfall, avoiding eager input-library
+discovery. Initial Linux bootstrap or updating the Rex input on another machine
+needs its own private netrc; pass its path with
 `nix flake update rex --option netrc-file /path/to/private/netrc`.
 
 After activation, check `systemctl status rex-auth rex-firewall rex-login-server
@@ -185,7 +188,7 @@ resolves through the target terminal's `REX_BIN_DIR`, falling back to `PATH`.
 After deploying on Linux, run `rex config check` and `rex config reload` as that
 account on the server; this setup does not automatically restart its sessions.
 
-`init.lua` configures it with `whichkey.setup({ position = "center" })`.
+`init.lua` configures it with `whichkey.setup({ position = "left" })`.
 The implementation, helper, dependencies, tests, and upstream attribution now
 live in the plugin repository, not in this configuration. Update it with
 `nix flake update rex-whichkey`. Publish the matching plugin changes before

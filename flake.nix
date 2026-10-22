@@ -137,7 +137,12 @@
 
   outputs = inputs: let
     lib = inputs.snowfall-lib.mkLib {
-      inherit inputs;
+      # Snowfall inspects every input's lib. Keep the private Linux-only flake lazy.
+      inputs =
+        inputs
+        // {
+          rex = {nixosModules = inputs.rex.nixosModules;};
+        };
       src = ./.;
 
       snowfall = {

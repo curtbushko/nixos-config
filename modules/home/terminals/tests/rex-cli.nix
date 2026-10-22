@@ -61,7 +61,7 @@ let
 in
   assert module.config.targets.darwin.defaults."com.superlogical.rex"."Workspace.terminalFontName" == "JetBrainsMono Nerd Font";
   assert module.config.targets.darwin.defaults."com.superlogical.rex"."Workspace.terminalFontStyle" == "Medium";
-  assert module.config.targets.darwin.defaults."com.superlogical.rex"."Workspace.terminalFontPointSize" == 10.0;
+  assert module.config.targets.darwin.defaults."com.superlogical.rex"."Workspace.terminalFontPointSize" == 12.0;
   assert !module.config.targets.darwin.defaults."com.superlogical.rex"."rex.server.tailnet-enabled";
   assert !module.config.targets.darwin.defaults."com.superlogical.rex"."rex.server.automatic-restart-enabled";
   assert module.options.ns.terminals.rex.lan.enable.default == false;
@@ -81,6 +81,7 @@ in
   assert builtins.elem "192.0.2.1:8000" custom.config.launchd.agents.rex-server.config.ProgramArguments;
   assert module.config.home.file.".local/bin/rex".source == expected;
   assert !contains expected module.config.xdg.configFile."rex/init.lua".text;
+  assert contains ''whichkey.setup({ position = "left" })'' module.config.xdg.configFile."rex/init.lua".text;
   assert module.config.xdg.configFile."rex/whichkey/plugin.lua".source == "/test/plugin.lua";
   assert module.config.xdg.configFile."rex/whichkey/rex-whichkey".source == "/test/whichkey/bin/rex-whichkey";
   assert linux.config.xdg.configFile."rex/init.lua".text == module.config.xdg.configFile."rex/init.lua".text;

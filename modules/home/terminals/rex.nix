@@ -84,7 +84,7 @@ in {
         # Match Ghostty's terminal typography.
         "Workspace.terminalFontName" = "JetBrainsMono Nerd Font";
         "Workspace.terminalFontStyle" = "Medium";
-        "Workspace.terminalFontPointSize" = 10.0;
+        "Workspace.terminalFontPointSize" = 12.0;
       };
 
       launchd.agents.rex-server = mkIf cfg.lan.enable {
