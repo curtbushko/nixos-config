@@ -159,13 +159,15 @@ these file-based bindings; clear any conflicting UI shortcuts.
 | Cmd+Option+W | Cycle pane widths: 1/3, 1/2, 2/3 of the window |
 
 Cmd+H/L sorts panes by their x/y positions, including vertically stacked panes.
-After the last tab, navigation continues into the next session in server order,
-wrapping from the final session to the first. Cmd+H traverses the same cycle in
-reverse. Tab/session crossings focus the first/last pane in the destination tab;
-sessions without tabs are skipped. A single tab cycles through its own panes.
-The action explicitly selects the client session/tab as well as server focus.
-This cycle covers sessions on the current server, not other connected hosts.
-J/K stays spatial within the tab.
+After the last tab, navigation asks the app to select the next session, including
+sessions on connected remote hosts. Cmd+H traverses in reverse. Session ordering
+and wrapping follow Rex's built-in Next/Previous Session actions, not a
+server-local session list. Session crossings select the destination's first/last
+tab and retain that tab's remembered pane focus. Within a session, tab crossings
+focus the first/last pane. J/K stays spatial within the tab.
+
+Deploy this configuration on each server: shortcuts in remote sessions run that
+server's `init.lua`, so updating only the Mac does not update Gamingrig's bindings.
 
 Width changes adjust the nearest horizontal split. A single pane is unchanged;
 unreachable presets inside nested splits are skipped. Incremental changes are
