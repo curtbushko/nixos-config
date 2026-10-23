@@ -148,7 +148,7 @@ these file-based bindings; clear any conflicting UI shortcuts.
 | --- | --- |
 | Cmd+D / Cmd+Shift+D | Split right / down |
 | Cmd+J/K / Cmd+Down/Up | Focus pane down / up |
-| Cmd+H/L / Cmd+Left/Right | Previous / next pane, then tab, then session |
+| Cmd+H/L / Cmd+Left/Right | Previous / next pane, then tab, then connected session |
 | Cmd+T | New tab |
 | Cmd+W | Close tab |
 | Cmd+1–9 | Go to tab 1–9 |
@@ -158,28 +158,29 @@ these file-based bindings; clear any conflicting UI shortcuts.
 | Cmd+Option+- / Cmd+Option+= | Shrink / grow pane width by 10 percentage points |
 | Cmd+Option+W | Cycle pane widths: 1/3, 1/2, 2/3 of the window |
 
-Cmd+H/L sorts panes by their x/y positions, including vertically stacked panes.
-After the last tab, navigation continues into the next session, including remote
-hosts. Cmd+H traverses in reverse. The order is the app's home server first, then
-hosts in `rex.servers()` order, with each server's sessions in server order.
-Navigation wraps at either end and skips sessions without tabs. Tab/session
-crossings focus the destination's first/last pane. They select the tab with an
-explicit session/window ID: `client.tab.goto` otherwise selects a home-server tab,
-even when the action originated remotely. J/K stays spatial within the tab.
+Cmd+H/L sorts panes by x/y position, then crosses tabs and sessions. Sessions
+are ordered by the home server first, then hosts in `rex.servers()` order, with
+each server's sessions in server order. Navigation wraps and skips sessions
+without tabs. J/K stays spatial within the current tab.
 
-Every navigation step runs `rex/cycle.lua` through the home machine's CLI, passing
-the invoking session and pane IDs. The helper locates that pane's tab rather than
-trusting potentially stale server focus, then selects the next pane/tab/session.
-The invoking host is tried first, and attach's view snapshot avoids a separate
-view request. Pane/tab moves do not enumerate sessions or contact unrelated hosts;
-only session crossings query the global order. Views are not cached across keypresses.
-Keeping all selection on this CLI path avoids server-side queued actions being interpreted
-against the wrong host. Native Next/Previous Session actions also only cycle the
-home server's sessions. Lookup/focus errors are reported instead of silently
-wrapping locally. The Mac's Remote Control setting
-must remain enabled, and its managed `~/.local/bin/rex` must be available.
-Deploy the updated home configuration on the app's home machine. An app using a
-different server as its home needs this configuration installed there too.
+Each keypress launches `rex/cycle.lua` asynchronously. Before attaching or changing
+focus, it verifies that the source still exists in its server's live session list
+and is attached to a connected app client. Remote sessions are eligible only when
+that same app has a connected client on the remote server. App matching requires
+a unique nonempty client label, name, and platform; use the same label, such as
+`m4-pro`, on the app's local and remote connections. Lost connections and failed
+hosts are excluded from the navigation list, which is rebuilt for each step.
+
+The helper rechecks the source and destination immediately before changing focus.
+A missing source, stale pane, or disconnected source connection results in no
+navigation, not a fallback to another host. Tab/session activation is routed through
+the destination server's app client. A pane move within the current tab does not
+reactivate that tab. The CLI uses a one-second request timeout and a five-second
+process budget. The app does not wait for the helper; additional cycling keys are
+ignored while a step is running so they cannot build up stale session switches.
+The Mac's Remote Control setting must remain enabled for tab/session activation.
+These guards are covered by offline tests; a real disconnect/crash reproduction
+has not been run against the updated code.
 
 Width changes adjust the nearest horizontal split. A single pane is unchanged;
 unreachable presets inside nested splits are skipped. Incremental changes are
@@ -191,7 +192,7 @@ Spotlight's Cmd+Space shortcut if it still competes with which-key.
 
 Ghostty uses the same Cmd/Super tab, split, and command-menu keys. H/L selects
 tabs and J/K focuses vertical splits; it does not implement Rex's combined
-pane/tab traversal. Cmd+Option+H/L reorders tabs. Ghostty's resize keys move a
+pane/tab/session traversal. Cmd+Option+H/L reorders tabs. Ghostty's resize keys move a
 divider by 10 cells, not 10%, and it has no equivalent pane-width preset action
 or directional pane-move action. Those capabilities are not emulated.
 

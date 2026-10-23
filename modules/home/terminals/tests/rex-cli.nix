@@ -85,7 +85,10 @@ in
   assert !contains expected module.config.xdg.configFile."rex/init.lua".text;
   assert contains ''whichkey.setup({ position = "center" })'' module.config.xdg.configFile."rex/init.lua".text;
   assert module.config.xdg.configFile."rex/cycle.lua".source == ../rex/cycle.lua;
-  assert linux.config.xdg.configFile."rex/cycle.lua".source == module.config.xdg.configFile."rex/cycle.lua".source;
+  assert linux.config.xdg.configFile."rex/cycle.lua".source == ../rex/cycle.lua;
+  assert contains "rex.exec.start" module.config.xdg.configFile."rex/init.lua".text;
+  assert !contains "checked(rex.exec(" module.config.xdg.configFile."rex/init.lua".text;
+  assert contains "herdr_focus" module.config.xdg.configFile."rex/init.lua".text;
   assert module.config.xdg.configFile."rex/whichkey/plugin.lua".source == "/test/plugin.lua";
   assert module.config.xdg.configFile."rex/whichkey/rex-whichkey".source == "/test/whichkey/bin/rex-whichkey";
   assert linux.config.xdg.configFile."rex/init.lua".text == module.config.xdg.configFile."rex/init.lua".text;

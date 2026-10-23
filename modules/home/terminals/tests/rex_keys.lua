@@ -1,17 +1,30 @@
 local bindings, actions, calls = {}, {}, {}
 local view, view_error, focus_error, popup_error, theme_error
-local encoded_args, exec_error, exec_failure
+local helper_running, spawn_error
 rex = {
 	json = {
 		encode = function(args)
-			encoded_args = args
-			return "encoded-cycle-args"
+			return args
 		end,
 	},
-	exec = function(argv, options)
-		calls[#calls + 1] = { exec = argv, options = options }
-		return { ok = not exec_failure, stderr = "cycle failed" }, exec_error
-	end,
+	exec = setmetatable({
+		start = function(argv, options)
+			calls[#calls + 1] = { exec = argv, options = options }
+			if spawn_error then
+				return nil, spawn_error
+			end
+			helper_running = true
+			return {
+				running = function()
+					return helper_running
+				end,
+			}
+		end,
+	}, {
+		__call = function()
+			error("navigation must not synchronously wait for the CLI")
+		end,
+	}),
 	block = {
 		call = function(creator, method, args)
 			assert(method == "set_theme", "opening a popup must not depend on cached terminal dimensions")
@@ -106,6 +119,7 @@ binding({ "cmd+j", "cmd+down" }, "pane.focus", "direction", "down")
 binding({ "cmd+k", "cmd+up" }, "pane.focus", "direction", "up")
 binding({ "cmd+h", "cmd+left" }, "herdr_focus", "direction", "left")
 binding({ "cmd+l", "cmd+right" }, "herdr_focus", "direction", "right")
+assert(actions.herdr_focus, "retain combined pane/tab/session cycling")
 binding({ "cmd+t" }, "client.tab.new")
 binding({ "cmd+w" }, "client.tab.close")
 binding({ "cmd+space" }, "whichkey")
@@ -225,51 +239,35 @@ local function window(id, focused, blocks)
 end
 local first = window("first", "b", { block("c", 0.5, 0.5), block("b", 0.5, 0), block("a", 0, 0) })
 local second = window("second", "d", { block("e", 0.5, 0), block("d", 0, 0) })
--- Every navigation step uses the same helper; no server-side client actions.
-for _, session_id in ipairs({ "local-session", "remote-session" }) do
-	for _, pane in ipairs({ "a", "b", "c", "d" }) do
-		for _, direction in ipairs({ "left", "right" }) do
-			calls = {}
-			actions.herdr_focus.run(
-				{ client_id = "app-client", session_id = session_id, block_id = pane, server = "Gamingrig" },
-				{
-					direction = direction,
-				}
-			)
-			assert(#calls == 1 and calls[1].exec, "all navigation must use the CLI routing path")
-			local argv = calls[1].exec
-			assert(argv[2] == "--autostart=false" and argv[3] == "-C" and argv[4] == "app-client")
-			assert(argv[5] == "do" and argv[6]:match("/rex/cycle.lua$"))
-			assert(argv[7] == "--args" and argv[8] == "encoded-cycle-args")
-			assert(encoded_args.session_id == session_id and encoded_args.block_id == pane)
-			assert(encoded_args.server == "Gamingrig", "forward the invoking host to avoid discovery RPCs")
-			assert(encoded_args.direction == direction)
-			for _, key in ipairs({ "REX_SERVER", "REX_SESSION", "REX_BLOCK", "REX_CLIENT" }) do
-				assert(calls[1].options.env[key] == false, "do not inherit remote routing")
-			end
-		end
+-- Navigation hands off without waiting for the helper or nested app requests.
+local context = { client_id = "app-client", session_id = "session", block_id = "pane", server = "Gamingrig" }
+for _, direction in ipairs({ "left", "right" }) do
+	calls, helper_running = {}, false
+	actions.herdr_focus.run(context, { direction = direction })
+	assert(#calls == 1)
+	local argv, options = calls[1].exec, calls[1].options
+	assert(argv[2] == "--autostart=false" and argv[3] == "--timeout=1s")
+	assert(argv[4] == "-C" and argv[5] == context.client_id)
+	assert(argv[6] == "do" and argv[7]:match("/rex/cycle.lua$"))
+	assert(argv[8] == "--args")
+	assert(argv[9].session_id == context.session_id and argv[9].server == context.server)
+	assert(argv[9].client_id == context.client_id and argv[9].direction == direction)
+	assert(options.detach and options.timeout == 5, "parent must return before the helper asks the app to act")
+	assert(options.stdout == false and options.stderr == false)
+	for _, key in ipairs({ "REX_SERVER", "REX_SESSION", "REX_BLOCK", "REX_CLIENT" }) do
+		assert(options.env[key] == false)
 	end
+	-- Key repeats may not enqueue a backlog of stale session switches.
+	actions.herdr_focus.run(context, { direction = direction })
+	assert(#calls == 1)
 end
-for _, failure in ipairs({ "spawn", "exit" }) do
-	calls = {}
-	exec_error, exec_failure = failure == "spawn" and "spawn failed" or nil, failure == "exit"
-	assert(
-		not pcall(
-			actions.herdr_focus.run,
-			{ client_id = "app-client", session_id = "session", block_id = "e" },
-			{ direction = "right" }
-		)
-	)
-	assert(#calls == 1 and calls[1].exec)
-end
-exec_error, exec_failure = nil, nil
-calls = {}
-assert(not pcall(actions.herdr_focus.run, {}, { direction = "right" }) and #calls == 0)
-assert(not pcall(actions.herdr_focus.run, { client_id = "app-client" }, { direction = "right" }) and #calls == 0)
-assert(
-	not pcall(actions.herdr_focus.run, { client_id = "app-client", session_id = "session" }, { direction = "up" })
-		and #calls == 0
-)
+calls, helper_running = {}, false
+actions.herdr_focus.run({}, { direction = "right" })
+assert(#calls == 0, "a disconnected context may have no source session")
+spawn_error = "spawn failed"
+assert(not pcall(actions.herdr_focus.run, context, { direction = "right" }))
+spawn_error = nil
+assert(not pcall(actions.herdr_focus.run, context, { direction = "up" }))
 -- Removed menu operations must fail before changing focus or queuing commands.
 for _, choice in ipairs({ "move_new_tab", "resize_left", "resize_up", "resize_down", "resize_right" }) do
 	calls = {}

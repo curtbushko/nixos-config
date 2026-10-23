@@ -31,16 +31,19 @@ local function checked(result, err)
 	return result
 end
 
+-- Never wait inside the app for a helper that may need that same app to act.
+-- One in-flight step prevents held keys from queuing stale session switches.
+local navigation
 rex.action({
 	name = "herdr_focus",
 	title = "Focus Pane, Tab, or Session",
-	description = "Cycle through panes by column, then tabs and local or remote sessions.",
+	description = "Cycle panes, tabs and connected sessions; ignore disconnected sources.",
 	args = { direction = "string" },
 	run = function(ctx, args)
-		if args.direction ~= "left" and args.direction ~= "right" then
-			error("direction must be left or right", 0)
+		assert(args.direction == "left" or args.direction == "right", "direction must be left or right")
+		if not ctx.session_id or not ctx.client_id or (navigation and navigation:running()) then
+			return
 		end
-		-- Keep every step on the same CLI routing path, including remote tabs.
 		local cli = os.getenv("HOME") .. "/.local/bin/rex"
 		local file = io.open(cli, "r")
 		if file then
@@ -48,28 +51,31 @@ rex.action({
 		else
 			cli = "rex"
 		end
-		local result = checked(rex.exec({
+		navigation = checked(rex.exec.start({
 			cli,
 			"--autostart=false",
+			"--timeout=1s",
 			"-C",
-			assert(ctx.client_id, "No Rex client for cross-host navigation"),
+			ctx.client_id,
 			"do",
 			config_home .. "/rex/cycle.lua",
 			"--args",
 			checked(rex.json.encode({
-				session_id = assert(ctx.session_id, "No Rex session"),
+				session_id = ctx.session_id,
 				block_id = ctx.block_id,
 				server = ctx.server,
+				client_id = ctx.client_id,
 				direction = args.direction,
 			})),
 		}, {
+			detach = true,
+			timeout = 5,
+			stdout = false,
+			stderr = false,
 			env = { REX_SERVER = false, REX_SESSION = false, REX_BLOCK = false, REX_CLIENT = false },
-			timeout = 20,
 		}))
-		assert(result.ok, result.stderr)
 	end,
 })
-
 bind({ "cmd+h", "cmd+left" }, "herdr_focus", { direction = "left" })
 bind({ "cmd+l", "cmd+right" }, "herdr_focus", { direction = "right" })
 
