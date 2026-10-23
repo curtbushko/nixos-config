@@ -300,7 +300,7 @@ assert(options.command[1] == "/bin/sh" and options.command[2] == "-c")
 assert(options.command[6] == "app-client" and options.command[7] == "session" and options.command[8] == "b")
 assert(not options.theme, "inherit the active terminal theme")
 assert(options.command[10] == "#d3c6aa", "retain internal colors only as query fallbacks")
-assert(options.command[18] == "left")
+assert(options.command[18] == "center")
 calls = {}
 actions.whichkey.run({ client_id = "app-client", session_id = "session", block_id = "b" }, { position = "left" })
 assert(calls[1].layer.layout.block.options.command[18] == "left")

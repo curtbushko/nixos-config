@@ -204,7 +204,7 @@ resolves through the target terminal's `REX_BIN_DIR`, falling back to `PATH`.
 After deploying on Linux, run `rex config check` and `rex config reload` as that
 account on the server; this setup does not automatically restart its sessions.
 
-`init.lua` configures it with `whichkey.setup({ position = "left" })`.
+`init.lua` configures it with `whichkey.setup({ position = "center" })`.
 The implementation, helper, dependencies, tests, and upstream attribution now
 live in the plugin repository, not in this configuration. Update it with
 `nix flake update rex-whichkey`. Publish the matching plugin changes before
