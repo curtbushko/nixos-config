@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# TCC records are advisory: this does not validate code-signing requirements.
+permission_status() {
+	local client="$1" value
+	client="${client//\'/\'\'}"
+	if ! command -v sqlite3 >/dev/null 2>&1; then
+		printf 'unable to verify\n'
+	elif ! value="$(sqlite3 -readonly -cmd '.timeout 1000' \
+		'/Library/Application Support/com.apple.TCC/TCC.db' \
+		"SELECT auth_value FROM access WHERE service='kTCCServiceAccessibility' AND client='$client' LIMIT 1;" 2>/dev/null)"; then
+		printf 'unable to verify\n'
+	elif [[ "$value" == 2 ]]; then
+		printf 'allowed\n'
+	else
+		printf 'needs approval\n'
+	fi
+}
+
+report_permissions() {
+	local skhd="$1"
+	printf 'OmniWM Accessibility: %s\nskhd Accessibility: %s\n\nskhd executable to approve:\n%s\n' \
+		"$(permission_status com.barut.OmniWM)" "$(permission_status "$skhd")" "$skhd"
+}
+
+show_dialog() {
+	local message="$1"
+	if ! command -v osascript >/dev/null 2>&1; then
+		return 0
+	fi
+	osascript - "$message" <<'APPLESCRIPT' || true
+on run argv
+    set answer to display dialog (item 1 of argv) with title "OmniWM permissions" buttons {"Later", "Open Settings"} default button "Later" giving up after 60
+    if button returned of answer is "Open Settings" then
+        open location "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility"
+    end if
+end run
+APPLESCRIPT
+}
+
+main() {
+	local mode="${1:---check}" skhd="${2:-}" report
+	if [[ -z "$skhd" ]]; then
+		printf 'Usage: omniwm-permissions [--check|--notify|--demo] /nix/store/.../bin/skhd\n' >&2
+		return 0
+	fi
+	report="$(report_permissions "$skhd")"
+	printf '%s\n' "$report"
+	case "$mode" in
+	--check) return 0 ;;
+	--notify)
+		if [[ "$report" != *'needs approval'* && "$report" != *'unable to verify'* ]]; then
+			return 0
+		fi
+		;;
+	--demo) report="DEMO ONLY: no permissions changed.
+
+$report" ;;
+	*) return 0 ;;
+	esac
+	# Activation must not wait for a dialog, including when no GUI is available.
+	show_dialog "$report
+
+Enable missing permissions in Privacy & Security > Accessibility. If unable to verify, check manually. These database records are advisory, not a live authorization test.
+
+Installation continues without waiting. Restart OmniWM and the hotkey agent after approval. Screen Recording is optional for overview thumbnails." >/dev/null 2>&1 </dev/null &
+}
+
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+	main "$@"
+fi

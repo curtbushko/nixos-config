@@ -53,6 +53,7 @@
   new-note = pkgs.writeScriptBin "new-note" (builtins.readFile ./new-note);
   new-review = pkgs.writeScriptBin "new-review" (builtins.readFile ./new-review);
   nodewatcher = pkgs.writeScriptBin "nodewatcher" (builtins.readFile ./nodewatcher);
+  omniwm-permissions = pkgs.writeScriptBin "omniwm-permissions" (builtins.readFile ./omniwm-permissions);
   open-file = pkgs.writeScriptBin "open-file" (builtins.readFile ./open-file);
   pdf-clean = pkgs.writeScriptBin "pdf-clean" (builtins.readFile ./pdf-clean);
   pod-failed-cleanup = pkgs.writeScriptBin "pod-failed-cleanup" (builtins.readFile ./pod-failed-cleanup);
@@ -149,6 +150,7 @@ in {
         workspace-sync-main
         zigbuildwatcher
       ]
+      ++ lib.optionals pkgs.stdenv.hostPlatform.isDarwin [omniwm-permissions]
       ++ (lib.optionals isLinux [
         auto-sleep
         hyprstart

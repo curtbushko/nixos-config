@@ -38,9 +38,10 @@ Entry if bindings stop.
 ## Setup
 
 - Homebrew installs `/Applications/OmniWM.app` and `/opt/homebrew/bin/omniwmctl`.
-- Grant OmniWM Accessibility and Input Monitoring. Screen Recording is optional
-  for overview thumbnails. Click Start OmniWM in its permissions window.
-- Grant skhd Accessibility and Input Monitoring as well. In the permission
+- Grant OmniWM Accessibility. Screen Recording is optional for overview
+  thumbnails. Click Start OmniWM in its permissions window. Grant Input
+  Monitoring if requested; it is not checked by activation.
+- Grant skhd Accessibility as well. In the permission
   picker's Cmd+Shift+G dialog, enter the executable path shown by `command -v
   skhd`. During this trial, Finder reveals the Nix-store executable directly.
   Restart the hotkey agent after granting access.
@@ -105,6 +106,25 @@ remain useful. Only Cmd+Tab remains a global Cmd shortcut; Option-based desktop
 bindings replace the previous global Cmd bindings. Cmd+Q is not intercepted,
 so applications receive their native Quit shortcut. Secure Keyboard Entry can
 still suppress skhd shortcuts. A full system switch was not used for this trial.
+
+## Permission check
+
+When enabled, Home Manager activation checks the system TCC database read-only
+for OmniWM and the exact packaged skhd executable. Missing approvals or an
+unreadable database trigger a background dialog with an Open Settings button;
+activation continues immediately. The dialog closes after 60 seconds. GUI
+failures do not fail activation. No permissions are granted or reset.
+
+Database records are advisory: they do not validate signing requirements or
+prove live access. Screen Recording and Input Monitoring are not checked.
+After manual approval, restart OmniWM and the hotkey agent. An upgraded skhd
+store path may need approval again. No dialog is shown during a dry run.
+
+Run `omniwm-permissions --check /nix/store/.../bin/skhd` for a report, or use
+`--demo` instead of `--check` to preview the dialog without changing permissions.
+Pass the executable from the hotkey agent, not the profile symlink.
+
+Tests: `bash modules/home/wm/omniwm/tests/permissions.sh`.
 
 ## Configuration and validation
 

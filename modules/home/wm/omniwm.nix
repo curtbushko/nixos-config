@@ -7,6 +7,7 @@
   cfg = config.ns.wm.omniwm;
   settingsFormat = pkgs.formats.toml {};
   bindings = import ./omniwm/bindings.nix;
+  permissionCheck = pkgs.writeScriptBin "omniwm-permissions" (builtins.readFile ../scripts/omniwm-permissions);
   skhdConfig = pkgs.writeText "omniwm-skhdrc" (import ./omniwm/render-skhd.nix bindings);
 in {
   options.ns.wm.omniwm.enable = lib.mkEnableOption "OmniWM with niri-style shortcuts (installed through Homebrew)";
@@ -25,7 +26,12 @@ in {
 
     # Disabling the Rectangle module alone would leave its old login preference.
     targets.darwin.defaults."com.knollsoft.Rectangle".launchOnLogin = false;
-    home.packages = [pkgs.skhd];
+    home.packages = [pkgs.skhd permissionCheck];
+    home.activation.omniwmPermissions = lib.hm.dag.entryAfter ["writeBoundary"] ''
+      if [ -z "''${DRY_RUN_CMD:-}" ]; then
+        ${pkgs.bash}/bin/bash ${permissionCheck}/bin/omniwm-permissions --notify ${pkgs.skhd}/bin/skhd || true
+      fi
+    '';
     xdg.configFile = {
       "omniwm/settings.toml".source = settingsFormat.generate "omniwm-settings.toml" (import ./omniwm/settings.nix);
       "omniwm/skhdrc".source = skhdConfig;
