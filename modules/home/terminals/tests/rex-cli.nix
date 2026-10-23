@@ -62,6 +62,8 @@ in
   assert module.config.targets.darwin.defaults."com.superlogical.rex"."Workspace.terminalFontName" == "JetBrainsMono Nerd Font";
   assert module.config.targets.darwin.defaults."com.superlogical.rex"."Workspace.terminalFontStyle" == "Medium";
   assert module.config.targets.darwin.defaults."com.superlogical.rex"."Workspace.terminalFontPointSize" == 12.0;
+  assert module.config.targets.darwin.defaults."com.superlogical.rex".NSUserKeyEquivalents."Hide Rex Beta" == "@$^h";
+  assert module.config.targets.darwin.defaults."com.superlogical.rex".NSUserKeyEquivalents."Hide Rex" == "@$^h";
   assert !module.config.targets.darwin.defaults."com.superlogical.rex"."rex.server.tailnet-enabled";
   assert !module.config.targets.darwin.defaults."com.superlogical.rex"."rex.server.automatic-restart-enabled";
   assert module.options.ns.terminals.rex.lan.enable.default == false;

@@ -77,6 +77,11 @@ in {
       ];
 
       targets.darwin.defaults."com.superlogical.rex" = {
+        # Free Cmd+H for pane/tab navigation in both app variants.
+        NSUserKeyEquivalents = {
+          "Hide Rex" = "@$^h";
+          "Hide Rex Beta" = "@$^h";
+        };
         "rex.client.remoteControl" = true;
         "rex.server.tailnet-enabled" = false;
         # launchd owns the LAN server; don't let the app restart it without flags.

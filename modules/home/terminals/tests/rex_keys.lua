@@ -39,6 +39,10 @@ rex = {
 			calls[#calls + 1] = { window_id = args.window_id }
 			return focus_error and nil or {}, focus_error
 		end,
+		resize_pane = function(args)
+			calls[#calls + 1] = { resize = args }
+			return focus_error and nil or {}, focus_error
+		end,
 		new_layer = function(args)
 			calls[#calls + 1] = { layer = args }
 			return { layer_id = "popup", block_ids = { "popup-block" } }, popup_error
@@ -81,27 +85,116 @@ local function binding(keys, action, arg, value)
 	end
 end
 
-binding({ "ctrl+b>v", "alt+n" }, "pane.split", "direction", "right")
-binding({ "ctrl+b>-", "alt+m" }, "pane.split", "direction", "down")
-binding({ "ctrl+b>h", "alt+left" }, "pane.focus", "direction", "left")
-binding({ "ctrl+b>j", "alt+j", "alt+down" }, "pane.focus", "direction", "down")
-binding({ "ctrl+b>k", "alt+k", "alt+up" }, "pane.focus", "direction", "up")
-binding({ "ctrl+b>l", "alt+right" }, "pane.focus", "direction", "right")
-binding({ "alt+[" }, "client.tab.previous")
-binding({ "alt+]" }, "client.tab.next")
-binding({ "alt+=" }, "pane.resize", "direction", "up")
-binding({ "alt+-" }, "pane.resize", "direction", "down")
-binding({ "ctrl+b>z", "alt+p" }, "pane.zoom")
-binding({ "ctrl+b>space", "alt+space" }, "whichkey")
-binding({ "ctrl+b>e" }, "client.sidebar.toggle")
-binding({ "ctrl+b>ctrl+b" }, "pane.send_key", "key", "ctrl+b")
+binding({ "cmd+d" }, "pane.split", "direction", "right")
+binding({ "cmd+shift+d" }, "pane.split", "direction", "down")
+binding({ "cmd+j", "cmd+down" }, "pane.focus", "direction", "down")
+binding({ "cmd+k", "cmd+up" }, "pane.focus", "direction", "up")
+binding({ "cmd+h", "cmd+left" }, "herdr_focus", "direction", "left")
+binding({ "cmd+l", "cmd+right" }, "herdr_focus", "direction", "right")
+binding({ "cmd+t" }, "client.tab.new")
+binding({ "cmd+w" }, "client.tab.close")
+binding({ "cmd+space" }, "whichkey")
+binding({ "cmd+e" }, "client.sidebar.toggle")
 for i = 1, 9 do
-	binding({ "ctrl+b>" .. i, "alt+" .. i }, "client.tab.goto", "index", i)
+	binding({ "cmd+" .. i }, "client.tab.goto", "index", i)
 end
-binding({ "alt+h" }, "herdr_focus", "direction", "left")
-binding({ "alt+l" }, "herdr_focus", "direction", "right")
+for key, direction in pairs({ h = "left", j = "down", k = "up", l = "right" }) do
+	binding({ "alt+cmd+" .. key }, "pane.move", "direction", direction)
+end
+binding({ "alt+cmd+-" }, "pane_width", "delta", -0.1)
+binding({ "alt+cmd+=" }, "pane_width", "delta", 0.1)
+binding({ "alt+cmd+w" }, "pane_width", "cycle", true)
+for key, b in pairs(bindings) do
+	assert(not key:find("ctrl+b", 1, true), "no Ctrl+B prefix")
+	assert(key:sub(1, 4) ~= "alt+" or key:sub(1, 8) == "alt+cmd+", "Option alone belongs to desktop")
+	assert(b.action ~= "pane.zoom", "no zoom binding")
+end
 assert(not bindings["ctrl+b>d"], "Rex has no detach equivalent")
 assert(not bindings["ctrl+b>o"], "Rex has no agent-output file picker")
+
+-- Width adjustments use window-relative sizes, including the right-hand pane.
+local function resize(focused, args, ratio)
+	calls = {}
+	view = {
+		active_window_id = "width-test",
+		windows = {
+			{
+				window_id = "width-test",
+				focused_block_id = focused,
+				layers = {
+					{
+						layout = {
+							rect = { 0, 0, 1, 1 },
+							split = {
+								direction = "horizontal",
+								ratio = ratio or 0.5,
+								before = { block_id = "left", rect = { 0, 0, ratio or 0.5, 1 } },
+								after = { block_id = "right", rect = { ratio or 0.5, 0, 1 - (ratio or 0.5), 1 } },
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	focus_error = nil
+	actions.pane_width.run({ block_id = focused, session_id = "session" }, args)
+end
+resize("left", { delta = 0.1 })
+assert(math.abs(calls[1].resize.ratio - 0.6) < 1e-6)
+resize("right", { delta = 0.1 })
+assert(math.abs(calls[1].resize.ratio - 0.4) < 1e-6)
+resize("right", { delta = -0.1 })
+assert(math.abs(calls[1].resize.ratio - 0.6) < 1e-6)
+resize("left", { cycle = true }, 1 / 3)
+assert(math.abs(calls[1].resize.ratio - 0.5) < 1e-6)
+resize("left", { cycle = true }, 0.5)
+assert(math.abs(calls[1].resize.ratio - 2 / 3) < 1e-6)
+resize("left", { cycle = true }, 2 / 3)
+assert(math.abs(calls[1].resize.ratio - 1 / 3) < 1e-6)
+assert(calls[1].resize.session_id == "session")
+resize("right", { cycle = true }, 0.5)
+assert(math.abs(calls[1].resize.ratio - 1 / 3) < 1e-6)
+resize("left", { delta = -10 })
+assert(math.abs(calls[1].resize.ratio - 0.05) < 1e-6)
+resize("left", { delta = 10 })
+assert(math.abs(calls[1].resize.ratio - 0.95) < 1e-6)
+focus_error = "resize failed"
+local resize_ok, resize_err = pcall(
+	actions.pane_width.run,
+	{ block_id = "left", session_id = "session" },
+	{ cycle = true }
+)
+assert(not resize_ok and tostring(resize_err):find("resize failed", 1, true))
+focus_error = nil
+-- A nested split is only half a window wide; skip the unreachable 1/2 and 2/3.
+resize("left", { cycle = true })
+local root = view.windows[1].layers[1].layout
+root.split.before = {
+	rect = { 0, 0, 0.5, 1 },
+	split = {
+		direction = "horizontal",
+		ratio = 0.5,
+		before = { block_id = "left", rect = { 0, 0, 0.25, 1 } },
+		after = { block_id = "middle", rect = { 0.25, 0, 0.25, 1 } },
+	},
+}
+calls = {}
+actions.pane_width.run({ block_id = "left", session_id = "session" }, { cycle = true })
+assert(#calls == 1 and calls[1].resize.after_block_id == "middle")
+assert(math.abs(calls[1].resize.ratio - 2 / 3) < 1e-6)
+-- A vertically stacked pane still resizes through its horizontal ancestor.
+root.split.before.split.direction = "vertical"
+root.split.before.split.before.rect = { 0, 0, 0.5, 0.5 }
+calls = {}
+actions.pane_width.run({ block_id = "left", session_id = "session" }, { cycle = true })
+assert(calls[1].resize.after_block_id == "right")
+assert(math.abs(calls[1].resize.ratio - 2 / 3) < 1e-6)
+view.windows[1].layers[1].layout = { block_id = "left", rect = { 0, 0, 1, 1 } }
+calls = {}
+actions.pane_width.run({ block_id = "left", session_id = "session" }, { cycle = true })
+assert(#calls == 0, "a single pane has no divider to resize")
+assert(not pcall(actions.pane_width.run, { block_id = "missing" }, { cycle = true }))
 
 local function block(id, x, y)
 	return { block_id = id, rect = { x, y, 0.5, 0.5 } }
@@ -207,7 +300,7 @@ assert(options.command[1] == "/bin/sh" and options.command[2] == "-c")
 assert(options.command[6] == "app-client" and options.command[7] == "session" and options.command[8] == "b")
 assert(not options.theme, "inherit the active terminal theme")
 assert(options.command[10] == "#d3c6aa", "retain internal colors only as query fallbacks")
-assert(options.command[18] == "center")
+assert(options.command[18] == "left")
 calls = {}
 actions.whichkey.run({ client_id = "app-client", session_id = "session", block_id = "b" }, { position = "left" })
 assert(calls[1].layer.layout.block.options.command[18] == "left")

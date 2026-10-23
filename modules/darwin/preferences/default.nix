@@ -107,7 +107,7 @@
   system.activationScripts.postActivation.text = ''
     CURRENT_USER=$(/usr/bin/stat -f %Su /dev/console)
 
-    # OmniWM owns Cmd+arrows; retain native Space shortcuts on the other Macs.
+    # Keep Cmd+arrows available to apps under OmniWM; retain Space shortcuts elsewhere.
     # Uses defaults write with nested plist dicts which CustomUserPreferences can't handle
     /usr/bin/sudo -u "$CURRENT_USER" /usr/bin/defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 79 '
       <dict>

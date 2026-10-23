@@ -133,9 +133,11 @@ After activation, check `systemctl status rex-auth rex-firewall rex-login-server
 rex-tailscale-serve` and `tailscale serve status`. Verify each remote path from
 the corresponding Mac; successful local evaluation does not prove connectivity.
 
-## HerdR keyboard bindings
+## Application keyboard bindings
 
-`rex/init.lua` matches the explicit bindings in `modules/home/llm/herdr/default.nix`.
+Cmd/Super controls application content. Option/Alt controls desktop focus;
+Option+Ctrl moves and sizes desktop windows in Niri and OmniWM. Cmd+Option
+moves and sizes Rex panes. These bindings intentionally differ from HerdR.
 Home Manager reloads the config after linking files and installing the theme,
 provided Rex's CLI and an existing server are available. It does not start Rex.
 Use `rex config check` to validate, or `rex config reload` for a manual reload.
@@ -144,27 +146,41 @@ these file-based bindings; clear any conflicting UI shortcuts.
 
 | Keys | Action |
 | --- | --- |
-| Ctrl+B, V / Alt+N | Split right |
-| Ctrl+B, - / Alt+M | Split down |
-| Ctrl+B, H/J/K/L / Alt+arrows | Focus pane spatially |
-| Alt+J / Alt+K | Focus down / up |
-| Alt+H / Alt+L | Previous / next pane in column order, then adjacent tab |
-| Alt+[ / Alt+] | Previous / next tab |
-| Alt+= / Alt+- | Resize up / down |
-| Ctrl+B, Z / Alt+P | Zoom pane |
-| Ctrl+B, 1–9 / Alt+1–9 | Go to tab 1–9 |
-| Ctrl+B, Space / Alt+Space | Floating which-key menu |
-| Ctrl+B, E | Rex sidebar (not HerdR's Neovim plugin) |
-| Ctrl+B, Ctrl+B | Send Ctrl+B to the terminal |
+| Cmd+D / Cmd+Shift+D | Split right / down |
+| Cmd+J/K / Cmd+Down/Up | Focus pane down / up |
+| Cmd+H/L / Cmd+Left/Right | Previous / next pane, then adjacent tab |
+| Cmd+T | New tab |
+| Cmd+W | Close tab |
+| Cmd+1–9 | Go to tab 1–9 |
+| Cmd+Space | Floating which-key menu |
+| Cmd+E | Rex sidebar |
+| Cmd+Option+H/J/K/L | Move pane left/down/up/right |
+| Cmd+Option+- / Cmd+Option+= | Shrink / grow pane width by 10 percentage points |
+| Cmd+Option+W | Cycle pane widths: 1/3, 1/2, 2/3 of the window |
 
-Alt+H/L sorts panes by their x/y positions, including vertically stacked panes,
-just like `herdr-smart-focus`. Crossing a tab boundary wraps within the current
-Rex session and focuses the first/last pane in the destination tab. The action
-also explicitly selects the destination client tab; server-side focus alone
-does not update the visible app tab.
-HerdR's detach (Ctrl+B, D) and agent-output file picker (Ctrl+B, O) have no
-matching Rex client action and are left unmapped. Rex's other default shortcuts
-remain available.
+Cmd+H/L sorts panes by their x/y positions, including vertically stacked panes.
+Crossing a tab boundary wraps within the current Rex session and focuses the
+first/last pane in the destination tab. The action explicitly selects the client
+tab as well as server focus. J/K stays spatial within the tab.
+
+Width changes adjust the nearest horizontal split. A single pane is unchanged;
+unreachable presets inside nested splits are skipped. Incremental changes are
+clamped to leave both sides of the split visible. Ctrl+B is no longer a prefix,
+and there is no direct zoom binding. Native Cmd+Q remains application Quit.
+The macOS Hide Rex menu shortcut moves to Ctrl+Shift+Cmd+H so Cmd+H reaches
+navigation. Restart Rex after changing native menu shortcuts. Disable macOS
+Spotlight's Cmd+Space shortcut if it still competes with which-key.
+
+Ghostty uses the same Cmd/Super tab, split, and command-menu keys. H/L selects
+tabs and J/K focuses vertical splits; it does not implement Rex's combined
+pane/tab traversal. Cmd+Option+H/L reorders tabs. Ghostty's resize keys move a
+divider by 10 cells, not 10%, and it has no equivalent pane-width preset action
+or directional pane-move action. Those capabilities are not emulated.
+
+Firefox and other applications are not automatically remapped by these terminal
+settings. Firefox's reserved chrome shortcuts require an additional remapping
+mechanism; ordinary Home Manager preferences or Vimium page bindings alone do
+not establish the same Cmd+H/J/K/L behavior everywhere.
 
 ## Which-key popup
 
@@ -239,7 +255,7 @@ snapshot to the frontend; callbacks and action arguments remain in Rex. See the
 inherit attributes, while full key sequences determine arbitrary submenu depth.
 Apply the configuration after editing the spec; activation reloads a running Rex server.
 
-Open it with **Ctrl+B, Space** or **Alt+Space**, then press a displayed key:
+Open it with **Cmd+Space**, then press a displayed key:
 
 - **w**: Rex session operations (the nearest equivalent to HerdR workspaces).
 - **t**: New/previous/next/rename/close tabs, or **1–9** to select a tab.

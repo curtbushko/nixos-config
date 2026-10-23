@@ -336,44 +336,38 @@ in {
         binds = let
           inherit (config.lib.niri) actions;
         in {
-          "Mod+Return".action.spawn = "ghostty";
-          "Mod+T".action.spawn = "ghostty";
-          "Mod+Space".action.spawn = ["vicinae" "vicinae://toggle"]; # fuzzel
-          "Mod+Shift+V".action.spawn = ["vicinae" "vicinae://extensions/vicinae/clipboard/history"]; # Changed from Mod+V to avoid paste conflict
+          # Alt controls the desktop; Super/Cmd is left to applications.
+          "Alt+Return".action.spawn = "ghostty";
+          "Alt+T".action.spawn = "ghostty";
+          "Alt+Space".action.spawn = ["vicinae" "vicinae://toggle"];
+          "Alt+V".action.spawn = ["vicinae" "vicinae://extensions/vicinae/clipboard/history"];
           "Mod+Tab".action = actions.toggle-overview;
-
-          "Mod+Shift+Slash".action = actions.show-hotkey-overlay;
-          "Mod+Q".action = actions.close-window;
-          "Mod+M".action = actions.quit;
+          "Alt+Tab".action = actions.toggle-overview;
+          "Alt+M".action = actions.quit;
           "Ctrl+Alt+Delete".action = actions.quit;
 
-          "Mod+Left".action = actions.focus-column-left;
-          "Mod+Down".action = actions.focus-window-or-monitor-down;
-          "Mod+Up".action = actions.focus-window-or-monitor-up;
-          "Mod+Right".action = actions.focus-column-right;
-          "Mod+H".action = actions.focus-column-left;
-          "Mod+J".action = actions.focus-window-or-monitor-down;
-          "Mod+K".action = actions.focus-window-or-monitor-up;
-          "Mod+L".action = actions.focus-column-right;
+          "Alt+Left".action = actions.focus-column-left;
+          "Alt+Down".action = actions.focus-window-or-monitor-down;
+          "Alt+Up".action = actions.focus-window-or-monitor-up;
+          "Alt+Right".action = actions.focus-column-right;
+          "Alt+H".action = actions.focus-column-left;
+          "Alt+J".action = actions.focus-window-or-monitor-down;
+          "Alt+K".action = actions.focus-window-or-monitor-up;
+          "Alt+L".action = actions.focus-column-right;
 
-          "Mod+Ctrl+Left".action = actions.move-column-left;
-          "Mod+Ctrl+Down".action = actions.move-window-down;
-          "Mod+Ctrl+Up".action = actions.move-window-up;
-          "Mod+Ctrl+Right".action = actions.move-column-right;
-          "Mod+Ctrl+H".action = actions.move-column-left;
-          "Mod+Ctrl+L".action = actions.move-column-right;
+          "Alt+Ctrl+Left".action = actions.move-column-left;
+          "Alt+Ctrl+Down".action = actions.move-window-down;
+          "Alt+Ctrl+Up".action = actions.move-window-up;
+          "Alt+Ctrl+Right".action = actions.move-column-right;
+          "Alt+Ctrl+H".action = actions.move-column-left;
+          "Alt+Ctrl+J".action = actions.move-window-down;
+          "Alt+Ctrl+K".action = actions.move-window-up;
+          "Alt+Ctrl+L".action = actions.move-column-right;
 
-          "Mod+Shift+Minus".action = actions.set-window-width "-10%";
-          "Mod+Shift+Equal".action = actions.set-window-width "+10%";
-
-          # Sizing
-          "Mod+Alt+F".action = actions.fullscreen-window;
-          "Mod+Alt+Right".action = actions.switch-preset-column-width;
-          "Mod+Alt+Left".action = actions.switch-preset-column-width;
-          "Mod+Alt+H".action = actions.switch-preset-column-width;
-          "Mod+Alt+L".action = actions.switch-preset-column-width;
-          "Mod+Alt+Up".action = actions.switch-preset-window-height;
-          "Mod+Alt+Down".action = actions.switch-preset-window-height;
+          "Alt+Ctrl+Minus".action = actions.set-window-width "-10%";
+          "Alt+Ctrl+Equal".action = actions.set-window-width "+10%";
+          "Alt+Ctrl+W".action = actions.switch-preset-column-width;
+          "Alt+F".action = actions.fullscreen-window;
 
           # Volume keys mappings for PipeWire & WirePlumber.
           XF86AudioRaiseVolume.action = actions.spawn ["wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "+2dB"];

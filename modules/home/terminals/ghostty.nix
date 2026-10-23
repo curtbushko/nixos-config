@@ -60,7 +60,7 @@ in {
           cursor-style-blink = true
           custom-shader-animation = false
 
-          # Keybinds to match macOS since this is a VM
+          # Super/Cmd controls application content; Alt belongs to the desktop.
           keybind = super+c=copy_to_clipboard
           keybind = super+v=paste_from_clipboard
           keybind = super+equal=increase_font_size:1
@@ -68,17 +68,29 @@ in {
           keybind = super+zero=reset_font_size
           keybind = super+q=quit
           keybind = super+shift+comma=reload_config
-          keybind = super+k=clear_screen
-          #keybind = super+n=new_window
-          #keybind = super+w=close_surface
-          #keybind = super+shift+w=close_window
-          #keybind = super+t=new_tab
-          #keybind = super+shift+left_bracket=previous_tab
-          #keybind = super+shift+right_bracket=next_tab
-          #keybind = super+d=new_split:right
-          #keybind = super+shift+d=new_split:down
-          #keybind = super+right_bracket=goto_split:next
-          #keybind = super+left_bracket=goto_split:previous
+          keybind = super+t=new_tab
+          keybind = super+w=close_tab
+          keybind = super+h=previous_tab
+          keybind = super+l=next_tab
+          keybind = super+j=goto_split:down
+          keybind = super+k=goto_split:up
+          keybind = super+d=new_split:right
+          keybind = super+shift+d=new_split:down
+          keybind = super+space=toggle_command_palette
+          keybind = alt+super+h=move_tab:-1
+          keybind = alt+super+l=move_tab:1
+          # Ghostty resizes dividers in cells, not window-relative percentages.
+          keybind = alt+super+minus=resize_split:left,10
+          keybind = alt+super+equal=resize_split:right,10
+          keybind = super+one=goto_tab:1
+          keybind = super+two=goto_tab:2
+          keybind = super+three=goto_tab:3
+          keybind = super+four=goto_tab:4
+          keybind = super+five=goto_tab:5
+          keybind = super+six=goto_tab:6
+          keybind = super+seven=goto_tab:7
+          keybind = super+eight=goto_tab:8
+          keybind = super+nine=goto_tab:9
           # Unbind these keys as they are the default in linux
           keybind = alt+one=unbind
           keybind = alt+two=unbind

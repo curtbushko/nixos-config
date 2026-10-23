@@ -1,37 +1,39 @@
 # OmniWM trial on m4-pro
 
-OmniWM 0.7.4 uses niri scrolling layout. Linux `Mod`/Super becomes macOS
-**Command**, and Linux Alt becomes **Option**. skhd supplies aliases and app
-launch commands because OmniWM accepts only one native shortcut per action.
+OmniWM 0.7.4 uses niri scrolling layout. **Option/Alt** controls desktop focus;
+**Option+Control** moves and sizes windows. **Command/Super** is reserved for
+application content, except the familiar Cmd+Tab overview binding. Niri uses the
+same desktop shortcuts. skhd supplies aliases and application launch commands.
 OmniWM's native hotkeys are disabled to avoid competing defaults.
 
 ## Shortcuts
 
 | Keys | Action |
 | --- | --- |
-| Cmd+Return / Cmd+T | New Ghostty instance |
-| Cmd+Space | OmniWM Applications launcher (automatically selects Cmd+5) |
-| Cmd+Shift+V | Command palette; press Cmd+3 for clipboard history |
-| Cmd+Tab | Overview |
-| Cmd+Shift+/ | Open this cheat sheet |
-| Cmd+Q | Native application Quit (not intercepted) |
-| Cmd+M / Ctrl+Option+Forward Delete | Quit OmniWM, not macOS |
-| Cmd+arrows / Cmd+H/J/K/L | Focus left/down/up/right |
-| Cmd+Ctrl+Left/Right / Cmd+Ctrl+H/L | Move whole column |
-| Cmd+Ctrl+Up/Down | Reorder window within column |
-| Cmd+Shift+- / Cmd+Shift+= | Change window width by -/+10% |
-| Cmd+Option+F | Toggle full-width tiled column (not fullscreen) |
-| Cmd+Option+Left/Right/H/L | Cycle column widths forward: 1/3, 1/2, 2/3 |
-| Cmd+Option+Up/Down | Cycle window height presets forward |
+| Option+Return / Option+T | Launch/focus Rex Beta (Ghostty on Linux) |
+| Option+Space | OmniWM Applications launcher (automatically selects Cmd+5) |
+| Option+V | Clipboard history (automatically selects Cmd+3) |
+| Cmd+Tab / Option+Tab | Overview |
+| Cmd+Q / Cmd+W | Native application Quit / close tab or window (not intercepted) |
+| Option+M / Ctrl+Option+Forward Delete | Quit OmniWM, not macOS |
+| Option+arrows / Option+H/J/K/L | Focus left/down/up/right |
+| Option+Ctrl+Left/Right / Option+Ctrl+H/L | Move whole column |
+| Option+Ctrl+Up/Down / Option+Ctrl+K/J | Reorder window within column |
+| Option+Ctrl+- / Option+Ctrl+= | Change window width by -/+10% |
+| Option+F | Toggle full-width tiled column (Niri: fullscreen) |
+| Option+Ctrl+W | Cycle column widths forward: 1/3, 1/2, 2/3 |
 
-Both directions cycle forward, just like the source niri configuration.
-Native media keys retain macOS volume/playback behavior.
+No height-preset, shortcut-help, or workspace-selection bindings are installed.
+Native media keys retain macOS volume/playback behavior. Arrow aliases are
+retained alongside H/J/K/L. The equals key does not require Shift.
 
-**These global bindings replace normal macOS Cmd+H, Cmd+J, Cmd+K, Cmd+L,
-Cmd+T, Cmd+M, Cmd+Space and Cmd+Tab behavior.** Disable the Spotlight
-Cmd+Space shortcut in System Settings > Keyboard > Keyboard Shortcuts >
-Spotlight if it competes with the launcher. Secure Input in an app can prevent
-skhd from seeing keys; check terminal Secure Keyboard Entry if bindings stop.
+Cmd+Tab intentionally replaces native application switching with overview.
+Other plain Cmd shortcuts reach the focused application. Terminal mappings are
+documented in `modules/home/terminals/README.md`; applications must implement
+their own equivalent bindings. Global Option shortcuts override native word
+navigation on Option+arrows and special-character entry on the bound letters.
+Secure Input can prevent skhd from seeing keys; check terminal Secure Keyboard
+Entry if bindings stop.
 
 ## Setup
 
@@ -47,7 +49,7 @@ skhd from seeing keys; check terminal Secure Keyboard Entry if bindings stop.
 - Keep one native macOS desktop per display. In Mission Control, hover each
   unused desktop thumbnail and close it with its X; macOS moves its windows to
   a remaining desktop. OmniWM uses only workspace 1.
-  Native fullscreen still creates a macOS Space: use Cmd+Option+F to fill the
+  Native fullscreen still creates a macOS Space: use Option+F to fill the
   available width while staying tiled, instead of the green fullscreen button/Ctrl+Cmd+F.
 - Quit Rectangle while using OmniWM. The m4-pro Home Manager config disables
   Rectangle for future activations; the other Macs are unchanged.
@@ -75,12 +77,14 @@ clamp requested proportions.
 
 ## Differences from Linux
 
-OmniWM's palette replaces Vicinae. Clipboard needs a second Cmd+3 keystroke.
-OmniWM exposes no exact niri hotkey-overlay action, so the help shortcut opens
-this file. Quit only stops the window manager; it never logs you out.
+OmniWM's palette replaces Vicinae. Clipboard selection sends Cmd+3 after a short
+focus delay, just as the application launcher selects Cmd+5. This timing needs
+checking on the live desktop; it is not a native direct-to-clipboard API.
+The shortcut-help binding is removed in both window managers. Quitting OmniWM
+only stops the window manager; unlike Niri's quit action, it never logs you out.
 Directional focus can cross monitors, but OmniWM's spatial routing differs
-from niri's window-or-monitor actions. Window-height presets use OmniWM's
-implementation. Inactive borders, niri's resize shader, corner clipping,
+from niri's window-or-monitor actions. Window-height presets are not bound.
+Inactive borders, niri's resize shader, corner clipping,
 per-app screencast blocking, mpv's Linux output rule, and automatic workspace
 back-and-forth are not reproduced. Password-manager screencast protection
 must not be assumed to carry over.
@@ -97,8 +101,8 @@ Other Macs retain their native navigation settings.
 
 Spotlight's Cmd+Space bindings and Apple's edge/Option tiling were already
 disabled; those settings are compatible. Existing per-app Cmd+H remaps also
-remain useful. Cmd+Tab, Cmd+M and the other documented global bindings
-intentionally override ordinary app/macOS behavior. Cmd+Q is not intercepted,
+remain useful. Only Cmd+Tab remains a global Cmd shortcut; Option-based desktop
+bindings replace the previous global Cmd bindings. Cmd+Q is not intercepted,
 so applications receive their native Quit shortcut. Secure Keyboard Entry can
 still suppress skhd shortcuts. A full system switch was not used for this trial.
 
