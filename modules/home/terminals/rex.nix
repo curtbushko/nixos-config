@@ -64,6 +64,7 @@ in {
           text = initLua;
           force = true;
         };
+        "rex/cycle.lua".source = ./rex/cycle.lua;
         "rex/whichkey/plugin.lua".source = whichkey.plugin;
         "rex/whichkey/rex-whichkey".source = "${whichkey}/bin/rex-whichkey";
       };

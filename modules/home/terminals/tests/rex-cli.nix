@@ -84,6 +84,8 @@ in
   assert module.config.home.file.".local/bin/rex".source == expected;
   assert !contains expected module.config.xdg.configFile."rex/init.lua".text;
   assert contains ''whichkey.setup({ position = "center" })'' module.config.xdg.configFile."rex/init.lua".text;
+  assert module.config.xdg.configFile."rex/cycle.lua".source == ../rex/cycle.lua;
+  assert linux.config.xdg.configFile."rex/cycle.lua".source == module.config.xdg.configFile."rex/cycle.lua".source;
   assert module.config.xdg.configFile."rex/whichkey/plugin.lua".source == "/test/plugin.lua";
   assert module.config.xdg.configFile."rex/whichkey/rex-whichkey".source == "/test/whichkey/bin/rex-whichkey";
   assert linux.config.xdg.configFile."rex/init.lua".text == module.config.xdg.configFile."rex/init.lua".text;

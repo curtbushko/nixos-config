@@ -159,15 +159,27 @@ these file-based bindings; clear any conflicting UI shortcuts.
 | Cmd+Option+W | Cycle pane widths: 1/3, 1/2, 2/3 of the window |
 
 Cmd+H/L sorts panes by their x/y positions, including vertically stacked panes.
-After the last tab, navigation asks the app to select the next session, including
-sessions on connected remote hosts. Cmd+H traverses in reverse. Session ordering
-and wrapping follow Rex's built-in Next/Previous Session actions, not a
-server-local session list. Session crossings select the destination's first/last
-tab and retain that tab's remembered pane focus. Within a session, tab crossings
-focus the first/last pane. J/K stays spatial within the tab.
+After the last tab, navigation continues into the next session, including remote
+hosts. Cmd+H traverses in reverse. The order is the app's home server first, then
+hosts in `rex.servers()` order, with each server's sessions in server order.
+Navigation wraps at either end and skips sessions without tabs. Tab/session
+crossings focus the destination's first/last pane. They select the tab with an
+explicit session/window ID: `client.tab.goto` otherwise selects a home-server tab,
+even when the action originated remotely. J/K stays spatial within the tab.
 
-Deploy this configuration on each server: shortcuts in remote sessions run that
-server's `init.lua`, so updating only the Mac does not update Gamingrig's bindings.
+Every navigation step runs `rex/cycle.lua` through the home machine's CLI, passing
+the invoking session and pane IDs. The helper locates that pane's tab rather than
+trusting potentially stale server focus, then selects the next pane/tab/session.
+The invoking host is tried first, and attach's view snapshot avoids a separate
+view request. Pane/tab moves do not enumerate sessions or contact unrelated hosts;
+only session crossings query the global order. Views are not cached across keypresses.
+Keeping all selection on this CLI path avoids server-side queued actions being interpreted
+against the wrong host. Native Next/Previous Session actions also only cycle the
+home server's sessions. Lookup/focus errors are reported instead of silently
+wrapping locally. The Mac's Remote Control setting
+must remain enabled, and its managed `~/.local/bin/rex` must be available.
+Deploy the updated home configuration on the app's home machine. An app using a
+different server as its home needs this configuration installed there too.
 
 Width changes adjust the nearest horizontal split. A single pane is unchanged;
 unreachable presets inside nested splits are skipped. Incremental changes are

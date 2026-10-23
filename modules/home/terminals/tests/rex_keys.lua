@@ -1,6 +1,17 @@
 local bindings, actions, calls = {}, {}, {}
 local view, view_error, focus_error, popup_error, theme_error
+local encoded_args, exec_error, exec_failure
 rex = {
+	json = {
+		encode = function(args)
+			encoded_args = args
+			return "encoded-cycle-args"
+		end,
+	},
+	exec = function(argv, options)
+		calls[#calls + 1] = { exec = argv, options = options }
+		return { ok = not exec_failure, stderr = "cycle failed" }, exec_error
+	end,
 	block = {
 		call = function(creator, method, args)
 			assert(method == "set_theme", "opening a popup must not depend on cached terminal dimensions")
@@ -214,69 +225,51 @@ local function window(id, focused, blocks)
 end
 local first = window("first", "b", { block("c", 0.5, 0.5), block("b", 0.5, 0), block("a", 0, 0) })
 local second = window("second", "d", { block("e", 0.5, 0), block("d", 0, 0) })
-local function focus(current_window, current_block, direction, windows)
-	calls = {}
-	view =
-		{ session_id = "session", active_window_id = current_window.window_id, windows = windows or { first, second } }
-	view_error, focus_error = nil, nil
-	actions.herdr_focus.run({ block_id = current_block }, { direction = direction })
-end
-
--- Reading order includes vertically stacked panes in the same column.
-focus(first, "b", "right")
-assert(#calls == 1 and calls[1].block_id == "c")
-focus(first, "b", "left")
-assert(#calls == 1 and calls[1].block_id == "a")
--- Tab crossings land on the first/last pane, rather than its previous focus.
-focus(first, "c", "right")
-assert(#calls == 2 and calls[1].block_id == "d")
-assert(calls[2].action == "client.tab.goto" and calls[2].args.index == 2)
-focus(second, "d", "left")
-assert(#calls == 2 and calls[1].block_id == "c")
-assert(calls[2].action == "client.tab.goto" and calls[2].args.index == 1)
--- Session boundaries must use the app's cross-host cycle, not a server-local list.
--- The client selects the session before selecting its first/last tab.
+-- Every navigation step uses the same helper; no server-side client actions.
 for _, session_id in ipairs({ "local-session", "remote-session" }) do
-	for _, single_tab in ipairs({ false, true }) do
-		for _, step in ipairs({ 1, -1 }) do
-			local windows = single_tab and { first } or { first, second }
-			local edge = windows[step == 1 and #windows or 1]
-			local pane = step == 1 and (single_tab and "c" or "e") or "a"
-			view = { session_id = session_id, active_window_id = edge.window_id, windows = windows }
+	for _, pane in ipairs({ "a", "b", "c", "d" }) do
+		for _, direction in ipairs({ "left", "right" }) do
 			calls = {}
-			actions.herdr_focus.run({ session_id = session_id, block_id = pane }, {
-				direction = step == 1 and "right" or "left",
-			})
-			assert(#calls == 2, "session crossing must not focus a pane on the originating server")
-			assert(calls[1].action == (step == 1 and "session.next" or "session.previous"))
-			assert(calls[1].args == nil, "let the client choose among local and remote sessions")
-			assert(calls[2].action == "client.tab.goto" and calls[2].args.index == (step == 1 and 1 or -1))
+			actions.herdr_focus.run(
+				{ client_id = "app-client", session_id = session_id, block_id = pane, server = "Gamingrig" },
+				{
+					direction = direction,
+				}
+			)
+			assert(#calls == 1 and calls[1].exec, "all navigation must use the CLI routing path")
+			local argv = calls[1].exec
+			assert(argv[2] == "--autostart=false" and argv[3] == "-C" and argv[4] == "app-client")
+			assert(argv[5] == "do" and argv[6]:match("/rex/cycle.lua$"))
+			assert(argv[7] == "--args" and argv[8] == "encoded-cycle-args")
+			assert(encoded_args.session_id == session_id and encoded_args.block_id == pane)
+			assert(encoded_args.server == "Gamingrig", "forward the invoking host to avoid discovery RPCs")
+			assert(encoded_args.direction == direction)
+			for _, key in ipairs({ "REX_SERVER", "REX_SESSION", "REX_BLOCK", "REX_CLIENT" }) do
+				assert(calls[1].options.env[key] == false, "do not inherit remote routing")
+			end
 		end
 	end
 end
--- Empty target windows still receive focus.
-local empty = window("empty", nil, {})
-focus(first, "c", "right", { first, empty })
-assert(#calls == 2 and calls[1].window_id == "empty")
-assert(calls[2].action == "client.tab.goto" and calls[2].args.index == 2)
--- Missing block context falls back to the active window's focused pane.
-focus(second, nil, "right")
-assert(#calls == 1 and calls[1].block_id == "e")
--- Missing context and API errors must not silently switch tabs.
-focus(first, "b", "right")
+for _, failure in ipairs({ "spawn", "exit" }) do
+	calls = {}
+	exec_error, exec_failure = failure == "spawn" and "spawn failed" or nil, failure == "exit"
+	assert(
+		not pcall(
+			actions.herdr_focus.run,
+			{ client_id = "app-client", session_id = "session", block_id = "e" },
+			{ direction = "right" }
+		)
+	)
+	assert(#calls == 1 and calls[1].exec)
+end
+exec_error, exec_failure = nil, nil
 calls = {}
-view.active_window_id = "missing"
-assert(not pcall(actions.herdr_focus.run, {}, { direction = "right" }))
-assert(#calls == 0)
-view.active_window_id = first.window_id
-assert(not pcall(actions.herdr_focus.run, { block_id = "missing" }, { direction = "right" }))
-assert(#calls == 0)
-view, view_error = nil, "unavailable"
-local ok, err = pcall(actions.herdr_focus.run, {}, { direction = "right" })
-assert(not ok and tostring(err):find("unavailable", 1, true))
-view, view_error, focus_error = { active_window_id = first.window_id, windows = { first, second } }, nil, "focus failed"
-ok, err = pcall(actions.herdr_focus.run, { block_id = "b" }, { direction = "right" })
-assert(not ok and tostring(err):find("focus failed", 1, true))
+assert(not pcall(actions.herdr_focus.run, {}, { direction = "right" }) and #calls == 0)
+assert(not pcall(actions.herdr_focus.run, { client_id = "app-client" }, { direction = "right" }) and #calls == 0)
+assert(
+	not pcall(actions.herdr_focus.run, { client_id = "app-client", session_id = "session" }, { direction = "up" })
+		and #calls == 0
+)
 -- Removed menu operations must fail before changing focus or queuing commands.
 for _, choice in ipairs({ "move_new_tab", "resize_left", "resize_up", "resize_down", "resize_right" }) do
 	calls = {}

@@ -1,4 +1,5 @@
 -- Cmd controls application content; Option alone belongs to the desktop.
+local config_home = os.getenv("XDG_CONFIG_HOME") or (os.getenv("HOME") .. "/.config")
 local function bind(keys, action, args)
 	for _, key in ipairs(keys) do
 		rex.bind(key, action, args)
@@ -23,34 +24,6 @@ rex.bind("alt+cmd+-", "pane_width", { delta = -0.1 })
 rex.bind("alt+cmd+=", "pane_width", { delta = 0.1 })
 rex.bind("alt+cmd+w", "pane_width", { cycle = true })
 
-local function panes(window)
-	local result = {}
-	local function visit(node)
-		if not node then
-			return
-		end
-		if node.block_id then
-			result[#result + 1] = node
-		elseif node.split then
-			visit(node.split.before)
-			visit(node.split.after)
-		end
-	end
-	for _, layer in ipairs(window.layers or {}) do
-		visit(layer.layout)
-	end
-	table.sort(result, function(a, b)
-		if a.rect[1] ~= b.rect[1] then
-			return a.rect[1] < b.rect[1]
-		end
-		if a.rect[2] ~= b.rect[2] then
-			return a.rect[2] < b.rect[2]
-		end
-		return a.block_id < b.block_id
-	end)
-	return result
-end
-
 local function checked(result, err)
 	if err then
 		error(err, 0)
@@ -67,76 +40,33 @@ rex.action({
 		if args.direction ~= "left" and args.direction ~= "right" then
 			error("direction must be left or right", 0)
 		end
-		local step = args.direction == "right" and 1 or -1
-		local view = checked(rex.session.view({}))
-		local window
-		for _, candidate in ipairs(view.windows or {}) do
-			if candidate.window_id == view.active_window_id then
-				window = candidate
-				break
-			end
-		end
-		assert(window, "No focused Rex tab")
-		local blocks = panes(window)
-		local focused = ctx.block_id or window.focused_block_id
-		local index
-		for i, block in ipairs(blocks) do
-			if block.block_id == focused then
-				index = i
-				break
-			end
-		end
-		if not index then
-			error("Focused pane not found in Rex tab", 0)
-		end
-
-		local next_block = blocks[index + step]
-		if next_block then
-			return checked(rex.session.focus_block({
-				session_id = view.session_id or ctx.session_id,
-				block_id = next_block.block_id,
-			}))
-		end
-
-		-- Exhaust this session's tabs before asking the app to cross hosts.
-		local windows = view.windows or {}
-		local window_index
-		for i, candidate in ipairs(windows) do
-			if candidate.window_id == window.window_id then
-				window_index = i
-				break
-			end
-		end
-		if not window_index then
-			error("Focused tab not found in Rex session", 0)
-		end
-		local session_id = view.session_id or ctx.session_id
-		local target_index = window_index + step
-		if target_index < 1 or target_index > #windows then
-			-- Only the client knows its combined local/remote session order.
-			-- Queue the tab selection after the session switch, on its new host.
-			rex.client.queue(step == 1 and "session.next" or "session.previous")
-			rex.client.queue("client.tab.goto", { index = step == 1 and 1 or -1 })
-			return
-		end
-		local target = windows[target_index]
-		local target_blocks = panes(target)
-		local target_block = target_blocks[step == 1 and 1 or #target_blocks]
-		local result
-		if target_block then
-			result = checked(rex.session.focus_block({
-				session_id = session_id,
-				block_id = target_block.block_id,
-			}))
+		-- Keep every step on the same CLI routing path, including remote tabs.
+		local cli = os.getenv("HOME") .. "/.local/bin/rex"
+		local file = io.open(cli, "r")
+		if file then
+			file:close()
 		else
-			result = checked(rex.session.focus_window({
-				session_id = session_id,
-				window_id = target.window_id,
-			}))
+			cli = "rex"
 		end
-		-- Server focus alone does not select the app's visible tab.
-		rex.client.queue("client.tab.goto", { index = target_index })
-		return result
+		local result = checked(rex.exec({
+			cli,
+			"--autostart=false",
+			"-C",
+			assert(ctx.client_id, "No Rex client for cross-host navigation"),
+			"do",
+			config_home .. "/rex/cycle.lua",
+			"--args",
+			checked(rex.json.encode({
+				session_id = assert(ctx.session_id, "No Rex session"),
+				block_id = ctx.block_id,
+				server = ctx.server,
+				direction = args.direction,
+			})),
+		}, {
+			env = { REX_SERVER = false, REX_SESSION = false, REX_BLOCK = false, REX_CLIENT = false },
+			timeout = 20,
+		}))
+		assert(result.ok, result.stderr)
 	end,
 })
 
@@ -234,6 +164,5 @@ rex.action({
 })
 
 -- Plugin defaults include the standard menus. Add spec = { ... } to replace them.
-local config_home = os.getenv("XDG_CONFIG_HOME") or (os.getenv("HOME") .. "/.config")
 local whichkey = dofile(config_home .. "/rex/whichkey/plugin.lua")
 whichkey.setup({ position = "center" })
