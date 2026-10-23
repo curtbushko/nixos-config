@@ -60,8 +60,8 @@ end
 
 rex.action({
 	name = "herdr_focus",
-	title = "Focus Pane or Adjacent Tab",
-	description = "Move through panes by column, then wrap through tabs like HerdR.",
+	title = "Focus Pane, Tab, or Session",
+	description = "Cycle through panes by column, then tabs and sessions in server order.",
 	args = { direction = "string" },
 	run = function(ctx, args)
 		if args.direction ~= "left" and args.direction ~= "right" then
@@ -92,14 +92,14 @@ rex.action({
 
 		local next_block = blocks[index + step]
 		if next_block then
-			return checked(rex.session.focus_block({ block_id = next_block.block_id }))
+			return checked(rex.session.focus_block({
+				session_id = view.session_id or ctx.session_id,
+				block_id = next_block.block_id,
+			}))
 		end
 
-		-- At a tab boundary, enter the adjacent tab at its first/last pane.
+		-- Exhaust this session's tabs before continuing into the next session.
 		local windows = view.windows or {}
-		if #windows < 2 then
-			return
-		end
 		local window_index
 		for i, candidate in ipairs(windows) do
 			if candidate.window_id == window.window_id then
@@ -110,19 +110,53 @@ rex.action({
 		if not window_index then
 			error("Focused tab not found in Rex session", 0)
 		end
-		local target_index = (window_index - 1 + step) % #windows + 1
+		local session_id = view.session_id or ctx.session_id
+		local target_session_id = session_id
+		local target_index = window_index + step
+		if target_index < 1 or target_index > #windows then
+			local sessions = checked(rex.session.list({})).sessions or {}
+			local session_index
+			for i, session in ipairs(sessions) do
+				if session.session_id == session_id then
+					session_index = i
+					break
+				end
+			end
+			assert(session_index, "Focused session not found in Rex session list")
+			for offset = 1, #sessions do
+				local candidate_id = sessions[(session_index - 1 + step * offset) % #sessions + 1].session_id
+				local candidate = candidate_id == session_id and view
+					or checked(rex.session.view({ session_id = candidate_id }))
+				if #(candidate.windows or {}) > 0 then
+					target_session_id = candidate_id
+					windows = candidate.windows
+					target_index = step == 1 and 1 or #windows
+					break
+				end
+			end
+		end
 		local target = windows[target_index]
 		local target_blocks = panes(target)
 		local target_block = target_blocks[step == 1 and 1 or #target_blocks]
 		local result
 		if target_block then
-			result = checked(rex.session.focus_block({ block_id = target_block.block_id }))
+			result = checked(rex.session.focus_block({
+				session_id = target_session_id,
+				block_id = target_block.block_id,
+			}))
 		else
-			result = checked(rex.session.focus_window({ window_id = target.window_id }))
+			result = checked(rex.session.focus_window({
+				session_id = target_session_id,
+				window_id = target.window_id,
+			}))
 		end
-		-- Server focus alone does not select the app's visible tab. Use an absolute
-		-- index so an already-observed focus update cannot cause a second tab jump.
-		rex.client.queue("client.tab.goto", { index = target_index })
+		-- Server focus alone does not select the app's visible session/tab.
+		-- Absolute targets avoid double jumps when the app already saw the update.
+		if target_session_id ~= session_id then
+			rex.client.queue("session.select", { session_id = target_session_id, window_id = target.window_id })
+		else
+			rex.client.queue("client.tab.goto", { index = target_index })
+		end
 		return result
 	end,
 })

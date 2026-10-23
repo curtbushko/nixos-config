@@ -1,5 +1,7 @@
 local bindings, actions, calls = {}, {}, {}
 local view, view_error, focus_error, popup_error, theme_error
+local session_views, session_list, list_error
+local focused_session
 rex = {
 	block = {
 		call = function(creator, method, args)
@@ -27,11 +29,19 @@ rex = {
 		actions[action.name] = action
 	end,
 	session = {
-		view = function()
+		list = function()
+			return { sessions = session_list or { { session_id = "session" } } }, list_error
+		end,
+		view = function(args)
 			assert(view or view_error, "session API called at config load time")
+			if args.session_id and session_views then
+				local target_view = assert(session_views[args.session_id], "unknown session")
+				return target_view
+			end
 			return view, view_error
 		end,
 		focus_block = function(args)
+			focused_session = args.session_id
 			calls[#calls + 1] = { block_id = args.block_id }
 			return focus_error and nil or {}, focus_error
 		end,
@@ -212,7 +222,8 @@ local first = window("first", "b", { block("c", 0.5, 0.5), block("b", 0.5, 0), b
 local second = window("second", "d", { block("e", 0.5, 0), block("d", 0, 0) })
 local function focus(current_window, current_block, direction, windows)
 	calls = {}
-	view = { active_window_id = current_window.window_id, windows = windows or { first, second } }
+	view =
+		{ session_id = "session", active_window_id = current_window.window_id, windows = windows or { first, second } }
 	view_error, focus_error = nil, nil
 	actions.herdr_focus.run({ block_id = current_block }, { direction = direction })
 end
@@ -237,7 +248,55 @@ focus(first, "a", "left")
 assert(#calls == 2 and calls[1].block_id == "e")
 assert(calls[2].action == "client.tab.goto" and calls[2].args.index == 2)
 focus(first, "c", "right", { first })
-assert(#calls == 0)
+assert(#calls == 2 and calls[1].block_id == "a", "a single tab must cycle its panes")
+-- Cycle every pane/tab/session in server order, forward and backward.
+local s1t1 = window("s1t1", "s1b", { block("s1a", 0, 0), block("s1b", 0.5, 0) })
+local s1t2 = window("s1t2", "s1c", { block("s1c", 0, 0) })
+local s2t1 = window("s2t1", "s2a", { block("s2a", 0, 0) })
+local s2t2 = window("s2t2", "s2c", { block("s2b", 0, 0), block("s2c", 0.5, 0), block("s2d", 1, 0) })
+session_views = {
+	session = { session_id = "session", windows = { s1t1, s1t2 } },
+	other = { session_id = "other", windows = { s2t1, s2t2 } },
+	empty = { session_id = "empty", windows = {} },
+}
+session_list = { { session_id = "session" }, { session_id = "empty" }, { session_id = "other" } }
+local sequence = {
+	{ "session", s1t1, "s1a", 1 },
+	{ "session", s1t1, "s1b", 1 },
+	{ "session", s1t2, "s1c", 2 },
+	{ "other", s2t1, "s2a", 1 },
+	{ "other", s2t2, "s2b", 2 },
+	{ "other", s2t2, "s2c", 2 },
+	{ "other", s2t2, "s2d", 2 },
+}
+for _, step in ipairs({ 1, -1 }) do
+	for i, source in ipairs(sequence) do
+		local target = sequence[(i - 1 + step) % #sequence + 1]
+		view = session_views[source[1]]
+		view.active_window_id = source[2].window_id
+		calls, focused_session = {}, nil
+		actions.herdr_focus.run({ session_id = source[1], block_id = source[3] }, {
+			direction = step == 1 and "right" or "left",
+		})
+		assert(calls[1].block_id == target[3], "wrong pane in full cycle")
+		assert(focused_session == target[1], "focus must explicitly target the destination session")
+		if source[1] ~= target[1] then
+			assert(#calls == 2 and calls[2].action == "session.select")
+			assert(calls[2].args.session_id == target[1] and calls[2].args.window_id == target[2].window_id)
+		elseif source[2] ~= target[2] then
+			assert(#calls == 2 and calls[2].action == "client.tab.goto" and calls[2].args.index == target[4])
+		else
+			assert(#calls == 1)
+		end
+	end
+end
+-- A failed session lookup must not wrap inside the current session instead.
+view = session_views.session
+view.active_window_id = s1t2.window_id
+calls, list_error = {}, "list failed"
+local list_ok, list_err = pcall(actions.herdr_focus.run, { block_id = "s1c" }, { direction = "right" })
+assert(not list_ok and tostring(list_err):find("list failed", 1, true) and #calls == 0)
+session_views, session_list, list_error = nil, nil, nil
 -- Empty target windows still receive focus.
 local empty = window("empty", nil, {})
 focus(first, "c", "right", { first, empty })

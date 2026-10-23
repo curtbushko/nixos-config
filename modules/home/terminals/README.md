@@ -148,7 +148,7 @@ these file-based bindings; clear any conflicting UI shortcuts.
 | --- | --- |
 | Cmd+D / Cmd+Shift+D | Split right / down |
 | Cmd+J/K / Cmd+Down/Up | Focus pane down / up |
-| Cmd+H/L / Cmd+Left/Right | Previous / next pane, then adjacent tab |
+| Cmd+H/L / Cmd+Left/Right | Previous / next pane, then tab, then session |
 | Cmd+T | New tab |
 | Cmd+W | Close tab |
 | Cmd+1–9 | Go to tab 1–9 |
@@ -159,9 +159,13 @@ these file-based bindings; clear any conflicting UI shortcuts.
 | Cmd+Option+W | Cycle pane widths: 1/3, 1/2, 2/3 of the window |
 
 Cmd+H/L sorts panes by their x/y positions, including vertically stacked panes.
-Crossing a tab boundary wraps within the current Rex session and focuses the
-first/last pane in the destination tab. The action explicitly selects the client
-tab as well as server focus. J/K stays spatial within the tab.
+After the last tab, navigation continues into the next session in server order,
+wrapping from the final session to the first. Cmd+H traverses the same cycle in
+reverse. Tab/session crossings focus the first/last pane in the destination tab;
+sessions without tabs are skipped. A single tab cycles through its own panes.
+The action explicitly selects the client session/tab as well as server focus.
+This cycle covers sessions on the current server, not other connected hosts.
+J/K stays spatial within the tab.
 
 Width changes adjust the nearest horizontal split. A single pane is unchanged;
 unreachable presets inside nested splits are skipped. Incremental changes are
