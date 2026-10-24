@@ -51,6 +51,7 @@
   # Packages
   #---------------------------------------------------------------------
   home.packages = [
+    (pkgs.callPackage ../../../packages/tasknotes-tools {})
     # Darwin only
     pkgs.cachix
     inputs.neovim.packages.${pkgs.stdenv.hostPlatform.system}.default

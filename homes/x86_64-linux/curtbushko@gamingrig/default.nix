@@ -67,6 +67,7 @@
   # Packages
   #---------------------------------------------------------------------
   home.packages = [
+    (pkgs.callPackage ../../../packages/tasknotes-tools {})
     pkgs.crawl
     pkgs.crawlTiles
     pkgs.cachix
