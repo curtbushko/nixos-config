@@ -39,6 +39,7 @@
     };
   in {
     NSGlobalDomain = {
+      NSUserKeyEquivalents."Hide Others" = ""; # Disable native Option+Cmd+H.
       AppleActionOnDoubleClick = "None"; # Disable double-click title bar to maximize
       "com.apple.swipescrolldirection" = false; # Disable natural scrolling
     };
