@@ -1,5 +1,5 @@
 local bindings, actions, calls = {}, {}, {}
-local view, view_error, focus_error, popup_error, theme_error
+local view, resize_error
 local helper_running, spawn_error
 rex = {
 	json = {
@@ -25,23 +25,6 @@ rex = {
 			error("navigation must not synchronously wait for the CLI")
 		end,
 	}),
-	block = {
-		call = function(creator, method, args)
-			assert(method == "set_theme", "opening a popup must not depend on cached terminal dimensions")
-			calls[#calls + 1] = { creator = creator, method = method, args = args }
-			return {}, theme_error
-		end,
-	},
-	layout = {
-		block = function(args)
-			return { block = args }
-		end,
-	},
-	client = {
-		queue = function(action, args)
-			calls[#calls + 1] = { action = action, args = args }
-		end,
-	},
 	bind = function(key, action, args)
 		assert(not bindings[key], "duplicate key: " .. key)
 		bindings[key] = { action = action, args = args }
@@ -55,53 +38,18 @@ rex = {
 	end,
 	session = {
 		view = function(args)
-			assert(view or view_error, "session API called at config load time")
+			assert(view, "session API called at config load time")
 			assert(not args.session_id, "navigation must only inspect its current session")
-			return view, view_error
-		end,
-		focus_block = function(args)
-			calls[#calls + 1] = { block_id = args.block_id }
-			return focus_error and nil or {}, focus_error
-		end,
-		focus_window = function(args)
-			calls[#calls + 1] = { window_id = args.window_id }
-			return focus_error and nil or {}, focus_error
+			return view
 		end,
 		resize_pane = function(args)
 			calls[#calls + 1] = { resize = args }
-			return focus_error and nil or {}, focus_error
-		end,
-		new_layer = function(args)
-			calls[#calls + 1] = { layer = args }
-			return { layer_id = "popup", block_ids = { "popup-block" } }, popup_error
-		end,
-		close_layer = function(args)
-			calls[#calls + 1] = { closed_layer = args.layer_id }
-			return {}
+			return resize_error and nil or {}, resize_error
 		end,
 	},
 }
 
--- Resolve the installed plugin path and resource tokens without deployment.
-local real_dofile = dofile
-local directory =
-	assert(os.getenv("REX_WHICHKEY_LUA_DIR"), "Set REX_WHICHKEY_LUA_DIR to the pinned plugin input's lua/whichkey")
-local menu_config = real_dofile(directory .. "/config.lua")
-dofile = function(path)
-	local config_home = os.getenv("XDG_CONFIG_HOME") or (os.getenv("HOME") .. "/.config")
-	if path == config_home .. "/rex/whichkey/plugin.lua" then
-		return real_dofile(directory .. "/plugin.lua")
-	end
-	if path == "@REX_WHICHKEY_DIRECTORY@/config.lua" then
-		return menu_config
-	end
-	if path:find("@REX_WHICHKEY_DIRECTORY@/", 1, true) == 1 then
-		return real_dofile((path:gsub("@REX_WHICHKEY_DIRECTORY@", directory)))
-	end
-	return real_dofile(path)
-end
-real_dofile("modules/home/terminals/rex/init.lua")
-dofile = real_dofile
+dofile("modules/home/terminals/rex/init.lua")
 
 local function binding(keys, action, arg, value)
 	for _, key in ipairs(keys) do
@@ -122,7 +70,15 @@ binding({ "cmd+l", "cmd+right" }, "herdr_focus", "direction", "right")
 assert(actions.herdr_focus, "retain combined pane/tab/session cycling")
 binding({ "cmd+t" }, "client.tab.new")
 binding({ "cmd+w" }, "client.tab.close")
-binding({ "cmd+space" }, "whichkey")
+assert(not bindings["cmd+space"], "reserve Cmd+Space for the replacement menu")
+local action_count = 0
+for _ in pairs(actions) do
+	action_count = action_count + 1
+end
+assert(
+	action_count == 2 and actions.herdr_focus and actions.pane_width,
+	"load only the built-in navigation and resize actions"
+)
 binding({ "cmd+e" }, "client.sidebar.toggle")
 for i = 1, 9 do
 	binding({ "cmd+" .. i }, "client.tab.goto", "index", i)
@@ -166,7 +122,7 @@ local function resize(focused, args, ratio)
 			},
 		},
 	}
-	focus_error = nil
+	resize_error = nil
 	actions.pane_width.run({ block_id = focused, session_id = "session" }, args)
 end
 resize("left", { delta = 0.1 })
@@ -188,14 +144,14 @@ resize("left", { delta = -10 })
 assert(math.abs(calls[1].resize.ratio - 0.05) < 1e-6)
 resize("left", { delta = 10 })
 assert(math.abs(calls[1].resize.ratio - 0.95) < 1e-6)
-focus_error = "resize failed"
+resize_error = "resize failed"
 local resize_ok, resize_err = pcall(
 	actions.pane_width.run,
 	{ block_id = "left", session_id = "session" },
 	{ cycle = true }
 )
 assert(not resize_ok and tostring(resize_err):find("resize failed", 1, true))
-focus_error = nil
+resize_error = nil
 -- A nested split is only half a window wide; skip the unreachable 1/2 and 2/3.
 resize("left", { cycle = true })
 local root = view.windows[1].layers[1].layout
@@ -225,20 +181,6 @@ actions.pane_width.run({ block_id = "left", session_id = "session" }, { cycle = 
 assert(#calls == 0, "a single pane has no divider to resize")
 assert(not pcall(actions.pane_width.run, { block_id = "missing" }, { cycle = true }))
 
-local function block(id, x, y)
-	return { block_id = id, rect = { x, y, 0.5, 0.5 } }
-end
-local function window(id, focused, blocks)
-	local metadata = {}
-	local layout
-	for _, pane in ipairs(blocks) do
-		metadata[#metadata + 1] = { block_id = pane.block_id }
-		layout = layout and { rect = { 0, 0, 1, 1 }, split = { before = layout, after = pane } } or pane
-	end
-	return { window_id = id, focused_block_id = focused, layers = { { blocks = metadata, layout = layout } } }
-end
-local first = window("first", "b", { block("c", 0.5, 0.5), block("b", 0.5, 0), block("a", 0, 0) })
-local second = window("second", "d", { block("e", 0.5, 0), block("d", 0, 0) })
 -- Navigation hands off without waiting for the helper or nested app requests.
 local context = { client_id = "app-client", session_id = "session", block_id = "pane", server = "Gamingrig" }
 for _, direction in ipairs({ "left", "right" }) do
@@ -268,103 +210,4 @@ spawn_error = "spawn failed"
 assert(not pcall(actions.herdr_focus.run, context, { direction = "right" }))
 spawn_error = nil
 assert(not pcall(actions.herdr_focus.run, context, { direction = "up" }))
--- Removed menu operations must fail before changing focus or queuing commands.
-for _, choice in ipairs({ "move_new_tab", "resize_left", "resize_up", "resize_down", "resize_right" }) do
-	calls = {}
-	assert(not pcall(actions.whichkey_dispatch.run, { block_id = "b" }, { lhs = choice }))
-	assert(#calls == 0)
-end
--- Opening the menu creates a focused floating terminal, keeping caller context.
-view_error, focus_error, popup_error = nil, nil, nil
-view = { active_window_id = first.window_id, windows = { first, second } }
-calls = {}
-actions.whichkey.run({ client_id = "app-client", session_id = "session", block_id = "b" }, {})
-assert(#calls == 1, "inherit the theme; do not override it before terminal color queries")
-local layer = calls[1].layer
-assert(layer.window_id == "first" and layer.focus)
-assert(
-	layer.bounds.x == 0 and layer.bounds.y == 0 and layer.bounds.w == 1 and layer.bounds.h == 1,
-	"bootstrap at the origin; shared areas own subsequent placement"
-)
-assert(
-	math.abs(tonumber(layer.layout.block.options.command[16]) - (layer.bounds.w - layer.bounds.x) / layer.bounds.w)
-		< 1e-9
-)
-assert(
-	math.abs(tonumber(layer.layout.block.options.command[17]) - (layer.bounds.h - layer.bounds.y) / layer.bounds.h)
-		< 1e-9
-)
-assert(layer.bounds.x >= 0 and layer.bounds.y >= 0)
-assert(layer.bounds.x + layer.bounds.w <= 1 and layer.bounds.y + layer.bounds.h <= 1)
-assert(layer.layout.block.flavor == "com.superlogical.terminal.shell")
-local options = layer.layout.block.options
-assert(
-	options.shell == "none" and options.login == false and options.exit.on_completion,
-	"a popup must not run login initialization or emit a Last login timestamp"
-)
-assert(options.exit.quick_exit_threshold_ms == 0, "even a fast Escape must close the temporary popup")
-assert(options.command[1] == "/bin/sh" and options.command[2] == "-c")
-assert(options.command[6] == "app-client" and options.command[7] == "session" and options.command[8] == "b")
-assert(not options.theme, "inherit the active terminal theme")
-assert(options.command[10] == "#d3c6aa", "retain internal colors only as query fallbacks")
-assert(options.command[18] == "center")
-calls = {}
-actions.whichkey.run({ client_id = "app-client", session_id = "session", block_id = "b" }, { position = "left" })
-assert(calls[1].layer.layout.block.options.command[18] == "left")
--- A tab switch must not create the popup apart from its originating pane.
-calls = {}
-actions.whichkey.run({ client_id = "app-client", session_id = "session", block_id = "d" }, {})
-assert(calls[1].layer.window_id == "second" and #calls == 1)
-calls = {}
-assert(not pcall(actions.whichkey.run, { client_id = "app-client", session_id = "session", block_id = "gone" }, {}))
-assert(#calls == 0, "do not create an orphan popup if the originating pane disappeared")
--- Dispatch restores focus before requesting the action on the app client.
-calls = {}
-actions.whichkey_dispatch.run({ block_id = "b" }, { lhs = "v" })
-assert(#calls == 2 and calls[1].block_id == "b")
-assert(calls[2].action == "pane.split" and calls[2].args.direction == "right")
-calls = {}
-actions.whichkey_dispatch.run({ block_id = "b" }, { lhs = "t9" })
-assert(calls[2].action == "client.tab.goto" and calls[2].args.index == 9)
-calls = {}
-assert(not pcall(actions.whichkey_dispatch.run, { block_id = "b" }, { lhs = "unknown" }))
-assert(#calls == 0)
--- Editing only the shared spec adds a nested action and a confirmed callback.
-menu_config.spec[#menu_config.spec + 1] = { "g", group = "Tools", icon = "!" }
-menu_config.spec[#menu_config.spec + 1] = { "gn", group = "Nested" }
-menu_config.spec[#menu_config.spec + 1] = { "gnr", "pane.split", desc = "Split left", args = { direction = "left" } }
-menu_config.spec[#menu_config.spec + 1] = {
-	"gnx",
-	function(ctx, args)
-		calls[#calls + 1] = { callback = ctx.block_id, value = args.value }
-	end,
-	desc = "Callback",
-	confirm = true,
-	args = { value = 42 },
-}
-calls = {}
-actions.whichkey_dispatch.run({ block_id = "b" }, { lhs = "gnr" })
-assert(calls[2].action == "pane.split" and calls[2].args.direction == "left")
-calls = {}
-assert(not pcall(actions.whichkey_dispatch.run, { block_id = "b" }, { lhs = "gn" }))
-assert(not pcall(actions.whichkey_dispatch.run, { block_id = "b" }, { lhs = "gnx" }))
-assert(not pcall(actions.whichkey_dispatch.run, { block_id = "b" }, { lhs = "x", confirmed = false }))
-assert(#calls == 0, "groups and unconfirmed actions must not change focus")
-actions.whichkey_dispatch.run({ block_id = "b" }, { lhs = "gnx", confirmed = true })
-assert(#calls == 2 and calls[2].callback == "b" and calls[2].value == 42)
-calls = {}
-focus_error = "origin disappeared"
-assert(not pcall(actions.whichkey_dispatch.run, { block_id = "b" }, { lhs = "z" }))
-assert(#calls == 1) -- no client action after failed focus
-focus_error, popup_error = nil, "cannot create popup"
-assert(not pcall(actions.whichkey.run, { client_id = "app-client", session_id = "session", block_id = "b" }, {}))
-calls = {}
-assert(not pcall(actions.whichkey.run, {}, {}))
-assert(#calls == 0)
--- Theme writes are deliberately absent: even an unavailable theme setter cannot
--- stop startup or replace the colors the terminal will report.
-popup_error, theme_error = nil, "theme writes forbidden"
-calls = {}
-actions.whichkey.run({ client_id = "app-client", session_id = "session", block_id = "b" }, {})
-assert(#calls == 1)
-print("Rex bindings, navigation, popup styling, cleanup and dispatch: passed")
+print("Rex built-in bindings, pane sizing and asynchronous navigation: passed")

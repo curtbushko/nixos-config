@@ -8,7 +8,6 @@ let
     inputs = {
       rex.nixosModules.default = {};
       sops-nix.nixosModules.sops = {};
-      rex-whichkey.lib.mkPackage = _: "/test/rex-whichkey";
     };
     lib = {
       mkIf = condition: value:
@@ -23,5 +22,5 @@ let
   };
 in
   assert module.config.home-manager.users.curtbushko.ns.terminals.rex.enable;
-  assert builtins.elem "/test/rex-whichkey" module.config.environment.systemPackages;
+  assert !(module.config.environment ? systemPackages);
   assert module.config.services.rex.loginServer.enable; true

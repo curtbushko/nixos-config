@@ -1395,27 +1395,6 @@
         "url": "https://pkgs.superlogical.com/rex/nix/snapshot.tar.gz"
       }
     },
-    "rex-whichkey": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1792766837,
-        "narHash": "sha256-qmKyWXXHUE76R8xD4/AL8ysde9lLxzhHy52Mx10KFjQ=",
-        "ref": "main",
-        "rev": "a830c6164520e0ff52c2fb65908896b2579699cb",
-        "revCount": 8,
-        "type": "git",
-        "url": "ssh://git@github.com/curtbushko/rex-whichkey.git"
-      },
-      "original": {
-        "ref": "main",
-        "type": "git",
-        "url": "ssh://git@github.com/curtbushko/rex-whichkey.git"
-      }
-    },
     "root": {
       "inputs": {
         "claude-code": "claude-code",
@@ -1438,7 +1417,6 @@
         "nixpkgs": "nixpkgs_5",
         "pi": "pi",
         "rex": "rex",
-        "rex-whichkey": "rex-whichkey",
         "snowfall-lib": "snowfall-lib",
         "sops-nix": "sops-nix",
         "stevenblack-hosts": "stevenblack-hosts",

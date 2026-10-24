@@ -2,7 +2,6 @@
   config,
   lib,
   pkgs,
-  inputs,
   ...
 }: let
   inherit (lib) mkIf mkOption types;
@@ -23,9 +22,6 @@
       ])
     (lib.splitString "\n" config.xdg.configFile."ghostty/config".text);
   themeFile = pkgs.writeText "rex-flair-theme" (lib.concatStringsSep "\n" themeLines + "\n");
-  whichkey = inputs.rex-whichkey.lib.mkPackage {
-    inherit pkgs;
-  };
   initLua = builtins.readFile ./rex/init.lua;
 in {
   options.ns.terminals.rex.appPath = mkOption {
@@ -51,7 +47,7 @@ in {
     type = types.bool;
     default = config.ns.terminals.enable && pkgs.stdenv.hostPlatform.isDarwin;
     description = ''
-      Whether to install Rex's init.lua, HerdR-style keys, and which-key helper.
+      Whether to install Rex's init.lua and HerdR-style keys.
       On macOS, also configure a theme matching Ghostty; install the app
       separately, then import ~/.config/rex/themes/flair in Rex's theme settings.
     '';
@@ -65,8 +61,6 @@ in {
           force = true;
         };
         "rex/cycle.lua".source = ./rex/cycle.lua;
-        "rex/whichkey/plugin.lua".source = whichkey.plugin;
-        "rex/whichkey/rex-whichkey".source = "${whichkey}/bin/rex-whichkey";
       };
     }
     (mkIf pkgs.stdenv.hostPlatform.isDarwin {

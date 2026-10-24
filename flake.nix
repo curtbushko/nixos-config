@@ -86,11 +86,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    rex-whichkey = {
-      url = "git+ssh://git@github.com/curtbushko/rex-whichkey.git?ref=main";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     pi = {
       url = "github:lukasl-dev/pi.nix/a8ce1745fcfae2cbb86b37f9e89f76941893d00e";
       inputs.nixpkgs.follows = "nixpkgs";

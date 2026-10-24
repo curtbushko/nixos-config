@@ -15,7 +15,6 @@ rex.bind("cmd+w", "client.tab.close")
 for i = 1, 9 do
 	rex.bind("cmd+" .. i, "client.tab.goto", { index = i })
 end
-rex.bind("cmd+space", "whichkey")
 rex.bind("cmd+e", "client.sidebar.toggle")
 for key, direction in pairs({ h = "left", j = "down", k = "up", l = "right" }) do
 	rex.bind("alt+cmd+" .. key, "pane.move", { direction = direction })
@@ -168,7 +167,3 @@ rex.action({
 		}))
 	end,
 })
-
--- Plugin defaults include the standard menus. Add spec = { ... } to replace them.
-local whichkey = dofile(config_home .. "/rex/whichkey/plugin.lua")
-whichkey.setup({ position = "center" })

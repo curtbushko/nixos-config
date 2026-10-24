@@ -27,9 +27,6 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    environment.systemPackages = [
-      (inputs.rex-whichkey.lib.mkPackage {inherit pkgs;})
-    ];
     # The login server starts a personal server with this account's init.lua.
     home-manager.users.curtbushko.ns.terminals.rex.enable = true;
 
