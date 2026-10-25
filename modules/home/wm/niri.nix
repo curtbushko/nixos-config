@@ -343,6 +343,7 @@ in {
           "Alt+V".action.spawn = ["vicinae" "vicinae://extensions/vicinae/clipboard/history"];
           "Mod+Tab".action = actions.toggle-overview;
           "Alt+Tab".action = actions.toggle-overview;
+          "Alt+Q".action = actions.close-window;
           "Alt+M".action = actions.quit;
           "Ctrl+Alt+Delete".action = actions.quit;
 

@@ -53,6 +53,7 @@ in
   assert binds."Alt+F".action == "fullscreen-window";
   assert binds."Mod+Tab".action == "toggle-overview";
   assert binds."Alt+Tab".action == "toggle-overview";
+  assert binds."Alt+Q".action == "close-window";
   assert binds."Alt+M".action == "quit";
   assert binds."Ctrl+Alt+Delete".action == "quit";
   assert binds."Alt+Space".action.spawn == ["vicinae" "vicinae://toggle"];
