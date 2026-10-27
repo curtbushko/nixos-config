@@ -85,6 +85,9 @@ in {
         "Workspace.terminalFontName" = "JetBrainsMono Nerd Font";
         "Workspace.terminalFontStyle" = "Medium";
         "Workspace.terminalFontPointSize" = 12.0;
+        # Inactive windows use the pane fade choice instead of separate window styling.
+        "Workspace.usesStandardInactiveWindowPaneStyles" = false;
+        "Workspace.inactivePaneFadeMode" = "none";
       };
 
       launchd.agents.rex-server = mkIf cfg.lan.enable {
