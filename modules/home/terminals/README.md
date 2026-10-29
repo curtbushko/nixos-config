@@ -137,7 +137,7 @@ the corresponding Mac; successful local evaluation does not prove connectivity.
 
 Cmd/Super controls application content. Option/Alt controls desktop focus;
 Option+Ctrl moves and sizes desktop windows in Niri and OmniWM. Cmd+Option
-moves and sizes Rex panes. These bindings intentionally differ from HerdR.
+moves and sizes Rex panes.
 Home Manager reloads the config after linking files and installing the theme,
 provided Rex's CLI and an existing server are available. It does not start Rex.
 Use `rex config check` to validate, or `rex config reload` for a manual reload.

@@ -34,7 +34,7 @@ end
 -- One in-flight step prevents held keys from queuing stale session switches.
 local navigation
 rex.action({
-	name = "herdr_focus",
+	name = "cycle_focus",
 	title = "Focus Pane, Tab, or Session",
 	description = "Cycle panes, tabs and connected sessions; ignore disconnected sources.",
 	args = { direction = "string" },
@@ -75,8 +75,8 @@ rex.action({
 		}))
 	end,
 })
-bind({ "cmd+h", "cmd+left" }, "herdr_focus", { direction = "left" })
-bind({ "cmd+l", "cmd+right" }, "herdr_focus", { direction = "right" })
+bind({ "cmd+h", "cmd+left" }, "cycle_focus", { direction = "left" })
+bind({ "cmd+l", "cmd+right" }, "cycle_focus", { direction = "right" })
 
 -- Resize the nearest horizontal split containing the focused pane. Widths are
 -- fractions of the window, not of a nested split; unreachable presets are skipped.

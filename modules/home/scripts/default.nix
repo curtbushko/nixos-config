@@ -37,12 +37,6 @@
   gobuildwatcher = pkgs.writeScriptBin "gobuildwatcher" (builtins.readFile ./gobuildwatcher);
   gotestwatcher = pkgs.writeScriptBin "gotestwatcher" (builtins.readFile ./gotestwatcher);
   helm-nuke = pkgs.writeScriptBin "helm-nuke" (builtins.readFile ./helm-nuke);
-  codex-orchestrator = pkgs.writeShellApplication {
-    name = "codex-orchestrator";
-    runtimeInputs = [pkgs.git pkgs.gh pkgs.yq-go pkgs.jq pkgs.coreutils pkgs.gnugrep];
-    text = builtins.readFile ./codex-orchestrator;
-  };
-  herdr-smart-focus = pkgs.writeScriptBin "herdr-smart-focus" (builtins.readFile ./herdr-smart-focus);
   hyprstart = pkgs.writeScriptBin "hyprstart" (builtins.readFile ./hyprstart);
   jira-ls = pkgs.writeScriptBin "jira-ls" (builtins.readFile ./jira-ls);
   kubewatcher = pkgs.writeScriptBin "kubewatcher" (builtins.readFile ./kubewatcher);
@@ -119,8 +113,6 @@ in {
         gobuildwatcher
         gotestwatcher
         helm-nuke
-        codex-orchestrator
-        herdr-smart-focus
         jira-ls
         kubewatcher
         leetgen

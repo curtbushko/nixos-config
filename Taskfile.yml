@@ -65,8 +65,10 @@ tasks:
               echo "{{.DATELOG}} Waking gamingrig for cache access..."
               wake-gamingrig
             fi
-            nix --extra-experimental-features 'nix-command flakes' build ".#darwinConfigurations.{{.HOST}}.system" --show-trace --impure
-            sudo ./result/sw/bin/darwin-rebuild switch --flake "$(pwd)#{{.HOST}}" --impure
+            # Reuse the user-built result; root must not refetch private flake inputs.
+            nix --extra-experimental-features 'nix-command flakes' build ".#darwinConfigurations.{{.HOST}}.system" --show-trace --impure &&
+            sudo nix-env -p /nix/var/nix/profiles/system --set "$(readlink result)" &&
+              sudo ./result/sw/bin/darwin-rebuild activate
           elif echo "{{.NIXOS_HOSTS}}" | grep -qw "{{.HOST}}"; then
             if command -v wake-gamingrig &>/dev/null; then
               echo "{{.DATELOG}} Waking gamingrig for cache access..."
@@ -321,15 +323,15 @@ tasks:
     desc: Run fast deterministic checks for an agent workflow
     cmds:
       - alejandra --check --quiet .
-      - bash modules/home/llm/herdr/tests/policy_test.sh
+      - bash modules/home/llm/tests/integration_cleanup_test.sh
       - bash modules/home/llm/pi/tests/theme_test.sh
-      - bash modules/home/scripts/tests/codex-orchestrator_test.sh
+      - bash modules/home/terminals/tests/darwin-switch_test.sh
       - bash modules/home/scripts/tests/workspace_test.sh
       - bash modules/home/scripts/tests/worktrunk_clone_test.sh
       - shellcheck modules/home/scripts/workspace-to-worktrees modules/home/scripts/workspace-sync-main modules/home/scripts/tests/workspace_test.sh modules/home/scripts/tests/worktrunk_clone_test.sh modules/home/scripts/tests/fixtures/workspace-tg
       - shfmt -d modules/home/scripts/workspace-to-worktrees modules/home/scripts/workspace-sync-main modules/home/scripts/tests/workspace_test.sh modules/home/scripts/tests/worktrunk_clone_test.sh modules/home/scripts/tests/fixtures/workspace-tg
-      - shellcheck modules/home/llm/herdr/agent-quality.sh modules/home/llm/herdr/tests/policy_test.sh modules/home/llm/pi/tests/theme_test.sh modules/home/scripts/codex-orchestrator modules/home/scripts/tests/codex-orchestrator_test.sh modules/home/scripts/tests/fixtures/codex-orchestrator-command
-      - shfmt -d modules/home/llm/herdr/agent-quality.sh modules/home/llm/herdr/tests/policy_test.sh modules/home/llm/pi/tests/theme_test.sh modules/home/scripts/codex-orchestrator modules/home/scripts/tests/codex-orchestrator_test.sh modules/home/scripts/tests/fixtures/codex-orchestrator-command
+      - shellcheck modules/home/llm/tests/integration_cleanup_test.sh modules/home/llm/pi/tests/theme_test.sh modules/home/terminals/tests/darwin-switch_test.sh
+      - shfmt -d modules/home/llm/tests/integration_cleanup_test.sh modules/home/llm/pi/tests/theme_test.sh modules/home/terminals/tests/darwin-switch_test.sh
 
   agent-verify-full:
     desc: Run the complete deterministic checks for an agent workflow

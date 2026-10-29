@@ -68,6 +68,7 @@
   #---------------------------------------------------------------------
   home.packages = [
     (pkgs.callPackage ../../../packages/tasknotes-tools {})
+    inputs.mtn.packages.${pkgs.stdenv.hostPlatform.system}.default
     pkgs.crawl
     pkgs.crawlTiles
     pkgs.cachix

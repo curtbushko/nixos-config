@@ -19,7 +19,6 @@ Uses a custom `pi-npm` wrapper that redirects the global npm prefix to `~/.pi/ag
 ### Declarative Extensions
 Extensions are declared in `settings.json` packages list and installed via idempotent activation hooks:
 - `@burneikis/pi-fzfp` - Fuzzy find plugin
-- `@andrewjacop/pi-herdr` - Pinned by Nix and exposed directly from the Nix store
 
 ### Shared Skills
 

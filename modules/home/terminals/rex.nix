@@ -47,7 +47,7 @@ in {
     type = types.bool;
     default = config.ns.terminals.enable && pkgs.stdenv.hostPlatform.isDarwin;
     description = ''
-      Whether to install Rex's init.lua and HerdR-style keys.
+      Whether to install Rex's init.lua and application keybindings.
       On macOS, also configure a theme matching Ghostty; install the app
       separately, then import ~/.config/rex/themes/flair in Rex's theme settings.
     '';

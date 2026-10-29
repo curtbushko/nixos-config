@@ -699,72 +699,6 @@
         "type": "github"
       }
     },
-    "herdr-nixpkgs": {
-      "locked": {
-        "lastModified": 1790570722,
-        "narHash": "sha256-Avcz96Q+8OkfUIUXipBBVsQn19L622BtKP7mk6M+uls=",
-        "owner": "nixos",
-        "repo": "nixpkgs",
-        "rev": "419fe0f449b3fbe3bdd53d9840288db4509ec32e",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nixos",
-        "repo": "nixpkgs",
-        "rev": "419fe0f449b3fbe3bdd53d9840288db4509ec32e",
-        "type": "github"
-      }
-    },
-    "herdr-nvim": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1791562903,
-        "narHash": "sha256-Hk+r5ReArirmjsYOK7BEt8/tj81RmM56SqZSfkYgmcQ=",
-        "owner": "ChmaraX",
-        "repo": "herdr-nvim",
-        "rev": "e2ec32e7bbbb1eefd64363414b5806f84eedd6bc",
-        "type": "github"
-      },
-      "original": {
-        "owner": "ChmaraX",
-        "repo": "herdr-nvim",
-        "type": "github"
-      }
-    },
-    "herdr-routines": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1784413702,
-        "narHash": "sha256-y+N7C4cw8gBnCyNjQsW+n2YHJ9gDNhWceLEZ1eKYUTg=",
-        "owner": "mrcndz",
-        "repo": "herdr-routines",
-        "rev": "cd504512d2f1976d39668fbdc0fe9b86cf3eff85",
-        "type": "github"
-      },
-      "original": {
-        "owner": "mrcndz",
-        "repo": "herdr-routines",
-        "rev": "cd504512d2f1976d39668fbdc0fe9b86cf3eff85",
-        "type": "github"
-      }
-    },
-    "herdr-workflows": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1790454068,
-        "narHash": "sha256-N6/tybvlqjCTjDMTzsJG3QNIM/FAk3+zDjEXME5nEPc=",
-        "owner": "aorumbayev",
-        "repo": "herdr-workflows",
-        "rev": "140de99b7fa43b10dc2a294e0667c62fa2f763dd",
-        "type": "github"
-      },
-      "original": {
-        "owner": "aorumbayev",
-        "ref": "v0.15.1",
-        "repo": "herdr-workflows",
-        "type": "github"
-      }
-    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -922,6 +856,26 @@
         "type": "github"
       }
     },
+    "mtn": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1793276082,
+        "narHash": "sha256-hRDq9pwf4uBBDJjn12o9Z3zsn3Iz6FP8OCn9b7e2nIA=",
+        "owner": "curtbushko",
+        "repo": "mdbase-tasknotes",
+        "rev": "48ee3994bdad87ab93543b98c37a7c2c27532aa5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "curtbushko",
+        "repo": "mdbase-tasknotes",
+        "type": "github"
+      }
+    },
     "naersk": {
       "inputs": {
         "fenix": "fenix",
@@ -951,15 +905,14 @@
         "neovim-nightly-overlay": "neovim-nightly-overlay",
         "nixpkgs": "nixpkgs_4",
         "nixvim": "nixvim",
-        "plugin-herdr-nvim": "plugin-herdr-nvim",
         "plugin-wayfinder": "plugin-wayfinder"
       },
       "locked": {
-        "lastModified": 1790788359,
-        "narHash": "sha256-S0Q19rcO8FTmU+iQWD9E4ytBqkTCDwekVAuz7J1gSdA=",
+        "lastModified": 1793238748,
+        "narHash": "sha256-NMKq82RPwSvvP60KZ9Lwve40qv/c71ZoZ96RH+0ER+I=",
         "owner": "curtbushko",
         "repo": "neovim-flake",
-        "rev": "82225b256ddc68a8e163f49e281920dd9a936618",
+        "rev": "9d2e521a4ac4b178d2ba34d22c0c3678a7b0eace",
         "type": "github"
       },
       "original": {
@@ -1341,27 +1294,6 @@
         "type": "github"
       }
     },
-    "plugin-herdr-nvim": {
-      "inputs": {
-        "nixpkgs": [
-          "neovim",
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1790787772,
-        "narHash": "sha256-FFNkLtZwoi+0TN/VmSzVF960ibV8rKbmFWcf5hiRflE=",
-        "owner": "curtbushko",
-        "repo": "herdr-nvim",
-        "rev": "3cfc7bbf80bd9ea10647cee4229d2bab6d2b8fe7",
-        "type": "github"
-      },
-      "original": {
-        "owner": "curtbushko",
-        "repo": "herdr-nvim",
-        "type": "github"
-      }
-    },
     "plugin-wayfinder": {
       "flake": false,
       "locked": {
@@ -1403,15 +1335,12 @@
         "firefox-addons": "firefox-addons",
         "flair": "flair",
         "ghostty": "ghostty",
-        "herdr-nixpkgs": "herdr-nixpkgs",
-        "herdr-nvim": "herdr-nvim",
-        "herdr-routines": "herdr-routines",
-        "herdr-workflows": "herdr-workflows",
         "home-manager": "home-manager_2",
         "hunk": "hunk",
         "llm-agents": "llm-agents",
         "llmfit": "llmfit",
         "minecraft-servers": "minecraft-servers",
+        "mtn": "mtn",
         "neovim": "neovim",
         "niri": "niri",
         "nixpkgs": "nixpkgs_5",

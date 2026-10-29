@@ -25,13 +25,6 @@ in {
         Provider/model glob patterns exposed by Pi's model cycling interface.
       '';
     };
-    copilot.enable = mkOption {
-      type = types.bool;
-      default = false;
-      description = ''
-        Whether to expose GitHub Copilot through HerdR.
-      '';
-    };
   };
 
   config = mkIf cfg.enable {
@@ -190,7 +183,6 @@ in {
   imports = [
     ./claude.nix
     ./codex.nix
-    ./herdr
     ./llmfit.nix
     ./openchamber.nix
     ./pi

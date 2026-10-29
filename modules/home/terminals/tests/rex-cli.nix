@@ -84,7 +84,7 @@ in
   assert linux.config.xdg.configFile."rex/cycle.lua".source == ../rex/cycle.lua;
   assert contains "rex.exec.start" module.config.xdg.configFile."rex/init.lua".text;
   assert !contains "checked(rex.exec(" module.config.xdg.configFile."rex/init.lua".text;
-  assert contains "herdr_focus" module.config.xdg.configFile."rex/init.lua".text;
+  assert contains "cycle_focus" module.config.xdg.configFile."rex/init.lua".text;
   assert linux.config.xdg.configFile."rex/init.lua".text == module.config.xdg.configFile."rex/init.lua".text;
   assert builtins.attrNames linux.config.xdg.configFile == ["rex/cycle.lua" "rex/init.lua"];
   assert !(linux.config ? targets);

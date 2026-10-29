@@ -24,8 +24,6 @@ buildNpmPackage {
     cp -r node_modules "$out/lib/tasknotes-tools/"
     makeWrapper ${nodejs_22}/bin/node "$out/bin/kb-node" \
       --set NODE_PATH "$out/lib/tasknotes-tools/node_modules"
-    makeWrapper ${nodejs_22}/bin/node "$out/bin/mtn" \
-      --add-flags "$out/lib/tasknotes-tools/node_modules/mdbase-tasknotes/dist/cli.js"
     makeWrapper ${nodejs_22}/bin/node "$out/bin/tn" \
       --add-flags "$out/lib/tasknotes-tools/node_modules/tasknotes-cli/bin/tn"
     runHook postInstall
@@ -35,13 +33,12 @@ buildNpmPackage {
   installCheckPhase = ''
     runHook preInstallCheck
     env -u NODE_PATH "$out/bin/kb-node" -e "require('yaml'); require('zod');"
-    "$out/bin/mtn" --version
     "$out/bin/tn" --help > /dev/null
     runHook postInstallCheck
   '';
 
   meta = {
-    description = "Pinned Node runtime, offline mtn and API-backed tn CLIs for TaskNotes";
+    description = "Pinned Node runtime and API-backed tn CLI for TaskNotes";
     mainProgram = "kb-node";
   };
 }

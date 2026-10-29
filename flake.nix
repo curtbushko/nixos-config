@@ -40,23 +40,6 @@
       url = "github:ghostty-org/ghostty";
     };
 
-    herdr-nixpkgs.url = "github:nixos/nixpkgs/419fe0f449b3fbe3bdd53d9840288db4509ec32e";
-
-    herdr-workflows = {
-      url = "github:aorumbayev/herdr-workflows/v0.15.1";
-      flake = false;
-    };
-
-    herdr-routines = {
-      url = "github:mrcndz/herdr-routines/cd504512d2f1976d39668fbdc0fe9b86cf3eff85";
-      flake = false;
-    };
-
-    herdr-nvim = {
-      url = "github:ChmaraX/herdr-nvim";
-      flake = false;
-    };
-
     llm-agents = {
       url = "github:numtide/llm-agents.nix";
     };
@@ -68,6 +51,11 @@
 
     minecraft-servers = {
       url = "github:curtbushko/minecraft-servers";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    mtn = {
+      url = "github:curtbushko/mdbase-tasknotes";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

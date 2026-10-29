@@ -14,8 +14,6 @@
       # only suspend if LLM agents are not running
       CLAUDE_RUNNING=$(${pkgs.procps}/bin/ps -ef | ${pkgs.gnugrep}/bin/grep -i "claude" | ${pkgs.gnugrep}/bin/grep -v grep | ${pkgs.coreutils}/bin/wc -l | ${pkgs.findutils}/bin/xargs)
       CODEX_RUNNING=$(${pkgs.procps}/bin/ps -ef | ${pkgs.gnugrep}/bin/grep -Ei "codex|cdx" | ${pkgs.gnugrep}/bin/grep -v grep | ${pkgs.coreutils}/bin/wc -l | ${pkgs.findutils}/bin/xargs)
-      # The persistent server alone should not prevent sleep.
-      HERDR_RUNNING=$(${pkgs.procps}/bin/pgrep -ax herdr | ${pkgs.gnugrep}/bin/grep -Ev 'herdr[[:space:]]+server([[:space:]]|$)' | ${pkgs.coreutils}/bin/wc -l | ${pkgs.findutils}/bin/xargs)
       DS4_RUNNING=$(${pkgs.procps}/bin/ps -ef | ${pkgs.gnugrep}/bin/grep -Ei "ds4|ds4-server|ds4-bench|ds4-eval" | ${pkgs.gnugrep}/bin/grep -v grep | ${pkgs.coreutils}/bin/wc -l | ${pkgs.findutils}/bin/xargs)
 
       # A remote login session blocks sleep; the persistent Rex daemon does not.
@@ -34,8 +32,8 @@
       # only suspend if no ssh connections
       SSH_CONNECTION=$(${pkgs.iproute2}/bin/ss | ${pkgs.gnugrep}/bin/grep ssh | ${pkgs.gnugrep}/bin/grep ESTAB | ${pkgs.coreutils}/bin/wc -l | ${pkgs.findutils}/bin/xargs )
 
-      echo "claude running: $CLAUDE_RUNNING, codex running: $CODEX_RUNNING, herdr running: $HERDR_RUNNING, rex running: $REX_RUNNING, ds4 running: $DS4_RUNNING, music running: $MUSIC_RUNNING, ssh connection: $SSH_CONNECTION, steam: $STEAM_RUNNING"
-      if [[ $CLAUDE_RUNNING -eq 0 && $CODEX_RUNNING -eq 0 && $HERDR_RUNNING -eq 0 && $REX_RUNNING -eq 0 && $DS4_RUNNING -eq 0 && $MUSIC_RUNNING -eq 0 && $SSH_CONNECTION -eq 0 && $STEAM_RUNNING -eq 0 ]]; then
+      echo "claude running: $CLAUDE_RUNNING, codex running: $CODEX_RUNNING, rex running: $REX_RUNNING, ds4 running: $DS4_RUNNING, music running: $MUSIC_RUNNING, ssh connection: $SSH_CONNECTION, steam: $STEAM_RUNNING"
+      if [[ $CLAUDE_RUNNING -eq 0 && $CODEX_RUNNING -eq 0 && $REX_RUNNING -eq 0 && $DS4_RUNNING -eq 0 && $MUSIC_RUNNING -eq 0 && $SSH_CONNECTION -eq 0 && $STEAM_RUNNING -eq 0 ]]; then
         echo "Suspending..."
         ${pkgs.systemd}/bin/systemctl suspend
         # Woken up. If it was user input, swayidle's resumeCommand stops

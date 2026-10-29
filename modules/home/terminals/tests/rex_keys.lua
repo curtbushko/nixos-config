@@ -65,9 +65,9 @@ binding({ "cmd+d" }, "pane.split", "direction", "right")
 binding({ "cmd+shift+d" }, "pane.split", "direction", "down")
 binding({ "cmd+j", "cmd+down" }, "pane.focus", "direction", "down")
 binding({ "cmd+k", "cmd+up" }, "pane.focus", "direction", "up")
-binding({ "cmd+h", "cmd+left" }, "herdr_focus", "direction", "left")
-binding({ "cmd+l", "cmd+right" }, "herdr_focus", "direction", "right")
-assert(actions.herdr_focus, "retain combined pane/tab/session cycling")
+binding({ "cmd+h", "cmd+left" }, "cycle_focus", "direction", "left")
+binding({ "cmd+l", "cmd+right" }, "cycle_focus", "direction", "right")
+assert(actions.cycle_focus, "retain combined pane/tab/session cycling")
 binding({ "cmd+t" }, "client.tab.new")
 binding({ "cmd+w" }, "client.tab.close")
 assert(not bindings["cmd+space"], "reserve Cmd+Space for the replacement menu")
@@ -76,7 +76,7 @@ for _ in pairs(actions) do
 	action_count = action_count + 1
 end
 assert(
-	action_count == 2 and actions.herdr_focus and actions.pane_width,
+	action_count == 2 and actions.cycle_focus and actions.pane_width,
 	"load only the built-in navigation and resize actions"
 )
 binding({ "cmd+e" }, "client.sidebar.toggle")
@@ -185,7 +185,7 @@ assert(not pcall(actions.pane_width.run, { block_id = "missing" }, { cycle = tru
 local context = { client_id = "app-client", session_id = "session", block_id = "pane", server = "Gamingrig" }
 for _, direction in ipairs({ "left", "right" }) do
 	calls, helper_running = {}, false
-	actions.herdr_focus.run(context, { direction = direction })
+	actions.cycle_focus.run(context, { direction = direction })
 	assert(#calls == 1)
 	local argv, options = calls[1].exec, calls[1].options
 	assert(argv[2] == "--autostart=false" and argv[3] == "--timeout=1s")
@@ -200,14 +200,14 @@ for _, direction in ipairs({ "left", "right" }) do
 		assert(options.env[key] == false)
 	end
 	-- Key repeats may not enqueue a backlog of stale session switches.
-	actions.herdr_focus.run(context, { direction = direction })
+	actions.cycle_focus.run(context, { direction = direction })
 	assert(#calls == 1)
 end
 calls, helper_running = {}, false
-actions.herdr_focus.run({}, { direction = "right" })
+actions.cycle_focus.run({}, { direction = "right" })
 assert(#calls == 0, "a disconnected context may have no source session")
 spawn_error = "spawn failed"
-assert(not pcall(actions.herdr_focus.run, context, { direction = "right" }))
+assert(not pcall(actions.cycle_focus.run, context, { direction = "right" }))
 spawn_error = nil
-assert(not pcall(actions.herdr_focus.run, context, { direction = "up" }))
+assert(not pcall(actions.cycle_focus.run, context, { direction = "up" }))
 print("Rex built-in bindings, pane sizing and asynchronous navigation: passed")
