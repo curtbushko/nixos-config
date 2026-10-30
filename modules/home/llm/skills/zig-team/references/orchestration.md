@@ -1,512 +1,97 @@
-# Zig Team Orchestration Procedure
+# Zig Team Orchestration
 
-## ORCHESTRATOR RULES (CRITICAL - READ FIRST)
+Read `mtn-tasks`, its commands, migration rules, and shared execution reference
+`../../mtn-tasks/references/execution.md` completely. It owns the selection/resume,
+single-writer, lifecycle, supervision, and completion loop. Keep the coordinator
+focused on graph/status/evidence metadata, not source or full specifications.
 
-**You are a COORDINATOR, not a worker. Your ONLY job is to dispatch subagents and track status.**
+## Task Manager
 
-### Context Budget Warning
+Pass the absolute collection root and exact phase/project refs. The planner reads
+phase/approved PRD/design descriptions through mtn, explores code/module boundaries/tests, and
+proposes `workflowKind: task`, `workflowLanguage: zig`, and phase-scoped integer
+`workflowOrder` records. Work inside out: domain → ports → app → adapters → wiring.
+Each task states files, criteria, tests, constraints, and its own TDD cycle.
+Return proposed native links, ownership/interface boundaries and REQ coverage.
+Coordinator validates and serially publishes the approved v1 plan manifest; planners
+never mutate the collection. Mark final gates in the task graph with dependencies
+on ALL required phase work, not merely the highest task number.
 
-Your context window is finite. Every subagent return consumes context. You MUST:
-- Keep dispatches concise - reference files by path, don't inline content
-- Extract ONLY status/verdict from subagent returns - ignore everything else
-- Never read source code, task detail files, or result files
-- Never echo or summarize subagent output
+## Verification Strategy
 
-### Mandatory Watchdog Loop
-
-The orchestrator MUST remain active while the phase has unfinished tasks. After
-dispatching any Task Manager, Builder, Reviewer, or fix agent, it MUST run this
-watchdog until that agent completes:
-
-```text
-POLL_INTERVAL = 30 seconds
-PROGRESS_INTERVAL = 2 minutes
-STATUS_INTERVAL = 5 minutes
-INSPECT_AFTER = 10 minutes without evidence of progress
-RECOVER_AFTER = 15 minutes without evidence of progress
-MAX_RECOVERY_ATTEMPTS = 3
-
-while phase has unfinished tasks:
-  event = wait_agent(timeout=POLL_INTERVAL)
-  if event, agent output, active command output, result/status file timestamp,
-     or task transition proves progress:
-    record last_progress_at and continue the normal workflow
-  if PROGRESS_INTERVAL elapsed while an agent or command is active:
-    report the current stage, exact command, elapsed time, and latest evidence of progress
-  if STATUS_INTERVAL elapsed:
-    report a concise timestamped status without asking the user to respond
-  if no progress for STATUS_INTERVAL:
-    ask the active agent for its exact command and last completed step
-  if no progress for INSPECT_AFTER:
-    inspect agent state, process state, command activity, and artifact timestamps
-  if no progress for RECOVER_AFTER:
-    interrupt the stalled agent and dispatch a replacement for the same task,
-    preserving all existing edits and task artifacts
-  if recovery fails MAX_RECOVERY_ATTEMPTS times for the same condition:
-    report the concrete blocker and preserved state to the user
-```
-
-A `wait_agent` timeout is a polling event, never a reason to stop the orchestration turn.
-An agent being alive is not evidence of progress. Conversely, a long-running command
-with fresh output or resource activity is progress and MUST NOT be interrupted merely
-for exceeding a wall-clock threshold. After every completion, the orchestrator MUST
-immediately dispatch the next required Builder, Reviewer, fix, or task without waiting
-for a user prompt.
-
-Builders and reviewers MUST send a concise progress update at least every two minutes
-while a command or investigation is still active. A progress update names the current
-stage, exact command, elapsed time, and most recent output or artifact change. The
-orchestrator relays this evidence instead of reporting only that an agent is alive.
-
-The orchestrator MUST NOT return a final response while work remains unless the same
-genuine blocking condition has survived all recovery attempts. Model-capacity errors
-and terminated agents are recoverable conditions: retry or replace the agent and
-continue from `.tasks/` state.
-
-### You MUST:
-- Read `.phases/index.yaml` for status overview (Step 1)
-- Dispatch subagents using the host's subagent mechanism
-- Extract ONLY: Builder `status` and each Reviewer `verdict` (1-2 lines per agent)
-- Track task progress via `.tasks/status.yaml`
-- Update `.phases/` files when tasks complete (Step 3c)
-- Report summary to user
-
-**NOTE**: Builders and reviewers run validation commands. The orchestrator does NOT run these - it only tracks status.
-
-### You MUST NOT:
-- Read source code files
-- Read Builder/Reviewer skills or `examples.md`
-- Read `.tasks/task-*.yaml` or `.tasks/result-*.yaml` detail files
-- Read `.phases/phase-*.md` files (Task Manager reads these)
-- Write or edit any source code
-- Analyze code quality or debug test failures
-- Repeat or summarize subagent output
-- Use `rm` to delete files (move to `.trash/` instead)
-
----
-
-## Subagent Context Files
-
-Subagents read their own context. You do NOT read these:
-
-| Agent | Reads | Path |
-|-------|-------|------|
-| Zig Builder | Team workflow + language patterns | `zig-builder` + `zig` skills |
-| Zig Builder | Task details | `.tasks/task-{id}.yaml` |
-| All Reviewers | Shared contract | `zig-reviewer` skill |
-| Code Reviewer | Correctness and style | `zig-code-reviewer` + `zig-code-review` skills |
-| Comment Reviewer | Intent and references | `zig-comment-reviewer` skill |
-| Architecture Reviewer | Boundaries and enforcement | `zig-architecture-reviewer` skill |
-| Test Reviewer | Behavioral evidence | `zig-test-reviewer` skill |
-| All Reviewers | Task and build evidence | `.tasks/task-{id}.yaml` + `.tasks/result-{id}-build.yaml` |
-| Task Manager | Phase details | `.phases/phase-*.md` |
-
----
-
-## Step 1: Read Phase Index and Check State
-
-```
-SPECIFIC_TASK = args.task or null
-SPECIFIC_PHASE = args.phase or null
-
-# Read the lean index file (orchestrator's view of the plan)
-if not file_exists(".phases/index.yaml"):
-    error "No phases found. Run the to-phases skill first to create .phases/"
-
-INDEX = Read(".phases/index.yaml")
-
-# Determine which phase to work on
-if SPECIFIC_PHASE is set:
-    PHASE = INDEX.phases[SPECIFIC_PHASE]
-else:
-    PHASE = INDEX.phases[INDEX.current_phase]
-
-if PHASE.status == "completed":
-    # Auto-advance to next pending phase
-    PHASE = first phase where status != "completed"
-    if no such phase: report "All phases complete" and exit
-
-# Display status to user (from index.yaml only)
-Display:
-  Project: {INDEX.project}
-  Current Phase: {PHASE.id} - {PHASE.name} [{PHASE.status}] {PHASE.progress}
-
-# Check for existing task state
-if file_exists(".tasks/status.yaml"):
-    STATUS = Read(".tasks/status.yaml")
-    # Verify it's for the current phase
-    if STATUS.phase_id == PHASE.id:
-        if SPECIFIC_TASK is set:
-            Skip to Step 3 (execute only that task)
-        if STATUS has pending tasks:
-            Skip to Step 3 (resume from where we left off)
-    else:
-        # Different phase - archive old tasks and start fresh
-        Archive .tasks/*.yaml to .trash/
-```
-
----
-
-## Step 2: Task Manager Dispatch
-
-**Skip if:** `.tasks/status.yaml` exists for current phase with pending tasks, or `SPECIFIC_TASK` is set.
-
-```
-Dispatch a subagent:
-  model: cheaper/faster model
-  role: general-purpose
-  description: "Plan phase {PHASE.id}"
-  prompt: |
-    ## Task Manager: Break down phase into implementation tasks
-
-    ### Instructions
-    1. Read the phase file at: `.phases/{PHASE.file}`
-    2. Parse the task checklist (extract all `- [ ]` items)
-    3. Explore the codebase to find existing patterns, module structure, test helpers
-    4. Identify hexagonal architecture layout (src/domain/, src/ports/, src/app/, src/adapters/, build.zig modules)
-    5. Break down into right-sized tasks following TDD and inside-out implementation order (domain -> ports -> app -> adapters -> wiring). Each task: one coherent concern, independently verifiable acceptance criteria, a reviewable diff, and enough context stated in the task for a fresh agent session.
-    6. Write output files (format below)
-
-    ### Context
-    - Project: {INDEX.project}
-    - Phase: {PHASE.id} - {PHASE.name}
-    - Phase file: `.phases/{PHASE.file}`
-
-    ### Output: Write these files
-
-    First: `mkdir -p .tasks`
-
-    **IMPORTANT: NEVER create .gitkeep files.** Git tracks files, not directories.
-
-    **`.tasks/status.yaml`** (coordination summary)
-    ```yaml
-    project: "{INDEX.project}"
-    phase_id: {PHASE.id}
-    phase_name: "{PHASE.name}"
-    phase_file: "{PHASE.file}"
-    execution_order: [1, 2, 3]
-    tasks:
-      - id: 1
-        name: "[task name]"
-        status: pending
-        deps: []
-        plan_tasks:
-          - "[exact task text from phase file]"
-    ```
-    NOTE: `plan_tasks` MUST list the exact task text from the phase file's
-    checklist. The orchestrator uses these to mark tasks complete in the
-    phase file when each task finishes.
-
-    **`.tasks/task-{id}.yaml`** (one per task, full details)
-    ```yaml
-    id: 1
-    name: "[task name]"
-    project: "{INDEX.project}"
-    phase_id: {PHASE.id}
-    phase_file: "{PHASE.file}"
-    plan_tasks: ["[exact task text]"]
-    files:
-      create: [{path, purpose}]
-      modify: [{path, changes}]
-    test_cases:
-      - name: "test [scenario_snake_case]"
-        given_setup: "[setup]"
-        when_action: "[action]"
-        then_assert: "[std.testing assertions]"
-    acceptance_criteria: ["[criterion from plan tasks]"]
-    tdd_steps:
-      - step: "[red|green|refactor]"
-        file: "[file path]"
-        description: "[what to do]"
-    ```
-
-    **IMPORTANT**: Return ONLY this short confirmation (nothing else):
-    ```
-    status: complete
-    tasks_created: [count]
-    execution_order: [1, 2, ...]
-    ```
-```
-
-Verify `.tasks/status.yaml` exists after dispatch.
-
----
-
-## Step 3: Execution Loop
-
-### Verification Strategy
-
-Run the narrowest relevant test first during RED, GREEN, and each fix cycle. A
-focused test should exercise only the changed behavior and its immediate integration
-boundary so ordinary development does not repeatedly pay for the whole repository.
-
-Run the full test suite once after the implementation is ready for review. Record that
-successful run in the build result so the reviewer can verify it without running the
-same suite again. Re-run the full test suite after a fix only when the fix has broad impact
-(shared infrastructure, public contracts, build wiring, persistence, concurrency, or
-multiple capabilities), or when the reviewer explicitly requests it. Otherwise, re-run
-the focused regression and record why the existing full-suite result remains applicable.
+Run the narrowest relevant test first during RED, GREEN, and each fix cycle.
+Run the full test suite once after the implementation is ready for review.
+Re-run the full test suite after a fix only when the fix has broad impact
+(shared infrastructure, public contracts, build wiring, persistence, concurrency,
+or multiple capabilities), or a reviewer explicitly requests it. Otherwise record
+why prior full-suite evidence still applies to the reviewed revision.
 
 Reserve exhaustive project-specific, packaged-runtime, and full-system gates for the final task of the phase.
-Earlier tasks run focused tests plus the standard full suite; the final task owns the
-phase-wide release matrix and records all of its results for final review.
+Earlier tasks run focused tests plus standard build/full suite; the final task
+records all release-matrix evidence for final review.
 
-Test parallelism is configurable through `ZIG_TEAM_TEST_JOBS`. If it is unset, choose a
-conservative value capped by logical CPUs and available memory, budgeting 4 GiB per Zig
-test job: `max(1, min(logical_cpu_count, available_memory_gib / 4))`. Fall back to 1
-when memory or CPU count cannot be detected. Never hard-code `-j1`. Validate that an
-explicit override is a positive integer before passing it to Zig.
+Select/export `ZIG_TEAM_TEST_JOBS` from the coordinator's shared per-gate allocation
+(`mtn-workflow budget`), not full host resources per worker. Validate/cap explicit
+overrides; use one job if no reliable allocation exists. Heavy commands share the
+same gate slots across builders AND reviewers. Check `mtn-workflow disk` before
+preparing Nix environments/builds; keep cleanup planning in the phase completion flow.
 
-```
-MAX_REVIEW_CYCLES = 10
-
-For each task (following execution_order, skip completed):
-  Check dependencies are completed
-  Set task status to in_progress in .tasks/status.yaml
-
-  # 3a: Build
-  dispatch_builder(task)
-  # Builder writes results to .tasks/result-{id}-build.yaml
-  # Builder returns only: "status: complete|blocked, summary: [1 line]"
-
-  # 3b: Four independent reviews
-  for cycle in 1..MAX_REVIEW_CYCLES:
-    On the initial cycle, Dispatch all four initial reviewers in parallel:
-      dispatch_code_reviewer(task)
-      dispatch_comment_reviewer(task)
-      dispatch_architecture_reviewer(task)
-      dispatch_test_reviewer(task)
-
-    # Reviewers write these independent artifacts:
-    # .tasks/result-{id}-code-review.yaml
-    # .tasks/result-{id}-comment-review.yaml
-    # .tasks/result-{id}-architecture-review.yaml
-    # .tasks/result-{id}-test-review.yaml
-    # Each returns only: "verdict: APPROVED|CHANGES_NEEDED, issues: [count]"
-
-    if any result sets user_decision_required: true:
-      Present evidence, scope, risks, options, and the reviewer's recommended path
-      Ask the user before dispatching implementation; do not broaden scope implicitly
-
-    if blocking findings conflict:
-      Dispatch the affected reviewers for focused reconciliation
-      If they cannot agree on a compatible result, ask the user with their joint recommendation
-
-    All four reviewers MUST return `APPROVED` before completion
-    if every verdict == "APPROVED": break
-
-    dispatch_builder_fix(task, cycle)
-    # Builder reads all four review artifacts and fixes every changes_required item
-    # Builder returns only: "status: complete|blocked, fixes: [count]"
-
-    Re-dispatch only reviewers whose concerns could be affected by the fix
-    Re-dispatch all four after changes to public behavior, architecture,
-    shared infrastructure, multiple capabilities, or several files substantially
-  else: escalate_to_user
-
-  # 3c: Complete — update .tasks/ AND .phases/
-  Edit .tasks/status.yaml: set task.status to "completed"
-
-  # MANDATORY: Update phase file checklist
-  # Read task.plan_tasks from .tasks/status.yaml for this task
-  PHASE_FILE = ".phases/{STATUS.phase_file}"
-  For each plan_task in task.plan_tasks:
-    Use the Edit tool on PHASE_FILE:
-      old_string: "- [ ] {plan_task}"
-      new_string: "- [x] {plan_task}"
-
-  # MANDATORY: Update index.yaml progress
-  # Count completed/total from phase file or calculate from status.yaml
-  completed_count = count of tasks with status "completed" in .tasks/status.yaml
-  total_count = total tasks in .tasks/status.yaml
-  
-  # Update progress in index.yaml
-  Edit .phases/index.yaml:
-    Update phase {STATUS.phase_id} progress to "{completed_count}/{total_count}"
-    If all tasks complete, set status to "completed"
-    If first task just completed, set status to "in_progress"
+```bash
+zig build
+zig build test -j"$ZIG_TEAM_TEST_JOBS"
 ```
 
----
+Use actual project-defined focused test targets/filters, not guessed Zig flags.
+Record exact commands, job count, RED failure, GREEN success, and full-suite result
+in protocol v1 build payloads. Fixes are new dispatch/build attempts. Coordinator
+publishes ALL evidence; workers never mutate the collection or complete native tasks.
 
-## Dispatch Templates
+## Build and Review
 
-### 3a: Builder
+Builder handoff: `mtn-tasks`, `zig-builder`, `zig`, exact task/phase refs, absolute
+collection root, isolated worktree/base/head/target branch, allowed ownership scope,
+interfaces, verification/integration gates, attempt/run ID, spec hash and commit policy.
 
-```
-Dispatch a subagent:
-  model: strongest available coding model
-  role: general-purpose
-  description: "Build task {task.id}"
-  prompt: |
-    ## Zig Builder: Task {task.id} - {task.name}
+Dispatch all four initial reviewers in parallel against the same frozen code revision
+only if the allocated reviewer limit permits four. Otherwise queue fresh independent
+contexts within that limit; heavy commands still consume shared gate slots. Each reads `mtn-tasks` and `zig-reviewer` plus:
 
-    Read and FOLLOW ALL procedures in these files:
-    1. Your task spec: `.tasks/task-{task.id}.yaml`
-    2. The `zig-builder` skill (MANDATORY): `~/.claude/skills/zig-builder/SKILL.md` — team workflow
-    3. The `zig` skill (MANDATORY): `~/.claude/skills/zig/SKILL.md` — language, architecture, testing
+| Specialty | Additional skills | Evidence role |
+|---|---|---|
+| Code | `zig-code-reviewer`, `zig-code-review`, `zig` | code |
+| Comment | `zig-comment-reviewer` | comment |
+| Architecture | `zig-architecture-reviewer`, `zig` | architecture |
+| Test | `zig-test-reviewer`, `zig` | test |
 
-    You MUST follow TDD (RED/GREEN/REFACTOR), hexagonal architecture, Zig idioms, error unions, and allocator management.
-    Dependencies flow INWARD: adapters -> app -> ports -> domain. Domain has NO external deps.
+Reviewers are read-only for source and managed records. Return full review payloads;
+the coordinator serially publishes each using `agent note` category `review`, with
+role, attempt, revision, findings, and verdict. Do not concurrently append to one
+record. Confirm all four evidence entries survived with `show` before proceeding.
 
-    ## MANDATORY VERIFICATION - NON-NEGOTIABLE
+All four reviewers MUST return `APPROVED` for the accepted revision.
+`NON_BLOCKING_SUGGESTIONS` are preserved as follow-up evidence, not blocking findings.
+Conflicting blockers require focused reviewer reconciliation; unresolved conflicts
+or scope-changing remedies require user decision before further implementation.
 
-    During RED/GREEN, run the narrowest test that proves the behavior. Before the first
-    review, run the standard build and full suite once and ensure both pass:
+## Fix, Resume, Complete
 
-    Select and export ZIG_TEAM_TEST_JOBS using the verification strategy above, then run:
+Fix workers read every published specialty finding through mtn and return a new v1
+build attempt after required verification; the coordinator publishes it. Re-dispatch only reviewers whose concerns could be affected
+by the fix; broad changes to architecture, behavior, shared infrastructure, or several
+capabilities require all four. Every required specialty must issue a fresh explicit v1 verdict for the NEW build
+ID/head/tree; unchanged reasoning may be reused by its reviewer, not by the coordinator.
+Never mix approvals across builds. Ten cycles without resolution require user escalation.
 
-    ```bash
-    zig build
-    zig build test -j"$ZIG_TEAM_TEST_JOBS"
-    ```
+Only the coordinator serially integrates approved results, checks the combined
+revision, publishes integration/completion events and verifies target history before
+native task completion. After ALL required integrations, run phase-final gates and
+REQ coverage checks before completing nonempty parents. Do not keep manual counters.
 
-    Do NOT mark as completed until ALL verification passes.
+## Progress and Recovery
 
-    Write your full results to: `.tasks/result-{task.id}-build.yaml`
-    (format defined in the `zig-builder` skill — include verification results)
+PROGRESS_INTERVAL = 2 minutes
 
-    **IMPORTANT**: Return ONLY this to the orchestrator (2 lines max):
-    ```
-    status: complete|blocked
-    summary: [one sentence]
-    ```
-```
-
-### 3b: Independent Reviews
-
-Dispatch the four initial reviews in parallel. Give each a fresh context, the strongest
-available coding model, and read-only permissions. Substitute the specialty values from
-the table into the common template.
-
-| specialty | role | required skills | artifact |
-|-----------|------|-----------------|----------|
-| code | code-reviewer | `zig-reviewer`, `zig-code-reviewer`, `zig-code-review`, `zig` | `.tasks/result-{task.id}-code-review.yaml` |
-| comment | code-reviewer | `zig-reviewer`, `zig-comment-reviewer` | `.tasks/result-{task.id}-comment-review.yaml` |
-| architecture | architecture-reviewer | `zig-reviewer`, `zig-architecture-reviewer`, `zig` | `.tasks/result-{task.id}-architecture-review.yaml` |
-| test | test-reviewer | `zig-reviewer`, `zig-test-reviewer`, `zig` | `.tasks/result-{task.id}-test-review.yaml` |
-
-```text
-Dispatch a subagent:
-  model: strongest available coding model
-  role: {role}
-  description: "{specialty} review task {task.id}"
-  prompt: |
-    ## {specialty} Review: Task {task.id} - {task.name}
-
-    Read and follow:
-    1. Task acceptance criteria: `.tasks/task-{task.id}.yaml`
-    2. Build results: `.tasks/result-{task.id}-build.yaml`
-    3. The `zig-reviewer` shared contract
-    4. Every specialty skill listed for this review in the dispatch table
-
-    Remain strictly read-only. Independently inspect the source, diff, and necessary
-    dependency context. Verify Builder evidence and run the narrowest specialty checks
-    required by the skills. Do not assume approval is expected.
-
-    Write the full result to: {artifact}
-
-    Return ONLY:
-    verdict: APPROVED|CHANGES_NEEDED
-    issues: [count of changes_required]
-```
-
-An `APPROVED` result may include `NON_BLOCKING_SUGGESTIONS`. Suggestions never replace
-blocking findings and never delay task completion. Preserve deferred suggestions in the
-phase follow-up ledger. If the Builder adopts one and materially changes reviewed code,
-re-run every specialty that could be affected.
-
-### 3c: Builder Fix
-
-```
-Dispatch a subagent:
-  model: strongest available coding model
-  role: general-purpose
-  description: "Fix task {task.id}"
-  prompt: |
-    ## Fix Review Feedback: Task {task.id} - {task.name}
-
-    Read and FOLLOW ALL procedures in these files:
-    1. Task spec: `.tasks/task-{task.id}.yaml`
-    2. Review feedback: `.tasks/result-{task.id}-*-review.yaml`
-    3. The `zig-builder` skill (MANDATORY) — team workflow + fix mode
-    4. The `zig` skill (MANDATORY) — language, architecture, testing
-
-    Fix each issue listed in `changes_required` in priority order.
-
-    ## MANDATORY VERIFICATION - NON-NEGOTIABLE
-
-    After fixing issues, re-run the project-defined focused regression. Re-run the full suite only for
-    a broad-impact fix or when the reviewer explicitly requested it. Record the decision
-    and evidence in the fix result:
-
-    ```bash
-    zig build
-    # Reuse the same focused test command recorded in .tasks/result-{task.id}-build.yaml
-    # (e.g. zig build test --test-filter "<name>") for the RED/GREEN behavior touched by this fix.
-    # Broad-impact or reviewer-requested fixes only:
-    zig build test -j"$ZIG_TEAM_TEST_JOBS"
-    ```
-
-    Do NOT mark as completed until the required verification passes.
-    Commit fixes after verification passes.
-
-    Write your fix results to: `.tasks/result-{task.id}-fix-{cycle}.yaml`
-    (same format as build results - include verification results)
-
-    **IMPORTANT**: Return ONLY this to the orchestrator (2 lines max):
-    ```
-    status: complete|blocked
-    fixes: [count of issues fixed]
-    ```
-```
-
----
-
-## Step 4: Phase/Project Completion
-
-**NOTE**: The orchestrator does NOT run validation commands. Builders and reviewers are responsible for ensuring tests and build pass before marking their work complete.
-
-After all tasks in the phase complete:
-
-```
-# Archive completed task files
-mkdir -p .trash
-# Ensure .trash is in .gitignore
-if ! grep -q "^\.trash/$" .gitignore 2>/dev/null; then
-    echo ".trash/" >> .gitignore
-fi
-mv .tasks/task-*.yaml .trash/
-mv .tasks/result-*.yaml .trash/
-# Keep .tasks/status.yaml for history
-
-# Update index.yaml
-Edit .phases/index.yaml:
-  - Set phase {PHASE.id} status to "completed"
-  - Increment current_phase to next pending phase (if any)
-
-# Check if all phases complete
-if all phases in index.yaml have status "completed":
-    Report: "Project {INDEX.project} complete!"
-else:
-    Report: "Phase {PHASE.id} complete. Next: Phase {next_phase.id} - {next_phase.name}"
-```
-
-Report to user:
-```
-## Zig Team Complete: Phase {PHASE.id} - {PHASE.name}
-- Tasks completed: {count}
-- Phase status: completed
-- Next phase: {next_phase.name} (or "None - project complete")
-```
-
----
-
-## Error Handling
-
-- **Missing dependency**: Check `.tasks/status.yaml`, reorder if needed
-- **Unclear requirement**: ask the user, offering concrete options
-- **Compile error**: Include error output in next builder dispatch
-- **Review cycles exceeded (10)**: ask the user: skip / manual fix / abort
-- **Stale .tasks/**: If task files reference nonexistent source, re-run Task Manager
-- **No .phases/ found**: Direct user to run the `to-phases` skill first
+While long work runs, report stage, exact command, elapsed time, and fresh evidence.
+Use host-native automatic delivery, not polling loops on event-driven hosts. Follow
+the shared recovery thresholds; confirm a writer stopped before replacement.
+An alive process is not proof of progress; fresh output is not a reason to interrupt.

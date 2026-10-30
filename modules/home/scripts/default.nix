@@ -44,6 +44,24 @@
   levity = pkgs.writeScriptBin "levity" (builtins.readFile ./levity);
   makelintwatcher = pkgs.writeScriptBin "makelintwatcher" (builtins.readFile ./makelintwatcher);
   makeunitwatcher = pkgs.writeScriptBin "makeunitwatcher" (builtins.readFile ./makeunitwatcher);
+  mtn-workflow = pkgs.writeShellApplication {
+    name = "mtn-workflow";
+    runtimeInputs = [pkgs.git pkgs.jq pkgs.coreutils pkgs.gawk];
+    text =
+      ''
+        export MTN_WORKFLOW_LIB=${../llm/skills/mtn-tasks/scripts}
+      ''
+      + builtins.readFile ./mtn-workflow;
+  };
+  mtn-rex = pkgs.writeShellApplication {
+    name = "mtn-rex";
+    runtimeInputs = [pkgs.bash pkgs.git pkgs.jq pkgs.coreutils mtn-workflow];
+    text =
+      ''
+        export MTN_REX_LIB=${../llm/skills/mtn-tasks/scripts}
+      ''
+      + builtins.readFile ./mtn-rex;
+  };
   new-note = pkgs.writeScriptBin "new-note" (builtins.readFile ./new-note);
   new-review = pkgs.writeScriptBin "new-review" (builtins.readFile ./new-review);
   nodewatcher = pkgs.writeScriptBin "nodewatcher" (builtins.readFile ./nodewatcher);
@@ -119,6 +137,8 @@ in {
         levity
         makelintwatcher
         makeunitwatcher
+        mtn-workflow
+        mtn-rex
         new-note
         new-review
         nodewatcher

@@ -5,7 +5,7 @@ description: Use when independently reviewing a zig-team task for regression str
 
 # Zig Test Reviewer
 
-Read and follow `zig-reviewer` and the testing sections of `zig` before reviewing. This
+Read and follow `mtn-tasks`, `zig-reviewer`, and the testing sections of `zig` before reviewing. This
 agent owns whether tests prove required behavior and would catch plausible regressions.
 
 ## Procedure
@@ -21,7 +21,8 @@ agent owns whether tests prove required behavior and would catch plausible regre
 6. Run focused tests and demonstrate that at least one meaningful assertion detects a
    plausible broken implementation. Broaden validation when risk or missing evidence
    warrants it.
-7. Write `.tasks/result-{task.id}-test-review.yaml` using the shared schema.
+7. Return a `reviewer: test` evidence payload using the shared contract;
+   the coordinator serially publishes it through mtn. Never edit managed records.
 
 Passing weak tests is not approval. Flaky, timing-dependent, order-dependent, or
 environment-sensitive tests are blocking unless variability is the explicit contract.

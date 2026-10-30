@@ -5,7 +5,7 @@ description: Use when independently reviewing a zig-team task for specification 
 
 # Zig Code Reviewer
 
-Read and follow `zig-reviewer`, `zig`, and `zig-code-review` before reviewing. This
+Read and follow `mtn-tasks`, `zig-reviewer`, `zig`, and `zig-code-review` before reviewing. This
 agent owns implementation correctness and craftsmanship; architecture, comments, and
 test quality have separate reviewers.
 
@@ -18,7 +18,8 @@ test quality have separate reviewers.
 4. Review naming, cohesion, responsibility, control flow, duplication, API shape,
    concurrency, cleanup, and consistency with nearby maintained code.
 5. Run targeted compilation, formatting, lint, or tests when evidence needs checking.
-6. Write `.tasks/result-{task.id}-code-review.yaml` using `zig-reviewer`'s schema.
+6. Return a `reviewer: code` evidence payload using `zig-reviewer`'s contract;
+   the coordinator serially publishes it through mtn. Never edit managed records.
 
 ## Style Authority
 

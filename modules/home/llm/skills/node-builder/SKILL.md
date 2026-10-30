@@ -1,14 +1,17 @@
 ---
 name: node-builder
-description: Team-workflow builder skill for node-team subagents. Owns the TDD-driven build loop, ES-module conventions, Zod-based config/validation, testify-style AAA tests, `.tasks/result-*-build.yaml` schema, and fix-mode contract. Also carries Node language patterns until a `node` skill exists.
+description: Use when a node-team builder implements or fixes one task. Follows TDD, ES modules, Zod validation, isolated AAA tests, and quality gates, recording native mtn build/fix evidence.
 ---
 
 # Node Builder Skill
 
-Read by a subagent dispatched from `node-team`.
-
-
-This context is injected into every Node Builder agent dispatch.
+Read `mtn-tasks` and its short `references/worker.md` contract before work; the
+coordinator owns full scheduling/migration references. Receive the
+absolute `.tasks/` collection root, exact task/phase refs, allowed files, and commit
+policy from `node-team`. Read the task description and current evidence via
+`agent show`. Follow the worker contract and receive isolated worktree/base/target,
+run/attempt, spec hash and ownership/interface boundaries. Never mutate records,
+initialize a competing collection, merge branches or complete native task status. This skill also supplies Node language patterns.
 
 ## TDD Workflow (NON-NEGOTIABLE)
 
@@ -563,51 +566,19 @@ process.on('SIGINT', () => shutdown('SIGINT'));
 
 ---
 
-## Output Format
+## mtn Evidence and Fix Mode
 
-### File Output (write to `.tasks/result-{task.id}-build.yaml`)
+Return a protocol v1 `build` payload: common event keys, dispatchEventId, exact
+Git head/tree/spec hash, ready-for-review or blocked, files, REQ/test coverage,
+RED/GREEN and npm/project checks, integration commands, commits, limitations and
+summary. Coordinator validates and serially publishes it; workers never append
+notes, patch managed state or keep an authoritative result sidecar.
 
-```yaml
-task_id: {task.id}
-task_name: "{task.name}"
-status: complete|blocked|needs_clarification
+Fixes use a new dispatch/build attempt and head/tree. Read every current finding
+through mtn, address stable IDs, rerun required checks and include a `fixes` mapping.
+Commit only authorized implementation files, never `.tasks/`, and freeze the worktree
+for review. Return a concise outcome alongside the full payload.
 
-files_created:
-  - path: [path]
-    purpose: [why]
-files_modified:
-  - path: [path]
-    changes: [what changed]
-tests_added:
-  - name: [test name]
-    file: [test file]
-    covers: [what it tests]
-
-validation:
-  test: pass|fail
-  lint: pass|fail
-
-commits:
-  - hash: [short hash]
-    message: [message]
-
-summary: [1-2 sentences]
-```
-
-### Return to Orchestrator (2 lines max)
-
-Write full results to the file above. Return ONLY this to the orchestrator:
-```
-status: complete|blocked
-summary: [one sentence]
-```
-
-### Fix Mode
-
-When fixing review feedback, read the review results from `.tasks/result-{task.id}-review.yaml`
-and fix each issue in `changes_required`. Write fix results to `.tasks/result-{task.id}-fix-{cycle}.yaml`
-using the same format above. Return ONLY:
-```
-status: complete|blocked
-fixes: [count of issues fixed]
-```
+Completion belongs to the coordinator after current reviews, target integration,
+combined-revision checks, persisted evidence and verified target history. Branch
+approval alone does not deliver the task; failed checks/publication remain blockers.

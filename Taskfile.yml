@@ -326,12 +326,34 @@ tasks:
       - bash modules/home/llm/tests/integration_cleanup_test.sh
       - bash modules/home/llm/pi/tests/theme_test.sh
       - bash modules/home/terminals/tests/darwin-switch_test.sh
+      - bash modules/home/llm/skills/mtn-tasks/tests/policy_test.sh
+      - bash modules/home/llm/skills/zig-team/tests/policy_test.sh
       - bash modules/home/scripts/tests/workspace_test.sh
       - bash modules/home/scripts/tests/worktrunk_clone_test.sh
       - shellcheck modules/home/scripts/workspace-to-worktrees modules/home/scripts/workspace-sync-main modules/home/scripts/tests/workspace_test.sh modules/home/scripts/tests/worktrunk_clone_test.sh modules/home/scripts/tests/fixtures/workspace-tg
       - shfmt -d modules/home/scripts/workspace-to-worktrees modules/home/scripts/workspace-sync-main modules/home/scripts/tests/workspace_test.sh modules/home/scripts/tests/worktrunk_clone_test.sh modules/home/scripts/tests/fixtures/workspace-tg
       - shellcheck modules/home/llm/tests/integration_cleanup_test.sh modules/home/llm/pi/tests/theme_test.sh modules/home/terminals/tests/darwin-switch_test.sh
       - shfmt -d modules/home/llm/tests/integration_cleanup_test.sh modules/home/llm/pi/tests/theme_test.sh modules/home/terminals/tests/darwin-switch_test.sh
+
+  agent-verify-mtn:
+    desc: Check mtn workflow skills against the installed CLI
+    cmds:
+      - bash modules/home/llm/skills/mtn-tasks/tests/policy_test.sh
+      - shellcheck modules/home/llm/skills/mtn-tasks/tests/*.sh modules/home/llm/skills/zig-team/tests/policy_test.sh modules/home/scripts/mtn-workflow modules/home/scripts/tests/mtn-workflow_test.sh
+      - shfmt -d modules/home/llm/skills/mtn-tasks/tests/*.sh modules/home/llm/skills/zig-team/tests/policy_test.sh modules/home/scripts/mtn-workflow modules/home/scripts/tests/mtn-workflow_test.sh
+      - bash modules/home/llm/skills/mtn-tasks/tests/protocol_test.sh
+      - bash modules/home/llm/skills/mtn-tasks/tests/hardening_test.sh
+      - bash modules/home/scripts/tests/mtn-workflow_test.sh
+      - bash modules/home/llm/skills/mtn-tasks/tests/workflow_test.sh
+      - bash modules/home/llm/skills/mtn-tasks/tests/delivery_test.sh
+
+  agent-verify-rex:
+    desc: Check Rex/Pi orchestration without launching live agents
+    cmds:
+      - bash modules/home/llm/skills/mtn-tasks/tests/rex_policy_test.sh
+      - shellcheck modules/home/scripts/mtn-rex modules/home/scripts/tests/mtn-rex_test.sh modules/home/scripts/tests/fixtures/mtn-rex-*
+      - shfmt -d modules/home/scripts/mtn-rex modules/home/scripts/tests/mtn-rex_test.sh modules/home/scripts/tests/fixtures/mtn-rex-*
+      - bash modules/home/scripts/tests/mtn-rex_test.sh
 
   agent-verify-full:
     desc: Run the complete deterministic checks for an agent workflow

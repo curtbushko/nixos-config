@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+jq -cn --args '$ARGS.positional' -- "$@" >>"$FIXTURE/pi.jsonl"
+[[ "${MTN_WORKFLOW_COORDINATOR:-}" != 1 ]] || [[ "${MTN_REX_ROLE:-}" == coordinator ]]
+printf '{"outcome":"ready-for-review"}\n'

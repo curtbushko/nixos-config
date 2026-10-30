@@ -54,10 +54,13 @@ main() {
 	assert_contains "$ORCHESTRATION" 'Dispatch all four initial reviewers in parallel'
 	assert_contains "$ORCHESTRATION" "All four reviewers MUST return \`APPROVED\`"
 	assert_contains "$ORCHESTRATION" 'Re-dispatch only reviewers whose concerns could be affected'
-	assert_contains "$ORCHESTRATION" 'result-{task.id}-code-review.yaml'
-	assert_contains "$ORCHESTRATION" 'result-{task.id}-comment-review.yaml'
-	assert_contains "$ORCHESTRATION" 'result-{task.id}-architecture-review.yaml'
-	assert_contains "$ORCHESTRATION" 'result-{task.id}-test-review.yaml'
+	assert_contains "$ORCHESTRATION" '| Code |'
+	assert_contains "$ORCHESTRATION" '| Comment |'
+	assert_contains "$ORCHESTRATION" '| Architecture |'
+	assert_contains "$ORCHESTRATION" '| Test |'
+	assert_contains "$ORCHESTRATION" "coordinator serially publishes each using \`agent note\`"
+	assert_contains "$SHARED_REVIEWER" 'mtn-tasks'
+	assert_not_contains "$SHARED_REVIEWER" 'result-{task.id}'
 	assert_contains "$SHARED_REVIEWER" 'NON_BLOCKING_SUGGESTIONS'
 	assert_contains "$SHARED_REVIEWER" 'Reviewers are strictly read-only.'
 	assert_contains "$CODE_REVIEWER" 'concrete correctness or maintenance risk'

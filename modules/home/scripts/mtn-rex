@@ -1,0 +1,199 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+fail() {
+	printf 'mtn-rex: %s\n' "$*" >&2
+	exit 1
+}
+for tool in jq git dirname basename mkdir sleep tee; do
+	command -v "$tool" >/dev/null || fail "$tool is required"
+done
+lib="${MTN_REX_LIB:-$(dirname "${BASH_SOURCE[0]}")/../llm/skills/mtn-tasks/scripts}"
+self="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
+repo=''
+if [[ "${1:-}" == --repo ]]; then
+	repo="${2:?repository required}"
+	shift 2
+fi
+command="${1:-help}"
+shift || true
+
+# Run on the execution host. Never SSH a local worktree path or trust Rex's home-server default.
+workflow() { mtn-workflow --repo "$repo" "$@"; }
+publish() {
+	workflow publish "$1" | jq -e '.ok == true' >/dev/null || fail 'mtn publication failed; preserve transport and inspect before retrying'
+}
+lookup() {
+	local snapshot
+	snapshot="$(workflow snapshot "$1")"
+	jq -ce --arg run "$2" '[.events[] | select(.kind=="runtime" and .stage=="launched" and .runId==$run)] | last // error("No persisted Rex launch for that run")' <<<"$snapshot"
+}
+pin_host() {
+	local endpoint="$1" host="$2" instance="$3" identity
+	identity="$(rex --autostart=false -S "$endpoint" whoami --json)"
+	jq -e --arg host "$host" --arg instance "$instance" '.principal.transport=="unix" and .host_id==$host and .instance_id==$instance' <<<"$identity" >/dev/null || fail 'Rex host/server instance changed; inspect, do not relaunch'
+}
+
+agent() {
+	local dir="$1" request role run prompt model thinking i code=0
+	[[ "$dir" == /* && -f "$dir/request.json" && -f "$dir/context.json" ]] || fail 'absolute transport directory with launch context required'
+	# Rex's server may predate the user's activated Nix profile. Restore the launching
+	# host's command search path, without copying credentials or the whole environment.
+	PATH="$(jq -er '.path | select(type=="string" and length>0)' "$dir/context.json")"
+	export PATH
+	command -v pi >/dev/null || fail 'pi is unavailable on the saved launch PATH'
+	# A bounded startup gate, not session/log polling. Publication must finish before Pi can write.
+	for ((i = 0; i < 60; i++)); do
+		[[ ! -f "$dir/ready" ]] || break
+		sleep 1
+	done
+	[[ -f "$dir/ready" ]] || fail 'launch was not published; startup gate timed out'
+	request="$(jq -ce -L "$lib" 'include "workflow"; select(rex_request)' "$dir/request.json")"
+	role="$(jq -r .role <<<"$request")"
+	run="$(jq -r .runId <<<"$request")"
+	model="$(jq -r .model <<<"$request")"
+	thinking="$(jq -r .thinking <<<"$request")"
+	prompt="$(jq -r .prompt <<<"$request")"
+	prompt+=$'\nLaunch contract: '
+	prompt+="$(jq -c 'del(.prompt)' <<<"$request")"
+	prompt+=$'\nParent collection checkout: '
+	prompt+="$(jq -r .repo "$dir/context.json")"
+	cd "$(jq -r .worktree <<<"$request")"
+	export MTN_REX_ROLE="$role" MTN_REX_RUN_ID="$run" MTN_REX_REPO
+	MTN_REX_REPO="$(jq -r .repo "$dir/context.json")"
+	unset MTN_WORKFLOW_COORDINATOR MTN_REX_COORDINATOR_RUN
+	local args=(--session-id "$run" --name "$(jq -r .windowName "$dir/context.json")" --model "$model" --thinking "$thinking")
+	if [[ "$role" == coordinator ]]; then
+		export MTN_WORKFLOW_COORDINATOR=1 MTN_REX_COORDINATOR_RUN="$run"
+		prompt="You are the sole handed-off coordinator. Do not create another coordinator session. Read the team skill and mtn-tasks Rex execution reference, then reconcile the supplied phase and persisted runtime evidence before dispatch. $prompt"
+		pi "${args[@]}" -- "$prompt" || code=$?
+	else
+		prompt="You are a leaf $role using the $run run identity. Read mtn-tasks worker contract and the assigned skill. Never write mtn records, integrate, or launch agents. Return only the required protocol JSON payload as your final response, without Markdown fences. $prompt"
+		pi "${args[@]}" --print -- "$prompt" | tee "$dir/result.json" || code=$?
+	fi
+	printf '%s\n' "$code" >"$dir/exit-code"
+	return "$code"
+}
+
+case "$command" in
+help | --help | -h)
+	printf 'Usage: mtn-rex --repo COLLECTION_CHECKOUT launch REQUEST.json\n'
+	printf '       mtn-rex --repo COLLECTION_CHECKOUT inspect|result RECORD_REF RUN_ID\n'
+	printf 'Run locally on the execution host. Only the authorized coordinator may launch.\n'
+	exit 0
+	;;
+agent)
+	agent "${1:?transport directory required}"
+	exit
+	;;
+launch | inspect | result) ;;
+*) fail "unknown command: $command" ;;
+esac
+[[ -n "$repo" ]] || fail '--repo is required'
+repo="$(cd "$repo" && pwd -P)"
+[[ "$repo" == "$(git -C "$repo" rev-parse --show-toplevel)" ]] || fail '--repo must be the canonical collection checkout root'
+for tool in mtn-workflow rex; do command -v "$tool" >/dev/null || fail "$tool is required"; done
+
+if [[ "$command" != launch ]]; then
+	event="$(lookup "${1:?record ref required}" "${2:?run ID required}")"
+	endpoint="$(jq -r .host.endpoint <<<"$event")"
+	pin_host "$endpoint" "$(jq -r .host.hostId <<<"$event")" "$(jq -r .host.instanceId <<<"$event")"
+	if [[ "$command" == result ]]; then
+		dir="$(jq -r .transportDir <<<"$event")"
+		[[ "$dir" == "$repo/.mtn-tmp/rex/$(jq -r .runId <<<"$event")" && ! -L "$dir" ]] || fail 'unexpected transport path'
+		[[ "$(<"$dir/exit-code")" == 0 ]] || fail 'worker has not exited successfully'
+		jq -ce 'select(type=="object")' "$dir/result.json"
+	else
+		rex --autostart=false -S "$endpoint" block call -s "$(jq -r .rexSessionId <<<"$event")" -b "$(jq -r .rexBlockId <<<"$event")" process
+	fi
+	exit
+fi
+
+[[ "${MTN_WORKFLOW_COORDINATOR:-}" == 1 ]] || fail 'launch is coordinator-only'
+command -v pi >/dev/null || fail 'pi is required on the execution host'
+request="$(jq -ce -L "$lib" 'include "workflow"; select(rex_request)' "${1:?request JSON file required}")" || fail 'invalid launch request'
+ref="$(jq -r .recordRef <<<"$request")"
+run="$(jq -r .runId <<<"$request")"
+role="$(jq -r .role <<<"$request")"
+worktree="$(cd "$(jq -r .worktree <<<"$request")" && pwd -P)"
+[[ "$worktree" == "$(git -C "$worktree" rev-parse --show-toplevel)" ]] || fail 'worktree must be a Git checkout root'
+[[ "$(git -C "$repo" rev-parse --path-format=absolute --git-common-dir)" == "$(git -C "$worktree" rev-parse --path-format=absolute --git-common-dir)" ]] || fail 'worktree belongs to another repository'
+snapshot="$(workflow snapshot "$ref")"
+hash="$(jq -r .specHash <<<"$snapshot")"
+[[ "$hash" == "$(jq -r .specHash <<<"$request")" ]] || fail 'stale specification'
+jq -e --arg run "$run" 'all(.events[]; .kind!="runtime" or .runId!=$run)' <<<"$snapshot" >/dev/null || fail 'run already reserved; inspect persisted evidence, never duplicate launch'
+order="$(jq -er '.order | select(type=="number" and .>=1 and floor==.)' <<<"$snapshot")"
+kind="$(jq -r .kind <<<"$snapshot")"
+server="$(jq -r '.server // empty' <<<"$request")"
+if [[ "$role" != coordinator ]]; then
+	phase="$(jq -r .phaseRef <<<"$request")"
+	parent_run="$(jq -r .parentRunId <<<"$request")"
+	[[ "${MTN_REX_COORDINATOR_RUN:-}" == "$parent_run" ]] || fail 'only the handed-off coordinator may dispatch workers'
+	parent="$(lookup "$(jq -r '.coordinatorPhaseRef // .phaseRef' <<<"$request")" "$parent_run")"
+	server="$(jq -r .host.endpoint <<<"$parent")"
+fi
+rex_args=(--autostart=false)
+[[ -z "$server" ]] || rex_args+=(-S "$server")
+identity="$(rex "${rex_args[@]}" whoami --json)"
+jq -e '.principal.transport=="unix" and (.endpoint|startswith("unix://"))' <<<"$identity" >/dev/null || fail 'Rex must be local to this execution host; choose its Unix endpoint explicitly via request.server'
+host="$(jq -c '{endpoint,hostId:.host_id,instanceId:.instance_id}' <<<"$identity")"
+endpoint="$(jq -r .endpoint <<<"$host")"
+rex_args=(--autostart=false -S "$endpoint")
+session=''
+if [[ "$role" == coordinator ]]; then
+	[[ "$kind" == phase && -z "${MTN_REX_COORDINATOR_RUN:-}" ]] || fail 'coordinator handoff requires a phase and an unhanded-off caller'
+	command -v mtn >/dev/null || fail 'mtn is required'
+	# The existing single-owner protocol is conservative across the whole collection.
+	# These checks are not an atomic lease; callers still serialize handoffs.
+	phases="$(mtn --path "$repo/.tasks" list --json | jq -er '[.[] | select(.workflowKind=="phase") | .path] | if length>0 then .[] else error("No phase records") end')"
+	while IFS= read -r candidate; do
+		prior="$(workflow snapshot "$candidate")"
+		jq -e '.events as $events | all($events[]; . as $event | if .kind=="runtime" and .role=="coordinator" and .stage=="reserved" then any($events[]; .kind=="release" and .dispatchEventId==$event.eventId) else true end)' <<<"$prior" >/dev/null || fail "unreleased coordinator in $candidate; reconcile and confirm stoppage before handoff"
+	done <<<"$phases"
+	session_name="${worktree##*/}"
+	window_name="phase-$order-$(jq -r .title <<<"$snapshot")"
+else
+	jq -e --argjson host "$host" '.role=="coordinator" and .host==$host' <<<"$parent" >/dev/null || fail 'parent belongs to another host/server instance'
+	if [[ "$role" == planner ]]; then
+		[[ "$kind" == phase && "$ref" == "$phase" ]] || fail 'planner must be attached to its parent phase'
+	else
+		[[ "$kind" == task ]] || fail 'builder/reviewer requires an implementation task'
+		command -v mtn >/dev/null || fail 'mtn is required'
+		mtn --path "$repo/.tasks" agent hierarchy "$ref" --json | jq -e --arg phase "$phase" '.ok and any(.result.parents[]; .resolution.ref==$phase)' >/dev/null || fail 'task is not in that phase'
+		jq -e --arg id "$(jq -r .dispatchEventId <<<"$request")" --arg hash "$hash" --argjson attempt "$(jq .attempt <<<"$request")" 'any(.events[]; .kind=="dispatch" and .eventId==$id and .specHash==$hash and .attempt==$attempt)' <<<"$snapshot" >/dev/null || fail 'matching dispatch must be published before worker launch'
+	fi
+	session="$(jq -r .rexSessionId <<<"$parent")"
+	rex "${rex_args[@]}" session inspect "$session" --json >/dev/null
+	session_name="$(jq -r .sessionName <<<"$parent")"
+	window_name="$(jq -r .skill <<<"$request")-$kind$order-attempt$(jq -r .attempt <<<"$request")"
+fi
+[[ ${#session_name} -le 128 && ${#window_name} -le 128 ]] || fail 'Rex labels exceed 128 characters'
+# Git ignores transport, while mtn evidence is the sole authoritative run index.
+git -C "$repo" check-ignore -q --no-index .mtn-tmp/rex/ || fail 'exclude .mtn-tmp/ from Git before launch'
+[[ ! -L "$repo/.mtn-tmp" && ! -L "$repo/.mtn-tmp/rex" ]] || fail 'transport directory cannot be a symlink'
+mkdir -p "$repo/.mtn-tmp/rex"
+dir="$repo/.mtn-tmp/rex/$run"
+(
+	umask 077
+	mkdir "$dir"
+) || fail 'transport already exists; inspect before recovery'
+printf '%s\n' "$request" >"$dir/request.json"
+event="$(jq -c --arg run "$run" --arg dir "$dir" --arg window "$window_name" --arg session "$session_name" --arg worktree "$worktree" --argjson host "$host" '. + {schemaVersion:1,eventId:($run+"/runtime/reserved"),kind:"runtime",stage:"reserved",piSessionId:$run,transportDir:$dir,worktree:$worktree,host:$host,sessionName:$session,windowName:$window} | del(.prompt,.server)' <<<"$request")"
+# Keep prompts in transport, not durable notes. The event schema validates the launch metadata.
+printf '%s\n' "$event" >"$dir/reserved.json"
+publish "$dir/reserved.json"
+jq -n --arg repo "$repo" --arg window "$window_name" --arg path "$PATH" '{repo:$repo,windowName:$window,path:$path}' >"$dir/context.json"
+if [[ "$role" == coordinator ]]; then
+	rex "${rex_args[@]}" new "$session_name" -c "$worktree" --window "$window_name" --keep-open --shell=none --json -- bash "$self" agent "$dir" >"$dir/created.json"
+	ids="$(jq -ce '{rexSessionId:.session_id,rexWindowId:.initial_windows[0].window_id,rexBlockId:.initial_windows[0].block_ids[0]}' "$dir/created.json")"
+else
+	rex "${rex_args[@]}" window new -s "$session" "$window_name" -c "$worktree" --keep-open --focus=false --shell=none --json -- bash "$self" agent "$dir" >"$dir/created.json"
+	ids="$(jq -ce --arg session "$session" '{rexSessionId:$session,rexWindowId:.window_id,rexBlockId:.block_ids[0]}' "$dir/created.json")"
+fi
+jq -c --arg run "$run" --argjson ids "$ids" '. + $ids + {eventId:($run+"/runtime/launched"),stage:"launched"}' "$dir/reserved.json" >"$dir/launched.json"
+publish "$dir/launched.json"
+# Confirm persistence before allowing this new Pi to mutate anything.
+lookup "$ref" "$run" >"$dir/persisted.json"
+[[ "$(jq -Sc . "$dir/launched.json")" == "$(jq -Sc . "$dir/persisted.json")" ]] || fail 'launch readback mismatch; startup remains gated'
+printf 'ready\n' >"$dir/ready"
+printf '%s\n' "$(<"$dir/launched.json")"

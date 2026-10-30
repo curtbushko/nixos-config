@@ -1,19 +1,23 @@
 ---
 name: zig-builder
-description: Team-workflow builder skill for zig-team subagents. Owns the TDD-driven build loop, focused-test parallelism strategy, `.tasks/result-*-build.yaml` schema, and fix-mode contract. Language, architecture, and testing patterns live in the `zig` skill.
+description: Use when a zig-team builder implements or fixes one task. Follows TDD, focused-test parallelism, and mtn build/fix evidence contracts. Language, architecture, and testing patterns live in zig.
 ---
 
 # Zig Builder Skill
 
-Read by a subagent dispatched from `zig-team`. **Read the `zig` skill first** — language idioms, TDD workflow, implementation ladder, hexagonal architecture, `build.zig` boundary setup, Zig best practices, and testing patterns all live there. This skill covers only the team-workflow bits: file rules, test-parallelism strategy, and how to write your result file.
+Read by a subagent dispatched from `zig-team`. **Read the `zig` skill first** — language idioms, TDD workflow, implementation ladder, hexagonal architecture, `build.zig` boundary setup, Zig best practices, and testing patterns all live there. This skill covers file rules, test parallelism, and native mtn build/fix evidence.
 
 ---
 
 ## Required Reading Before You Build
 
-1. Your task spec: `.tasks/task-{task.id}.yaml`
-2. The `zig` skill (`~/.claude/skills/zig/SKILL.md`) — language + architecture + testing
-3. This skill — team workflow
+1. `mtn-tasks` and its short `references/worker.md` contract — not coordinator internals
+2. Your task description/evidence via `agent show` using the supplied absolute root and exact ref
+3. The `zig` skill — language, architecture, testing; this skill — team workflow
+
+Follow the worker contract. Never mutate the collection, initialize another,
+merge branches or complete tasks. Receive isolated worktree/base/target, run/attempt,
+spec hash, ownership/interfaces, commands and commit policy. Work in that checkout.
 
 You MUST follow TDD (RED → GREEN → REFACTOR) and hexagonal architecture as defined in the `zig` skill. Dependencies flow INWARD: adapters → app → ports → domain. Domain has NO external dependencies.
 
@@ -45,7 +49,13 @@ zig build
 zig build test -j"$ZIG_TEAM_TEST_JOBS"
 ```
 
-Honor an existing positive integer `ZIG_TEAM_TEST_JOBS` value. When it is unset, choose a conservative job count capped by logical CPU count and available memory, using `max(1, min(logical_cpu_count, available_memory_gib / 4))`. Read Linux `MemAvailable` from `/proc/meminfo`; on Darwin, use `sysctl -n hw.memsize` conservatively; fall back to 1 if detection is unavailable. Reject an explicit value unless it is a positive integer. Export the selected value and record it in the result file. Never hard-code `-j1`; a user can still request serial execution with `ZIG_TEAM_TEST_JOBS=1`.
+Use the coordinator's global-budget gate allocation, never host-wide CPU/RAM totals
+independently per worker. `mtn-workflow budget` supplies conservative per-gate jobs;
+all heavy commands, including reviewer builds, require a shared gate slot. Validate
+an explicit `ZIG_TEAM_TEST_JOBS` as positive and within that allocation; otherwise
+request an allocation (safe fallback: one job). Record the jobs and actual command.
+Check disk before Nix/build work; reuse the approved dev shell and do not create
+per-worker persistent profiles or run garbage collection.
 
 After review feedback, always re-run the focused regression. Re-run the full suite only when the fix affects shared infrastructure, public contracts, build wiring, persistence, concurrency, or multiple capabilities, or when the reviewer requests it. Record either the new full-suite result or the reason the previous result remains applicable.
 
@@ -63,41 +73,21 @@ The final task records the complete phase-wide release evidence. Earlier tasks u
 
 ---
 
-## Output Format
+## mtn Evidence and Fix Mode
 
-### File Output (write to `.tasks/result-{task.id}-build.yaml`)
+Return a protocol v1 `build` JSON payload: common event keys, dispatchEventId,
+exact Git head/tree/spec hash, ready-for-review or blocked, files, REQ/test coverage,
+RED/GREEN, focused/full-suite commands/results and jobs, integration/final-phase
+checks, commits and limitations. Coordinator serially publishes; workers never
+append notes, patch records or maintain an authoritative result sidecar.
 
-```yaml
-task_id: {task.id}
-task_name: "{task.name}"
-status: complete|blocked|needs_clarification
-files_created: [{path, purpose}]
-files_modified: [{path, changes}]
-tests_added: [{name, file, covers}]
-validation:
-  build: {passed, command}
-  test:
-    focused: {command, passed}
-    full_suite: {command, passed, jobs}
-  fmt: {passed}
-commits: [{hash, message}]
-summary: "[1-2 sentences]"
-```
+Fix workers read all specialty findings through mtn and address stable IDs. Produce
+a NEW dispatch/build attempt/head/tree with a `fixes` mapping. Rerun focused checks;
+rerun full suite for broad impact/reviewer request, otherwise justify previous evidence.
+All four reviewers issue current explicit verdicts for the new build; do not mix attempts.
+Commit only authorized implementation files, exclude `.tasks/`, and freeze that
+worktree for review. Return concise outcome alongside the full payload.
 
-### Return to Orchestrator (2 lines max)
-
-Write full results to the file above. Return ONLY:
-
-```
-status: complete|blocked
-summary: [one sentence]
-```
-
-### Fix Mode
-
-When fixing review feedback, read the review results from `.tasks/result-{task.id}-review.yaml` and fix each issue in `changes_required`. Write fix results to `.tasks/result-{task.id}-fix-{cycle}.yaml` using the same format above. Return ONLY:
-
-```
-status: complete|blocked
-fixes: [count of issues fixed]
-```
+Coordinator completes only after successful target integration, combined-revision
+checks, current approvals, integration/completion evidence and target-history verification.
+Branch approval is not delivery; failed checks/publication remain blockers.

@@ -1,25 +1,30 @@
 ---
 name: node-reviewer
-description: Team-workflow reviewer skill for node-team subagents. Owns the two-stage review procedure (spec / quality), verdict format, and `.tasks/result-*-review.yaml` schema. Also carries the Node review checklist (async pitfalls, security, resource leaks) until a `node-code-review` skill exists.
+description: Use when a node-team reviewer checks specification compliance then Node quality, async safety, security, and resource lifecycle. Returns evidence for serial mtn publication.
 ---
 
 # Node Reviewer Skill
 
-Read by a subagent dispatched from `node-team`.
-
-
-The reviewer performs BOTH spec compliance AND code quality review in a single pass.
+Read `mtn-tasks` and its short worker contract before review; coordinator/migration
+internals are not worker context. Receive the
+absolute collection root, exact task ref, protocol v1 build ID/spec hash, isolated
+worktree path, base/head/tree and attempt from the coordinator. Follow the handoff
+contract and inspect THAT checkout. Isolate mutable check outputs/resources or
+serialize checks with other reviewers. Source and managed records are read-only; return full
+evidence for coordinator publication. Never fix source, edit frontmatter, or
+complete native task status. Review spec compliance then quality in one pass.
 
 ---
 
 ## Review Procedure
 
-1. **Read task acceptance criteria** from `.tasks/task-{id}.yaml`
-2. **Read build results** from `.tasks/result-{id}-build.yaml`
-3. **Stage 1: Spec Compliance** - Check requirements, under/over-building
-4. **Stage 2: Code Quality** - Only if Stage 1 passes. Check patterns below.
-5. **Write results** to `.tasks/result-{id}-review.yaml`
-6. **Return only verdict** to orchestrator (2 lines max)
+1. Read acceptance criteria and current build/fix evidence through `agent show`.
+2. Confirm evidence matches the frozen code/diff identity being reviewed.
+3. **Stage 1: Spec Compliance** — requirements, under/over-building.
+4. **Stage 2: Code Quality** — only if Stage 1 passes; check patterns below.
+5. Return full review payload under the mtn-tasks evidence contract.
+6. Coordinator serially appends the payload as a `review` note and confirms it
+   before relying on the verdict.
 
 ### Spec Compliance Checks
 - Each acceptance criterion fully implemented and tested?
@@ -45,7 +50,7 @@ mv <file> .trash/
 
 ## Lint Verification
 
-Before approving, confirm lint passes:
+Before approving, independently run `npm run lint` and the applicable project target:
 ```bash
 make lint            # if Makefile exists
 task lint            # if Taskfile exists (fallback if no Makefile)
@@ -195,33 +200,19 @@ create = async (req, res) => {
 
 ---
 
-## Output Format
+## Review Evidence
 
-### File Output (write to `.tasks/result-{task.id}-review.yaml`)
+Return a protocol v1 `review` JSON payload through host delivery: common schemaVersion,
+eventId, kind, recordRef, specHash and attempt; buildEventId, matching head/tree,
+`reviewer: combined`, APPROVED or CHANGES_NEEDED, acceptance-criterion
+assessment, under/over-building, quality/security findings, independent command
+results, and limitations. Each blocker has a stable ID, file:line, rule, evidence,
+impact, required outcome, and re-review scope. Keep `NON_BLOCKING_SUGGESTIONS`
+separate. Missing/stale evidence or failed lint prevents approval.
 
-```yaml
-task_id: {task.id}
-
-spec_compliance:
-  criteria_assessment: [{criterion, status: met|partial|missing, evidence}]
-  under_building: {found, issues}
-  over_building: {found, issues}
-
-code_quality:
-  findings:
-    critical: [{issue, location, category, fix}]
-    major: [{issue, location, fix}]
-    minor: [{issue, suggestion}]
-  security: {issues_found, details}
-
-verdict: APPROVED|CHANGES_NEEDED
-changes_required: [{priority, description, location}]
-```
-
-### Return to Orchestrator (2 lines max)
-
-Write full results to the file above. Return ONLY this to the orchestrator:
-```
-verdict: APPROVED|CHANGES_NEEDED
-issues: [count of changes_required]
-```
+Coordinator serially publishes the payload as mtn note content and verifies via
+`show`. Do not write sidecar results or concurrently append to the task record.
+Return a concise verdict/count alongside the full payload; a two-line summary
+without persisted findings cannot authorize integration. New builds require fresh
+explicit verdicts. Only coordinator-owned target integration, combined-revision checks
+and persisted integration/completion evidence permit native task completion.

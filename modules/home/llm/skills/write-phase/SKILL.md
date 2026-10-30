@@ -1,179 +1,52 @@
 ---
 name: write-phase
-description: Synthesize the current conversation into a single new phase for .phases/. Use when you've discussed a feature and want to capture it as an implementation phase without running the full to-phases interactive flow.
+description: Use when capturing an agreed conversation as one implementation phase. Creates an mtn phase record in the repository-local .tasks collection with native project membership and explicit prerequisites.
 ---
 
-# Write Phase - Conversation to Single Phase
+# Write One Phase
 
-## Overview
+Read `mtn-tasks` and its protocol, command, execution, and migration references completely.
+The invoking agent coordinates writes; delegated planners return proposals.
+Use mtn for every record write; never hand-author frontmatter or coordination state.
 
-Takes the context from the current conversation (decisions made, requirements discussed, approaches agreed upon) and creates a **single** new phase file in the `.phases/` structure.
+## Procedure
 
-**Use this when:**
-- You've discussed a feature/task and want to capture it as a phase
-- You want to add a phase without the full `to-phases` interactive flow
-- You're mid-conversation and want to formalize what was discussed
+1. Run shared preflight. Existing legacy plans require explicit migration approval;
+   do not silently replace them. If no project/collection exists, ask whether to
+   initialize a new collection and create the project, or stop for `to-phases`.
+2. Read project/phase metadata and approved PRD/design documents through mtn; resolve
+   ambiguity and check current approval fingerprints. Determine the next unused order.
+   Stable REQ IDs, interface inputs/outputs and prerequisites define the phase boundary;
+   order does not force dependency on every earlier phase.
+3. Extract the feature, decisions, approach, constraints, impacted areas, tests,
+   and unresolved questions from the conversation. Do not invent requirements.
+4. Confirm: "Create one phase for <summary> under <project ref>?" Include proposed
+   prerequisites and linked PRD/story IDs. Wait for confirmation or clarification.
+5. Create `phases/<project>-<NN>-<slug>.md` via `agent create`, setting
+   `workflowKind: phase`, `workflowOrder`, `workflowRequirements` and fingerprinted
+   `workflowDocuments`. The Markdown description contains:
+   - Context and agreed decisions
+   - Scope and concrete, numbered acceptance criteria
+   - Expected file paths/interfaces where established
+   - TDD and observable test requirements
+   - PRD/story references, dependencies, constraints, and open questions
+6. Add native project membership through `agent project-add`; add explicit
+   prerequisites through `agent depends-add` after resolving exact target refs.
+   Do not use body checkboxes or custom parent/dependency fields as state.
+7. Validate graph plus requirement coverage and protocol metadata. Record the updated
+   actually-approved project manifest as v1 `plan` evidence, including current phase
+   fingerprints and dependencies. Report exact ref, readiness and parallelization
+   boundaries. Task Managers propose ownership-bounded task graphs; matching language
+   workers implement independent tasks in isolated worktrees.
 
-**Use the `to-phases` skill instead when:**
-- Starting fresh from a PRD
-- Creating multiple phases at once
-- Managing existing phases (update, view, validate)
+## Granularity
 
-## EXECUTION INSTRUCTIONS
+Capture one coherent phase, not multiple phases or an implementation dump. Use
+`to-phases` for multi-phase planning. The Task Manager later researches and creates
+reviewable implementation tasks; each task owns its own RED/GREEN/refactor cycle.
+Do not split tests and implementation into independently completable work items.
 
-When this skill runs:
-
-### Step 1: Check Prerequisites
-
-```
-if not file_exists(".phases/index.yaml"):
-    Ask the user:
-      Question: "No .phases/ structure found. What would you like to do?"
-      Header: "Setup"
-      Options:
-        - "Create minimal index.yaml" (I'll create .phases/ with a basic index)
-        - "Exit" (run the to-phases skill first to set up properly)
-```
-
-If user chooses "Create minimal index.yaml":
-```yaml
-# .phases/index.yaml
-project: "{infer from directory name or ask}"
-current_phase: 1
-phases: []
-```
-
-### Step 2: Analyze Conversation
-
-Review the current conversation to extract:
-- What feature/functionality was discussed
-- What decisions were made
-- What approach was agreed upon
-- What files need to be created/modified
-- What tests are needed
-
-### Step 3: Confirm Understanding
-
-Ask the user to confirm:
-
-**Question**: "Based on our discussion, I'll create a phase for: {one-line summary}. Is this correct?"
-- Header: "Phase"
-- Options: "Yes, create it", "Let me clarify..."
-
-If user selects "Let me clarify...", wait for their input and re-confirm.
-
-### Step 4: Create Phase
-
-1. **Read `.phases/index.yaml`** to determine next phase number
-
-2. **Generate slug** from phase name (lowercase, hyphenated)
-
-3. **Create phase file** at `.phases/phase-{NN}-{slug}.md`:
-
-```markdown
-# Phase {N}: {PHASE_NAME}
-
-## Context
-
-{Brief summary of what was discussed and decided in the conversation}
-
-## Tasks
-
-- [ ] {Task with exact file path where applicable}
-- [ ] {Task with exact file path where applicable}
-...
-
-## Notes
-
-{Key decisions, constraints, or implementation hints from discussion}
-```
-
-4. **Update `.phases/index.yaml`** - append new phase entry:
-
-```yaml
-  - id: {N}
-    name: "{PHASE_NAME}"
-    file: "phase-{NN}-{slug}.md"
-    status: pending
-    progress: "0/{total_tasks}"
-```
-
-### Step 5: Report
-
-Display:
-```
-Created phase {N}: {PHASE_NAME}
-
-File: .phases/phase-{NN}-{slug}.md
-
-Tasks:
-1. {task 1}
-2. {task 2}
-...
-
-Next: run the go-team skill (or node-team, zig-team) to implement
-```
-
----
-
-## Task Granularity
-
-Each task should be:
-- **Concrete and completable** - not vague ("improve performance")
-- **Include exact file paths** where applicable
-- **Follow TDD** - test file first, then implementation
-- **Right-sized** - one coherent concern with independently verifiable
-  acceptance criteria, a reviewable diff, and enough context stated in the task
-  for a fresh agent session to complete it without prior conversation
-
-**Good tasks:**
-- `Create test file internal/parser/parser_test.go with TestParse_ValidInput`
-- `Implement Parse() method in internal/parser/parser.go`
-- `Add error handling for empty input in Parse()`
-
-**Bad tasks:**
-- `Write the parser` (too vague)
-- `Add tests` (which tests? where?)
-- `Fix bugs` (what bugs?)
-
----
-
-## Phase File Format
-
-```markdown
-# Phase {N}: {PHASE_NAME}
-
-## Context
-
-{Why this phase exists - what problem it solves, what was decided}
-
-## Tasks
-
-- [ ] {Specific task with file path}
-- [ ] {Specific task with file path}
-
-## Notes
-
-{Implementation hints, constraints, dependencies on other phases}
-```
-
----
-
-## Anti-Patterns
-
-- Creating phases without confirming understanding first
-- Vague tasks without file paths or specific actions
-- Not updating index.yaml after creating phase file
-- Creating multiple phases (use the to-phases skill for that)
-- Ignoring existing conversation context
-
----
-
-## Integration with Other Skills
-
-```
-[Conversation] → write-phase → go-team
-   (Discuss)      (Capture)     (Execute)
-```
-
-This skill captures a single phase from conversation. For full phase management from a PRD, use the `to-phases` skill.
+Specific acceptance criteria and known file paths are useful; vague "add tests"
+or "improve performance" items are not. Keep phase scope distinct from derived
+progress. Preserve existing records and evidence; an occupied path requires
+inspection, not overwriting or automatic suffixing.

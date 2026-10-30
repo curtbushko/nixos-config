@@ -1,17 +1,20 @@
 ---
 name: go-builder
-description: Team-workflow builder skill for go-team subagents. Owns the TDD-driven build loop, Cobra/Viper CLI rules, testify convention, Taskfile quality gates, `.tasks/result-*-build.yaml` schema, and fix-mode contract. Detailed language patterns live in the `golang` skill.
+description: Use when a go-team builder implements or fixes one task. Follows TDD, Cobra/Viper/testify and Taskfile gates, recording native mtn build/fix evidence. Detailed patterns live in golang.
 ---
 
 # Go Builder Skill
 
-Read by a subagent dispatched from `go-team`. Detailed patterns and examples live in the shared `golang` skill:
+Read `mtn-tasks` and its short `references/worker.md` contract before work; the
+coordinator owns the full protocol, scheduling and migration references. Receive the
+absolute `.tasks/` collection root, exact task/phase refs, permitted files, and commit
+policy from `go-team`. Read task description and current evidence with `agent show`.
+Follow the worker handoff contract. Receive isolated worktree/base/target, run/attempt,
+spec fingerprint, ownership/interfaces and commit policy. Work only in that checkout;
+never mutate the collection, initialize a copy, merge, or complete task status.
 
-- `~/.claude/skills/golang/references/architecture.md` — Hexagonal architecture
-- `~/.claude/skills/golang/references/tdd-workflow.md` — TDD patterns
-- `~/.claude/skills/golang/references/code-patterns.md` — Go idioms
-- `~/.claude/skills/golang/references/protobuf.md` — Protobuf guidelines
-- `~/.claude/skills/golang/references/ai-code-problems.md` — Common mistakes and fixes
+Read `golang` and its bundle-relative architecture, TDD, code-patterns, protobuf,
+and common-mistake references for detailed language guidance.
 
 ---
 
@@ -168,53 +171,20 @@ If build/test fails repeatedly:
 
 ---
 
-## Output Format
+## mtn Evidence and Fix Mode
 
-### File Output (write to `.tasks/result-{task.id}-build.yaml`)
+Return a protocol v1 `build` JSON payload to the coordinator: common event keys,
+dispatchEventId, exact Git head/tree, task specHash, ready-for-review or blocked,
+created/modified files, REQ/test coverage, exact RED/GREEN/build/test/lint/architecture
+commands and results, limitations, integration checks, commits and summary. Coordinator
+validates and serially publishes it; workers never append notes or patch managed state.
+Commit only authorized implementation files; exclude `.tasks/`. Freeze the worktree
+for review after delivery. Return a concise outcome alongside the full payload.
 
-```yaml
-task_id: {task.id}
-task_name: "{task.name}"
-status: completed|blocked|needs_clarification
+Fix workers read current published findings through mtn and address each stable ID.
+Use a NEW dispatch/build attempt and head/tree; run every required gate again and
+include `fixes` mapping review/finding IDs to outcomes. Never reuse old approvals.
 
-files_created:
-  - path: [path]
-    purpose: [why]
-files_modified:
-  - path: [path]
-    changes: [what changed]
-tests_added:
-  - name: [test name]
-    file: [test file]
-    covers: [what it tests]
-
-validation:
-  build: pass|fail
-  test: pass|fail
-  lint: pass|fail
-  arch: pass|fail|skipped
-
-commits:
-  - hash: [short hash]
-    message: [message]
-
-summary: [1-2 sentences]
-```
-
-### Return to Orchestrator (2 lines max)
-
-Write full results to the file above. Return ONLY:
-
-```
-status: completed|blocked
-summary: [one sentence]
-```
-
-### Fix Mode
-
-When fixing review feedback, read the review results from `.tasks/result-{task.id}-review.yaml` and fix each issue in `changes_required`. Write fix results to `.tasks/result-{task.id}-fix-{cycle}.yaml` using the same format above. Return ONLY:
-
-```
-status: completed|blocked
-fixes: [count of issues fixed]
-```
+Review approval alone does not complete the task. Coordinator must integrate, run
+combined-target checks, persist integration/completion evidence and verify target
+history before native completion. Failed checks or missing publication block progress.

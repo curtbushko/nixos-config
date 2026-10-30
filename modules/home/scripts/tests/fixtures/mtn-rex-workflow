@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -euo pipefail
+if [[ "${REJECT_LAUNCH:-}" == 1 && "${3:-}" == publish ]] && jq -e '.stage=="launched"' "$4" >/dev/null; then exit 1; fi
+exec bash "$SCRIPTS/mtn-workflow" "$@"

@@ -1,6 +1,6 @@
 ---
 name: go-reviewer
-description: Team-workflow reviewer skill for go-team subagents. Owns the two-stage review procedure (spec / quality), verdict format, and `.tasks/result-*-review.yaml` schema. Pattern content lives in the `go-code-review` skill and shared references in the `golang` skill.
+description: Use when a go-team reviewer checks specification compliance then code quality. Returns revision-bound review evidence for serial mtn publication; patterns live in go-code-review and golang.
 ---
 
 # Go Reviewer Skill
@@ -9,20 +9,27 @@ Read by a subagent dispatched from `go-team`. The reviewer performs BOTH spec co
 
 For detailed patterns, see the shared Go references:
 
-- `~/.claude/skills/golang/references/architecture.md` — Hexagonal architecture
-- `~/.claude/skills/golang/references/ai-code-problems.md` — Common AI mistakes and fixes
-- `~/.claude/skills/go-code-review/` — 100+ Go mistake patterns
+- `golang` and its architecture/common-mistake references
+- `go-code-review` for Go mistake patterns and semantic dead-code checks
+- `mtn-tasks` and its short worker contract for exact handoff and evidence rules
+
+Read the short worker contract, not coordinator/migration internals. Receive absolute collection root, exact task ref,
+build event ID, spec hash, isolated worktree path, base/head/tree and attempt.
+Review THAT frozen checkout, not the current parent checkout. Isolate mutable check
+outputs/resources or serialize checks with other reviewers. Source and managed records are read-only; return evidence for coordinator
+publication. Do not complete tasks, mutate frontmatter, or fix source.
 
 ---
 
 ## Review Procedure
 
-1. **Read task acceptance criteria** from `.tasks/task-{task.id}.yaml`
-2. **Read build results** from `.tasks/result-{task.id}-build.yaml`
-3. **Stage 1: Spec Compliance** — Check requirements, under/over-building
-4. **Stage 2: Code Quality** — Only if Stage 1 passes. Check patterns below.
-5. **Write results** to `.tasks/result-{task.id}-review.yaml`
-6. **Return only verdict** to orchestrator (2 lines max)
+1. Read task acceptance criteria and current build/fix evidence through `agent show`.
+2. Confirm the evidence matches the frozen code/diff identity being reviewed.
+3. **Stage 1: Spec Compliance** — requirements, under/over-building.
+4. **Stage 2: Code Quality** — only if Stage 1 passes; include semantic dead code.
+5. Return full findings and verdict payload under the mtn-tasks evidence contract.
+6. Coordinator serially publishes it as a `review` note; publication is required
+   before the verdict can authorize completion.
 
 ### Spec Compliance Checks
 
@@ -235,34 +242,21 @@ type LoggingRepository struct {
 
 ---
 
-## Output Format
+## Review Evidence
 
-### File Output (write to `.tasks/result-{task.id}-review.yaml`)
+Return a protocol v1 `review` JSON payload through host delivery: common schemaVersion,
+eventId, kind, recordRef, specHash and attempt; buildEventId, matching head/tree,
+`reviewer: combined`, APPROVED or
+CHANGES_NEEDED, criterion-by-criterion assessment, under/over-building, quality and
+architecture findings, lint/independent command evidence, and limitations.
+Each blocker has a stable ID, file:line, violated rule, evidence/impact, required
+outcome, and re-review scope. Keep `NON_BLOCKING_SUGGESTIONS` distinct from blockers.
+Missing/stale validation prevents approval; personal preference does not.
 
-```yaml
-task_id: {task.id}
-
-spec_compliance:
-  criteria_assessment: [{criterion, status: met|partial|missing, evidence}]
-  under_building: {found, issues}
-  over_building: {found, issues}
-
-code_quality:
-  findings:
-    critical: [{issue, location, mistake_ref, category, fix}]
-    major: [{issue, location, fix}]
-    minor: [{issue, suggestion}]
-  architecture: {compliant, violations}
-
-verdict: APPROVED|CHANGES_NEEDED
-changes_required: [{priority, description, location}]
-```
-
-### Return to Orchestrator (2 lines max)
-
-Write full results to the file above. Return ONLY:
-
-```
-verdict: APPROVED|CHANGES_NEEDED
-issues: [count of changes_required]
-```
+The coordinator serially appends the full payload as mtn note content and verifies
+it via `show`. Do not write sidecar results or concurrently append review notes.
+A two-line verdict without durable findings is insufficient. Return a concise
+verdict/count alongside the full payload; never mutate task lifecycle status.
+A new build requires a fresh explicit verdict. Approval authorizes coordinator-owned
+integration only; combined-target checks and integration/completion evidence are
+required before native task completion.

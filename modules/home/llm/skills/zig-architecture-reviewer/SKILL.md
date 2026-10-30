@@ -5,7 +5,7 @@ description: Use when independently reviewing a zig-team task for hexagonal boun
 
 # Zig Architecture Reviewer
 
-Read and follow `zig-reviewer` and the architecture sections of `zig` before reviewing.
+Read and follow `mtn-tasks`, `zig-reviewer`, and the architecture sections of `zig` before reviewing.
 This agent owns dependency direction, capability boundaries, ports, adapters, runtime
 composition, public surfaces, and mechanical enforcement.
 
@@ -18,7 +18,8 @@ composition, public surfaces, and mechanical enforcement.
 3. Verify ports use appropriate compile-time or runtime polymorphism and resource-owning
    adapters have explicit, correctly wired lifecycle management.
 4. Run all relevant repository-wide automated architecture gates independently.
-5. Write `.tasks/result-{task.id}-architecture-review.yaml` using the shared schema.
+5. Return a `reviewer: architecture` evidence payload using the shared contract;
+   the coordinator serially publishes it through mtn. Never edit managed records.
 
 Any discovered architectural violation is blocking, including a pre-existing one.
 Existing technical debt is not precedent for a new exception. An exception is valid

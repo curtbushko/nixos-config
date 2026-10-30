@@ -71,6 +71,19 @@ environment.systemPackages = [ pkgs.git pkgs.vim pkgs.wget ];
 environment.systemPackages = let p = pkgs; in [ p.git p.vim p.wget ];
 ```
 
+## Agent Environment and Disk Budget
+
+For multi-agent work, follow `mtn-tasks` resource/environment lifecycle guidance.
+Reuse the approved pinned dev shell; do not create persistent per-agent/per-attempt
+profiles or copy nix-direnv/devenv roots into worktrees. Check repository and Nix-store
+free space before preparation/builds, and stop new heavy work on disk pressure.
+
+Shell exit does not collect the store, and retained profiles/GC roots/worktrees can
+keep old closures alive. Inventory automation-owned roots/caches at phase completion;
+confirm no active consumer before proposing release. Archive is preservation, not
+space reclamation. Global GC, user-root removal and generation/history deletion
+require explicit approval; never run sudo GC as an automatic error-recovery step.
+
 ## Essential Commands
 
 ```bash

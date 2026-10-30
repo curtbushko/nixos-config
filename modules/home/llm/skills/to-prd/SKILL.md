@@ -1,13 +1,23 @@
 ---
 name: to-prd
-description: Use when the user wants to create a PRD from the current conversation context. Synthesizes conversation and codebase understanding into a Product Requirements Document saved as .phases/prd-{name}.md. Triggers include "create a PRD", "write a PRD", or "turn this into a PRD".
+description: Use when the user wants to create a PRD from conversation context. Synthesizes requirements into an mtn PRD record in the repository-local .tasks collection.
 ---
 
 # To PRD - Conversation to Product Requirements Document
 
+## Required Contract
+
+Read `mtn-tasks`, its protocol/command/migration references, and `prd` completely. Run shared
+preflight before any record mutation. Existing project migration requires explicit
+approval. Use mtn for all record creation, frontmatter, prose, and relationship edits.
+
 ## Core Principle
 
-Transform the current conversation context and codebase understanding into a comprehensive PRD without interviewing the user. Synthesize what is already known, explore the codebase to fill gaps, and produce a structured requirements document saved in `.phases/prd-{name}.md` for reference by planning and implementation phases.
+Transform conversation and codebase understanding into a comprehensive PRD, without
+repeating a full requirements interview. Store its prose as the description of an
+mtn record at `prds/<feature>.md` within `.tasks/`, with `workflowKind: prd`.
+PRDs remain outside project/phase progress membership; reference their exact refs
+and story IDs in project and phase descriptions.
 
 ## When to Use
 
@@ -73,7 +83,8 @@ Bad (Shallow):  cache.GetWithTTL(key, ttl, evictionPolicy, serializer) → leaks
 **Check with user:**
 1. Present the list of modules to be built/modified
 2. Confirm these match user expectations
-3. Ask the user which modules need tests
+3. Clarify test strategy, constraints and evidence for every acceptance criterion;
+   required behavior is never optional testing scope.
 
 ### Step 3: Write the PRD
 
@@ -82,24 +93,30 @@ Using the template below, write a comprehensive PRD that includes:
 - Problem statement from user's perspective
 - Solution from user's perspective
 - Extensive list of user stories (numbered)
-- Implementation decisions (modules, interfaces, technical choices)
-- Testing decisions (what to test, how to test, prior art)
+- Stable REQ identifiers and observable acceptance criteria
+- Known constraints and links to an optional `rfc` design (not duplicated solutions)
+- Testing decisions for every requirement (how to test, constraints, prior art)
 - Out of scope items
 - Further notes
 
 **CRITICAL: Do NOT include specific file paths or code snippets in the PRD.**
 These become outdated quickly. Focus on concepts and modules.
 
-### Step 4: Write PRD to .phases/ Directory
+### Step 4: Create or Update the PRD with mtn
 
-1. Create `.phases/` directory if it doesn't exist: `mkdir -p .phases`
-2. Generate filename from feature name: `prd-{kebab-case-name}.md`
-3. Write the PRD to `.phases/prd-{name}.md`
-4. Return the file path to the user
+1. Discover existing PRDs through `list --json`; inspect matches with `agent show`.
+2. Use `agent create --input ... --json` with an exact `prds/<feature>.md` path,
+   literal title, `fields: {workflowKind: "prd"}`, and the full template below as
+   `description` (or `descriptionFile`). Encode arbitrary prose safely with jq.
+3. On an approved update, use `agent describe` to preserve existing evidence; never
+   overwrite an occupied path or reuse a creation retry key for changed intent.
+4. Obtain actual user/stakeholder approval and record a protocol v1 `approval`
+   event bound to the document fingerprint; preserve unresolved questions. If not
+   approved, return the draft ref and stop before implementation planning. Validate
+   the record and return its exact collection-relative ref.
 
-**File naming examples:**
-- "Add Authentication" → `.phases/prd-add-authentication.md`
-- "API Caching Layer" → `.phases/prd-api-caching-layer.md`
+Do not manually write Markdown/frontmatter, create a second planning directory, or
+add PRDs to progress hierarchy. Their lifecycle is document approval, not task progress.
 
 ## PRD Template
 
@@ -125,19 +142,18 @@ Example:
 
 This list should be extremely extensive and cover all aspects of the feature.
 
-## Implementation Decisions
+## Requirements and Acceptance Criteria
 
-A list of implementation decisions that were made. This can include:
+Assign stable REQ-001-style IDs. Every requirement has observable acceptance criteria
+and its verification approach. User stories reference these IDs; never renumber
+surviving requirements during revisions.
 
-- The modules that will be built/modified
-- The interfaces of those modules that will be modified
-- Technical clarifications from the developer
-- Architectural decisions
-- Schema changes
-- API contracts
-- Specific interactions
+## Constraints and Related Design
 
-Do NOT include specific file paths or code snippets. They may end up being outdated very quickly.
+Record confirmed technical/business constraints without duplicating the solution.
+Reference an optional approved `designs/<slug>.md` RFC for architecture, interfaces,
+schema/API changes, alternatives and rollout decisions. The PRD remains what/why.
+Do not include specific implementation file paths or code snippets.
 
 ## Testing Decisions
 
@@ -165,7 +181,7 @@ Any further notes about the feature.
 - Creating shallow modules when deep modules are possible
 - Not checking module expectations with user
 - Writing vague user stories ("As a user, I want it to work")
-- Publishing to issue tracker instead of `.phases/` directory
+- Writing unmanaged planning files or publishing elsewhere instead of the mtn collection
 
 ## Integration with Other Skills
 
@@ -184,11 +200,8 @@ This skill fits into the workflow:
 - Use `to-phases` to break PRD into implementation phases
 - Use `go-team`/`node-team`/`zig-team` to execute tasks
 
-**File structure created:**
-```
-.phases/
-└── prd-{feature-name}.md    # Created by to-prd
-```
+**Managed record:** `.tasks/prds/<feature>.md`, created only by mtn.
+Use `mtn --path "$TASK_ROOT" agent show "prds/<feature>.md" --json` to read it.
 
 ## Example Output
 
@@ -197,7 +210,8 @@ When complete, provide:
 ```
 Created PRD: [Feature Name]
 
-File: .phases/prd-{feature-name}.md
+Collection: <repository>/.tasks
+Ref: prds/<feature-name>.md
 
 Next steps:
 - Review the PRD for completeness
@@ -208,7 +222,7 @@ Modules identified:
 1. [Module name] - [brief description] - [Deep/Shallow]
 2. [Module name] - [brief description] - [Deep/Shallow]
 
-Modules to test: [list based on user response]
+Requirement verification: [acceptance criteria mapped to test/evidence strategy]
 ```
 
 ## Notes

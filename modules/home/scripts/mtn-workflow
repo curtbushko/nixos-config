@@ -1,0 +1,319 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+fail() {
+	printf 'mtn-workflow: %s\n' "$*" >&2
+	exit 1
+}
+for tool in git jq dirname shasum realpath; do
+	command -v "$tool" >/dev/null || fail "$tool is required"
+done
+repo="${MTN_WORKFLOW_REPO:-}"
+if [[ "${1:-}" == --repo ]]; then
+	repo="${2:?repository required}"
+	shift 2
+fi
+[[ -n "$repo" ]] || fail 'provide --repo with the parent collection checkout, including from worker worktrees'
+repo="$(cd "$repo" && pwd -P)"
+[[ "$repo" == "$(git -C "$repo" rev-parse --show-toplevel)" ]] || fail '--repo must be a repository root'
+root="$repo/.tasks"
+lib="${MTN_WORKFLOW_LIB:-$(dirname "${BASH_SOURCE[0]}")/../llm/skills/mtn-tasks/scripts}"
+[[ -f "$lib/workflow.jq" && -f "$lib/facade.jq" ]] || fail 'workflow libraries unavailable'
+command="${1:-help}"
+shift || true
+mapping='{}'
+completed='[]'
+show_refs=()
+show_values=()
+SHOW=''
+
+require_collection() {
+	command -v mtn >/dev/null || fail 'mtn is required'
+	[[ -f "$root/mdbase.yaml" && ! -L "$root" ]] || fail 'missing local collection; initialization/migration needs explicit approval'
+	local diagnosis
+	diagnosis="$(mtn --path "$root" diagnose --json)"
+	jq -e '.ok and .result.capabilities.agentExactPaths and .result.capabilities.evidence' <<<"$diagnosis" >/dev/null || fail 'unsupported collection capabilities'
+	mapping="$(jq -c '.result.mapping.roleToField' <<<"$diagnosis")"
+	completed="$(jq -c '.result.status.completedValues' <<<"$diagnosis")"
+}
+load_show() {
+	local ref="$1" i=0
+	[[ "$ref" == *.md && "$ref" != /* && "$ref" != -* && "$ref" != .tasks/* && "$ref" != *$'\n'* ]] || fail 'use an exact collection-relative Markdown ref'
+	case "/$ref/" in */../*) fail 'reference traversal is not allowed' ;; esac
+	for ((i = 0; i < ${#show_refs[@]}; i++)); do
+		if [[ "${show_refs[$i]}" == "$ref" ]]; then
+			SHOW="${show_values[$i]}"
+			return
+		fi
+	done
+	SHOW="$(mtn --path "$root" agent show "$ref" --json)"
+	jq -e '.ok' <<<"$SHOW" >/dev/null || fail 'record read failed'
+	show_refs+=("$ref")
+	show_values+=("$SHOW")
+}
+semantic_show() {
+	local spec normalized path
+	local paths=() shared=()
+	spec="$(jq -c -L "$lib" --argjson mapping "$mapping" 'include "facade"; semantic_spec($mapping)')"
+	if jq -e '.ownership|type=="object"' <<<"$spec" >/dev/null; then
+		while IFS= read -r path; do paths+=("$path"); done < <(jq -r '.ownership.paths[]?' <<<"$spec")
+		while IFS= read -r path; do shared+=("$path"); done < <(jq -r '.ownership.sharedPaths[]?' <<<"$spec")
+		normalized="$(normal_paths "${paths[@]}")"
+		spec="$(jq -c --argjson paths "$normalized" '.ownership.paths=$paths' <<<"$spec")"
+		normalized="$(normal_paths "${shared[@]}")"
+		spec="$(jq -c --argjson paths "$normalized" '.ownership.sharedPaths=$paths' <<<"$spec")"
+	fi
+	printf '%s\n' "$spec"
+}
+fingerprint_show() {
+	semantic_show | jq -S -c . | shasum -a 256 | {
+		read -r digest _
+		printf 'sha256:%s\n' "$digest"
+	}
+}
+snapshot() {
+	local ref="$1" hash events
+	load_show "$ref"
+	hash="$(fingerprint_show <<<"$SHOW")"
+	events="$(jq -c -L "$lib" 'include "facade"; evidence_events' <<<"$SHOW")"
+	jq -c --arg hash "$hash" --argjson events "$events" --argjson mapping "$mapping" \
+		'{ref:.result.ref,specHash:$hash,language:.result.frontmatter.workflowLanguage,kind:.result.frontmatter.workflowKind,order:.result.frontmatter.workflowOrder,title:.result.frontmatter[$mapping.title // "title"],nativeStatus:.result.frontmatter[$mapping.status // "status"],events:$events}' <<<"$SHOW" |
+		jq -c -e -L "$lib" 'include "workflow"; if all(.events[];valid_event) then . else error("Invalid evidence event") end'
+}
+status() {
+	local data kind state
+	data="$(snapshot "$1")"
+	kind="$(jq -r .kind <<<"$data")"
+	case "$kind" in
+	task) state="$(jq -r -L "$lib" 'include "workflow";task_state' <<<"$data")" ;;
+	prd | design) state="$(jq -r -L "$lib" 'include "workflow";if document_approved then "approved" else "approval-needed" end' <<<"$data")" ;;
+	project | phase)
+		if jq -e --argjson completed "$completed" '.nativeStatus as $status|$completed|index($status)!=null' <<<"$data" >/dev/null; then
+			verify_delivery "$1"
+			state=complete
+		else state=incomplete; fi
+		;;
+	*) fail 'unknown workflow record kind' ;;
+	esac
+	jq -c -L "$lib" --arg state "$state" 'include "workflow"; .+{state:$state,unresolvedBlockers:(unresolved_blockers|map({id:.eventId,reason:(.reason // "Blocked build; resolve this event ID")}))}|del(.events)' <<<"$data"
+}
+task_brief() {
+	local ref="$1" data spec title
+	load_show "$ref"
+	jq -e '.result.frontmatter.workflowKind=="task"' <<<"$SHOW" >/dev/null || fail 'task brief requires an implementation task; use status for other records'
+	title="$(jq -r --argjson mapping "$mapping" '.result.frontmatter[$mapping.title // "title"]' <<<"$SHOW")"
+	spec="$(semantic_show <<<"$SHOW")"
+	data="$(snapshot "$ref")"
+	jq -c -L "$lib" --arg title "$title" --argjson spec "$spec" 'include "workflow"; . as $snapshot | [.events[]|select(.recordRef==$snapshot.ref and .specHash==$snapshot.specHash)] as $events | ([$events[]|select(.kind=="dispatch")]|last) as $dispatch | {ref,specHash,title:$title,definition:$spec,state:task_state,unresolvedBlockers:unresolved_blockers,currentEvidence:following($events;$dispatch)}' <<<"$data"
+}
+verify_delivery() {
+	local ref="$1" data proof commit tree branch actual children expected child
+	data="$(snapshot "$ref")"
+	jq -e --argjson completed "$completed" '.nativeStatus as $status|$completed|index($status)!=null' <<<"$data" >/dev/null || fail "prerequisite is not natively complete: $ref"
+	if [[ "$(jq -r .kind <<<"$data")" == task ]]; then
+		case "$(jq -r -L "$lib" 'include "workflow";task_state' <<<"$data")" in
+		complete) proof="$(jq -c '.specHash as $hash|[.events[]|select(.kind=="integration" and .outcome=="passed" and .specHash==$hash)]|last' <<<"$data")" ;;
+		baseline) proof="$(jq -c '.specHash as $hash|[.events[]|select(.kind=="baseline" and .specHash==$hash)]|last' <<<"$data")" ;;
+		*) fail "native completion lacks delivery proof: $ref" ;;
+		esac
+	else
+		proof="$(jq -c '.specHash as $hash|[.events[]|select((.kind=="milestone" or .kind=="baseline") and .specHash==$hash)]|last' <<<"$data")"
+		if [[ "$(jq -r .kind <<<"$proof")" == milestone ]]; then
+			actual="$(mtn --path "$root" agent hierarchy "$ref" --json)"
+			jq -e '.result.cycles|length==0' <<<"$actual" >/dev/null || fail 'cyclic milestone hierarchy'
+			children="$(jq -c '.result.children|sort' <<<"$actual")"
+			expected="$(jq -c '.records|sort' <<<"$proof")"
+			[[ "$children" == "$expected" && "$children" != '[]' ]] || fail "stale/empty milestone child scope: $ref"
+			while IFS= read -r child; do verify_delivery "$child"; done < <(jq -r '.[]' <<<"$children")
+		fi
+	fi
+	jq -e -L "$lib" 'include "workflow";valid_event' <<<"$proof" >/dev/null || fail "missing valid delivery proof: $ref"
+	commit="$(jq -r '.integratedCommit // .targetCommit // empty' <<<"$proof")"
+	tree="$(jq -r '.integratedTree // .targetTree // empty' <<<"$proof")"
+	branch="$(jq -r '.targetBranch // empty' <<<"$proof")"
+	[[ "$commit" =~ ^[0-9a-f]{40}([0-9a-f]{24})?$ && "$tree" =~ ^[0-9a-f]{40}([0-9a-f]{24})?$ ]] || fail "invalid Git object identity: $ref"
+	git check-ref-format "refs/heads/$branch" >/dev/null || fail 'proof requires an explicit target branch'
+	[[ "$tree" == "$(git -C "$repo" rev-parse --verify "$commit^{tree}")" ]] || fail "delivery tree mismatch: $ref"
+	git -C "$repo" merge-base --is-ancestor "$commit" "refs/heads/$branch" || fail "delivery is absent from target history: $ref"
+}
+RECORDS='[]'
+record_plan_ok() {
+	local ref="$1" selected docs
+	selected="$(jq -c --arg ref "$ref" '[.[]|select(.ref==$ref)][0]' <<<"$RECORDS")"
+	docs="$(jq -c --argjson selected "$selected" '[.[]|select(.ref as $ref | any($selected.documents[]?;.ref==$ref))|{ref,specHash,events}]' <<<"$RECORDS")"
+	jq -n -e -L "$lib" --argjson selected "$selected" --argjson records "$RECORDS" --argjson docs "$docs" 'include "workflow"; {ref:$selected.ref,specHash:$selected.specHash,events:$selected.events,requirements:$selected.requirements,documents:$docs,records:[$records[]|select(.parentRefs|index($selected.ref)!=null)|{ref,specHash,requirements}]}|plan_approved' >/dev/null
+}
+append_record() {
+	local ref="$1" data parents hash events ownership
+	load_show "$ref"
+	hash="$(fingerprint_show <<<"$SHOW")"
+	events="$(jq -c -L "$lib" 'include "facade"; evidence_events' <<<"$SHOW")"
+	parents="$(mtn --path "$root" agent hierarchy "$ref" --json | jq -c '[.result.parents[].resolution.ref]')"
+	ownership="$(semantic_show <<<"$SHOW" | jq -c .ownership)"
+	data="$(jq -c --argjson ownership "$ownership" --arg hash "$hash" --argjson events "$events" --argjson parents "$parents" --argjson mapping "$mapping" '.result|{ref,specHash:$hash,events:$events,parentRefs:$parents,kind:.frontmatter.workflowKind,order:.frontmatter.workflowOrder,language:.frontmatter.workflowLanguage,requirements:.frontmatter.workflowRequirements,documents:.frontmatter.workflowDocuments,ownership:$ownership,nativeStatus:.frontmatter[$mapping.status // "status"]}' <<<"$SHOW")"
+	RECORDS="$(jq -c --argjson data "$data" '.+[$data]' <<<"$RECORDS")"
+}
+ready() {
+	local project="$1" refs ref documents requirements native row state candidate candidates='[]' active='[]' phase phase_ready dependency allowed released limits
+	refs="$(mtn --path "$root" agent hierarchy "$project" --json | jq -r '.result.ref,.result.descendants[]')"
+	while IFS= read -r ref; do append_record "$ref"; done <<<"$refs"
+	documents="$(jq -r '[.[].documents[]?.ref]|unique[]' <<<"$RECORDS")"
+	if [[ -n "$documents" ]]; then while IFS= read -r ref; do append_record "$ref"; done <<<"$documents"; fi
+	requirements="$(jq -c --arg ref "$project" '[.[]|select(.ref==$ref)][0].requirements' <<<"$RECORDS")"
+	jq -e 'type=="array" and length>0' <<<"$requirements" >/dev/null || fail 'project must declare its approved workflowRequirements'
+	jq -n -e -L "$lib" --argjson records "$RECORDS" --argjson requirements "$requirements" 'include "workflow"; {records:$records,requirements:$requirements}|metadata_valid' >/dev/null || fail 'invalid workflow metadata (parents, requirements, documents, order, language or ownership)'
+	record_plan_ok "$project" || fail 'project plan or document approval is stale/incomplete'
+	native="$(mtn --path "$root" agent ready "$project" --json | jq -c '.result.evaluated')"
+	while IFS= read -r ref; do
+		[[ -z "$ref" ]] || verify_delivery "$ref"
+	done < <(jq -r --argjson completed "$completed" '[.[].blockedBy[]?|select(.observedStatus as $status|$completed|index($status)!=null)|.resolution.ref]|unique[]' <<<"$native")
+	while IFS= read -r ref; do
+		row="$(jq -c --arg ref "$ref" '[.[]|select(.ref==$ref)][0]' <<<"$RECORDS")"
+		state="$(jq -r -L "$lib" 'include "workflow"; task_state' <<<"$row")"
+		if jq -e --argjson completed "$completed" '.nativeStatus as $status|$completed|index($status)!=null' <<<"$row" >/dev/null; then
+			verify_delivery "$ref"
+			continue
+		fi
+		phase="$(jq -r '.parentRefs[0]' <<<"$row")"
+		record_plan_ok "$phase" || fail "phase plan/document approval is stale: $phase"
+		phase_ready="$(jq -c --arg ref "$phase" 'any(.[];.ref==$ref and .dependencyReady==true)' <<<"$native")"
+		dependency="$(jq -c --arg ref "$ref" 'any(.[];.ref==$ref and .dependencyReady==true)' <<<"$native")"
+		allowed="$(jq -c --arg ref "$ref" 'any(.[];.ref==$ref and (.agentEligible==null or .agentEligible==true))' <<<"$native")"
+		released="$(jq -c '([.events[]|select(.kind=="dispatch")]|last) as $dispatch|any(.events[];.kind=="release" and .dispatchEventId==$dispatch.eventId)' <<<"$row")"
+		candidate="$(jq -c --arg state "$state" --argjson allowed "$allowed" --argjson phase_ready "$phase_ready" --argjson dependency "$dependency" --argjson released "$released" --argjson records "$RECORDS" '{ref,phaseOrder:(.parentRefs[0] as $phase|[$records[]|select(.ref==$phase)][0].order),order,incomplete:true,statusAllowed:($allowed and (if $state=="fixing" then $released else true end)),phaseReady:$phase_ready,dependencyReady:$dependency,documentsApproved:true,planApproved:true,state:$state,agentEligible:null,ownership}' <<<"$row")"
+		candidates="$(jq -c --argjson candidate "$candidate" '.+[$candidate]' <<<"$candidates")"
+		case "$state" in
+		building | reviewing | awaiting-integration | integrated) active="$(jq -c --argjson candidate "$candidate" '.+[$candidate]' <<<"$active")" ;;
+		fixing) if [[ "$released" != true ]]; then active="$(jq -c --argjson candidate "$candidate" '.+[$candidate]' <<<"$active")"; fi ;;
+		esac
+	done < <(jq -r '.[]|select(.kind=="task")|.ref' <<<"$RECORDS")
+	limits="$(budget | jq -c .limits)"
+	jq -n -L "$lib" --argjson candidates "$candidates" --argjson active "$active" --argjson limits "$limits" 'include "workflow"; {candidates:$candidates,active:$active,limits:$limits}|.+{ready:ready_batch}|{limits,ready:[.ready[]|{ref,state,ownership}],reservations:[.active[]|{ref,state}],note:"Reconcile host runs and verify delivered prerequisite Git ancestry before dispatch; this command does not launch agents"}'
+}
+normal_paths() {
+	local path resolved rel result='[]'
+	for path in "$@"; do
+		[[ -n "$path" && "$path" != /* && "$path" != *$'\n'* ]] || fail 'ownership paths must be relative'
+		case "/$path/" in */../*) fail 'ownership traversal is not allowed' ;; esac
+		resolved="$(realpath -m "$repo/$path")"
+		case "$resolved" in "$repo") rel=. ;; "$repo"/*) rel="${resolved#"$repo"/}" ;; *) fail 'ownership symlink escapes repository' ;; esac
+		result="$(jq -c --arg path "$rel" '.+[$path]' <<<"$result")"
+	done
+	printf '%s\n' "$result"
+}
+positive() { [[ "$1" =~ ^[1-9][0-9]*$ ]]; }
+budget() {
+	local cpu=1 memory=4 detected=0 reserve=2 builders reviewers gates integrations jobs per_cpu per_memory
+	if command -v getconf >/dev/null; then cpu="$(getconf _NPROCESSORS_ONLN 2>/dev/null || printf 1)"; fi
+	positive "$cpu" || cpu=1
+	if [[ -r /proc/meminfo ]]; then
+		memory="$(awk '/^MemAvailable:/{print int($2/1048576)}' /proc/meminfo)"
+		detected=1
+	elif command -v vm_stat >/dev/null && command -v sysctl >/dev/null; then
+		memory="$(vm_stat | awk -v page="$(sysctl -n hw.pagesize)" '/Pages free:|Pages inactive:|Pages speculative:/{gsub(/\./,"",$NF); pages+=$NF} END{print int(pages*page/1073741824)}')"
+		detected=1
+	fi
+	positive "$memory" || memory=1
+	if [[ -n "${MTN_WORKFLOW_CPU_BUDGET:-}" ]]; then
+		positive "$MTN_WORKFLOW_CPU_BUDGET" || fail 'CPU budget must be a positive integer'
+		((MTN_WORKFLOW_CPU_BUDGET <= cpu)) || fail 'CPU budget exceeds detected CPUs'
+		cpu="$MTN_WORKFLOW_CPU_BUDGET"
+	fi
+	((memory > reserve)) && memory=$((memory - reserve)) || memory=1
+	if [[ -n "${MTN_WORKFLOW_MEMORY_GIB:-}" ]]; then
+		positive "$MTN_WORKFLOW_MEMORY_GIB" || fail 'memory budget must be a positive integer'
+		if ((MTN_WORKFLOW_MEMORY_GIB > memory)); then fail 'memory budget exceeds available memory minus headroom'; fi
+		memory="$MTN_WORKFLOW_MEMORY_GIB"
+	fi
+	builders="${MTN_WORKFLOW_BUILDERS:-2}"
+	reviewers="${MTN_WORKFLOW_REVIEWERS:-2}"
+	gates="${MTN_WORKFLOW_GATES:-1}"
+	integrations="${MTN_WORKFLOW_INTEGRATIONS:-1}"
+	for value in "$builders" "$reviewers" "$gates" "$integrations"; do positive "$value" || fail 'stage limits must be positive integers'; done
+	((integrations == 1)) || fail 'target integration must remain serialized'
+	((builders > cpu)) && builders="$cpu"
+	((reviewers > cpu)) && reviewers="$cpu"
+	((gates > cpu)) && gates="$cpu"
+	((gates > memory / 4)) && gates=$((memory / 4))
+	((gates < 1)) && gates=1
+	per_cpu=$((cpu / gates))
+	((per_cpu < 1)) && per_cpu=1
+	per_memory=$((memory / gates))
+	((per_memory < 1)) && per_memory=1
+	jobs=$((per_memory / 4))
+	((jobs < 1)) && jobs=1
+	((jobs > per_cpu)) && jobs="$per_cpu"
+	jq -n --argjson detected "$detected" --argjson cpu "$cpu" --argjson memory "$memory" --argjson builders "$builders" --argjson reviewers "$reviewers" --argjson gates "$gates" --argjson integrations "$integrations" --argjson per_cpu "$per_cpu" --argjson per_memory "$per_memory" --argjson jobs "$jobs" \
+		'{memoryDetected:($detected==1),cpuBudget:$cpu,memoryBudgetGiB:$memory,limits:{builders:$builders,reviewers:$reviewers,gates:$gates,integrations:$integrations},perGate:{cpu:$per_cpu,memoryGiB:$per_memory,zigJobs:$jobs},note:"Coordinator admits heavy commands through shared gate slots; stage caps are not independent CPU grants"}'
+}
+disk() {
+	command -v df >/dev/null || fail 'df is required'
+	command -v awk >/dev/null || fail 'awk is required'
+	local path free entries='[]' reserve="${MTN_WORKFLOW_MIN_FREE_GIB:-10}"
+	positive "$reserve" || fail 'disk reserve must be a positive integer'
+	for path in "$repo" /nix/store; do
+		[[ -d "$path" ]] || continue
+		free="$(df -Pk "$path" | awk 'END{print int($4/1048576)}')"
+		entries="$(jq -c --arg path "$path" --argjson free "$free" '.+[{path:$path,freeGiB:$free}]' <<<"$entries")"
+	done
+	jq -n --argjson entries "$entries" --argjson reserve "$reserve" '{reserveGiB:$reserve,filesystems:$entries,canStartHeavyWork:all($entries[];.freeGiB >= $reserve)}'
+}
+case "$command" in
+fingerprint)
+	require_collection
+	load_show "${1:?record ref required}"
+	fingerprint_show <<<"$SHOW"
+	;;
+status)
+	require_collection
+	status "${1:?record ref required}"
+	;;
+task)
+	require_collection
+	task_brief "${1:?record ref required}"
+	;;
+ready)
+	require_collection
+	ready "${1:?project ref required}"
+	;;
+snapshot)
+	require_collection
+	snapshot "${1:?record ref required}"
+	;;
+paths)
+	[[ $# -gt 0 ]] || fail 'provide ownership paths'
+	normal_paths "$@"
+	;;
+budget) budget ;;
+disk) disk ;;
+cleanup-plan)
+	jq -n '{mutates:false,notes:["Archive is preservation, not disk reclamation.","Stop and confirm completed workers before releasing their roots or worktrees.","Reuse the pinned dev shell; do not create per-agent nix develop --profile roots.","Inspect .direnv/.devenv profiles, result links, task caches and retained worktrees.","Moving a GC root to trash may not release it; inspect roots explicitly.","Never run global GC, wipe generations, or remove user roots without explicit approval."],inspectCommands:["df -h . /nix/store","git worktree list","nix-store --gc --print-roots","nix-store --gc --print-dead"]}'
+	;;
+publish)
+	[[ "${MTN_WORKFLOW_COORDINATOR:-}" == 1 ]] || fail 'publication is coordinator-only; set MTN_WORKFLOW_COORDINATOR=1 in the authorized coordinator'
+	require_collection
+	file="${1:?event JSON file or - required}"
+	payload="$(jq -Sc . "$file")"
+	jq -e -L "$lib" 'include "workflow"; valid_event' <<<"$payload" >/dev/null || fail 'invalid protocol event'
+	ref="$(jq -r .recordRef <<<"$payload")"
+	load_show "$ref"
+	hash="$(fingerprint_show <<<"$SHOW")"
+	[[ "$hash" == "$(jq -r .specHash <<<"$payload")" ]] || fail 'stale semantic fingerprint; re-read the record'
+	if jq -e '.kind=="historical" and has("legacyIntents")' <<<"$payload" >/dev/null; then
+		jq -e '(.legacyIntents|type=="array") and (.approvedBy|type=="string" and length>0) and (.decisionEvidence|type=="string" and length>0)' <<<"$payload" >/dev/null || fail 'historical import requires explicit approval and legacy intent IDs'
+		jq -e --argjson requested "$(jq -c .legacyIntents <<<"$payload")" '.result.evidence as $notes|all($requested[];. as $intent|any($notes[];.intent==$intent))' <<<"$SHOW" >/dev/null || fail 'historical authorization names an absent note intent'
+	else
+		# Unknown legacy entries cannot be ignored while publishing current delivery events.
+		jq -e -L "$lib" 'include "facade"; include "workflow"; evidence_events | all(.[];valid_event)' <<<"$SHOW" >/dev/null
+	fi
+	jq -n --argjson event "$payload" '{content:($event|tojson),role:"coordinator",category:$event.kind,adopt:true,retryKey:$event.eventId}' |
+		mtn --path "$root" agent note "$ref" --input - --json
+	;;
+help)
+	printf 'Usage: mtn-workflow --repo PARENT_CHECKOUT status|task|snapshot|fingerprint REF | ready PROJECT_REF\n'
+	printf '       mtn-workflow --repo PARENT_CHECKOUT paths PATH... | budget | disk | cleanup-plan\n'
+	printf '       MTN_WORKFLOW_COORDINATOR=1 mtn-workflow --repo PARENT_CHECKOUT publish EVENT.json\n'
+	printf 'Read-only guards, not an agent launcher. No JS/Python automation, GC, or automatic lock takeover.\n'
+	;;
+*) fail "unknown command: $command" ;;
+esac

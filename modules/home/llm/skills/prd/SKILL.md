@@ -5,7 +5,26 @@ description: Comprehensive PRD (Product Requirements Document) writing skill bas
 
 # PRD (Product Requirements Document) Writing Skill
 
-This skill provides guidance for creating high-quality PRDs that clearly define problems and requirements.
+Read `mtn-tasks` and its protocol, command and migration references before creating
+or updating a document. The invoking top-level agent is the document coordinator;
+delegated researchers return proposals without mutating the collection.
+
+Store PRDs with `workflowKind: prd` at `prds/<slug>.md` in the repository-local
+`.tasks/` collection. Use `agent create` for literal prose/typed metadata and
+`agent describe` for approved updates. Never hand-edit frontmatter or keep a second
+authoritative document outside the collection. Existing project migration requires
+explicit approval. `to-prd` is the conversation-synthesis entry point to this same
+format, not a competing document system.
+
+Assign stable REQ-001-style identifiers and observable acceptance criteria. Keep
+requirements/why here; interfaces and implementation choices belong in an optional
+`rfc` design record, referenced by exact ref. Do not fabricate research or sign-off.
+A real approval is a protocol v1 `approval` event bound to the document fingerprint
+and actual user/stakeholder decision. Document status/checkboxes are not delivery
+state. Changes invalidate dependent plan approvals until impact review/reapproval.
+
+This skill supplies the content-quality guidance below. Planning maps requirement
+IDs to phases/tasks/tests under `to-phases` and the mtn delivery protocol.
 
 ## What is a PRD?
 
@@ -136,7 +155,7 @@ Each phase:
 
 Example: "Make it easier for policy writers to create Terraform mock data"
 
-#### Requirement 1.1: [Specific Component/Feature]
+#### REQ-001: [Specific Component/Feature]
 
 **Description**: [What needs to be built/changed]
 
@@ -149,7 +168,7 @@ Example: "Make it easier for policy writers to create Terraform mock data"
 
 **Out of Scope**: [Explicitly list what this does NOT include]
 
-#### Requirement 1.2: [Next Component]
+#### REQ-002: [Next Component]
 [Same structure]
 
 ### Phase 2: [Next Objective]
@@ -176,7 +195,7 @@ Acceptance criteria must be:
 ```markdown
 ## Acceptance Criteria
 
-### Requirement 1.1 Criteria
+### REQ-001 Criteria
 
 **Criterion 1**: User can create mock data from existing policy
 - **Given**: A user has an existing Sentinel policy

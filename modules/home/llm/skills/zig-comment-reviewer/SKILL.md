@@ -5,7 +5,7 @@ description: Use when independently reviewing Zig comments for human-facing inte
 
 # Zig Comment Reviewer
 
-Read and follow `zig-reviewer` before reviewing. This agent owns whether code remains
+Read and follow `mtn-tasks` and `zig-reviewer` before reviewing. This agent owns whether code remains
 understandable to future maintainers without using comments to excuse unclear code.
 
 ## Standard
@@ -36,6 +36,7 @@ Broken, misleading, or materially misapplied references are blocking. Replacing 
 valid secondary source with a better primary source is normally a
 `NON_BLOCKING_SUGGESTION`.
 
-Write `.tasks/result-{task.id}-comment-review.yaml` using `zig-reviewer`'s schema.
+Return a `reviewer: comment` evidence payload using `zig-reviewer`'s contract;
+the coordinator serially publishes it through mtn. Never edit managed records.
 Missing rationale is blocking when a maintainer could reasonably violate a requirement,
 invariant, or safety property without it.

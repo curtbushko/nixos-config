@@ -373,8 +373,9 @@ func ProcessConcurrently(items []Item, maxWorkers int) error {
 ### Project & Feature Planning
 For structuring larger work into reviewable increments, use the portable planning
 skills: the `to-prd` skill to capture requirements, the `to-phases` (or
-`write-phase`) skill to break the PRD into `.phases/`, and a team skill (`go-team`)
-to execute. That planning model is language-independent and documented in those
+`write-phase`) skill to create native mtn phase records in the repository-local
+`.tasks/` collection, and a team skill (`go-team`) to execute. Read `mtn-tasks` for
+the shared storage, relationship, evidence, and approval-gated migration contract. That planning model is language-independent and documented in those
 skills; the Go-specific concerns below are what you layer on top when the project
 is Go.
 

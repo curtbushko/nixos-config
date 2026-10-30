@@ -5,7 +5,28 @@ description: Comprehensive RFC (Request for Comments) writing skill based on Has
 
 # RFC (Request for Comments) Writing Skill
 
-This skill provides guidance for creating effective RFCs that propose solutions and drive consensus through collaborative feedback.
+Read `mtn-tasks` and its protocol, command and migration references completely.
+The invoking top-level agent coordinates document writes; delegated design/research
+workers return proposals without mutating records. Store RFC/design prose using
+`agent create` at `designs/<slug>.md`, `workflowKind: design`, in the repository-local
+`.tasks/` collection. Updates use `agent describe`; no hand-authored frontmatter or
+second authoritative design document. Existing projects migrate only with approval.
+
+PRDs state what/why with stable requirement IDs. This design states how: interface
+contracts/IDs, component boundaries, data changes, security, rollout/rollback and
+risks. Reference exact PRD refs and REQ IDs rather than duplicating requirements.
+Explicitly identify stable contracts that independent task agents can consume and
+shared files/resources/interface changes that require serialized ownership.
+
+A significant cross-interface/security/persistence change requires an approved
+design before implementation planning. Simple work may omit a design with rationale
+in the approved project plan. RFC prose status labels are descriptive, not native
+task statuses. Record actual approval as protocol v1 fingerprint-bound `approval`
+evidence. Never invent consensus. Changed fingerprints require impact review and
+new approvals of dependent plans. `to-phases` consumes accepted PRD/design records.
+
+The content-quality guidance and templates below remain applicable; their checklists
+and rollout phases are prose, not a separate delivery status store.
 
 ## What is an RFC?
 
