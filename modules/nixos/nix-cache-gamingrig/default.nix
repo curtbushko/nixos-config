@@ -8,7 +8,7 @@ with lib; let
   cfg = config.ns.nix-cache-gamingrig;
 in {
   options.ns.nix-cache-gamingrig = {
-    enable = mkEnableOption "Use gamingrig as primary binary cache with wake-on-lan support";
+    enable = mkEnableOption "Use gamingrig as a remote builder";
 
     relayHost = mkOption {
       type = types.str;
@@ -23,11 +23,9 @@ in {
       etherwake
     ];
 
-    # Configure Nix to use gamingrig cache with builder
+    # Keep the remote builder and use public binary caches directly.
     nix.settings = {
       substituters = [
-        "http://gamingrig:5000" # nix-serve: Local /nix/store (fastest, 173GB)
-        "http://gamingrig:8501" # ncps: Pull-through cache (LRU, 100GB)
         "https://cache.nixos.org"
         "https://nix-community.cachix.org"
       ];

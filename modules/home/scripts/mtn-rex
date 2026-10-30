@@ -28,6 +28,9 @@ lookup() {
 	snapshot="$(workflow snapshot "$1")"
 	jq -ce --arg run "$2" '[.events[] | select(.kind=="runtime" and .stage=="launched" and .runId==$run)] | last // error("No persisted Rex launch for that run")' <<<"$snapshot"
 }
+label_slug() {
+	jq -ner --arg label "$1" '$label | ascii_downcase | gsub("[^a-z0-9]+";"-") | sub("^-+";"") | sub("-+$";"") | select(length>0)'
+}
 pin_host() {
 	local endpoint="$1" host="$2" instance="$3" identity
 	identity="$(rex --autostart=false -S "$endpoint" whoami --json)"
@@ -58,17 +61,19 @@ agent() {
 	prompt+="$(jq -c 'del(.prompt)' <<<"$request")"
 	prompt+=$'\nParent collection checkout: '
 	prompt+="$(jq -r .repo "$dir/context.json")"
+	prompt+=$'\nRuntime identity: '
+	prompt+="$(jq -ce --arg run "$run" 'select(.stage=="launched" and .piSessionId==$run) | {runId,piSessionId,piSessionName:(.piSessionName // .windowName),rexSessionId,rexSessionName:(.rexSessionName // .sessionName),rexWindowId,rexWindowName:(.rexWindowName // .windowName),rexBlockId,host}' "$dir/persisted.json")"
 	cd "$(jq -r .worktree <<<"$request")"
 	export MTN_REX_ROLE="$role" MTN_REX_RUN_ID="$run" MTN_REX_REPO
 	MTN_REX_REPO="$(jq -r .repo "$dir/context.json")"
 	unset MTN_WORKFLOW_COORDINATOR MTN_REX_COORDINATOR_RUN
-	local args=(--session-id "$run" --name "$(jq -r .windowName "$dir/context.json")" --model "$model" --thinking "$thinking")
+	local args=(--session-id "$run" --name "$(jq -r '.piSessionName // .windowName' "$dir/context.json")" --model "$model" --thinking "$thinking")
 	if [[ "$role" == coordinator ]]; then
 		export MTN_WORKFLOW_COORDINATOR=1 MTN_REX_COORDINATOR_RUN="$run"
-		prompt="You are the sole handed-off coordinator. Do not create another coordinator session. Read the team skill and mtn-tasks Rex execution reference, then reconcile the supplied phase and persisted runtime evidence before dispatch. $prompt"
+		prompt="You are the sole handed-off coordinator. Your Rex session/window and Pi conversation already exist; use the supplied runtime IDs, never display names, to address them. Do not create another Rex session or coordinator Pi conversation. Launch leaf agents only through mtn-rex as new Rex windows in this Rex session. Read the team skill and mtn-tasks Rex execution reference, then reconcile the supplied phase and persisted runtime evidence before dispatch. $prompt"
 		pi "${args[@]}" -- "$prompt" || code=$?
 	else
-		prompt="You are a leaf $role using the $run run identity. Read mtn-tasks worker contract and the assigned skill. Never write mtn records, integrate, or launch agents. Return only the required protocol JSON payload as your final response, without Markdown fences. $prompt"
+		prompt="You are a leaf $role using the $run run identity. Your Rex window and Pi conversation already exist; do not create or resume sessions/windows. Rex resource IDs and your Pi session ID are separate identities. Read mtn-tasks worker contract and the assigned skill. Never write mtn records, integrate, or launch agents. Return only the required protocol JSON payload as your final response, without Markdown fences. $prompt"
 		pi "${args[@]}" --print -- "$prompt" | tee "$dir/result.json" || code=$?
 	fi
 	printf '%s\n' "$code" >"$dir/exit-code"
@@ -140,6 +145,9 @@ host="$(jq -c '{endpoint,hostId:.host_id,instanceId:.instance_id}' <<<"$identity
 endpoint="$(jq -r .endpoint <<<"$host")"
 rex_args=(--autostart=false -S "$endpoint")
 session=''
+# The common Git directory identifies the project even in a linked worktree.
+project_dir="$(dirname "$(git -C "$repo" rev-parse --path-format=absolute --git-common-dir)")"
+project_name="$(label_slug "${project_dir##*/}")" || fail 'project directory needs an ASCII letter or digit for its label'
 if [[ "$role" == coordinator ]]; then
 	[[ "$kind" == phase && -z "${MTN_REX_COORDINATOR_RUN:-}" ]] || fail 'coordinator handoff requires a phase and an unhanded-off caller'
 	command -v mtn >/dev/null || fail 'mtn is required'
@@ -150,8 +158,10 @@ if [[ "$role" == coordinator ]]; then
 		prior="$(workflow snapshot "$candidate")"
 		jq -e '.events as $events | all($events[]; . as $event | if .kind=="runtime" and .role=="coordinator" and .stage=="reserved" then any($events[]; .kind=="release" and .dispatchEventId==$event.eventId) else true end)' <<<"$prior" >/dev/null || fail "unreleased coordinator in $candidate; reconcile and confirm stoppage before handoff"
 	done <<<"$phases"
-	session_name="${worktree##*/}"
-	window_name="phase-$order-$(jq -r .title <<<"$snapshot")"
+	worktree_name="$(label_slug "${worktree##*/}")" || fail 'worktree directory needs an ASCII letter or digit for its label'
+	session_name="$project_name-$worktree_name"
+	[[ "$project_dir" != "$worktree" ]] || session_name="$project_name"
+	printf -v window_name '%s-p%02d-coordinator-a%02d' "$project_name" "$order" "$(jq -r .attempt <<<"$request")"
 else
 	jq -e --argjson host "$host" '.role=="coordinator" and .host==$host' <<<"$parent" >/dev/null || fail 'parent belongs to another host/server instance'
 	if [[ "$role" == planner ]]; then
@@ -164,10 +174,22 @@ else
 	fi
 	session="$(jq -r .rexSessionId <<<"$parent")"
 	rex "${rex_args[@]}" session inspect "$session" --json >/dev/null
-	session_name="$(jq -r .sessionName <<<"$parent")"
-	window_name="$(jq -r .skill <<<"$request")-$kind$order-attempt$(jq -r .attempt <<<"$request")"
+	session_name="$(jq -r '.rexSessionName // .sessionName' <<<"$parent")"
+	if [[ "$role" == planner ]]; then
+		printf -v window_name '%s-p%02d-planner-a%02d' "$project_name" "$order" "$(jq -r .attempt <<<"$request")"
+	else
+		phase_order="$(workflow snapshot "$phase" | jq -er '.order | select(type=="number" and .>=1 and floor==.)')"
+		agent_label="$role"
+		if [[ "$role" == reviewer ]]; then
+			skill="$(jq -r .skill <<<"$request")"
+			agent_label="${skill#*-}"
+		fi
+		printf -v window_name '%s-p%02d-t%02d-%s-a%02d' "$project_name" "$phase_order" "$order" "$agent_label" "$(jq -r .attempt <<<"$request")"
+	fi
 fi
-[[ ${#session_name} -le 128 && ${#window_name} -le 128 ]] || fail 'Rex labels exceed 128 characters'
+[[ "$run" == "$window_name" ]] || fail "runId must match the canonical agent identity: $window_name"
+[[ ${#window_name} -le 100 ]] || fail 'canonical agent identity exceeds the 100-character Pi run ID limit'
+[[ ${#session_name} -le 128 ]] || fail 'Rex session label exceeds 128 characters'
 # Git ignores transport, while mtn evidence is the sole authoritative run index.
 git -C "$repo" check-ignore -q --no-index .mtn-tmp/rex/ || fail 'exclude .mtn-tmp/ from Git before launch'
 [[ ! -L "$repo/.mtn-tmp" && ! -L "$repo/.mtn-tmp/rex" ]] || fail 'transport directory cannot be a symlink'
@@ -178,11 +200,11 @@ dir="$repo/.mtn-tmp/rex/$run"
 	mkdir "$dir"
 ) || fail 'transport already exists; inspect before recovery'
 printf '%s\n' "$request" >"$dir/request.json"
-event="$(jq -c --arg run "$run" --arg dir "$dir" --arg window "$window_name" --arg session "$session_name" --arg worktree "$worktree" --argjson host "$host" '. + {schemaVersion:1,eventId:($run+"/runtime/reserved"),kind:"runtime",stage:"reserved",piSessionId:$run,transportDir:$dir,worktree:$worktree,host:$host,sessionName:$session,windowName:$window} | del(.prompt,.server)' <<<"$request")"
+event="$(jq -c --arg run "$run" --arg dir "$dir" --arg window "$window_name" --arg session "$session_name" --arg worktree "$worktree" --argjson host "$host" '. + {schemaVersion:1,eventId:($run+"/runtime/reserved"),kind:"runtime",stage:"reserved",piSessionId:$run,transportDir:$dir,worktree:$worktree,host:$host,rexSessionName:$session,rexWindowName:$window,piSessionName:$window,sessionName:$session,windowName:$window} | del(.prompt,.server)' <<<"$request")"
 # Keep prompts in transport, not durable notes. The event schema validates the launch metadata.
 printf '%s\n' "$event" >"$dir/reserved.json"
 publish "$dir/reserved.json"
-jq -n --arg repo "$repo" --arg window "$window_name" --arg path "$PATH" '{repo:$repo,windowName:$window,path:$path}' >"$dir/context.json"
+jq -n --arg repo "$repo" --arg window "$window_name" --arg path "$PATH" '{repo:$repo,piSessionName:$window,windowName:$window,path:$path}' >"$dir/context.json"
 if [[ "$role" == coordinator ]]; then
 	rex "${rex_args[@]}" new "$session_name" -c "$worktree" --window "$window_name" --keep-open --shell=none --json -- bash "$self" agent "$dir" >"$dir/created.json"
 	ids="$(jq -ce '{rexSessionId:.session_id,rexWindowId:.initial_windows[0].window_id,rexBlockId:.initial_windows[0].block_ids[0]}' "$dir/created.json")"

@@ -25,4 +25,5 @@ def candidate($ref;$path):{ref:$ref,phaseOrder:1,order:1,incomplete:true,statusA
   ({limits:{builders:2,reviewers:4,gates:1,integrations:1},active:[candidate("a";"src/a")|.state="reviewing",candidate("b";"src/b")|.state="awaiting-integration"],candidates:[candidate("c";"src/c")]}|ready_batch|length==1),
   ({limits:{builders:2,reviewers:4,gates:1,integrations:1},active:[candidate("a";"src/c")|.state="reviewing"],candidates:[candidate("c";"src/c")]}|ready_batch|length==0)
 ]|all'
+bash "$skill/tests/recovery_test.sh"
 printf 'Workflow hardening checks passed\n'

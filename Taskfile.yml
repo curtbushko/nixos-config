@@ -61,19 +61,11 @@ tasks:
         silent: true
       - cmd: |
           if echo "{{.DARWIN_HOSTS}}" | grep -qw "{{.HOST}}"; then
-            if command -v wake-gamingrig &>/dev/null; then
-              echo "{{.DATELOG}} Waking gamingrig for cache access..."
-              wake-gamingrig
-            fi
             # Reuse the user-built result; root must not refetch private flake inputs.
             nix --extra-experimental-features 'nix-command flakes' build ".#darwinConfigurations.{{.HOST}}.system" --show-trace --impure &&
             sudo nix-env -p /nix/var/nix/profiles/system --set "$(readlink result)" &&
               sudo ./result/sw/bin/darwin-rebuild activate
           elif echo "{{.NIXOS_HOSTS}}" | grep -qw "{{.HOST}}"; then
-            if command -v wake-gamingrig &>/dev/null; then
-              echo "{{.DATELOG}} Waking gamingrig for cache access..."
-              wake-gamingrig
-            fi
             sudo NIXPKGS_ALLOW_UNSUPPORTED_ARCH=1 nixos-rebuild switch --flake ".#{{.HOST}}" --impure
           elif echo "{{.HOME_MANAGER_HOSTS}}" | grep -qw "{{.HOST}}"; then
             echo "{{.DATELOG}} Using home-manager for {{.NIXUSER}}@{{.HOST}}"
@@ -110,17 +102,9 @@ tasks:
         silent: true
       - cmd: |
           if echo "{{.DARWIN_HOSTS}}" | grep -qw "{{.HOST}}"; then
-            if command -v wake-gamingrig &>/dev/null; then
-              echo "{{.DATELOG}} Waking gamingrig for cache access..."
-              wake-gamingrig
-            fi
             nix --extra-experimental-features 'nix-command flakes' build ".#darwinConfigurations.{{.HOST}}.system" --show-trace --impure
             ./result/sw/bin/darwin-rebuild test --flake "$(pwd)#{{.HOST}}" --impure
           elif echo "{{.NIXOS_HOSTS}}" | grep -qw "{{.HOST}}"; then
-            if command -v wake-gamingrig &>/dev/null; then
-              echo "{{.DATELOG}} Waking gamingrig for cache access..."
-              wake-gamingrig
-            fi
             sudo NIXPKGS_ALLOW_UNSUPPORTED_ARCH=1 nixos-rebuild test --flake ".#{{.HOST}}" --impure
           elif echo "{{.HOME_MANAGER_HOSTS}}" | grep -qw "{{.HOST}}"; then
             echo "{{.DATELOG}} Testing home-manager config for {{.NIXUSER}}@{{.HOST}}"
@@ -326,6 +310,9 @@ tasks:
       - bash modules/home/llm/tests/integration_cleanup_test.sh
       - bash modules/home/llm/pi/tests/theme_test.sh
       - bash modules/home/terminals/tests/darwin-switch_test.sh
+      - bash modules/nixos/nix-cache-gamingrig/tests/cache-removal_test.sh
+      - shellcheck modules/nixos/nix-cache-gamingrig/tests/cache-removal_test.sh
+      - shfmt -d modules/nixos/nix-cache-gamingrig/tests/cache-removal_test.sh
       - bash modules/home/llm/skills/mtn-tasks/tests/policy_test.sh
       - bash modules/home/llm/skills/zig-team/tests/policy_test.sh
       - bash modules/home/scripts/tests/workspace_test.sh

@@ -232,7 +232,13 @@ Per-kind fields:
 - runtime: Rex/Pi locator evidence, as defined in [Rex/Pi execution](rex.md).
   Common event keys plus `stage` (reserved or launched), `runId`, `role`, `skill`,
   `worktree`, exact `model`/`thinking`, `piSessionId`, `host` (endpoint/hostId/instanceId),
-  `sessionName`, `windowName`, `transportDir`. Coordinator entries require `handoff:true`;
+  `rexSessionName`, `rexWindowName`, `piSessionName`, `transportDir`. The Pi display
+  name, Pi session ID and Rex window name all equal immutable `runId` for new
+  launches, using the space-free canonical agent identity defined in rex.md.
+  Rex-generated resource IDs stay separate. Keep `sessionName`/`windowName` as
+  matching compatibility aliases;
+  old runtime events lacking the explicit names remain valid and are not rewritten.
+  Coordinator entries require `handoff:true`;
   workers identify `phaseRef` and `parentRunId`; builders/reviewers also identify the
   governing `dispatchEventId`. Launched entries add full `rexSessionId`, `rexWindowId`,
   `rexBlockId`. Reserve BEFORE creation and append returned IDs BEFORE Pi startup.

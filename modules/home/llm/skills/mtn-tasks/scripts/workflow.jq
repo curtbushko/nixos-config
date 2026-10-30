@@ -23,6 +23,11 @@ def rex_runtime:
   rex_launch_metadata and
   ([.sessionName,.windowName,.transportDir] | all(.[]; rex_string)) and
   .piSessionId == .runId and
+  (if has("rexSessionName") or has("rexWindowName") or has("piSessionName") then
+     ([.rexSessionName,.rexWindowName,.piSessionName] | all(.[]; rex_string)) and
+     .rexSessionName == .sessionName and .rexWindowName == .windowName and
+     .piSessionName == .rexWindowName
+   else true end) and
   (.host | [.endpoint,.hostId,.instanceId] | all(.[]; rex_string)) and
   (.host.endpoint | startswith("unix://")) and
   (if .stage == "reserved" then true
@@ -36,6 +41,20 @@ def positive_integer: type == "number" and . >= 1 and floor == .;
 def checks_pass:
   type == "array" and length > 0 and all(.[];
     (.command | nonempty) and .result == "pass");
+# A recovery is narrow authorization, never a replacement document approval.
+def recovery_authorization:
+  .decision == "approved" and .disposition == "quarantine-malformed-approval" and
+  ([.approvedBy,.decisionEvidence,.replacementEventId] | all(.[]; nonempty)) and
+  (.collectionRoot | nonempty and startswith("/")) and
+  (.target | type == "object" and
+    ([.eventId,.specHash] | all(.[]; nonempty)) and
+    (.intent | type == "string" and test("^[0-9a-f]{64}$")) and
+    (.contentDigest | type == "string" and test("^sha256:[0-9a-f]{64}$"))) and
+  .target.eventId != .eventId and .replacementEventId != .eventId and
+  .replacementEventId != .target.eventId and
+  (if has("supersedesRecoveryEventId") then
+    (.supersedesRecoveryEventId | nonempty) and .supersedesRecoveryEventId != .eventId
+   else true end);
 def valid_event:
   (.schemaVersion == 1) and (.eventId | nonempty) and
   (.recordRef | nonempty) and (.specHash | nonempty) and
@@ -49,6 +68,7 @@ def valid_event:
    elif .kind == "dispatch" then
      ([.runId,.baseCommit,.branch,.worktree,.targetBranch] | all(.[]; nonempty))
    elif .kind == "runtime" then rex_runtime
+   elif .kind == "recovery" then recovery_authorization
    elif .kind == "build" then
      ([.dispatchEventId,.head,.tree] | all(.[]; nonempty)) and
      (.outcome == "blocked" or (.outcome == "ready-for-review" and (.validation | checks_pass)))
@@ -85,6 +105,15 @@ def document_approved:
   . as $s |
   (any(.events[]; (valid_event | not)) | not) and
   ([.events[].eventId] | length == (unique | length)) and
+  # Quarantine cannot expose an unrelated earlier approval as current authority.
+  # Superseded authorizations stay visible, but only the active chain tip governs.
+  all(.events[] | select(.kind == "recovery") | . as $a |
+    select(any($s.events[]; .kind == "recovery" and .supersedesRecoveryEventId == $a.eventId) | not);
+    . as $recovery |
+    .recordRef == $s.ref and .specHash == $s.specHash and
+    any($s.events[(($s.events | index($recovery)) + 1):][];
+      .eventId == $recovery.replacementEventId and .kind == "approval" and
+      .recordRef == $s.ref and .specHash == $s.specHash and .decision == "approved")) and
   (([.events[] | select(.kind == "approval" and .recordRef == $s.ref and .specHash == $s.specHash)] | last | .decision) == "approved");
 def plan_approved:
   . as $s |

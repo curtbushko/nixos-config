@@ -14,11 +14,19 @@ bodies into coordinator context unless diagnosing a workflow problem.
 
 Use Pi for every agent. Before dispatch, read
 `../mtn-tasks/references/rex.md` completely. Unless `MTN_REX_COORDINATOR_RUN`
-is already set for this collection, hand off to a new coordinator Pi in a Rex
-session named for the orchestration worktree. Stop coordinating after handoff;
-do not also execute the team in this caller. The handed-off coordinator launches
-all planners/builders/reviewers as named Rex windows through `mtn-rex`.
-Never substitute hidden/background subagents or start another coordinator.
+is already set for this collection, hand off to a new coordinator Pi process in
+one Rex session labelled `<project>-<worktree>` (plain project checkouts use the
+project name). Use one Rex session per project execution/worktree, not per phase.
+Stop coordinating after handoff; do not also execute the team in this caller.
+The handed-off coordinator launches each planner/builder/reviewer through `mtn-rex`
+in a separate phase/task-labelled Rex window, with a separate Pi conversation.
+Use one lowercase hyphenated agent identity for `runId`, Pi session ID, Pi display
+name and Rex window name: `<project>-p<NN>-t<NN>-<agent>-a<NN>` for task workers;
+coordinators/planners omit the task segment and use their role. No spaces. Supply
+the canonical `runId` when launching; mismatches are rejected before Rex creation.
+Rex-generated session/window/block IDs stay separate. The launcher supplies them
+before Pi starts: agents must not recreate their own sessions/windows. Never substitute
+hidden/background subagents or start another coordinator.
 
 ## Invocation
 

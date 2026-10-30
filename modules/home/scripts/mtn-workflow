@@ -71,11 +71,25 @@ fingerprint_show() {
 		printf 'sha256:%s\n' "$digest"
 	}
 }
+evidence_events_show() {
+	local source hash index digest digests='[]' allow_stale="${1:-false}"
+	source="$(jq -c 'del(.recoveryContext)')"
+	if jq -e 'any(.result.evidence[]?; (.content | try fromjson catch null) | type == "object" and has("schemaVersion") and .kind == "recovery")' <<<"$source" >/dev/null; then
+		hash="$(fingerprint_show <<<"$source")"
+		# Hash the decoded UTF-8 content directly: shell variables trim trailing newlines.
+		while IFS= read -r index; do
+			digest="$(jq -j --argjson index "$index" '.result.evidence[$index].content' <<<"$source" | shasum -a 256)"
+			digests="$(jq -c --arg digest "sha256:${digest%% *}" '.+[$digest]' <<<"$digests")"
+		done < <(jq -r '.result.evidence | keys[]' <<<"$source")
+		source="$(jq -c --arg root "$root" --arg hash "$hash" --argjson digests "$digests" --argjson allow_stale "$allow_stale" '.recoveryContext={collectionRoot:$root,specHash:$hash,contentDigests:$digests,allowStaleRecoveryTips:$allow_stale}' <<<"$source")"
+	fi
+	jq -c -L "$lib" 'include "workflow"; include "facade"; evidence_events(valid_event)' <<<"$source"
+}
 snapshot() {
 	local ref="$1" hash events
 	load_show "$ref"
 	hash="$(fingerprint_show <<<"$SHOW")"
-	events="$(jq -c -L "$lib" 'include "facade"; evidence_events' <<<"$SHOW")"
+	events="$(evidence_events_show <<<"$SHOW")"
 	jq -c --arg hash "$hash" --argjson events "$events" --argjson mapping "$mapping" \
 		'{ref:.result.ref,specHash:$hash,language:.result.frontmatter.workflowLanguage,kind:.result.frontmatter.workflowKind,order:.result.frontmatter.workflowOrder,title:.result.frontmatter[$mapping.title // "title"],nativeStatus:.result.frontmatter[$mapping.status // "status"],events:$events}' <<<"$SHOW" |
 		jq -c -e -L "$lib" 'include "workflow"; if all(.events[];valid_event) then . else error("Invalid evidence event") end'
@@ -147,7 +161,7 @@ append_record() {
 	local ref="$1" data parents hash events ownership
 	load_show "$ref"
 	hash="$(fingerprint_show <<<"$SHOW")"
-	events="$(jq -c -L "$lib" 'include "facade"; evidence_events' <<<"$SHOW")"
+	events="$(evidence_events_show <<<"$SHOW")"
 	parents="$(mtn --path "$root" agent hierarchy "$ref" --json | jq -c '[.result.parents[].resolution.ref]')"
 	ownership="$(semantic_show <<<"$SHOW" | jq -c .ownership)"
 	data="$(jq -c --argjson ownership "$ownership" --arg hash "$hash" --argjson events "$events" --argjson parents "$parents" --argjson mapping "$mapping" '.result|{ref,specHash:$hash,events:$events,parentRefs:$parents,kind:.frontmatter.workflowKind,order:.frontmatter.workflowOrder,language:.frontmatter.workflowLanguage,requirements:.frontmatter.workflowRequirements,documents:.frontmatter.workflowDocuments,ownership:$ownership,nativeStatus:.frontmatter[$mapping.status // "status"]}' <<<"$SHOW")"
@@ -302,10 +316,17 @@ publish)
 	if jq -e '.kind=="historical" and has("legacyIntents")' <<<"$payload" >/dev/null; then
 		jq -e '(.legacyIntents|type=="array") and (.approvedBy|type=="string" and length>0) and (.decisionEvidence|type=="string" and length>0)' <<<"$payload" >/dev/null || fail 'historical import requires explicit approval and legacy intent IDs'
 		jq -e --argjson requested "$(jq -c .legacyIntents <<<"$payload")" '.result.evidence as $notes|all($requested[];. as $intent|any($notes[];.intent==$intent))' <<<"$SHOW" >/dev/null || fail 'historical authorization names an absent note intent'
-	else
-		# Unknown legacy entries cannot be ignored while publishing current delivery events.
-		jq -e -L "$lib" 'include "facade"; include "workflow"; evidence_events | all(.[];valid_event)' <<<"$SHOW" >/dev/null
 	fi
+	# Every append, including legacy imports, must respect recovery reservations.
+	# Identical retries remain native-idempotent; changed/duplicate identities fail closed.
+	candidate="$(jq -c --argjson event "$payload" '
+	  if any(.result.evidence[]?; .retryKey == $event.eventId and .content == ($event|tojson)) then .
+	  else .result.evidence += [{content:($event|tojson)}] end' <<<"$SHOW")"
+	# Exact reassessments may advance one chain while other stale tips still block reads.
+	# This allowance is shell-owned and never available to approvals or other appends.
+	reassessment="$(jq -c '.kind=="recovery"' <<<"$payload")"
+	events="$(evidence_events_show "$reassessment" <<<"$candidate")"
+	jq -e -L "$lib" 'include "workflow"; all(.[];valid_event) and ([.[].eventId]|length==(unique|length))' <<<"$events" >/dev/null
 	jq -n --argjson event "$payload" '{content:($event|tojson),role:"coordinator",category:$event.kind,adopt:true,retryKey:$event.eventId}' |
 		mtn --path "$root" agent note "$ref" --input - --json
 	;;

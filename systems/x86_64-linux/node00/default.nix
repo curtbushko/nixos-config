@@ -24,7 +24,7 @@
     services.minecraft.homestead.enable = false;
     services.vr.enable = false;
     services.wm.enable = false;
-    # Use gamingrig as binary cache with wake-on-lan
+    # Use gamingrig as a remote builder
     nix-cache-gamingrig.enable = true;
   };
 

@@ -258,41 +258,6 @@
   services.openssh.settings.PasswordAuthentication = true;
   services.openssh.settings.PermitRootLogin = "no";
 
-  # Enable nix-serve to serve local /nix/store (port 5000)
-  services.nix-serve = {
-    enable = true;
-    port = 5000;
-    bindAddress = "0.0.0.0";
-  };
-
-  # Enable ncps for pull-through caching (port 8501)
-  services.ncps = {
-    enable = true;
-
-    # LRU cache with 100GB limit
-    cache = {
-      hostName = "gamingrig";
-      storage.local = "/var/lib/ncps";
-      maxSize = "100G";
-
-      # Configure upstream caches
-      upstream = {
-        urls = [
-          "https://cache.nixos.org"
-          "https://nix-community.cachix.org"
-        ];
-        publicKeys = [
-          "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-          "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-        ];
-      };
-    };
-
-    server = {
-      addr = "0.0.0.0:8501";
-    };
-  };
-
   # Configure Nix settings
   nix = {
     settings = {
