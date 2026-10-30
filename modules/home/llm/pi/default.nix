@@ -132,6 +132,9 @@
       # ========================================================================
 
       home.file = {
+        # Global collaboration instructions, loaded in every working directory.
+        ".pi/agent/AGENTS.md".source = ./AGENTS.md;
+
         # Pi settings - core configuration
         ".pi/agent/settings.json".source = pkgs.writeText "pi-settings.json" (builtins.toJSON {
           defaultProvider = "openai-codex";
