@@ -154,6 +154,8 @@
   ];
 
   services.tailscale.enable = true;
+  # Let tailscaled manage its resolver; Nix store symlinks fail its path checks.
+  environment.etc."resolver/ts.net".enable = false;
 
   # Homebrew for packages not in nixpkgs
   homebrew = {
