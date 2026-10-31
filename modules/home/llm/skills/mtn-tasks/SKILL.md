@@ -17,6 +17,10 @@ whole task history.
 Team execution uses Pi in Rex: read [Rex/Pi execution](references/rex.md).
 Persist coordinator and worker locators as `runtime` evidence through mtn; these
 notes never count as review, completion, or proof of a live process.
+Keep routine terminal output to concise status summaries and artifact paths, not
+task Markdown or full payload dumps. Save mutation responses/results to files.
+Successful worker windows close automatically; failed windows and all evidence
+remain available. See the Rex reference for exact closure and recovery rules.
 
 Use `mtn-workflow --repo "$REPO_ROOT" status|task|snapshot|fingerprint REF`, `ready PROJECT`,
 `paths PATH...`, `budget`, `disk`, and `cleanup-plan`. Only the authorized coordinator

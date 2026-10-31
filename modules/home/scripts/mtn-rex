@@ -5,7 +5,7 @@ fail() {
 	printf 'mtn-rex: %s\n' "$*" >&2
 	exit 1
 }
-for tool in jq git dirname basename mkdir sleep tee; do
+for tool in jq git dirname basename mkdir sleep; do
 	command -v "$tool" >/dev/null || fail "$tool is required"
 done
 lib="${MTN_REX_LIB:-$(dirname "${BASH_SOURCE[0]}")/../llm/skills/mtn-tasks/scripts}"
@@ -70,13 +70,32 @@ agent() {
 	local args=(--session-id "$run" --name "$(jq -r '.piSessionName // .windowName' "$dir/context.json")" --model "$model" --thinking "$thinking")
 	if [[ "$role" == coordinator ]]; then
 		export MTN_WORKFLOW_COORDINATOR=1 MTN_REX_COORDINATOR_RUN="$run"
-		prompt="You are the sole handed-off coordinator. Your Rex session/window and Pi conversation already exist; use the supplied runtime IDs, never display names, to address them. Do not create another Rex session or coordinator Pi conversation. Launch leaf agents only through mtn-rex as new Rex windows in this Rex session. Read the team skill and mtn-tasks Rex execution reference, then reconcile the supplied phase and persisted runtime evidence before dispatch. $prompt"
+		prompt="Keep terminal output concise: report only dispatch, completion, blockers and decisions. Never echo task Markdown, full descriptions, prompts or evidence payloads. Write record/request content directly to files with quiet tool calls; redirect mtn mutation output to private transport files and inspect only the needed status fields. Your interactive tool calls are visible, so do not embed full record bodies in displayed commands. You are the sole handed-off coordinator. Your Rex session/window and Pi conversation already exist; use the supplied runtime IDs, never display names, to address them. Do not create another Rex session or coordinator Pi conversation. Launch leaf agents only through mtn-rex as new Rex windows in this Rex session. Read the team skill and mtn-tasks Rex execution reference, then reconcile the supplied phase and persisted runtime evidence before dispatch. $prompt"
 		pi "${args[@]}" -- "$prompt" || code=$?
 	else
 		prompt="You are a leaf $role using the $run run identity. Your Rex window and Pi conversation already exist; do not create or resume sessions/windows. Rex resource IDs and your Pi session ID are separate identities. Read mtn-tasks worker contract and the assigned skill. Never write mtn records, integrate, or launch agents. Return only the required protocol JSON payload as your final response, without Markdown fences. $prompt"
-		pi "${args[@]}" --print -- "$prompt" | tee "$dir/result.json" || code=$?
+		printf 'mtn-rex: %s started\n' "$run"
+		pi "${args[@]}" --print -- "$prompt" >"$dir/result.json" 2>"$dir/stderr.log" || code=$?
 	fi
+	# Persist evidence before closing our own window; never close the coordinator.
 	printf '%s\n' "$code" >"$dir/exit-code"
+	if [[ "$role" != coordinator ]]; then
+		if [[ "$code" == 0 ]] && jq -se 'length==1 and (.[0] | type=="object" and .outcome!="blocked" and .outcome!="failed" and .verdict!="CHANGES_NEEDED")' "$dir/result.json" >/dev/null 2>&1; then
+			printf 'mtn-rex: %s finished; evidence: %s\n' "$run" "$dir"
+			local endpoint host instance session window
+			endpoint="$(jq -r .host.endpoint "$dir/persisted.json")"
+			host="$(jq -r .host.hostId "$dir/persisted.json")"
+			instance="$(jq -r .host.instanceId "$dir/persisted.json")"
+			session="$(jq -r .rexSessionId "$dir/persisted.json")"
+			window="$(jq -r .rexWindowId "$dir/persisted.json")"
+			if ! (command -v rex >/dev/null && pin_host "$endpoint" "$host" "$instance" &&
+				rex --autostart=false -S "$endpoint" window close -s "$session" "$window") >>"$dir/stderr.log" 2>&1; then
+				printf 'mtn-rex: could not close %s; inspect %s/stderr.log\n' "$run" "$dir" >&2
+			fi
+		else
+			printf 'mtn-rex: %s needs attention (exit %s); retained window; evidence: %s\n' "$run" "$code" "$dir" >&2
+		fi
+	fi
 	return "$code"
 }
 
@@ -189,6 +208,8 @@ else
 fi
 [[ "$run" == "$window_name" ]] || fail "runId must match the canonical agent identity: $window_name"
 [[ ${#window_name} -le 100 ]] || fail 'canonical agent identity exceeds the 100-character Pi run ID limit'
+# Display labels are scoped by the Rex session; durable run/Pi IDs keep the project.
+window_name="${window_name#"$project_name-"}"
 [[ ${#session_name} -le 128 ]] || fail 'Rex session label exceeds 128 characters'
 # Git ignores transport, while mtn evidence is the sole authoritative run index.
 git -C "$repo" check-ignore -q --no-index .mtn-tmp/rex/ || fail 'exclude .mtn-tmp/ from Git before launch'

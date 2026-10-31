@@ -19,6 +19,9 @@ entire protocol, scheduling or migration references.
 6. Under Rex, keep the supplied Pi session/run identity. You are a leaf in a named
    window, not another coordinator. Return only the requested JSON payload as the
    final response (no Markdown fences); the launcher saves it as excluded transport.
-   Do not publish it yourself. A successful Pi process exit is not task completion.
+   Do not publish it yourself or echo task Markdown/tool payloads as progress.
+   The launcher saves stdout/stderr to files and automatically closes successful
+   worker windows; failures remain open. Never close Rex resources yourself.
+   A successful Pi process exit or closed window is not task completion.
 7. Preserve work on interruption. Report completion/stoppage so the coordinator can
    release reservations and plan safe cleanup. Archiving does not reclaim disk.

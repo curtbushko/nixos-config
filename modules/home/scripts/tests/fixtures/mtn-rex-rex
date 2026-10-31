@@ -7,6 +7,9 @@ case " $* " in
 	if [[ "${DEFAULT_REMOTE:-}" == 1 && " $* " != *" -S "* ]]; then transport=tcp; fi
 	jq -n --arg transport "$transport" --arg instance "${INSTANCE:-instance-1}" '{endpoint:"unix:///fixture.sock",principal:{transport:$transport},host_id:"host-1",instance_id:$instance}'
 	;;
+*" window close "*)
+	[[ "${FAIL_CLOSE:-}" != 1 ]] || exit 1
+	;;
 *" window new "*) printf '{"window_id":"window:worker","block_ids":["block:worker"]}\n' ;;
 *" new "*)
 	[[ "${FAIL_NEW:-}" != 1 ]] || exit 1

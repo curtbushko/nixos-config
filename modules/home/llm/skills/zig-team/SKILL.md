@@ -20,10 +20,12 @@ project name). Use one Rex session per project execution/worktree, not per phase
 Stop coordinating after handoff; do not also execute the team in this caller.
 The handed-off coordinator launches each planner/builder/reviewer through `mtn-rex`
 in a separate phase/task-labelled Rex window, with a separate Pi conversation.
-Use one lowercase hyphenated agent identity for `runId`, Pi session ID, Pi display
-name and Rex window name: `<project>-p<NN>-t<NN>-<agent>-a<NN>` for task workers;
-coordinators/planners omit the task segment and use their role. No spaces. Supply
-the canonical `runId` when launching; mismatches are rejected before Rex creation.
+Use one lowercase hyphenated agent identity for `runId` and Pi session ID:
+`<project>-p<NN>-t<NN>-<agent>-a<NN>` for task workers; coordinators/planners
+omit the task segment and use their role. Rex window and Pi display names omit
+the project prefix: `p<NN>-t<NN>-<agent>-a<NN>` or `p<NN>-<role>-a<NN>`.
+No spaces. Supply the canonical `runId` when launching; mismatches are rejected
+before Rex creation. Do not rename historical/live runs.
 Rex-generated session/window/block IDs stay separate. The launcher supplies them
 before Pi starts: agents must not recreate their own sessions/windows. Never substitute
 hidden/background subagents or start another coordinator.

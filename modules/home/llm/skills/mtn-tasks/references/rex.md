@@ -16,21 +16,24 @@ or integration checks.
   hyphens. For example `Demo Project` / `Feature Worktree` becomes
   `demo-project-feature-worktree`. No spaces, underscores or punctuation in new labels.
 - The coordinator occupies the initial Rex window, named
-  `<project>-p<NN>-coordinator-a<NN>`, for example `rex-whichkey-p01-coordinator-a01`.
+  `p<NN>-coordinator-a<NN>`, for example `p01-coordinator-a01`.
   Its phase is the anchor phase at startup; keep that identity when scheduling
   later phases. Never rename/reidentify a live coordinator to imply a fresh run.
 - Every worker occupies a new Rex window in that same Rex session, named
-  `<project>-p<NN>-t<NN>-<agent>-a<NN>`, for example
-  `rex-whichkey-p01-t01-builder-a01` or `rex-whichkey-p01-t01-reviewer-a01`.
+  `p<NN>-t<NN>-<agent>-a<NN>`, for example
+  `p01-t01-builder-a01` or `p01-t01-reviewer-a01`.
   Builders use `builder`; reviewers use their skill without its language prefix:
   `go-reviewer` becomes `reviewer`, `zig-code-reviewer` becomes `code-reviewer`.
   Numbers come from native phase/task order and the request's attempt, zero-padded
   to at least two digits. They are labels, not prerequisite edges.
-- Phase planners use `<project>-p<NN>-planner-a<NN>`, for example
-  `rex-whichkey-p01-planner-a01`, and attach evidence to their phase. Each worker's
+- Phase planners use `p<NN>-planner-a<NN>`, for example
+  `p01-planner-a01`, and attach evidence to their phase. Each worker's
   phase prefix is its actual phase, not the coordinator's anchor phase.
-- For every NEW run, `runId`, `piSessionId`, `piSessionName` and `rexWindowName`
-  MUST be the same canonical agent string. Supply that exact `runId` in launch
+- For every NEW run, `runId` and `piSessionId` MUST be the same canonical agent string:
+  `<project>-p<NN>-t<NN>-<agent>-a<NN>` for task workers, or
+  `<project>-p<NN>-<role>-a<NN>` for coordinators/planners. `piSessionName` and
+  `rexWindowName` match each other but omit the project prefix; the Rex session
+  already supplies that context. Supply the full canonical `runId` in launch
   requests and dispatch evidence; the launcher rejects a mismatched scope/name
   before reserving a run or creating Rex resources. Do not silently change the
   run ID after publication. Each Rex window runs one Pi conversation; phase
@@ -59,7 +62,7 @@ on PATH and run both helpers through Bash wrappers if they are not executable.
 | `rexWindowId` | Server-returned `window:...`; selects the Rex window/tab |
 | `rexBlockId` | Server-returned `block:...`; selects the terminal running Pi |
 | `rexSessionName` | Human-readable project/worktree label |
-| `rexWindowName`, `piSessionName` | Same canonical string as `runId`, passed to Rex's window label and `pi --name` |
+| `rexWindowName`, `piSessionName` | Matching short display label without the project prefix, passed to Rex's window label and `pi --name` |
 
 New runtime events publish these explicit names. `sessionName` and `windowName`
 remain compatibility aliases for `rexSessionName` and `rexWindowName`; historical
@@ -96,7 +99,7 @@ phase. Do not change the team's existing dependency-ready scheduling semantics.
    the child's startup gate. A bounded 60-second gate keeps Pi from writing
    while its caller is publishing. Publication failure leaves the gate closed.
 6. The new Pi receives `MTN_REX_COORDINATOR_RUN`, `MTN_REX_ROLE=coordinator`,
-   its exact `--session-id` and matching `--name`, plus a `Runtime identity` prompt
+   its exact full `--session-id` and short display `--name`, plus a `Runtime identity` prompt
    block containing the persisted returned Rex IDs, explicit names and host identity.
    Its Rex resources and Pi conversation ALREADY EXIST at this point. Do not create
    them again or recurse into another coordinator handoff. Check `MTN_REX_REPO`
@@ -185,14 +188,18 @@ not credentials or the rest of the caller's environment.
 
 Worker startup strips the publication marker and coordinator recursion marker.
 Workers are leaves; this is role discipline, not an OS sandbox. Every worker
-gets a fresh canonical Pi session ID/name matching its Rex window label,
+gets a fresh full canonical Pi session ID and a short Pi display name matching
+its Rex window label,
 explicit model/thinking and an initial prompt
 containing its launch contract, parent collection checkout and persisted runtime
 identity. The launcher creates the Rex resources BEFORE starting Pi; the worker
 must not create its own session or window. Workers run in print mode and return
 just the requested JSON as the final response. Their final
 response and process exit code are excluded `.mtn-tmp/rex/<runId>/` transport,
-not a second authoritative results database. Coordinator Pi stays interactive.
+not a second authoritative results database. Worker stdout goes directly to
+`result.json`, and stderr to `stderr.log`; neither is streamed into the terminal.
+Only concise start/finish/attention summaries are displayed. Coordinator Pi stays
+interactive; follow the quiet-output policy below.
 
 ```bash
 mtn-rex --repo "$REPO_ROOT" inspect "$TASK_REF" "$RUN_ID"
@@ -215,7 +222,34 @@ terminal's process method. `result` requires a zero worker exit code and a JSON
 object; the coordinator must still validate the full role-specific protocol,
 attempt/spec/revision and actual checks before publishing through mtn. It never
 auto-publishes or completes a task. A zero exit or an open window is not success.
-Retain windows (`--keep-open`) so the user can inspect failures and finished work.
+Launch with `--keep-open` to retain startup/process failures. Once Pi exits zero
+and exactly one JSON object is saved, the launcher closes only that worker's
+persisted window on its pinned host/server instance. Blocked/failed outcomes,
+CHANGES_NEEDED reviews, malformed/multiple payloads and close errors retain the
+window for inspection. This is transport cleanup, NOT protocol approval or task
+completion. Coordinator windows remain open. Results, stderr, exit codes, Pi
+sessions, worktrees and runtime notes are retained even after window closure.
+Use saved transport evidence after closure; a missing worker window alone is not
+a failure and does not authorize relaunch.
+
+## Quiet terminal output
+
+Report dispatch, completion, blockers and approval requests in short summaries
+with exact refs and artifact paths. Never echo task Markdown, entire descriptions,
+prompts, tool request bodies or evidence payloads as progress output. Write record
+content directly to files rather than using verbose shell heredocs or patch dumps
+in displayed commands. Redirect mtn mutation responses and large diagnostics into
+private transport files; inspect only necessary status/ID fields. Do not use
+`tee`, `cat`, tracing (`set -x`) or full snapshot dumps for routine progress.
+Read full task/evidence content when needed for correctness, but do not repeat it
+in commentary. Retrieve worker results into a file, then validate that file:
+
+```bash
+mtn-rex --repo "$REPO_ROOT" result "$TASK_REF" "$RUN_ID" >"$RESULT_FILE"
+```
+
+Interactive tool inputs may still be rendered by Pi; these instructions reduce
+unnecessary dumps, not guarantee that its TUI hides every tool argument.
 
 ## Runtime notes and recovery
 
@@ -248,5 +282,7 @@ semantic fingerprints. Runtime notes do not satisfy prerequisites or reviews.
   transfer and an explicit new attempt; never duplicate a writer.
 - A missing result/transport file is missing evidence, not permission to infer
   success. Preserve worktrees, runtime notes, Pi sessions and windows on failure.
-- Closing sessions/windows, deleting transport/worktrees or global cleanup needs
-  separate authorization. Phase completion still includes cleanup planning.
+- Automatic closure of successful worker windows follows the policy above.
+  Closing coordinator/failed/unrelated windows or sessions, deleting transport or
+  worktrees, and global cleanup still need separate authorization. Phase completion
+  still includes cleanup planning.
