@@ -69,7 +69,6 @@ in {
     };
     hardware.steam-hardware.enable = true;
 
-    programs.envision.enable = true;
     # Configure monado
     services.monado = {
       enable = true;
@@ -77,6 +76,10 @@ in {
       # defaultRuntime = true;
     };
     hardware.graphics.extraPackages = [pkgs.monado-vulkan-layers pkgs.gamemode];
+
+    # SteamVR is installed into the user's Steam library, which is unavailable
+    # inside Nix's build sandbox and cannot be a declarative security-wrapper source.
+    # Steam/Monado manage the user-installed launchers directly.
 
     # Configure WiVRn
     services.wivrn = {
@@ -92,24 +95,6 @@ in {
       openFirewall = true;
     };
 
-    security.wrappers.steamvr = {
-      owner = "root";
-      group = "root";
-      capabilities = "cap_sys_nice+ep";
-      source = "/home/curtbushko/.local/share/Steam/steamapps/common/SteamVR/bin/linux64/vrcompositor-launcher";
-    };
-    security.wrappers.steamvrsh = {
-      owner = "root";
-      group = "root";
-      capabilities = "cap_sys_nice+ep";
-      source = "/home/curtbushko/.local/share/Steam/steamapps/common/SteamVR/bin/linux64/vrcompositor-launcher.sh";
-    };
-    security.wrappers.vrstartup = {
-      owner = "root";
-      group = "root";
-      capabilities = "cap_sys_nice+ep";
-      source = "/home/curtbushko/.local/share/Steam/steamapps/common/SteamVR/bin/vrstartup.sh";
-    };
 
     # create a wireless access point
     services.create_ap = {

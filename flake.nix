@@ -74,6 +74,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    rex-whichkey = {
+      url = "github:curtbushko/rex-whichkey";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     pi = {
       url = "github:lukasl-dev/pi.nix/a8ce1745fcfae2cbb86b37f9e89f76941893d00e";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -124,7 +129,7 @@
       inputs =
         inputs
         // {
-          rex = {nixosModules = inputs.rex.nixosModules;};
+          rex = {inherit (inputs.rex) nixosModules packages;};
         };
       src = ./.;
 

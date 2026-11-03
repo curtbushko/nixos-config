@@ -49,6 +49,21 @@ rex = {
 	},
 }
 
+package.preload["rex_whichkey"] = function()
+	return {
+		register_completion = function() end,
+		new = function()
+			return {
+				setup = function() end,
+				register_launch = function() end,
+			}
+		end,
+	}
+end
+package.preload["rex_whichkey.defaults"] = function()
+	return {}
+end
+
 dofile("modules/home/terminals/rex/init.lua")
 
 local function binding(keys, action, arg, value)
@@ -70,7 +85,7 @@ binding({ "cmd+l", "cmd+right" }, "cycle_focus", "direction", "right")
 assert(actions.cycle_focus, "retain combined pane/tab/session cycling")
 binding({ "cmd+t" }, "client.tab.new")
 binding({ "cmd+w" }, "client.tab.close")
-assert(not bindings["cmd+space"], "reserve Cmd+Space for the replacement menu")
+binding({ "cmd+space" }, "whichkey")
 local action_count = 0
 for _ in pairs(actions) do
 	action_count = action_count + 1

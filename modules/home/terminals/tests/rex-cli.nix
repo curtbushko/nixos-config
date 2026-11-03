@@ -21,6 +21,9 @@ let
         xdg.configFile."ghostty/config".text = "";
         lib.file.mkOutOfStoreSymlink = path: path;
       };
+      inputs = {
+        rex-whichkey.homeManagerModules.default = {};
+      };
       lib = {
         mkIf = condition: value:
           if condition
@@ -78,6 +81,7 @@ in
   assert localOnly.config.targets.darwin.defaults."com.superlogical.rex"."rex.server.automatic-restart-enabled";
   assert builtins.elem "192.0.2.1:8000" custom.config.launchd.agents.rex-server.config.ProgramArguments;
   assert module.config.home.file.".local/bin/rex".source == expected;
+  assert module.config.programs.rex-whichkey.enable;
   assert !contains expected module.config.xdg.configFile."rex/init.lua".text;
   assert builtins.attrNames module.config.xdg.configFile == ["rex/cycle.lua" "rex/init.lua"];
   assert module.config.xdg.configFile."rex/cycle.lua".source == ../rex/cycle.lua;

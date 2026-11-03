@@ -63,6 +63,16 @@ in {
     };
 
     services.tailscale.enable = true;
+    services.rex.package = inputs.rex.packages.${pkgs.stdenv.hostPlatform.system}.rex.overrideAttrs (old: {
+      # patchelf 0.19 sorting puts loader data in an overlapping read-only segment.
+      patchelfFlags = (old.patchelfFlags or []) ++ ["--no-sort"];
+      doInstallCheck = true;
+      installCheckPhase = ''
+        runHook preInstallCheck
+        "$out/bin/rex" --help >/dev/null
+        runHook postInstallCheck
+      '';
+    });
     services.rex.loginServer = {
       enable = true;
       tailscaleServe.enable = true;

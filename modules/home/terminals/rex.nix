@@ -1,5 +1,6 @@
 {
   config,
+  inputs,
   lib,
   pkgs,
   ...
@@ -24,6 +25,8 @@
   themeFile = pkgs.writeText "rex-flair-theme" (lib.concatStringsSep "\n" themeLines + "\n");
   initLua = builtins.readFile ./rex/init.lua;
 in {
+  imports = [inputs.rex-whichkey.homeManagerModules.default];
+
   options.ns.terminals.rex.appPath = mkOption {
     type = types.str;
     default = "/Applications/Rex Beta.app";
@@ -55,6 +58,7 @@ in {
 
   config = mkIf cfg.enable (lib.mkMerge [
     {
+      programs.rex-whichkey.enable = true;
       xdg.configFile = {
         "rex/init.lua" = {
           text = initLua;
