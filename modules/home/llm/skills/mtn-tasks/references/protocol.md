@@ -73,12 +73,17 @@ assigned that authority. All publication still uses `mtn agent` and is serialize
 
 The coordinator publishes a planning worker's proposed creates/patches/links, verifies
 coverage/graph, and obtains required approval before dispatch. Record write ownership
-and active worker identities in dispatch evidence. Two coordinators must not operate
-on the same collection concurrently. A session-scoped kernel-lock proposal is in
-[locking-proposal.md](locking-proposal.md), awaiting policy approval; no lock or
-automatic takeover is currently implemented. This remains an explicit single-owner
-constraint, not an mtn lease or a security boundary. Reconcile existing sessions before takeover. On an event-driven host,
-use automatic delivery; do not implement polling loops over sessions or logs.
+and active worker identities in dispatch evidence. At most one active coordinator
+may own a selected phase at a time. A coordinator may schedule multiple phases, but
+phase ownership is local rather than a permanent machine identity. A session-scoped
+kernel-lock proposal is in [locking-proposal.md](locking-proposal.md), awaiting
+policy approval; no lock or automatic takeover is currently implemented. This
+remains an explicit single-owner constraint, not an mtn lease or a security boundary.
+Reconcile existing sessions before an explicitly authorized checkout relocation or
+ownership transfer. The phase coordinator and its subagents remain host-sticky;
+the collection and evidence are portable. Preserve prior runtime evidence without
+requiring contact with the old host. On an event-driven host, use automatic
+delivery; do not implement polling loops over sessions or logs.
 
 ## Parallel-safe task contract
 
@@ -121,7 +126,11 @@ Phases are milestones, not arbitrary agent-sized chunks. Tasks are primary execu
 units. Different ready phases may overlap; a Task Manager can plan each independently,
 but one project coordinator still schedules the entire graph and publishes changes.
 Mixed-language projects select worker/reviewer skills per task language, not per project.
-The invoked language team supplies defaults, never silently rewrites a task's language.
+Supported languages are `go`, `node`, `zig`, `lua`, `nix`, and `docs`. Lua uses the
+shared `mtn-tasks` builder/reviewer contract; Nix uses `mtn-tasks` with the `nix`
+support skill; documentation uses the shared `mtn-tasks` contract. Lua/Nix/docs use
+one independent `combined` source-review gate and do not inherit Go TDD gates. The
+invoked language team supplies defaults, never silently rewrites a task's language.
 
 ## Dependency-ready scheduling
 
@@ -201,13 +210,22 @@ Review approval authorizes integration, not task completion. Only the coordinato
 
 Checks on individual branches do not replace checks on the combined implementation.
 Phase-final/release checks run after all required changes are integrated. Record a
-v1 `milestone` event with completed child refs, accepted coverage, target commit/tree
-and validation results before native-completing a nonempty phase. Project completion
-likewise requires a milestone event with all phases and project-wide acceptance gates.
+v1 `milestone` or final `summary` with completed child refs, accepted coverage,
+target commit/tree and actual validation results before native-completing a nonempty
+phase. After completion, compact the phase to its summary. Project completion
+likewise requires a milestone/summary with all phases and project-wide acceptance
+gates.
 
-## Versioned evidence
+## Current delivery state and completion summaries
 
-Every protocol note contains a JSON object serialized as `agent note` **content**:
+Active records contain only the current state needed for coordination: exact refs,
+small verification results, blockers, approvals, delivery identities, and pointers
+to files containing detailed output. Workers do not inject prompts, full task prose,
+logs, or prior attempts into records. A completed task or phase contains one compact
+`summary` event; `mtn-workflow compact` removes the prior evidence suffix only after
+completion and delivery proof have been checked.
+
+Each current protocol note contains a JSON object serialized as `agent note` **content**:
 
 ```json
 {"schemaVersion":1,"eventId":"demo-task-01/build/2","kind":"build","recordRef":"tasks/demo-01-01-parser.md","specHash":"sha256:...","attempt":2,"dispatchEventId":"demo-task-01/dispatch/2","head":"git-commit","tree":"git-tree","outcome":"ready-for-review","validation":[{"command":"task test","result":"pass"}]}
@@ -218,8 +236,9 @@ and positive integer `attempt`. Include operator/worker attribution and source o
 claims, but note attribution is not authenticated. Note retry key equals eventId;
 retry an identical payload only. New content/revision/verdict requires a new eventId.
 Use `category` corresponding to kind (`approval`, `plan`, `dispatch`, `build`, `review`,
-`integration`, `completion`, `milestone`, `blocker`, `resume`, `release`, `runtime`). Fixes are new build attempts
-with `fixes` listing review event/finding IDs; do not invent a different gate format.
+`integration`, `completion`, `milestone`, `blocker`, `resume`, `release`, `runtime`,
+`summary`). Fixes replace current state with a new attempt; they do not require a
+permanent progress archive.
 
 Per-kind fields:
 
@@ -232,10 +251,11 @@ Per-kind fields:
 - runtime: Rex/Pi locator evidence, as defined in [Rex/Pi execution](rex.md).
   Common event keys plus `stage` (reserved or launched), `runId`, `role`, `skill`,
   `worktree`, exact `model`/`thinking`, `piSessionId`, `host` (endpoint/hostId/instanceId),
-  `rexSessionName`, `rexWindowName`, `piSessionName`, `transportDir`. The Pi display
-  name, Pi session ID and Rex window name all equal immutable `runId` for new
-  launches, using the space-free canonical agent identity defined in rex.md.
-  Rex-generated resource IDs stay separate. Keep `sessionName`/`windowName` as
+  `rexSessionName`, `rexWindowName`, `piSessionName`, `transportDir`. The Pi
+  session ID remains the immutable canonical `runId`; coordinator display names
+  are simply `coordinator`, while worker display names are scoped labels. Display
+  names are presentation only and never Rex resource selectors. Rex-generated
+  resource IDs stay separate. Keep `sessionName`/`windowName` as
   matching compatibility aliases;
   old runtime events lacking the explicit names remain valid and are not rewritten.
   Coordinator entries require `handoff:true`;
@@ -269,6 +289,11 @@ Per-kind fields:
   Blocked builds can reference `blockerEventIds`; otherwise their own build ID is an
   implicit blocker. Resolve reported IDs explicitly, then retry as a new attempt.
 - release: `dispatchEventId`, outcome stopped or finished, confirmed host/process evidence.
+- summary: `summaryVersion:1`, `status:"complete"`, accepted scope, requirement IDs,
+  approval authority summary, `targetCommit`/`targetTree`/`targetBranch`, actual
+  passing verification commands/results, exact artifact/source file refs, and
+  outstanding limitations. Phase summaries additionally contain exact completed
+  child refs.
 
 APPROVED requires zero blocking findings and passing independent validation. Go/Node
 require combined review; Zig requires code/comment/architecture/test. New build IDs
@@ -284,12 +309,14 @@ native links/statuses; exclude evidence, timestamps, native execution status, an
 completion dates. For documents hash ref/kind/description only. The `revision`
 returned by mtn includes mutable record state; it is not this stable spec fingerprint.
 Generate canonical JSON with `jq -S -c`, then `shasum -a 256` (or sha256sum). Never
-edit content to force a fingerprint match. Evidence appends must not change specHash.
+edit content to force a fingerprint match. Current-state replacement and summary
+compaction must not change specHash.
 
 ## Recovery state machine
 
-Derive state from ordered evidence entries for the current record/spec fingerprint,
-not timestamps, English status names, or a second status file:
+Derive state from compact current-state entries for the current record/spec
+fingerprint, not timestamps, English status names, or a second status file. A
+completed summary is the sole delivery proof retained after compaction:
 
 | Evidence | Derived state | Next action |
 |---|---|---|
@@ -300,7 +327,8 @@ not timestamps, English status names, or a second status file:
 | Current review has blockers | fixing | New isolated fix attempt; invalidate old approvals |
 | All current required approvals | awaiting-integration | Serialized integration |
 | Matching successful integration | integrated | Verify target history; record completion and lifecycle |
-| Completion references integration | complete | Reconcile native status; unlock dependencies only after native complete |
+| Completion references integration | complete | Write a concise summary, compact after workers stop, then reconcile native status |
+| Summary with verified delivery | complete | Reconcile native status; unlock dependencies from the summary |
 | Any unresolved blocker across spec revisions | blocked | Resolve each reported ID explicitly |
 | Blocked build with all blockers resolved | retryable | Confirm stopped writer, reserve new attempt |
 | Approved historical baseline, no newer work | baseline | Verify native completion and target history |
@@ -323,6 +351,7 @@ safe-batch selection. `metadata_valid` takes `{requirements,records}`; each norm
 record has ref/kind, resolved `parentRefs`, order, language, requirements, documents
 and ownership. Normalize parents using hierarchy's `parents[].resolution.ref`, not
 raw wikilink parsing. It rejects unknown kinds/languages, missing parents/documents,
+including languages outside `go`, `node`, `zig`, `lua`, `nix`, and `docs`.
 invalid ownership/requirement IDs and duplicate sibling orders. `document_approved`
 uses `{ref,specHash,events}`.
 `plan_approved` additionally takes `documents` (current document snapshots), `records`

@@ -31,6 +31,7 @@ def check($name; assertion): if assertion then true else error($name) end;
  check("projection preserves original envelope and exact content"; view([bad,recovery]) as $v|($v|evidence_events(valid_event)|.[0]) as $h|$h.kind=="historical" and $h.gateEligible==false and $h.originalNote==$v.result.evidence[0] and $h.content==$v.result.evidence[0].content),
  check("projection retains original immutable event identity"; view([bad,recovery])|evidence_events(valid_event)|.[0].eventId=="bad"),
  check("wrong collection"; view([bad,recovery])|.recoveryContext.collectionRoot="/other/.tasks"|rejected),
+ check("explicit collection relocation preserves recovery"; view([bad,recovery])|.recoveryContext.collectionRoot="/other/.tasks"|.recoveryContext.allowCollectionRelocation=true|.recoveryContext.relocation={fromRoot:"/fixture/.tasks",approvedBy:"fixture user",reason:"authorized checkout handover"}|snapshot|.events[0].kind=="historical"),
  check("missing context"; view([bad,recovery])|del(.recoveryContext)|rejected),
  check("wrong current fingerprint"; view([bad,recovery])|.recoveryContext.specHash="new"|rejected),
  check("wrong target record"; view([bad,(recovery|.recordRef="prds/other.md")])|rejected),

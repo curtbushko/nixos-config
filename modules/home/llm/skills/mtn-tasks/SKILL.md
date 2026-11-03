@@ -10,19 +10,26 @@ language/specialty skill and exact task. Do not load coordinator references or t
 whole task history.
 
 **Coordinator:** read [protocol](references/protocol.md), [execution](references/execution.md),
-[resources](references/resources.md) and [Bash facade](references/facade.md). Migration requires
+[resources](references/resources.md), [data model](references/data-model.md) and [Bash facade](references/facade.md).
+Migration requires
 **explicit approval**; see [migration](references/migration.md). The kernel-lock
 [proposal](references/locking-proposal.md) is not enabled yet.
 
 Team execution uses Pi in Rex: read [Rex/Pi execution](references/rex.md).
 Persist coordinator and worker locators as `runtime` evidence through mtn; these
 notes never count as review, completion, or proof of a live process.
-Keep routine terminal output to concise status summaries and artifact paths, not
-task Markdown or full payload dumps. Save mutation responses/results to files.
-Successful worker windows close automatically; failed windows and all evidence
-remain available. See the Rex reference for exact closure and recovery rules.
+Keep routine coordinator commentary to concise status summaries and artifact paths,
+not task Markdown or full payload dumps. Worker Rex terminals still show live Pi
+assistant/tool/error activity; only prompts, task Markdown, and durable payload dumps
+are suppressed. Save machine-readable mutation responses and worker results to files.
+Successful worker windows close automatically. Active records retain only the
+current delivery state and small file/ref pointers; completed task/phase records
+are compacted to one coordinator-authored delivery summary. Failed or blocked work
+retains only the current blocker and recovery inputs needed to resume. See the Rex
+reference for exact closure and recovery rules.
 
 Use `mtn-workflow --repo "$REPO_ROOT" status|task|snapshot|fingerprint REF`, `ready PROJECT`,
+`compact REF SUMMARY.json`,
 `paths PATH...`, `budget`, `disk`, and `cleanup-plan`. Only the authorized coordinator
 publishes events. Automation is Bash plus Unix tools/jq, never JS or Python.
 

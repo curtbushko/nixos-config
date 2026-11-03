@@ -1,5 +1,11 @@
 # Context digests are computed by the shell from native content bytes, not trusted
 # from event payloads. This projection never rewrites the original note.
+def relocation_authorized($context; $event):
+  $context.allowCollectionRelocation == true and
+  ($context.relocation | type == "object") and
+  $context.relocation.fromRoot == $event.collectionRoot and
+  ($context.relocation.approvedBy | type == "string" and length > 0) and
+  ($context.relocation.reason | type == "string" and length > 0);
 def recovery_bindings($r; $context; $entries):
   [$entries[] | select(.event | type == "object" and has("schemaVersion"))] as $protocol |
   [$protocol[] | select(.event.kind == "recovery")] as $recoveries |
@@ -12,7 +18,7 @@ def recovery_bindings($r; $context; $entries):
     [$recoveries[] | . as $entry | .event as $a |
       if ($entry.valid | not) then error("Invalid recovery authorization")
       elif ($r.frontmatter.workflowKind != "prd" and $r.frontmatter.workflowKind != "design") or
-           $context.collectionRoot != $a.collectionRoot or
+           ($context.collectionRoot != $a.collectionRoot and (relocation_authorized($context; $a) | not)) or
            ($context.contentDigests | type) != "array" or
            ($context.contentDigests | length) != ($entries | length) or $a.recordRef != $r.ref then
         error("Recovery collection, record or current fingerprint mismatch")

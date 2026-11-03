@@ -19,23 +19,42 @@ mtn-workflow --repo "$REPO_ROOT" cleanup-plan
 MTN_WORKFLOW_COORDINATOR=1 mtn-workflow --repo "$REPO_ROOT" publish request.json
 ```
 
-- `status` is a compact task state plus ALL outstanding blocker IDs.
-- `task` includes semantic definition and current-attempt evidence, not unrelated
-  history. `snapshot` is the full normalized evidence view for coordinator diagnosis.
+- `status` is a compact task state plus all outstanding blocker IDs.
+- `task` includes the semantic definition and current state, not unrelated history.
+  `snapshot` is an explicit normalized diagnostic view; scheduling uses a compact
+  current-state projection and does not pass the full view through readiness.
+- `route LANGUAGE` reports the supported leaf builder/reviewer contract. The
+  supported values are `go`, `node`, `zig`, `lua`, `nix`, and `docs`; Lua/Nix/docs
+  use the independent combined source-review gate without Go TDD routing.
 - `fingerprint` is the canonical semantic hash, excluding administrative title/order,
   timestamps, execution status and evidence. Ownership paths are filesystem-normalized.
 - `paths` resolves aliases/symlinks, permits future in-repository paths and rejects
   escapes/traversal. Conflict comparison conservatively folds case even on Linux;
   case-distinct paths may serialize rather than risk a Mac collision.
-- `ready` reads actual project/native graph/approval data, validates metadata and
-  manifests, checks completed prerequisite Git trees/target ancestry, and computes
-  a safe builder batch. It does not launch agents or infer live host process ownership.
-  Reconcile host runs/usage before dispatch; unknown live writers remain reserved.
+- `ready` reads compact metadata/current state and the native graph, validates
+  manifests, checks completed prerequisite summary proof and Git ancestry, and
+  computes a safe builder batch. `ready-phase` applies the same guards only to one
+  selected phase, so unrelated project scopes do not block an explicitly selected
+  phase. Neither command loads progress archives, launches agents, or infers live
+  host process ownership. Reconcile host runs/usage before dispatch; unknown live
+  writers remain reserved.
 - `budget` separates stage limits from shared CPU/memory allocations; `disk` reports
   admission headroom. Neither silently starts GC or a new Nix shell.
 - `cleanup-plan` reports proposed inspections only; it never deletes anything.
-- `publish` validates v1 shape, existing evidence and current semantic fingerprint,
-  then delegates the single managed write to `mtn agent note`. Permission marker is
+- An authorized Rex handoff may include `collectionRelocation` with the prior run,
+  source `.tasks` root, approver, and reason. The launcher uses it only for the
+  selected phase; it preserves old evidence while keeping the coordinator and its
+  subagents host-sticky. It does not require contact with the previous host.
+- `compact` is coordinator-only and applies only to a natively completed task or
+  phase with no active runtime reservation. It requires a current-spec summary with
+  accepted scope, approval authority, delivered commit/result, actual verification,
+  file references, and limitations. It replaces the evidence suffix atomically;
+  it creates no archive and does not alter identity, descriptions, memberships, or
+  dependencies.
+- `publish` validates v1 shape, current semantic fingerprint and current state,
+  then delegates the single managed write to `mtn agent note`. Active payloads
+  should contain current state and exact file/ref pointers, not full logs or prior
+  attempts. Permission marker is
   a role guard, NOT a security boundary or a session lock. Coordinator-only discipline
   remains necessary while the lock proposal awaits approval. Check policy and Git/host
   facts before publication; structured claims alone do not prove commands were run.

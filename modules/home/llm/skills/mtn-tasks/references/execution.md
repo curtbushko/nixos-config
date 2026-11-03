@@ -31,10 +31,10 @@ task's explicit language and corresponding builder/reviewer skills. Do not overw
 metadata to fit the invocation. Explicit phase/task selection narrows scheduling but
 never bypasses dependencies or approvals.
 
-Read current versioned evidence and derive the protocol state. Reconcile active host
-runs, worktree branches/heads, native status, plan/spec fingerprints and integrated
-history. Missing evidence means unfinished work, not implicit approval. Do not delete
-records, renumber completed work, or archive previous phases to start another phase.
+Read the compact current state and derive the protocol state. Reconcile active host
+runs, worktree branches/heads, native status, plan/spec fingerprints and delivered
+summary proofs. Missing current state means unfinished work, not implicit approval.
+Do not delete records, renumber completed work, or compact an active task/phase.
 
 ## 2. Document and Task Manager handoffs
 
@@ -132,16 +132,20 @@ but leaves target history unchanged and dependencies blocked. After success, ver
 target head still matches the candidate base and fast-forward; otherwise recheck a
 new candidate. Append versioned `integration` evidence, verify target ancestry,
 append `completion`, then
-`agent complete`. Only integrated, native-completed tasks satisfy dependency scheduling.
+`agent complete`. Only integrated, native-completed tasks satisfy dependency scheduling. Use the
+coordinator-only `mtn-workflow complete TASK_REF` facade to mark a task complete;
+it verifies delivery and removes only clean, stopped Git worktrees recorded for
+that task. Dirty, live, or unrecognized worktrees remain for investigation.
 If native status and versioned evidence disagree, investigate rather than trusting one.
 
 Run phase-final gates after ALL required task integrations, against the combined target
 revision. Query nonempty hierarchy and check requirement coverage before explicitly
 completing a phase. Project completion requires all planned phases, project-wide tests
-and accepted requirement coverage. Run disk/cleanup planning, inventory retained
-worktrees, environment roots and caches, and request approval for destructive/global
-maintenance. No automatic Nix GC or generation deletion. Preserve evidence; archive
-is not disk reclamation. No manual counters or mirrored status files.
+and accepted requirement coverage. Write the final summary, compact completed records
+after workers stop, then run disk/cleanup planning and inventory retained worktrees,
+environment roots and caches. Request approval for destructive/global maintenance.
+No automatic Nix GC or generation deletion. Preserve source and referenced artifacts;
+no archive or manual counter is required.
 
 ## 6. Supervision and recovery
 
@@ -153,9 +157,10 @@ command, elapsed time and fresh output. Process liveness alone is not progress.
 
 After 10 minutes without progress, inspect through supported tools. After 15 minutes,
 request cancellation/interruption and CONFIRM the writer stopped before replacement.
-Preserve changes, worktrees and evidence. Retry at most three times for one recoverable
-condition; then report the concrete blocker. Host delivery failure does not prove an
-mtn mutation failed: inspect event/retry identities before publishing again.
+Preserve changes, worktrees and referenced artifacts. Retry at most three times for
+one recoverable condition; then report the concrete blocker. Do not compact active
+records or records with live writers. Host delivery failure does not prove an mtn
+mutation failed: inspect current-state identities before publishing again.
 
 Recovery follows protocol states, not guessed native status names. Resume missing
 reviews, retry unintegrated approved work, or finish integration/completion publication

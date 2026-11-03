@@ -121,11 +121,15 @@ following status is valid for a **fresh default** collection only:
 mtn --path "$TASK_ROOT" agent status "$REF" --input - --json <<'JSON'
 {"status":"in-progress"}
 JSON
-mtn --path "$TASK_ROOT" agent complete "$REF" --json
+MTN_WORKFLOW_COORDINATOR=1 mtn-workflow --repo "$REPO_ROOT" complete "$REF"
+# `complete` marks the task complete, verifies delivery, and removes its clean,
+# stopped Git worktrees recorded in dispatch/runtime evidence.
 mtn --path "$TASK_ROOT" agent reopen "$REF" --json
 ```
 
-`complete` chooses a configured completed status; `reopen` chooses an incomplete
+The workflow `complete` command chooses a configured completed status, verifies
+that delivery is valid, and removes only clean, stopped task worktrees. Dirty or
+unrecognized worktrees are preserved and reported. `reopen` chooses an incomplete
 default. Do not patch completion timestamps or interpret `cancelled` as completed.
 Do not add invented `awaiting-review` or `blocked` statuses. If the diagnosed policy
 supports a blocked status, `agent block` requires `{status,blocker}`; otherwise
@@ -133,7 +137,7 @@ append blocker evidence, retain an incomplete status, and stop dispatching it.
 Description changes invalidate old acceptance reviews; reopening/fixes require
 explicitly assessing stale approvals and completed dependent work.
 
-## Durable evidence instead of result files
+## Current delivery state and completion summaries
 
 ```bash
 mtn --path "$TASK_ROOT" agent note "$REF" --input - --json <<'JSON'
@@ -142,17 +146,29 @@ JSON
 ```
 
 Notes accept `content` or `contentFile`, optional `role`, `author`, `category`,
-`timestamp`, and `retryKey`. `adopt:true` explicitly adds an evidence boundary to
-a plain description. It does not overwrite it. `describe` preserves the evidence
-suffix. Preserve malformed evidence and report it instead of hiding it.
+`timestamp`, and `retryKey`. Active notes are current-state updates and should point
+to exact files/refs for detailed output. Do not serialize logs, prompts, full task
+Markdown, or prior attempts into the record. The coordinator publishes only the
+current delivery state needed by the guards.
 
-The coordinator publishes v1 events using matching category and eventId/retryKey.
-See protocol.md for approval, plan, dispatch, build, review, integration, completion,
-blocker, resume and release schemas. Fixes are new build attempts with `fixes`
-referencing findings, not a separate unversioned fix/result format. Include scope,
-files, tests, exact RED/GREEN/full/integration commands, limitations and Git identity.
-Unversioned historical notes need explicit interpretation/migration, never silent loss.
-Each review event must include common v1 keys and:
+After native completion, the coordinator writes a small `summary` event and runs:
+
+```bash
+MTN_WORKFLOW_COORDINATOR=1 mtn-workflow --repo "$REPO_ROOT" compact \
+  "$REF" "$SUMMARY_JSON"
+```
+
+The summary preserves accepted scope, approval authority, delivered commit/result,
+actual verification commands/results, exact artifact or source filenames, and
+outstanding limitations. Compaction is refused for active records or live runtime
+reservations and does not alter identity, descriptions, memberships, dependencies,
+or referenced files. It is not an archive or a second result store.
+
+The coordinator publishes v1 current-state events using matching category and
+`eventId`/`retryKey`. See protocol.md for approval, plan, dispatch, build, review,
+integration, completion, blocker, resume, release and summary schemas. Fixes replace
+current state with a new attempt; they do not require retaining prior progress in the
+record. Each review event must include common v1 keys and:
 
 - `reviewer`: combined, code, comment, architecture, or test; `buildEventId`, exact head/tree
 - `verdict`: APPROVED or CHANGES_NEEDED; `user_decision_required`

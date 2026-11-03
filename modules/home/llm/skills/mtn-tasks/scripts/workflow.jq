@@ -41,6 +41,14 @@ def positive_integer: type == "number" and . >= 1 and floor == .;
 def checks_pass:
   type == "array" and length > 0 and all(.[];
     (.command | nonempty) and .result == "pass");
+def summary_event:
+  .summaryVersion == 1 and .status == "complete" and
+  ([.acceptedScope,.targetCommit,.targetTree,.targetBranch] | all(.[]; nonempty)) and
+  (.requirements | type == "array") and
+  (.approvalSummary | type == "array" and length > 0) and
+  (.verification | checks_pass) and
+  (.limitations | type == "array" and all(.[]; nonempty)) and
+  (.files | type == "array" and all(.[]; nonempty));
 # A recovery is narrow authorization, never a replacement document approval.
 def recovery_authorization:
   .decision == "approved" and .disposition == "quarantine-malformed-approval" and
@@ -96,6 +104,7 @@ def valid_event:
    elif .kind == "baseline" then
      ([.approvedBy,.decisionEvidence,.targetCommit,.targetTree,.targetBranch] | all(.[]; nonempty)) and
      .reviewEquivalent == false and (.validation | checks_pass)
+   elif .kind == "summary" then summary_event
    elif .kind == "blocker" then (.reason | nonempty)
    elif .kind == "resume" then (.blockerEventId | nonempty)
    elif .kind == "release" then
@@ -115,30 +124,63 @@ def document_approved:
       .eventId == $recovery.replacementEventId and .kind == "approval" and
       .recordRef == $s.ref and .specHash == $s.specHash and .decision == "approved")) and
   (([.events[] | select(.kind == "approval" and .recordRef == $s.ref and .specHash == $s.specHash)] | last | .decision) == "approved");
+# Accepted plan manifests have two equivalent encodings in native collections:
+# coverage may be an object map or an array of {requirement,records} entries, and
+# record entries may carry planning metadata in addition to ref/specHash. Normalize
+# only for comparison; the original approved event is never rewritten.
+def normalized_plan_records:
+  if type == "array" and all(.[]; type == "object" and (.ref | nonempty) and (.specHash | nonempty))
+  then map({ref, specHash})
+  else null
+  end;
+def normalized_plan_coverage:
+  if type == "object" and (. as $coverage |
+    all($coverage | keys[]; . as $requirement |
+      $coverage[$requirement] | type == "array" and length > 0 and all(.[]; nonempty)))
+  then .
+  elif type == "array" and all(.[];
+    type == "object" and (.requirement | nonempty) and
+    (.records | type == "array" and length > 0 and all(.[]; nonempty)))
+  then reduce .[] as $entry ({}; .[$entry.requirement] = $entry.records)
+  else null
+  end;
 def plan_approved:
   . as $s |
   ([$s.events[] | select(.kind == "plan" and .recordRef == $s.ref and .specHash == $s.specHash)] | last) as $plan |
+  ($plan.records | normalized_plan_records) as $plan_records |
+  ($plan.coverage | normalized_plan_coverage) as $coverage |
   $plan != null and ($plan | valid_event) and
+  $plan_records != null and $coverage != null and
   (any($s.events[]; (valid_event | not)) | not) and
   ([$s.events[].eventId] | length == (unique | length)) and
   ($s.documents | all(.[]; document_approved)) and
   (($plan.documents | sort_by(.ref)) == ([$s.documents[] | {ref,hash:.specHash}] | sort_by(.ref))) and
-  (($plan.records | sort_by(.ref)) == ([$s.records[] | {ref,specHash}] | sort_by(.ref))) and
+  (($plan_records | sort_by(.ref)) == ([$s.records[] | {ref,specHash}] | sort_by(.ref))) and
   ($s.records | length > 0) and
   ([$s.records[].ref] | length == (unique | length)) and
-  ($plan.coverage | type == "object") and
+  ($coverage | type == "object") and
   all($s.requirements[]; . as $req |
-    ($plan.coverage[$req] | type == "array" and length > 0) and
-    all($plan.coverage[$req][]; . as $ref |
+    ($coverage[$req] | type == "array" and length > 0) and
+    all($coverage[$req][]; . as $ref |
       any($s.records[]; .ref == $ref and (.requirements | index($req) != null)))) and
-  all($plan.coverage | keys[]; . as $req | $s.requirements | index($req) != null) and
+  all($coverage | keys[]; . as $req | $s.requirements | index($req) != null) and
   all($s.records[]; . as $record |
     ($record.requirements | type == "array" and length > 0) and
     all($record.requirements[]; . as $req |
-      ($s.requirements | index($req) != null) and ($plan.coverage[$req] | index($record.ref) != null)));
+      ($s.requirements | index($req) != null) and ($coverage[$req] | index($record.ref) != null)));
+def language_route($language):
+  if $language == "go" then {language:$language,builder:"go-builder",reviewer:"go-reviewer",support:["golang"]}
+  elif $language == "node" then {language:$language,builder:"node-builder",reviewer:"node-reviewer",support:[]}
+  elif $language == "zig" then {language:$language,builder:"zig-builder",reviewer:"zig-reviewer",support:["zig"]}
+  elif $language == "lua" then {language:$language,builder:"mtn-tasks",reviewer:"mtn-tasks",support:[]}
+  elif $language == "nix" then {language:$language,builder:"mtn-tasks",reviewer:"mtn-tasks",support:["nix"]}
+  elif $language == "docs" then {language:$language,builder:"mtn-tasks",reviewer:"mtn-tasks",support:[]}
+  else error("Unsupported task language") end;
+def supported_language($language):
+  try (language_route($language) | true) catch false;
 def required_reviewers($language):
   if $language == "zig" then ["code","comment","architecture","test"]
-  elif $language == "go" or $language == "node" then ["combined"]
+  elif supported_language($language) then ["combined"]
   else error("Unsupported task language") end;
 def following($events; $event):
   if $event == null then [] else $events[(($events | index($event)) + 1):] end;
@@ -160,11 +202,13 @@ def task_state:
   elif ([.events[].eventId] | length != (unique | length)) then error("Duplicate evidence eventId")
   else
     [.events[] | select(.recordRef == $s.ref and .specHash == $s.specHash)] as $events |
+    ([$events[] | select(.kind == "summary")] | last) as $summary |
     ($s | unresolved_blockers) as $blockers |
     ([$events[] | select(.kind == "baseline")] | last) as $baseline |
     ([$events[] | select(.kind == "dispatch")] | last) as $dispatch |
     ([following($events; $dispatch)[] | select(.kind == "build" and .dispatchEventId == $dispatch.eventId and .attempt == $dispatch.attempt)] | last) as $build |
-    if ($blockers | length > 0) then "blocked"
+    if ($summary != null) then "complete"
+    elif ($blockers | length > 0) then "blocked"
     elif $baseline != null and ($dispatch == null or ($events | index($baseline)) > ($events | index($dispatch))) then "baseline"
     elif $dispatch == null then "planned"
     elif $build == null then
@@ -215,7 +259,7 @@ def metadata_valid:
       (.documents | type == "array" and length > 0 and all(.[]; . as $doc |
         (.hash | nonempty) and any($s.records[]; .ref == $doc.ref and (.kind == "prd" or .kind == "design")))) and
       (if .kind == "task" then
-        (.language == "go" or .language == "node" or .language == "zig") and (.ownership | ownership_valid)
+        (supported_language(.language)) and (.ownership | ownership_valid)
        else true end)
     else false end);
 def conflicts($a; $b):

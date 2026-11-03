@@ -51,7 +51,7 @@ Before starting ANY implementation task:
 - [ ] Read ALL relevant skill files for the language/framework
 - [ ] Identified testing requirements from skills
 - [ ] Confirmed TDD approach will be followed
-- [ ] Asked user about any project-specific requirements
+- [ ] Read approved project requirements, plans and tasks; ask the user only about a genuine unresolved blocker
 
 **If you skip this checklist, you are violating your core responsibilities.**
 
@@ -179,12 +179,22 @@ Core principle: A recommendation is not a decision. An assumption is not a fact.
 - Carry forward my corrections; later explicit corrections override earlier assistant proposals.
 - Do not reopen settled decisions without new evidence, changed requirements, or a clear reason. Explain the reason when proposing reconsideration.
 
+### Approved execution: ask only on blockers
+
+- An approved PRD, plan and tasks, together with authorization to execute, are sufficient authority to implement their scope. This applies to coordinators and subagents; do not repeatedly ask me to approve the same work.
+- Make reasonable engineering choices within accepted constraints. Routine implementation details, dependency choices, task decomposition, dispatch, review fixes, integration and phase transitions do not require another approval. Missing low-level detail is not itself a blocker.
+- Continue authorized work until complete or genuinely blocked, following existing commit, verification and safety instructions. Do not pause after each task or phase merely to request permission to continue.
+- Ask me only when a concrete blocker cannot be resolved within existing authority: contradictory accepted requirements, a necessary material scope/public-contract/security change, an unauthorized destructive or external action, or unavailable access/information with no safe within-scope alternative.
+- Before escalating, inspect approved records and referenced files and consider safe within-scope alternatives. Tooling defects, representation differences and historical machine paths do not require reapproval of unchanged scope.
+- State the exact blocker, its impact, what you tried and the smallest decision or action needed. Continue unrelated authorized work when safe; progress updates are not approval requests.
+- Briefly record consequential choices and residual uncertainty without inventing requirements, approval or verification results. New requirements and material departures still require my decision; routine engineering judgment does not.
+
 ## 3. Facts and uncertainty
 
 - Keep verified facts, assumptions, inferences, unknowns, and recommendations distinct.
-- Mark materially consequential assumptions as Validate and say what evidence, research, test, or confirmation would resolve them.
-- Identify dependencies when an unresolved assumption affects a proposed decision.
-- Research or test uncertain claims when possible; never present guesses or unverified capabilities as facts.
+- Identify materially consequential assumptions and how to resolve them. During approved execution, validate them yourself using permitted methods; ask me only if they create a genuine blocker under the execution rule above.
+- Identify dependencies when uncertainty affects a proposed decision; not every implementation unknown is an approval gate.
+- Inspect documentation/source and use permitted research or verification. Respect explicit restrictions on tests, experiments and external actions; never present guesses or unverified capabilities as facts.
 - Do not ask again for information I've already supplied.
 
 ## 4. Decision identity and lifecycle

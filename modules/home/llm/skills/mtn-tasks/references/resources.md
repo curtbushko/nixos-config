@@ -49,7 +49,8 @@ root/cache/worktree it creates; record ownership and release conditions in evide
 
 ## Cleanup is part of completion
 
-At phase completion/interruption, stop and confirm workers, preserve source/evidence,
+At phase completion/interruption, stop and confirm workers, preserve source and
+referenced artifact files, compact completed task/phase records to concise summaries,
 and run `mtn-workflow --repo "$REPO_ROOT" cleanup-plan`. Review retained worktrees,
 profiles/roots and cache sizes. Release only explicitly selected automation-owned
 resources after checking no live consumers remain. Ask approval for deletion of user
@@ -63,5 +64,5 @@ second competing schedule. No cleanup command runs as part of the skill tests.
 
 Moving files/root links to `.trash/` preserves data but does not itself reclaim
 space and may retain roots. Do not claim disk was freed; verify root reachability
-and filesystem free space after approved maintenance. Keep failed work and recovery
-evidence; stale environments are not an excuse to discard user work.
+and filesystem free space after approved maintenance. Keep current blockers and
+summaries; stale environments are not an excuse to discard source or artifacts.

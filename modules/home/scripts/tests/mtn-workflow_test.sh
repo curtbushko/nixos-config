@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-for command in mtn git jq mktemp mkdir mv dirname ln; do command -v "$command" >/dev/null || exit 1; done
+for command in mtn git jq mktemp mkdir mv dirname ln grep; do command -v "$command" >/dev/null || exit 1; done
 script="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/mtn-workflow"
 repo="$(cd "$(dirname "$script")/../../.." && pwd)"
 work="$(mktemp -d "${TMPDIR:-/tmp}/mtn-facade.XXXXXX")"
@@ -45,4 +45,31 @@ cli status tasks/demo.md | jq -e '.state=="planned"' >/dev/null
 jq -n --arg hash "$first" '{schemaVersion:1,eventId:"editorial/note1",kind:"historical",recordRef:"tasks/demo.md",specHash:$hash,attempt:1,content:"Editorial suggestion only",provenance:"current coordinator annotation",gateEligible:false}' >"$work/comment.json"
 MTN_WORKFLOW_COORDINATOR=1 cli publish "$work/comment.json" >/dev/null
 cli status tasks/demo.md | jq -e '.state=="planned"' >/dev/null
+printf '%*s' 3000000 '' | tr ' ' x >"$work/large-content"
+jq -n --arg hash "$first" --rawfile content "$work/large-content" '{content:({schemaVersion:1,eventId:"large-history",kind:"historical",recordRef:"tasks/demo.md",specHash:$hash,attempt:1,content:$content,provenance:"large evidence fixture",gateEligible:false,approvedBy:"test fixture",decisionEvidence:"synthetic regression evidence"}|tojson),category:"historical",adopt:true,retryKey:"large-history"}' |
+	mtn --path "$work/repo/.tasks" agent note tasks/demo.md --input - --json >/dev/null
+cli snapshot tasks/demo.md | jq -e 'any(.events[];.eventId=="large-history")' >/dev/null
+# A large project readiness snapshot must use file-backed jq inputs and preserve
+# the real readiness diagnostic instead of cascading from E2BIG.
+jq -n '{title:"Demo project",path:"projects/demo.md",description:"REQ-001 project",fields:{workflowKind:"project",workflowOrder:1,workflowRequirements:["REQ-001"]}}' |
+	mtn --path "$work/repo/.tasks" agent create --input - --json >/dev/null
+jq -n '{title:"Demo PRD",path:"prds/demo.md",description:"REQ-001 document",fields:{workflowKind:"prd"}}' |
+	mtn --path "$work/repo/.tasks" agent create --input - --json >/dev/null
+prd_hash="$(cli fingerprint prds/demo.md)"
+jq -n --arg hash "$prd_hash" '{title:"Demo phase",path:"phases/demo-01.md",description:"REQ-001 phase",fields:{workflowKind:"phase",workflowOrder:1,workflowRequirements:["REQ-001"],workflowDocuments:[{ref:"prds/demo.md",hash:$hash}]}}' |
+	mtn --path "$work/repo/.tasks" agent create --input - --json >/dev/null
+printf '%s\n' '{"target":"projects/demo.md"}' |
+	mtn --path "$work/repo/.tasks" agent project-add phases/demo-01.md --input - --json >/dev/null
+phase_hash="$(cli fingerprint phases/demo-01.md)"
+jq -n --arg hash "$phase_hash" --rawfile content "$work/large-content" '{content:({schemaVersion:1,eventId:"large-phase-history",kind:"historical",recordRef:"phases/demo-01.md",specHash:$hash,attempt:1,content:$content,provenance:"large readiness fixture",gateEligible:false,approvedBy:"test fixture",decisionEvidence:"synthetic regression evidence"}|tojson),category:"historical",adopt:true,retryKey:"large-phase-history"}' |
+	mtn --path "$work/repo/.tasks" agent note phases/demo-01.md --input - --json >/dev/null
+if cli ready projects/demo.md >"$work/ready.out" 2>"$work/ready.err"; then
+	printf 'Expected unapproved project readiness to fail\n' >&2
+	exit 1
+fi
+grep -Fq 'scope plan or document approval is stale/incomplete' "$work/ready.err"
+if grep -Fq 'Argument list too long' "$work/ready.err"; then
+	printf 'Readiness still exceeded the jq argument limit\n' >&2
+	exit 1
+fi
 printf 'Workflow facade checks passed\n'

@@ -15,24 +15,32 @@ or integration checks.
   Normalize both to lowercase ASCII letters/digits and single hyphens; trim outer
   hyphens. For example `Demo Project` / `Feature Worktree` becomes
   `demo-project-feature-worktree`. No spaces, underscores or punctuation in new labels.
-- The coordinator occupies the initial Rex window, named
-  `p<NN>-coordinator-a<NN>`, for example `p01-coordinator-a01`.
+- The coordinator occupies the initial Rex window, displayed simply as
+  `coordinator`. Its immutable internal run ID remains
+  `<project>-p<NN>-coordinator-a<NN>` and retains phase/attempt identity.
   Its phase is the anchor phase at startup; keep that identity when scheduling
   later phases. Never rename/reidentify a live coordinator to imply a fresh run.
 - Every worker occupies a new Rex window in that same Rex session, named
   `p<NN>-t<NN>-<agent>-a<NN>`, for example
-  `p01-t01-builder-a01` or `p01-t01-reviewer-a01`.
-  Builders use `builder`; reviewers use their skill without its language prefix:
+  `p01-t01-builder-a01` or `p01-t01-reviewer-a01`. The prepared worker
+  worktree directory basename MUST be the same scoped display name, without the
+  project prefix (for example `p01-t01-builder-a01`, not
+  `rex-whichkey-p01-t01-builder-a01`). The launcher rejects a mismatched worker
+  worktree name. Builders use `builder`; reviewers use their skill without its language prefix:
   `go-reviewer` becomes `reviewer`, `zig-code-reviewer` becomes `code-reviewer`.
-  Numbers come from native phase/task order and the request's attempt, zero-padded
-  to at least two digits. They are labels, not prerequisite edges.
+  Numbers come from the stable numeric segments in phase/task refs, not
+  `workflowOrder`, and the attempt is zero-padded to at least two digits. They are
+  labels, not prerequisite edges. For an unnumbered ref, the request must provide
+  explicit positive `phaseNumber` and/or `taskNumber`; the launcher never falls
+  back to scheduling priority.
 - Phase planners use `p<NN>-planner-a<NN>`, for example
   `p01-planner-a01`, and attach evidence to their phase. Each worker's
   phase prefix is its actual phase, not the coordinator's anchor phase.
 - For every NEW run, `runId` and `piSessionId` MUST be the same canonical agent string:
   `<project>-p<NN>-t<NN>-<agent>-a<NN>` for task workers, or
-  `<project>-p<NN>-<role>-a<NN>` for coordinators/planners. `piSessionName` and
-  `rexWindowName` match each other but omit the project prefix; the Rex session
+  `<project>-p<NN>-<role>-a<NN>` for coordinators/planners. Coordinator
+  `piSessionName` and `rexWindowName` are `coordinator`; worker display names
+  remain scoped labels. Display names are not identity or resource selectors; the Rex session
   already supplies that context. Supply the full canonical `runId` in launch
   requests and dispatch evidence; the launcher rejects a mismatched scope/name
   before reserving a run or creating Rex resources. Do not silently change the
@@ -44,8 +52,10 @@ or integration checks.
   Unix endpoint if Rex's default points at a home/remote server. The launcher
   rejects network transports before publication and pins endpoint, host ID and
   server instance for all workers. It never falls back to the local Mac.
-- Worker paths must be checkouts of the same Git repository on that host.
-  Builders use prepared isolated worktrees; reviewers use the frozen revision.
+- Worker paths must be checkouts of the same Git repository on that host. A
+  worker worktree basename matches its Rex/Pi display name; do not prefix it with
+  the project name. Builders use prepared isolated worktrees; reviewers use the
+  frozen revision.
 
 Rex CLI and Pi must already be installed on that execution host. Nix installs
 `mtn-rex` with `ns.scripts.enable`; it does not install Rex or activate this
@@ -62,7 +72,7 @@ on PATH and run both helpers through Bash wrappers if they are not executable.
 | `rexWindowId` | Server-returned `window:...`; selects the Rex window/tab |
 | `rexBlockId` | Server-returned `block:...`; selects the terminal running Pi |
 | `rexSessionName` | Human-readable project/worktree label |
-| `rexWindowName`, `piSessionName` | Matching short display label without the project prefix, passed to Rex's window label and `pi --name` |
+| `rexWindowName`, `piSessionName` | Matching display label passed to Rex and `pi --name`; `coordinator` for coordinators, scoped worker label otherwise. Not an identity or resource selector |
 
 New runtime events publish these explicit names. `sessionName` and `windowName`
 remain compatibility aliases for `rexSessionName` and `rexWindowName`; historical
@@ -77,8 +87,10 @@ normalization applies only to new launches, not history or live resources.
 The caller resolves the collection, exact project/phase/task selection, approved
 scope and orchestration checkout. If selection spans several phases, anchor the
 run in its first selected dependency-ready phase and preserve the full selection
-in the handoff; this is still **one project coordinator**, not one writer per
-phase. Do not change the team's existing dependency-ready scheduling semantics.
+in the handoff; this is still **one active coordinator per selected phase**, not
+one writer per task. A single coordinator may schedule multiple phases, but phase
+ownership is local and may be explicitly transferred during an authorized checkout
+handover. Do not change the team's existing dependency-ready scheduling semantics.
 
 1. Inspect existing phase runtime notes across the collection and reconcile any
    coordinator already present. A saved locator or a quiet terminal is not proof
@@ -105,10 +117,14 @@ phase. Do not change the team's existing dependency-ready scheduling semantics.
    them again or recurse into another coordinator handoff. Check `MTN_REX_REPO`
    matches this collection; reconcile the persisted launch before the execution loop.
 
-The helper rejects any unreleased coordinator reservation across phase records,
-including a reservation with a different run ID. This is conservative recovery,
-**not an atomic session lock or security boundary**. The existing protocol's
-single-owner discipline still applies; never launch competing handoffs concurrently.
+The helper checks unreleased coordinator reservations on the selected phase. An
+explicit `collectionRelocation` request may transfer phase ownership to a new
+host after user authorization; it preserves the old runtime evidence and does not
+require contacting the old host. The transfer must name the prior run, source
+collection root, approver, and reason. The phase coordinator and its subagents are
+host-sticky; the collection and its evidence are not. This remains **not an atomic
+session lock or security boundary**, so the authorized handoff is the ownership
+change and competing handoffs must still be serialized by the caller.
 
 A coordinator request is JSON (create it with jq, not string interpolation):
 
@@ -124,6 +140,12 @@ A coordinator request is JSON (create it with jq, not string interpolation):
   "model": "provider/exact-authenticated-model-id",
   "thinking": "high",
   "handoff": true,
+  "collectionRelocation": {
+    "fromRoot": "/old/checkout/.tasks",
+    "fromRunId": "demo-p02-coordinator-a01",
+    "approvedBy": "explicit user authorization",
+    "reason": "authorized move to the designated execution host"
+  },
   "prompt": "Read go-team. Execute phase=phases/demo-02-authentication.md using the supplied approved plan, target branch, resource allocation and commit policy. [Include the complete handoff here.]"
 }
 ```
@@ -132,7 +154,9 @@ Use `mtn-workflow --repo "$REPO_ROOT" fingerprint "$REF"` for `specHash`.
 Transport requests retain the prompt, but published runtime notes deliberately
 exclude it. Do not put tokens, decrypted secrets or credentials in either.
 New `runId` values must use the canonical pattern above and be unique across the
-collection. Increase the attempt for retries; never reuse a previous Pi conversation
+collection. Stable phase/task numbers are identity derived from refs (for example,
+`demo-02-client.md` and `demo-02-01-login.md`); changing `workflowOrder` must not
+change a new run’s identity. Increase the attempt for retries; never reuse a previous Pi conversation
 for a fresh worker. Existing Pi-compatible IDs remain valid historical evidence.
 Use `pi --session-id ID` for exact create-or-open semantics, NOT `--session ID`
 (which looks up an existing conversation). The launcher supplies this flag; agents
@@ -160,7 +184,7 @@ its prompt. A fix uses a new task dispatch/build attempt and new worker run IDs.
   "coordinatorPhaseRef": "phases/demo-02-authentication.md",
   "parentRunId": "demo-p02-coordinator-a01",
   "dispatchEventId": "demo-task1/dispatch/1",
-  "worktree": "/absolute/path/to/isolated-task1-worktree",
+  "worktree": "/absolute/path/to/p01-t01-builder-a01",
   "model": "provider/exact-authenticated-model-id",
   "thinking": "high",
   "prompt": "Read go-builder and golang. [Include exact task/collection refs, owned scope, base/target revisions, checks, resource allocation and commit policy.] Return the required protocol v1 build payload."
@@ -188,18 +212,22 @@ not credentials or the rest of the caller's environment.
 
 Worker startup strips the publication marker and coordinator recursion marker.
 Workers are leaves; this is role discipline, not an OS sandbox. Every worker
-gets a fresh full canonical Pi session ID and a short Pi display name matching
-its Rex window label,
+gets a fresh full canonical Pi session ID and a display name matching its Rex
+window label (`coordinator` for coordinators),
 explicit model/thinking and an initial prompt
 containing its launch contract, parent collection checkout and persisted runtime
 identity. The launcher creates the Rex resources BEFORE starting Pi; the worker
-must not create its own session or window. Workers run in print mode and return
-just the requested JSON as the final response. Their final
-response and process exit code are excluded `.mtn-tmp/rex/<runId>/` transport,
-not a second authoritative results database. Worker stdout goes directly to
-`result.json`, and stderr to `stderr.log`; neither is streamed into the terminal.
-Only concise start/finish/attention summaries are displayed. Coordinator Pi stays
-interactive; follow the quiet-output policy below.
+must not create its own session or window. Workers run Pi directly in the Rex terminal's normal interactive mode, so the
+actual Pi TUI shows live assistant text, tool execution, and errors. There is no
+stdout/stderr redirection or hidden conversation capture. Before its final reply,
+the worker writes exactly one protocol JSON object to the explicit transport
+`final-result.json`. A trusted launcher extension observes Pi's supported
+`agent_before_settle` boundary, validates that final-result shape, and requests an
+orderly shutdown; the launcher then copies that machine-readable final result to
+`result.json` after Pi exits successfully. Prompts, task Markdown, and durable
+evidence
+payloads are not echoed by the launcher. Coordinator Pi stays interactive;
+follow the concise-output policy below.
 
 ```bash
 mtn-rex --repo "$REPO_ROOT" inspect "$TASK_REF" "$RUN_ID"
@@ -212,7 +240,10 @@ Distinguish four milestones: Rex resources created, Pi process started, model
 returned a useful response, and task finished with validated evidence. A published
 `runtime/launched` event establishes the first, not all four. Pi's warning that an
 exact `--session-id` was absent and is being created is expected for a fresh run,
-not a missing Rex session. A quiet print-mode worker is not proof of a hang.
+not a missing Rex session. A worker with no visible Pi activity is still suspicious, but bounded waits remain
+necessary because provider/model failures can occur after startup. The auto-finish
+hook runs only at Pi's completed-turn `agent_before_settle` boundary and never
+terminates merely because a result file exists while work is active.
 
 Use supported bounded Rex waits or event delivery; do not poll Pi session files
 or terminal logs. A bounded wait timeout means only that the wait expired; it is
@@ -227,12 +258,12 @@ and exactly one JSON object is saved, the launcher closes only that worker's
 persisted window on its pinned host/server instance. Blocked/failed outcomes,
 CHANGES_NEEDED reviews, malformed/multiple payloads and close errors retain the
 window for inspection. This is transport cleanup, NOT protocol approval or task
-completion. Coordinator windows remain open. Results, stderr, exit codes, Pi
-sessions, worktrees and runtime notes are retained even after window closure.
+completion. Coordinator windows remain open. Final results, exit codes, Pi sessions,
+worktrees and runtime notes are retained even after window closure.
 Use saved transport evidence after closure; a missing worker window alone is not
 a failure and does not authorize relaunch.
 
-## Quiet terminal output
+## Concise terminal output without hiding worker activity
 
 Report dispatch, completion, blockers and approval requests in short summaries
 with exact refs and artifact paths. Never echo task Markdown, entire descriptions,
@@ -248,8 +279,11 @@ in commentary. Retrieve worker results into a file, then validate that file:
 mtn-rex --repo "$REPO_ROOT" result "$TASK_REF" "$RUN_ID" >"$RESULT_FILE"
 ```
 
-Interactive tool inputs may still be rendered by Pi; these instructions reduce
-unnecessary dumps, not guarantee that its TUI hides every tool argument.
+The normal Pi TUI renders interactive tool inputs and results directly. Concise
+output means workers should not repeat prompts, task Markdown, or full evidence
+payloads in their final handoff; it does not suppress the live conversation. The
+explicit `final-result.json` and copied `result.json` are the only machine-readable
+final-result transport records; the conversation itself is not redirected into them.
 
 ## Runtime notes and recovery
 

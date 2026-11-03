@@ -5,7 +5,7 @@ fail() {
 	printf 'mtn-rex: %s\n' "$*" >&2
 	exit 1
 }
-for tool in jq git dirname basename mkdir sleep; do
+for tool in jq git dirname basename mkdir sleep cp; do
 	command -v "$tool" >/dev/null || fail "$tool is required"
 done
 lib="${MTN_REX_LIB:-$(dirname "${BASH_SOURCE[0]}")/../llm/skills/mtn-tasks/scripts}"
@@ -31,6 +31,38 @@ lookup() {
 label_slug() {
 	jq -ner --arg label "$1" '$label | ascii_downcase | gsub("[^a-z0-9]+";"-") | sub("^-+";"") | sub("-+$";"") | select(length>0)'
 }
+stable_phase_number() {
+	local ref="$1" stem suffix number
+	stem="${ref##*/}"
+	stem="${stem%.md}"
+	if [[ "$stem" == "$project_name-"* ]]; then
+		suffix="${stem#"$project_name-"}"
+		if [[ "$suffix" =~ ^([0-9]+)(-|$) ]]; then
+			number="$((10#${BASH_REMATCH[1]}))"
+			((number > 0)) || fail "phase ref has an invalid stable number: $ref"
+			printf '%s\n' "$number"
+			return
+		fi
+	fi
+	jq -er '.phaseNumber | select(type=="number" and .>=1 and floor==.)' <<<"$request" ||
+		fail "phase ref has no stable numeric identity; provide phaseNumber explicitly: $ref"
+}
+stable_task_number() {
+	local ref="$1" stem suffix number
+	stem="${ref##*/}"
+	stem="${stem%.md}"
+	if [[ "$stem" == "$project_name-"* ]]; then
+		suffix="${stem#"$project_name-"}"
+		if [[ "$suffix" =~ ^[0-9]+-([0-9]+)(-|$) ]]; then
+			number="$((10#${BASH_REMATCH[1]}))"
+			((number > 0)) || fail "task ref has an invalid stable number: $ref"
+			printf '%s\n' "$number"
+			return
+		fi
+	fi
+	jq -er '.taskNumber | select(type=="number" and .>=1 and floor==.)' <<<"$request" ||
+		fail "task ref has no stable numeric identity; provide taskNumber explicitly: $ref"
+}
 pin_host() {
 	local endpoint="$1" host="$2" instance="$3" identity
 	identity="$(rex --autostart=false -S "$endpoint" whoami --json)"
@@ -38,7 +70,7 @@ pin_host() {
 }
 
 agent() {
-	local dir="$1" request role run prompt model thinking i code=0
+	local dir="$1" request role run prompt model thinking i code=0 finish_extension
 	[[ "$dir" == /* && -f "$dir/request.json" && -f "$dir/context.json" ]] || fail 'absolute transport directory with launch context required'
 	# Rex's server may predate the user's activated Nix profile. Restore the launching
 	# host's command search path, without copying credentials or the whole environment.
@@ -52,6 +84,16 @@ agent() {
 	done
 	[[ -f "$dir/ready" ]] || fail 'launch was not published; startup gate timed out'
 	request="$(jq -ce -L "$lib" 'include "workflow"; select(rex_request)' "$dir/request.json")"
+	relocation="$(jq -c '.collectionRelocation // empty' <<<"$request")"
+	if [[ -n "$relocation" ]]; then
+		relocation_from="$(jq -r .fromRoot <<<"$relocation")"
+		relocation_approved_by="$(jq -r .approvedBy <<<"$relocation")"
+		relocation_reason="$(jq -r .reason <<<"$relocation")"
+		export MTN_WORKFLOW_ALLOW_RELOCATED_COLLECTION=true
+		export MTN_WORKFLOW_RELOCATION_FROM="$relocation_from"
+		export MTN_WORKFLOW_RELOCATION_APPROVED_BY="$relocation_approved_by"
+		export MTN_WORKFLOW_RELOCATION_REASON="$relocation_reason"
+	fi
 	role="$(jq -r .role <<<"$request")"
 	run="$(jq -r .runId <<<"$request")"
 	model="$(jq -r .model <<<"$request")"
@@ -73,9 +115,34 @@ agent() {
 		prompt="Keep terminal output concise: report only dispatch, completion, blockers and decisions. Never echo task Markdown, full descriptions, prompts or evidence payloads. Write record/request content directly to files with quiet tool calls; redirect mtn mutation output to private transport files and inspect only the needed status fields. Your interactive tool calls are visible, so do not embed full record bodies in displayed commands. You are the sole handed-off coordinator. Your Rex session/window and Pi conversation already exist; use the supplied runtime IDs, never display names, to address them. Do not create another Rex session or coordinator Pi conversation. Launch leaf agents only through mtn-rex as new Rex windows in this Rex session. Read the team skill and mtn-tasks Rex execution reference, then reconcile the supplied phase and persisted runtime evidence before dispatch. $prompt"
 		pi "${args[@]}" -- "$prompt" || code=$?
 	else
-		prompt="You are a leaf $role using the $run run identity. Your Rex window and Pi conversation already exist; do not create or resume sessions/windows. Rex resource IDs and your Pi session ID are separate identities. Read mtn-tasks worker contract and the assigned skill. Never write mtn records, integrate, or launch agents. Return only the required protocol JSON payload as your final response, without Markdown fences. $prompt"
+		result_file="$dir/final-result.json"
+		finish_extension="$dir/finish-on-result.mjs"
+		printf '%s\n' \
+			'import { readFileSync } from "node:fs";' \
+			'' \
+			'export default function (pi) {' \
+			'  pi.on("agent_before_settle", (_event, ctx) => {' \
+			'    const path = process.env.MTN_REX_RESULT_FILE;' \
+			'    if (!path) return;' \
+			'    try {' \
+			'      const result = JSON.parse(readFileSync(path, "utf8"));' \
+			'      if (result && typeof result === "object" && result.schemaVersion === 1 && typeof result.eventId === "string" && typeof result.recordRef === "string") {' \
+			'        ctx.shutdown();' \
+			'      }' \
+			'    } catch {}' \
+			'  });' \
+			'}' >"$finish_extension"
+		export MTN_REX_RESULT_FILE="$result_file"
+		args+=(--extension "$finish_extension")
+		prompt="You are a leaf $role using the $run run identity. Your Rex window and Pi conversation already exist; do not create or resume sessions/windows. Rex resource IDs and your Pi session ID are separate identities. Read mtn-tasks worker contract and the assigned skill. Never write mtn records, integrate, or launch agents. Keep working activity visible in this Rex terminal. Before your final response, write exactly one machine-readable protocol JSON object to the absolute final-result file $result_file; do not write progress, Markdown, or multiple objects there. Then return that same JSON object as your final response without Markdown fences. Once the final result is written and the final agent turn settles, the launcher will request an orderly Pi shutdown. $prompt"
 		printf 'mtn-rex: %s started\n' "$run"
-		pi "${args[@]}" --print -- "$prompt" >"$dir/result.json" 2>"$dir/stderr.log" || code=$?
+		set +e
+		pi "${args[@]}" -- "$prompt"
+		code=$?
+		set -e
+		if [[ "$code" == 0 && -s "$result_file" ]]; then
+			cp "$result_file" "$dir/result.json"
+		fi
 	fi
 	# Persist evidence before closing our own window; never close the coordinator.
 	printf '%s\n' "$code" >"$dir/exit-code"
@@ -89,8 +156,8 @@ agent() {
 			session="$(jq -r .rexSessionId "$dir/persisted.json")"
 			window="$(jq -r .rexWindowId "$dir/persisted.json")"
 			if ! (command -v rex >/dev/null && pin_host "$endpoint" "$host" "$instance" &&
-				rex --autostart=false -S "$endpoint" window close -s "$session" "$window") >>"$dir/stderr.log" 2>&1; then
-				printf 'mtn-rex: could not close %s; inspect %s/stderr.log\n' "$run" "$dir" >&2
+				rex --autostart=false -S "$endpoint" window close -s "$session" "$window"); then
+				printf 'mtn-rex: could not close %s; inspect Rex state and transport %s\n' "$run" "$dir" >&2
 			fi
 		else
 			printf 'mtn-rex: %s needs attention (exit %s); retained window; evidence: %s\n' "$run" "$code" "$dir" >&2
@@ -136,6 +203,21 @@ fi
 [[ "${MTN_WORKFLOW_COORDINATOR:-}" == 1 ]] || fail 'launch is coordinator-only'
 command -v pi >/dev/null || fail 'pi is required on the execution host'
 request="$(jq -ce -L "$lib" 'include "workflow"; select(rex_request)' "${1:?request JSON file required}")" || fail 'invalid launch request'
+relocation="$(jq -c '.collectionRelocation // empty' <<<"$request")"
+if [[ -n "$relocation" ]]; then
+	jq -e '(.fromRoot | type == "string" and startswith("/")) and
+		(.fromRunId | type == "string" and length > 0) and
+		(.approvedBy | type == "string" and length > 0) and
+		(.reason | type == "string" and length > 0)' <<<"$relocation" >/dev/null ||
+		fail 'collection relocation requires fromRoot, fromRunId, approvedBy and reason'
+	relocation_from="$(jq -r .fromRoot <<<"$relocation")"
+	relocation_approved_by="$(jq -r .approvedBy <<<"$relocation")"
+	relocation_reason="$(jq -r .reason <<<"$relocation")"
+	export MTN_WORKFLOW_ALLOW_RELOCATED_COLLECTION=true
+	export MTN_WORKFLOW_RELOCATION_FROM="$relocation_from"
+	export MTN_WORKFLOW_RELOCATION_APPROVED_BY="$relocation_approved_by"
+	export MTN_WORKFLOW_RELOCATION_REASON="$relocation_reason"
+fi
 ref="$(jq -r .recordRef <<<"$request")"
 run="$(jq -r .runId <<<"$request")"
 role="$(jq -r .role <<<"$request")"
@@ -146,7 +228,6 @@ snapshot="$(workflow snapshot "$ref")"
 hash="$(jq -r .specHash <<<"$snapshot")"
 [[ "$hash" == "$(jq -r .specHash <<<"$request")" ]] || fail 'stale specification'
 jq -e --arg run "$run" 'all(.events[]; .kind!="runtime" or .runId!=$run)' <<<"$snapshot" >/dev/null || fail 'run already reserved; inspect persisted evidence, never duplicate launch'
-order="$(jq -er '.order | select(type=="number" and .>=1 and floor==.)' <<<"$snapshot")"
 kind="$(jq -r .kind <<<"$snapshot")"
 server="$(jq -r '.server // empty' <<<"$request")"
 if [[ "$role" != coordinator ]]; then
@@ -170,17 +251,26 @@ project_name="$(label_slug "${project_dir##*/}")" || fail 'project directory nee
 if [[ "$role" == coordinator ]]; then
 	[[ "$kind" == phase && -z "${MTN_REX_COORDINATOR_RUN:-}" ]] || fail 'coordinator handoff requires a phase and an unhanded-off caller'
 	command -v mtn >/dev/null || fail 'mtn is required'
-	# The existing single-owner protocol is conservative across the whole collection.
-	# These checks are not an atomic lease; callers still serialize handoffs.
-	phases="$(mtn --path "$repo/.tasks" list --json | jq -er '[.[] | select(.workflowKind=="phase") | .path] | if length>0 then .[] else error("No phase records") end')"
-	while IFS= read -r candidate; do
-		prior="$(workflow snapshot "$candidate")"
-		jq -e '.events as $events | all($events[]; . as $event | if .kind=="runtime" and .role=="coordinator" and .stage=="reserved" then any($events[]; .kind=="release" and .dispatchEventId==$event.eventId) else true end)' <<<"$prior" >/dev/null || fail "unreleased coordinator in $candidate; reconcile and confirm stoppage before handoff"
-	done <<<"$phases"
+	# Coordinator ownership is phase-local. A deliberate transfer changes the
+	# host-sticky phase owner while preserving the prior runtime reservation.
+	transfer_run="$(jq -r '.fromRunId // empty' <<<"$relocation")"
+	prior="$(workflow snapshot "$ref")"
+	jq -e --arg transfer_run "$transfer_run" '.events as $events |
+		all($events[]; . as $event |
+			if .kind=="runtime" and .role=="coordinator" and .stage=="reserved" then
+				(any($events[]; .kind=="release" and .dispatchEventId==$event.eventId) or
+				 ($transfer_run != "" and .runId==$transfer_run))
+			else true end)' <<<"$prior" >/dev/null ||
+		fail "unreleased coordinator in selected phase; reconcile or provide an explicit ownership transfer"
 	worktree_name="$(label_slug "${worktree##*/}")" || fail 'worktree directory needs an ASCII letter or digit for its label'
+	if [[ "$role" != coordinator && "$worktree" != "$project_dir" ]]; then
+		[[ "$worktree_name" == "$display_name" ]] || fail "worker worktree name must match its Rex/Pi display name: $display_name"
+	fi
 	session_name="$project_name-$worktree_name"
 	[[ "$project_dir" != "$worktree" ]] || session_name="$project_name"
-	printf -v window_name '%s-p%02d-coordinator-a%02d' "$project_name" "$order" "$(jq -r .attempt <<<"$request")"
+	phase_number="$(stable_phase_number "$ref")"
+	printf -v canonical_name '%s-p%02d-coordinator-a%02d' "$project_name" "$phase_number" "$(jq -r .attempt <<<"$request")"
+	display_name=coordinator
 else
 	jq -e --argjson host "$host" '.role=="coordinator" and .host==$host' <<<"$parent" >/dev/null || fail 'parent belongs to another host/server instance'
 	if [[ "$role" == planner ]]; then
@@ -195,21 +285,28 @@ else
 	rex "${rex_args[@]}" session inspect "$session" --json >/dev/null
 	session_name="$(jq -r '.rexSessionName // .sessionName' <<<"$parent")"
 	if [[ "$role" == planner ]]; then
-		printf -v window_name '%s-p%02d-planner-a%02d' "$project_name" "$order" "$(jq -r .attempt <<<"$request")"
+		phase_number="$(stable_phase_number "$ref")"
+		printf -v canonical_name '%s-p%02d-planner-a%02d' "$project_name" "$phase_number" "$(jq -r .attempt <<<"$request")"
+		display_name="$canonical_name"
 	else
-		phase_order="$(workflow snapshot "$phase" | jq -er '.order | select(type=="number" and .>=1 and floor==.)')"
+		phase_number="$(stable_phase_number "$phase")"
+		task_number="$(stable_task_number "$ref")"
 		agent_label="$role"
 		if [[ "$role" == reviewer ]]; then
 			skill="$(jq -r .skill <<<"$request")"
 			agent_label="${skill#*-}"
 		fi
-		printf -v window_name '%s-p%02d-t%02d-%s-a%02d' "$project_name" "$phase_order" "$order" "$agent_label" "$(jq -r .attempt <<<"$request")"
+		printf -v canonical_name '%s-p%02d-t%02d-%s-a%02d' "$project_name" "$phase_number" "$task_number" "$agent_label" "$(jq -r .attempt <<<"$request")"
+		display_name="$canonical_name"
 	fi
 fi
-[[ "$run" == "$window_name" ]] || fail "runId must match the canonical agent identity: $window_name"
-[[ ${#window_name} -le 100 ]] || fail 'canonical agent identity exceeds the 100-character Pi run ID limit'
-# Display labels are scoped by the Rex session; durable run/Pi IDs keep the project.
-window_name="${window_name#"$project_name-"}"
+[[ "$run" == "$canonical_name" ]] || fail "runId must match the canonical agent identity: $canonical_name"
+[[ ${#canonical_name} -le 100 ]] || fail 'canonical agent identity exceeds the 100-character Pi run ID limit'
+# Display labels are presentation only; durable run/Pi IDs remain canonical.
+if [[ "$role" != coordinator ]]; then
+	display_name="${display_name#"$project_name-"}"
+fi
+window_name="$display_name"
 [[ ${#session_name} -le 128 ]] || fail 'Rex session label exceeds 128 characters'
 # Git ignores transport, while mtn evidence is the sole authoritative run index.
 git -C "$repo" check-ignore -q --no-index .mtn-tmp/rex/ || fail 'exclude .mtn-tmp/ from Git before launch'
