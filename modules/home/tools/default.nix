@@ -12,7 +12,6 @@
   ytDlpPkgs = inputs.yt-dlp-nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system};
 in {
   imports = [
-    ./atuin.nix
     ./bat.nix
     ./direnv.nix
     ./exercism.nix
