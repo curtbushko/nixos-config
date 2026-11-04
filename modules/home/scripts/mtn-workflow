@@ -124,13 +124,13 @@ new_uuid() {
 	fi
 }
 create_record() {
-	local file="$1" request kind id_field work_id uuid
+	local file="$1" request kind id_field uuid
 	[[ "${MTN_WORKFLOW_COORDINATOR:-}" == 1 ]] || fail 'creation is coordinator-only'
 	if [[ "$file" == - ]]; then request="$(cat)"; else request="$(cat "$file")"; fi
 	kind="$(jq -er '.fields.identity.kind | select(. == "project" or . == "phase" or . == "task" or . == "prd" or . == "design")' <<<"$request")" || fail 'create requires fields.identity.kind project, phase, task, prd or design'
 	id_field="$(case "$kind" in project) printf projectID ;; phase) printf phaseID ;; task) printf taskID ;; *) printf none ;; esac)"
 	if [[ "$id_field" != none ]]; then
-		work_id="$(jq -er --arg field "$id_field" '.fields.identity[$field] | strings | select(length > 0)' <<<"$request")" || fail "create requires fields.identity.$id_field"
+		jq -e --arg field "$id_field" '.fields.identity[$field] | strings | select(length > 0)' <<<"$request" >/dev/null || fail "create requires fields.identity.$id_field"
 	fi
 	uuid="$(jq -r '.fields.identity.uuid // empty' <<<"$request")"
 	[[ -n "$uuid" ]] || uuid="$(new_uuid)"
@@ -155,6 +155,7 @@ materialize_lifecycle() {
 	data=''
 	for attempt in {1..10}; do
 		if data="$(snapshot "$ref" 2>/dev/null)"; then break; fi
+		: "$attempt"
 		sleep 0.1
 done
 	[[ -n "$data" ]] || fail 'could not read the newly published evidence for lifecycle materialization'
