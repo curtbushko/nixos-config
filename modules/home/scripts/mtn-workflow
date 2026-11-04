@@ -5,7 +5,7 @@ fail() {
 	printf 'mtn-workflow: %s\n' "$*" >&2
 	exit 1
 }
-for tool in git jq dirname shasum realpath; do
+for tool in git jq dirname shasum realpath cat date tr sleep; do
 	command -v "$tool" >/dev/null || fail "$tool is required"
 done
 repo="${MTN_WORKFLOW_REPO:-}"
@@ -94,8 +94,9 @@ snapshot() {
 	load_show "$ref"
 	hash="$(fingerprint_show <<<"$SHOW")"
 	events="$(evidence_events_show <<<"$SHOW")"
-	jq -c --arg hash "$hash" --argjson mapping "$mapping" --slurpfile events <(printf '%s\n' "$events") \
-		'{ref:.result.ref,specHash:$hash,language:.result.frontmatter.workflowLanguage,kind:.result.frontmatter.workflowKind,order:.result.frontmatter.workflowOrder,title:.result.frontmatter[$mapping.title // "title"],nativeStatus:.result.frontmatter[$mapping.status // "status"],events:$events[0]}' <<<"$SHOW" |
+	[[ -n "$events" ]] || fail 'evidence projection failed; refuse to ignore malformed history'
+	jq -c -L "$lib" --arg hash "$hash" --argjson mapping "$mapping" --slurpfile events <(printf '%s\n' "$events") \
+		'include "facade"; (canonical_work_item) as $item | ($events[0] // []) as $e | ([ $e[] | select(.kind=="runtime" and .stage=="launched" and (. as $run | (any($e[]; .kind=="release" and .dispatchEventID==$run.eventID) | not))) ]) as $runs | {ref:.result.ref,specHash:$hash,identity:$item.identity,presentation:$item.presentation,structure:$item.structure,scope:$item.scope,lifecycle:($item.lifecycle + {nativeStatus:(.result.frontmatter[$mapping.status // "status"])}),execution:($item.execution + {current:{dispatchEventID:([$e[] | select(.kind=="dispatch" and (. as $dispatch | (any($e[]; .kind=="release" and .dispatchEventID==$dispatch.eventID) | not)))]|last|.eventID // null),runIDs:[$runs[]?.runID],runs:[$runs[]|{runID:.runID,role,state:"active",workItemRef:.recordRef,coordinator:(.coordinator // null),provider:(.provider // null)}]},coordinator:([$runs[]|select(.role=="coordinator")]|last|if . == null then null else {runID:.runID,state:"active",phaseRef:.recordRef,provider:(.provider // null)} end)}),implementation:$item.implementation,language:$item.implementation.language,kind:$item.identity.kind,order:$item.structure.order,title:$item.presentation.displayName,nativeStatus:.result.frontmatter[$mapping.status // "status"],events:$e}' <<<"$SHOW" |
 		jq -c -e -L "$lib" 'include "workflow"; if all(.events[];valid_event) then . else error("Invalid evidence event") end'
 }
 current_snapshot() {
@@ -106,7 +107,7 @@ current_snapshot() {
 			([.events[]|select(.kind=="dispatch")]|last) as $dispatch |
 			([.events[] | select(
 				.kind=="summary" or .kind=="blocker" or .kind=="resume" or .kind=="runtime" or
-				($dispatch != null and .eventId==$dispatch.eventId) or
+				($dispatch != null and .eventID==$dispatch.eventID) or
 				($dispatch != null and .attempt==$dispatch.attempt and
 					(.kind=="build" or .kind=="review" or .kind=="integration" or .kind=="completion" or .kind=="release")))] ) as $events |
 			$s | .events = $events
@@ -114,6 +115,54 @@ current_snapshot() {
 			([.events[] | select(.kind=="summary" or .kind=="plan" or .kind=="milestone" or .kind=="baseline")] ) as $events |
 			$s | .events=$events
 		else . end' <<<"$data"
+}
+new_uuid() {
+	if command -v uuidgen >/dev/null; then
+		uuidgen | tr '[:upper:]' '[:lower:]'
+	else
+		date -u '+%Y%m%dT%H%M%S.%3NZ'
+	fi
+}
+create_record() {
+	local file="$1" request kind id_field work_id uuid
+	[[ "${MTN_WORKFLOW_COORDINATOR:-}" == 1 ]] || fail 'creation is coordinator-only'
+	if [[ "$file" == - ]]; then request="$(cat)"; else request="$(cat "$file")"; fi
+	kind="$(jq -er '.fields.identity.kind | select(. == "project" or . == "phase" or . == "task" or . == "prd" or . == "design")' <<<"$request")" || fail 'create requires fields.identity.kind project, phase, task, prd or design'
+	id_field="$(case "$kind" in project) printf projectID ;; phase) printf phaseID ;; task) printf taskID ;; *) printf none ;; esac)"
+	if [[ "$id_field" != none ]]; then
+		work_id="$(jq -er --arg field "$id_field" '.fields.identity[$field] | strings | select(length > 0)' <<<"$request")" || fail "create requires fields.identity.$id_field"
+	fi
+	uuid="$(jq -r '.fields.identity.uuid // empty' <<<"$request")"
+	[[ -n "$uuid" ]] || uuid="$(new_uuid)"
+	jq -c --arg uuid "$uuid" --arg kind "$kind" --arg changed "$(date -u '+%Y-%m-%dT%H:%M:%S.%3NZ')" '.fields.identity += {uuid:$uuid,kind:$kind} | .fields.lifecycle //= {state:"planned",sourceEventID:null,changedAt:$changed}' <<<"$request" |
+		mtn --path "$root" agent create --input - --json
+}
+derive_state() {
+	local data="$1" kind
+	kind="$(jq -r .kind <<<"$data")"
+	case "$kind" in
+	task) jq -r -L "$lib" 'include "workflow"; task_state' <<<"$data" ;;
+	prd | design) jq -r -L "$lib" 'include "workflow"; if document_approved then "approved" else "approval-needed" end' <<<"$data" ;;
+	project | phase) if jq -e --argjson completed "$completed" '.nativeStatus as $status|$completed|index($status)!=null' <<<"$data" >/dev/null; then printf complete; else printf incomplete; fi ;;
+	*) fail 'unknown workflow record kind' ;;
+	esac
+}
+materialize_lifecycle() {
+	local ref="$1" data state source changed_at
+	show_refs=()
+	show_values=()
+	SHOW=''
+	data=''
+	for attempt in {1..10}; do
+		if data="$(snapshot "$ref" 2>/dev/null)"; then break; fi
+		sleep 0.1
+done
+	[[ -n "$data" ]] || fail 'could not read the newly published evidence for lifecycle materialization'
+	state="$(derive_state "$data")"
+	source="$(jq -r '[.events[] | .eventID // empty] | last // empty' <<<"$data")"
+	changed_at="$(date -u '+%Y-%m-%dT%H:%M:%S.%3NZ')"
+	jq -n --arg state "$state" --arg source "$source" --arg changed "$changed_at" '{operations:[{op:"set",field:"lifecycle",value:{state:$state,sourceEventID:(if $source=="" then null else $source end),changedAt:$changed}}]}' |
+		mtn --path "$root" agent patch "$ref" --input - --json >/dev/null
 }
 status() {
 	local data kind state
@@ -130,16 +179,16 @@ status() {
 		;;
 	*) fail 'unknown workflow record kind' ;;
 	esac
-	jq -c -L "$lib" --arg state "$state" 'include "workflow"; .+{state:$state,unresolvedBlockers:(unresolved_blockers|map({id:.eventId,reason:(.reason // "Blocked build; resolve this event ID")}))}|del(.events)' <<<"$data"
+	jq -c -L "$lib" --arg state "$state" 'include "workflow"; .+{state:$state,lifecycle:(.lifecycle + {state:$state}),unresolvedBlockers:(unresolved_blockers|map({id:.eventID,reason:(.reason // "Blocked build; resolve this event ID")}))}|del(.events)' <<<"$data"
 }
 task_brief() {
 	local ref="$1" data spec title
 	load_show "$ref"
-	jq -e '.result.frontmatter.workflowKind=="task"' <<<"$SHOW" >/dev/null || fail 'task brief requires an implementation task; use status for other records'
-	title="$(jq -r --argjson mapping "$mapping" '.result.frontmatter[$mapping.title // "title"]' <<<"$SHOW")"
+	jq -e -L "$lib" 'include "facade"; (canonical_work_item).identity.kind == "task"' <<<"$SHOW" >/dev/null || fail 'task brief requires an implementation task; use status for other records'
+	title="$(jq -r -L "$lib" 'include "facade"; canonical_work_item.presentation.displayName' <<<"$SHOW")"
 	spec="$(semantic_show <<<"$SHOW")"
 	data="$(current_snapshot "$ref")"
-	jq -c -L "$lib" --arg title "$title" --slurpfile spec <(printf '%s\n' "$spec") 'include "workflow"; . as $snapshot | [.events[]|select(.recordRef==$snapshot.ref and .specHash==$snapshot.specHash)] as $events | ([$events[]|select(.kind=="dispatch")]|last) as $dispatch | {ref,specHash,title:$title,definition:$spec[0],state:task_state,unresolvedBlockers:unresolved_blockers,currentEvidence:following($events;$dispatch)}' <<<"$data"
+	jq -c -L "$lib" --arg title "$title" --slurpfile spec <(printf '%s\n' "$spec") 'include "workflow"; . as $snapshot | (task_state) as $state | [.events[]|select(.recordRef==$snapshot.ref and .specHash==$snapshot.specHash)] as $events | ([$events[]|select(.kind=="dispatch")]|last) as $dispatch | {ref,specHash,identity,presentation,structure,scope,implementation,execution,lifecycle:(.lifecycle + {state:$state}),title:$title,definition:$spec[0],state:$state,unresolvedBlockers:unresolved_blockers,currentEvidence:following($events;$dispatch)}' <<<"$data"
 }
 verify_delivery() {
 	local ref="$1" data proof commit tree branch actual children expected child
@@ -174,7 +223,7 @@ verify_delivery() {
 cleanup_worktrees_for() {
 	local ref="$1" data paths worktree listed status
 	data="$(snapshot "$ref")"
-	jq -e -L "$lib" 'include "workflow"; all(.events[] as $event; $event.kind!="runtime" or any(.events[]; .kind=="release" and .dispatchEventId==$event.eventId))' <<<"$data" >/dev/null || fail 'active runtime reservation prevents worktree cleanup'
+	jq -e -L "$lib" 'include "workflow"; all(.events[] as $event; $event.kind!="runtime" or any(.events[]; .kind=="release" and .dispatchEventID==$event.eventID))' <<<"$data" >/dev/null || fail 'active runtime reservation prevents worktree cleanup'
 	paths="$(jq -r --arg ref "$ref" '[.events[] | select(.recordRef==$ref and (.kind=="dispatch" or .kind=="runtime")) | .worktree // empty] | unique[]' <<<"$data")"
 	[[ -n "$paths" ]] || return 0
 	listed="$(git -C "$repo" worktree list --porcelain | awk '/^worktree /{sub(/^worktree /, ""); print}')"
@@ -230,13 +279,13 @@ compact() {
 	jq -e -L "$lib" 'include "workflow"; (unresolved_blockers | length) == 0' <<<"$data" >/dev/null || fail 'unresolved blockers prevent compaction'
 	jq -e '.events as $events | all($events[]; . as $event |
 		if .kind=="runtime" and (.stage=="reserved" or .stage=="launched") then
-			any($events[]; .kind=="release" and .dispatchEventId==$event.eventId)
+			any($events[]; .kind=="release" and .dispatchEventID==$event.eventID)
 		else true end)' <<<"$data" >/dev/null || fail "active runtime reservation prevents compaction: $ref"
 	summary="$(jq -Sc . "$file")"
 	hash="$(jq -r .specHash <<<"$data")"
 	jq -e -L "$lib" --arg ref "$ref" --arg hash "$hash" 'include "workflow"; .kind=="summary" and .recordRef==$ref and .specHash==$hash and valid_event' <<<"$summary" >/dev/null ||
 		fail 'summary must be a valid current-spec summary event'
-	jq -e --slurpfile summary <(printf '%s\n' "$summary") --argjson mapping "$mapping" '.result.frontmatter.workflowRequirements as $requirements | ($summary[0].requirements|sort)==(($requirements // [])|sort)' <<<"$SHOW" >/dev/null ||
+	jq -e --slurpfile summary <(printf '%s\n' "$summary") --argjson mapping "$mapping" '.result.frontmatter.scope.requirements as $requirements | ($summary[0].requirements|sort)==(($requirements // [])|sort)' <<<"$SHOW" >/dev/null ||
 		fail 'summary requirements do not match the record'
 	if [[ "$kind" == phase || "$kind" == project ]]; then
 		children="$(mtn --path "$root" agent hierarchy "$ref" --json | jq -c '.result.children|sort')"
@@ -248,7 +297,7 @@ compact() {
 		fi
 	fi
 	if [[ "$kind" == project ]]; then
-		jq -e --argjson requirements "$(jq -c '.result.frontmatter.workflowRequirements // []' <<<"$SHOW")" --slurpfile summary <(printf '%s\n' "$summary") '$summary[0].coverage | type == "object" and (keys|sort) == ($requirements|sort)' <<<"$summary" >/dev/null || fail 'project summary coverage must cover exactly the accepted requirements'
+		jq -e --argjson requirements "$(jq -c '.result.frontmatter.scope.requirements // []' <<<"$SHOW")" --slurpfile summary <(printf '%s\n' "$summary") '$summary[0].coverage | type == "object" and (keys|sort) == ($requirements|sort)' <<<"$summary" >/dev/null || fail 'project summary coverage must cover exactly the accepted requirements'
 	fi
 	commit="$(jq -r '.targetCommit' <<<"$summary")"
 	tree="$(jq -r '.targetTree' <<<"$summary")"
@@ -261,9 +310,9 @@ compact() {
 	[[ -f "$record_path" && ! -L "$record_path" ]] || fail 'managed record path is not a regular file'
 	git -C "$repo" check-ignore -q --no-index .mtn-tmp/ || fail 'exclude .mtn-tmp/ from Git before compaction'
 	mkdir -p "$repo/.mtn-tmp"
-	MTN_WORKFLOW_COORDINATOR=1 jq -n --slurpfile summary <(printf '%s\n' "$summary") '{content:($summary[0]|tojson),role:"coordinator",category:"summary",adopt:true,retryKey:$summary[0].eventId}' |
+	MTN_WORKFLOW_COORDINATOR=1 jq -n --slurpfile summary <(printf '%s\n' "$summary") '{content:($summary[0]|tojson),role:"coordinator",category:"summary",adopt:true,retryKey:$summary[0].eventID}' |
 		mtn --path "$root" agent note "$ref" --input - --json >/dev/null
-	summary_event_id="$(jq -r .eventId <<<"$summary")"
+	summary_event_id="$(jq -r .eventID <<<"$summary")"
 	entry="$(awk -v event_id="$summary_event_id" '
 		/^<!-- mtn:entry:v1:/ {block=$0 ORS; capture=1; matched=0; next}
 		/^<!-- mtn:end-entry:v1 -->/ {
@@ -272,7 +321,7 @@ compact() {
 		}
 		capture {
 			block=block $0 ORS
-			if (index($0, "\"eventId\":\"" event_id "\"") > 0) matched=1
+			if (index($0, "\"eventID\":\"" event_id "\"") > 0) matched=1
 		}
 		END { printf "%s", result }
 	' "$record_path")"
@@ -297,7 +346,7 @@ record_plan_ok() {
 		($records[0] | [.[]|select(.ref==$ref)][0]) as $selected |
 		{ref:$selected.ref,specHash:$selected.specHash,events:$selected.events,requirements:$selected.requirements,
 		 documents:[$records[0][]|select(.ref as $record_ref|any($selected.documents[]?;.ref==$record_ref))|{ref,specHash,events}],
-		 records:[$records[0][]|select(.parentRefs|index($selected.ref)!=null)|{ref,specHash,requirements}]}|plan_approved' >/dev/null
+		 records:[$records[0][]|select(.parentRef==$selected.ref)|{ref,specHash,requirements}]}|plan_approved' >/dev/null
 }
 append_record() {
 	local ref="$1" data parents hash events
@@ -306,7 +355,7 @@ append_record() {
 	events="$(current_snapshot "$ref" | jq -c .events)"
 	parents="$(mtn --path "$root" agent hierarchy "$ref" --json | jq -c '[.result.parents[].resolution.ref]')"
 	ownership="$(semantic_show <<<"$SHOW" | jq -c .ownership)"
-	data="$(jq -c --arg hash "$hash" --argjson mapping "$mapping" --slurpfile ownership <(printf '%s\n' "$ownership") --slurpfile parents <(printf '%s\n' "$parents") --slurpfile events <(printf '%s\n' "$events") '.result|{ref,specHash:$hash,events:$events[0],parentRefs:$parents[0],kind:.frontmatter.workflowKind,order:.frontmatter.workflowOrder,language:.frontmatter.workflowLanguage,requirements:.frontmatter.workflowRequirements,documents:.frontmatter.workflowDocuments,ownership:$ownership[0],nativeStatus:.frontmatter[$mapping.status // "status"]}' <<<"$SHOW")"
+	data="$(jq -c -L "$lib" --arg hash "$hash" --argjson mapping "$mapping" --slurpfile ownership <(printf '%s\n' "$ownership") --slurpfile parents <(printf '%s\n' "$parents") --slurpfile events <(printf '%s\n' "$events") 'include "facade"; .result as $r | (canonical_work_item) as $item | {ref:$r.ref,specHash:$hash,events:$events[0],parentRef:($parents[0][0] // null),identity:$item.identity,presentation:$item.presentation,structure:($item.structure + {parentRef:($parents[0][0] // null)}),scope:$item.scope,implementation:($item.implementation + {ownership:$ownership[0]}),lifecycle:($item.lifecycle + {nativeStatus:$r.frontmatter[$mapping.status // "status"]}),kind:$item.identity.kind,order:$item.structure.order,language:$item.implementation.language,requirements:$item.scope.requirements,documents:$item.scope.documents,ownership:$ownership[0],nativeStatus:$r.frontmatter[$mapping.status // "status"]}' <<<"$SHOW")"
 	RECORDS="$(jq -c --slurpfile data <(printf '%s\n' "$data") '.+[$data[0]]' <<<"$RECORDS")"
 }
 ready_scope() {
@@ -316,7 +365,7 @@ ready_scope() {
 	documents="$(jq -r '[.[].documents[]?.ref]|unique[]' <<<"$RECORDS")"
 	if [[ -n "$documents" ]]; then while IFS= read -r ref; do append_record "$ref"; done <<<"$documents"; fi
 	requirements="$(jq -c --arg ref "$scope" '[.[]|select(.ref==$ref)][0].requirements' <<<"$RECORDS")"
-	jq -e 'type=="array" and length>0' <<<"$requirements" >/dev/null || fail 'scope must declare its approved workflowRequirements'
+	jq -e 'type=="array" and length>0' <<<"$requirements" >/dev/null || fail 'scope must declare its approved requirements'
 	if ! jq -n -e -L "$lib" --slurpfile records <(printf '%s\n' "$RECORDS") --slurpfile requirements <(printf '%s\n' "$requirements") 'include "workflow"; {records:$records[0],requirements:$requirements[0]}|metadata_valid' >/dev/null; then
 		fail 'invalid workflow metadata (parents, requirements, documents, order, language or ownership)'
 	fi
@@ -332,13 +381,13 @@ ready_scope() {
 			verify_delivery "$ref"
 			continue
 		fi
-		phase="$(jq -r '.parentRefs[0]' <<<"$row")"
+		phase="$(jq -r '.parentRef' <<<"$row")"
 		record_plan_ok "$phase" || fail "phase plan/document approval is stale: $phase"
 		phase_ready="$(jq -c --arg ref "$phase" 'any(.[];.ref==$ref and .dependencyReady==true)' <<<"$native")"
 		dependency="$(jq -c --arg ref "$ref" 'any(.[];.ref==$ref and .dependencyReady==true)' <<<"$native")"
 		allowed="$(jq -c --arg ref "$ref" 'any(.[];.ref==$ref and (.agentEligible==null or .agentEligible==true))' <<<"$native")"
-		released="$(jq -c '([.events[]|select(.kind=="dispatch")]|last) as $dispatch|any(.events[];.kind=="release" and .dispatchEventId==$dispatch.eventId)' <<<"$row")"
-		candidate="$(jq -c --arg state "$state" --argjson allowed "$allowed" --argjson phase_ready "$phase_ready" --argjson dependency "$dependency" --argjson released "$released" --slurpfile records <(printf '%s\n' "$RECORDS") '{ref,phaseOrder:(.parentRefs[0] as $phase|[$records[0][]|select(.ref==$phase)][0].order),order,incomplete:true,statusAllowed:($allowed and (if $state=="fixing" then $released else true end)),phaseReady:$phase_ready,dependencyReady:$dependency,documentsApproved:true,planApproved:true,state:$state,agentEligible:null,ownership}' <<<"$row")"
+		released="$(jq -c '([.events[]|select(.kind=="dispatch")]|last) as $dispatch|any(.events[];.kind=="release" and .dispatchEventID==$dispatch.eventID)' <<<"$row")"
+		candidate="$(jq -c --arg state "$state" --argjson allowed "$allowed" --argjson phase_ready "$phase_ready" --argjson dependency "$dependency" --argjson released "$released" --slurpfile records <(printf '%s\n' "$RECORDS") '{ref,phaseOrder:(.parentRef as $phase|[$records[0][]|select(.ref==$phase)][0].order),order,incomplete:true,statusAllowed:($allowed and (if $state=="fixing" then $released else true end)),phaseReady:$phase_ready,dependencyReady:$dependency,documentsApproved:true,planApproved:true,state:$state,agentEligible:null,ownership}' <<<"$row")"
 		candidates="$(jq -c --slurpfile candidate <(printf '%s\n' "$candidate") '.+[$candidate[0]]' <<<"$candidates")"
 		case "$state" in
 		building | reviewing | awaiting-integration | integrated) active="$(jq -c --slurpfile candidate <(printf '%s\n' "$candidate") '.+[$candidate[0]]' <<<"$active")" ;;
@@ -418,6 +467,10 @@ disk() {
 	jq -n --slurpfile entries <(printf '%s\n' "$entries") --argjson reserve "$reserve" '{reserveGiB:$reserve,filesystems:$entries[0],canStartHeavyWork:all($entries[0][];.freeGiB >= $reserve)}'
 }
 case "$command" in
+create)
+	require_collection
+	create_record "${1:?create request JSON file or - required}"
+	;;
 fingerprint)
 	require_collection
 	load_show "${1:?record ref required}"
@@ -480,15 +533,22 @@ publish)
 	# Every append, including legacy imports, must respect recovery reservations.
 	# Identical retries remain native-idempotent; changed/duplicate identities fail closed.
 	candidate="$(jq -c --slurpfile event <(printf '%s\n' "$payload") '
-	  if any(.result.evidence[]?; .retryKey == $event[0].eventId and .content == ($event[0]|tojson)) then .
+	  if any(.result.evidence[]?; .retryKey == $event[0].eventID and .content == ($event[0]|tojson)) then .
 	  else .result.evidence += [{content:($event[0]|tojson)}] end' <<<"$SHOW")"
 	# Exact reassessments may advance one chain while other stale tips still block reads.
 	# This allowance is shell-owned and never available to approvals or other appends.
 	reassessment="$(jq -c '.kind=="recovery"' <<<"$payload")"
 	events="$(evidence_events_show "$reassessment" <<<"$candidate")"
-	jq -e -L "$lib" 'include "workflow"; all(.[];valid_event) and ([.[].eventId]|length==(unique|length))' <<<"$events" >/dev/null
-	jq -n --slurpfile event <(printf '%s\n' "$payload") '{content:($event[0]|tojson),role:"coordinator",category:$event[0].kind,adopt:true,retryKey:$event[0].eventId}' |
-		mtn --path "$root" agent note "$ref" --input - --json
+	jq -e -L "$lib" 'include "workflow"; all(.[];valid_event) and ([.[].eventID]|length==(unique|length))' <<<"$events" >/dev/null
+	response="$(jq -n --slurpfile event <(printf '%s\n' "$payload") '{content:($event[0]|tojson),role:"coordinator",category:$event[0].kind,adopt:true,retryKey:$event[0].eventID}' |
+		mtn --path "$root" agent note "$ref" --input - --json)"
+	# Recovery chains may temporarily contain a stale sibling tip while a
+	# multi-target reassessment is serialized; the next replacement event
+	# materializes the converged lifecycle without rejecting the append.
+	if [[ "$(jq -r '.kind' <<<"$payload")" != recovery ]]; then
+		materialize_lifecycle "$ref"
+	fi
+	printf '%s\n' "$response"
 	;;
 help)
 	printf 'Usage: mtn-workflow --repo PARENT_CHECKOUT status|task|snapshot|fingerprint REF | ready PROJECT_REF | ready-phase PHASE_REF\n'

@@ -22,15 +22,15 @@ mtn --path "$TASK_ROOT" diagnose --json | jq -e '.ok and .result.capabilities.ev
 create() {
 	mtn --path "$TASK_ROOT" agent create --input - --json
 }
-project='{"title":"Demo project","path":"projects/demo.md","description":"Project scope","fields":{"workflowKind":"project"},"retryKey":"demo-project-v1"}'
+project='{"title":"Demo project","path":"projects/demo.md","description":"Project scope","fields":{"identity":{"kind":"project","projectID":"demo"},"structure":{"order":1},"scope":{"requirements":["REQ-001"]}},"retryKey":"demo-project-v1"}'
 printf '%s\n' "$project" | create >"$work/project.json"
 printf '%s\n' "$project" | create | jq -e '.ok and (.result.changed == false) and .result.ref == "projects/demo.md"' >/dev/null
-printf '%s\n' '{"title":"PRD","path":"prds/demo.md","description":"## Stories\n1. Literal input.","fields":{"workflowKind":"prd"}}' | create >/dev/null
-printf '%s\n' '{"title":"Phase 1","path":"phases/demo-01.md","description":"Implement stories 1–2","fields":{"workflowKind":"phase","workflowOrder":1}}' | create >/dev/null
+printf '%s\n' '{"title":"PRD","path":"prds/demo.md","description":"## Stories\n1. Literal input.","fields":{"identity":{"kind":"prd"}}}' | create >/dev/null
+printf '%s\n' '{"title":"Phase 1","path":"phases/demo-01.md","description":"Implement stories 1–2","fields":{"identity":{"kind":"phase","phaseID":"demo-01"},"structure":{"order":1},"scope":{"requirements":["REQ-001"]}}}' | create >/dev/null
 printf '%s\n' '{"target":"projects/demo.md"}' | mtn --path "$TASK_ROOT" agent project-add phases/demo-01.md --input - --json >/dev/null
 for number in 1 2; do
 	jq -n --arg title "Task $number tomorrow #literal" --arg path "tasks/demo-01-0$number.md" --argjson order "$number" \
-		'{title:$title,path:$path,description:"## Acceptance\nPreserve literal input.",fields:{workflowKind:"task",workflowOrder:$order,workflowLanguage:"go"}}' | create >/dev/null
+		'{title:$title,path:$path,description:"## Acceptance\nPreserve literal input.",fields:{identity:{kind:"task",taskID:$path},structure:{order:$order},scope:{requirements:["REQ-001"]},implementation:{language:"go",ownership:{paths:["src"],sharedPaths:[],resources:[],interfaces:[]}}}}' | create >/dev/null
 	printf '%s\n' '{"target":"phases/demo-01.md"}' | mtn --path "$TASK_ROOT" agent project-add "tasks/demo-01-0$number.md" --input - --json >/dev/null
 done
 REF='tasks/demo-01-01.md'
@@ -44,7 +44,7 @@ if printf '%s\n' '{"target":"tasks/demo-01-02.md"}' | mtn --path "$TASK_ROOT" ag
 fi
 jq -e '.ok == false' "$work/cycle.json" >/dev/null
 printf '%s\n' '{"status":"in-progress"}' | mtn --path "$TASK_ROOT" agent status "$REF" --input - --json >/dev/null
-printf '%s\n' '{"operations":[{"op":"set","field":"workflowOrder","value":3}]}' | mtn --path "$TASK_ROOT" agent patch "$REF" --input - --json >/dev/null
+printf '%s\n' '{"operations":[{"op":"set","field":"structure","value":{"order":3}}]}' | mtn --path "$TASK_ROOT" agent patch "$REF" --input - --json >/dev/null
 note='{"content":"Build attempt 1: focused test passed; full suite passed","role":"builder","category":"build","adopt":true,"retryKey":"build-attempt-1"}'
 printf '%s\n' "$note" | mtn --path "$TASK_ROOT" agent note "$REF" --input - --json >/dev/null
 printf '%s\n' "$note" | mtn --path "$TASK_ROOT" agent note "$REF" --input - --json | jq -e '.ok and (.result.changed == false)' >/dev/null
@@ -56,7 +56,7 @@ for specialty in code comment architecture test; do
 		mtn --path "$TASK_ROOT" agent note "$REF" --input - --json >/dev/null
 done
 mtn --path "$TASK_ROOT" agent show "$REF" --json >"$work/show.json"
-jq -e '.ok and (.result.evidence | length == 5) and .result.frontmatter.workflowOrder == 3 and .result.description == "## Acceptance\nUpdated description."' "$work/show.json" >/dev/null
+jq -e '.ok and (.result.evidence | length == 5) and .result.frontmatter.structure.order == 3 and .result.description == "## Acceptance\nUpdated description."' "$work/show.json" >/dev/null
 # Evidence approval does not complete tasks or unblock dependents.
 mtn --path "$TASK_ROOT" agent dependencies "$DEPENDENT_REF" --json | jq -e '.result.dependencyReady == false' >/dev/null
 mtn --path "$TASK_ROOT" agent complete "$REF" --json >/dev/null
@@ -65,7 +65,7 @@ mtn --path "$TASK_ROOT" agent hierarchy projects/demo.md --json | jq -e '.result
 mtn --path "$TASK_ROOT" agent reopen "$REF" --json >/dev/null
 mtn --path "$TASK_ROOT" agent dependencies "$DEPENDENT_REF" --json | jq -e '.result.dependencyReady == false' >/dev/null
 mtn --path "$TASK_ROOT" agent ready phases/demo-01.md --json | jq -e '.result.claim == false and (.result.evaluated | all(.agentEligible == null))' >/dev/null
-mtn --path "$TASK_ROOT" list --json | jq -e 'length == 5 and ([.[] | select(.workflowKind == "task")] | length == 2)' >/dev/null
+mtn --path "$TASK_ROOT" list --json | jq -e 'length == 5 and ([.[] | select(.identity.kind == "task")] | length == 2)' >/dev/null
 mtn --path "$TASK_ROOT" agent validate --json | jq -e '.ok and .result.valid' >/dev/null
 [[ ! -e "$MDBASE_TASKNOTES_PATH" ]]
 printf 'mtn workflow smoke checks passed\n'

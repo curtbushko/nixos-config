@@ -26,7 +26,7 @@ publish() {
 lookup() {
 	local snapshot
 	snapshot="$(workflow snapshot "$1")"
-	jq -ce --arg run "$2" '[.events[] | select(.kind=="runtime" and .stage=="launched" and .runId==$run)] | last // error("No persisted Rex launch for that run")' <<<"$snapshot"
+	jq -ce --arg run "$2" '[.events[] | select(.kind=="runtime" and .stage=="launched" and .runID==$run)] | last // error("No persisted Rex launch for that run")' <<<"$snapshot"
 }
 label_slug() {
 	jq -ner --arg label "$1" '$label | ascii_downcase | gsub("[^a-z0-9]+";"-") | sub("^-+";"") | sub("-+$";"") | select(length>0)'
@@ -95,7 +95,7 @@ agent() {
 		export MTN_WORKFLOW_RELOCATION_REASON="$relocation_reason"
 	fi
 	role="$(jq -r .role <<<"$request")"
-	run="$(jq -r .runId <<<"$request")"
+	run="$(jq -r .runID <<<"$request")"
 	model="$(jq -r .model <<<"$request")"
 	thinking="$(jq -r .thinking <<<"$request")"
 	prompt="$(jq -r .prompt <<<"$request")"
@@ -104,7 +104,7 @@ agent() {
 	prompt+=$'\nParent collection checkout: '
 	prompt+="$(jq -r .repo "$dir/context.json")"
 	prompt+=$'\nRuntime identity: '
-	prompt+="$(jq -ce --arg run "$run" 'select(.stage=="launched" and .piSessionId==$run) | {runId,piSessionId,piSessionName:(.piSessionName // .windowName),rexSessionId,rexSessionName:(.rexSessionName // .sessionName),rexWindowId,rexWindowName:(.rexWindowName // .windowName),rexBlockId,host}' "$dir/persisted.json")"
+	prompt+="$(jq -ce --arg run "$run" 'select(.stage=="launched" and .piSessionID==$run) | {runID,piSessionID,piSessionName:(.piSessionName // .windowName),rexSessionID,rexSessionName:(.rexSessionName // .sessionName),rexWindowID,rexWindowName:(.rexWindowName // .windowName),rexBlockID,host}' "$dir/persisted.json")"
 	cd "$(jq -r .worktree <<<"$request")"
 	export MTN_REX_ROLE="$role" MTN_REX_RUN_ID="$run" MTN_REX_REPO
 	MTN_REX_REPO="$(jq -r .repo "$dir/context.json")"
@@ -126,7 +126,7 @@ agent() {
 			'    if (!path) return;' \
 			'    try {' \
 			'      const result = JSON.parse(readFileSync(path, "utf8"));' \
-			'      if (result && typeof result === "object" && result.schemaVersion === 1 && typeof result.eventId === "string" && typeof result.recordRef === "string") {' \
+			'      if (result && typeof result === "object" && result.schemaVersion === 1 && typeof result.eventID === "string" && typeof result.recordRef === "string") {' \
 			'        ctx.shutdown();' \
 			'      }' \
 			'    } catch {}' \
@@ -151,10 +151,10 @@ agent() {
 			printf 'mtn-rex: %s finished; evidence: %s\n' "$run" "$dir"
 			local endpoint host instance session window
 			endpoint="$(jq -r .host.endpoint "$dir/persisted.json")"
-			host="$(jq -r .host.hostId "$dir/persisted.json")"
-			instance="$(jq -r .host.instanceId "$dir/persisted.json")"
-			session="$(jq -r .rexSessionId "$dir/persisted.json")"
-			window="$(jq -r .rexWindowId "$dir/persisted.json")"
+			host="$(jq -r .host.hostID "$dir/persisted.json")"
+			instance="$(jq -r .host.instanceID "$dir/persisted.json")"
+			session="$(jq -r .rexSessionID "$dir/persisted.json")"
+			window="$(jq -r .rexWindowID "$dir/persisted.json")"
 			if ! (command -v rex >/dev/null && pin_host "$endpoint" "$host" "$instance" &&
 				rex --autostart=false -S "$endpoint" window close -s "$session" "$window"); then
 				printf 'mtn-rex: could not close %s; inspect Rex state and transport %s\n' "$run" "$dir" >&2
@@ -188,14 +188,14 @@ for tool in mtn-workflow rex; do command -v "$tool" >/dev/null || fail "$tool is
 if [[ "$command" != launch ]]; then
 	event="$(lookup "${1:?record ref required}" "${2:?run ID required}")"
 	endpoint="$(jq -r .host.endpoint <<<"$event")"
-	pin_host "$endpoint" "$(jq -r .host.hostId <<<"$event")" "$(jq -r .host.instanceId <<<"$event")"
+	pin_host "$endpoint" "$(jq -r .host.hostID <<<"$event")" "$(jq -r .host.instanceID <<<"$event")"
 	if [[ "$command" == result ]]; then
 		dir="$(jq -r .transportDir <<<"$event")"
-		[[ "$dir" == "$repo/.mtn-tmp/rex/$(jq -r .runId <<<"$event")" && ! -L "$dir" ]] || fail 'unexpected transport path'
+		[[ "$dir" == "$repo/.mtn-tmp/rex/$(jq -r .runID <<<"$event")" && ! -L "$dir" ]] || fail 'unexpected transport path'
 		[[ "$(<"$dir/exit-code")" == 0 ]] || fail 'worker has not exited successfully'
 		jq -ce 'select(type=="object")' "$dir/result.json"
 	else
-		rex --autostart=false -S "$endpoint" block call -s "$(jq -r .rexSessionId <<<"$event")" -b "$(jq -r .rexBlockId <<<"$event")" process
+		rex --autostart=false -S "$endpoint" block call -s "$(jq -r .rexSessionID <<<"$event")" -b "$(jq -r .rexBlockID <<<"$event")" process
 	fi
 	exit
 fi
@@ -206,10 +206,10 @@ request="$(jq -ce -L "$lib" 'include "workflow"; select(rex_request)' "${1:?requ
 relocation="$(jq -c '.collectionRelocation // empty' <<<"$request")"
 if [[ -n "$relocation" ]]; then
 	jq -e '(.fromRoot | type == "string" and startswith("/")) and
-		(.fromRunId | type == "string" and length > 0) and
+		(.fromRunID | type == "string" and length > 0) and
 		(.approvedBy | type == "string" and length > 0) and
 		(.reason | type == "string" and length > 0)' <<<"$relocation" >/dev/null ||
-		fail 'collection relocation requires fromRoot, fromRunId, approvedBy and reason'
+		fail 'collection relocation requires fromRoot, fromRunID, approvedBy and reason'
 	relocation_from="$(jq -r .fromRoot <<<"$relocation")"
 	relocation_approved_by="$(jq -r .approvedBy <<<"$relocation")"
 	relocation_reason="$(jq -r .reason <<<"$relocation")"
@@ -219,7 +219,7 @@ if [[ -n "$relocation" ]]; then
 	export MTN_WORKFLOW_RELOCATION_REASON="$relocation_reason"
 fi
 ref="$(jq -r .recordRef <<<"$request")"
-run="$(jq -r .runId <<<"$request")"
+run="$(jq -r .runID <<<"$request")"
 role="$(jq -r .role <<<"$request")"
 worktree="$(cd "$(jq -r .worktree <<<"$request")" && pwd -P)"
 [[ "$worktree" == "$(git -C "$worktree" rev-parse --show-toplevel)" ]] || fail 'worktree must be a Git checkout root'
@@ -227,21 +227,23 @@ worktree="$(cd "$(jq -r .worktree <<<"$request")" && pwd -P)"
 snapshot="$(workflow snapshot "$ref")"
 hash="$(jq -r .specHash <<<"$snapshot")"
 [[ "$hash" == "$(jq -r .specHash <<<"$request")" ]] || fail 'stale specification'
-jq -e --arg run "$run" 'all(.events[]; .kind!="runtime" or .runId!=$run)' <<<"$snapshot" >/dev/null || fail 'run already reserved; inspect persisted evidence, never duplicate launch'
+jq -e --arg run "$run" 'all(.events[]; .kind!="runtime" or .runID!=$run)' <<<"$snapshot" >/dev/null || fail 'run already reserved; inspect persisted evidence, never duplicate launch'
 kind="$(jq -r .kind <<<"$snapshot")"
 server="$(jq -r '.server // empty' <<<"$request")"
 if [[ "$role" != coordinator ]]; then
 	phase="$(jq -r .phaseRef <<<"$request")"
-	parent_run="$(jq -r .parentRunId <<<"$request")"
+	workflow snapshot "$phase" | jq -e '.kind == "phase"' >/dev/null ||
+		fail 'phaseRef must identify a phase record'
+	parent_run="$(jq -r .coordinator.runID <<<"$request")"
 	[[ "${MTN_REX_COORDINATOR_RUN:-}" == "$parent_run" ]] || fail 'only the handed-off coordinator may dispatch workers'
-	parent="$(lookup "$(jq -r '.coordinatorPhaseRef // .phaseRef' <<<"$request")" "$parent_run")"
+	parent="$(lookup "$(jq -r '.coordinator.phaseRef // .phaseRef' <<<"$request")" "$parent_run")"
 	server="$(jq -r .host.endpoint <<<"$parent")"
 fi
 rex_args=(--autostart=false)
 [[ -z "$server" ]] || rex_args+=(-S "$server")
 identity="$(rex "${rex_args[@]}" whoami --json)"
 jq -e '.principal.transport=="unix" and (.endpoint|startswith("unix://"))' <<<"$identity" >/dev/null || fail 'Rex must be local to this execution host; choose its Unix endpoint explicitly via request.server'
-host="$(jq -c '{endpoint,hostId:.host_id,instanceId:.instance_id}' <<<"$identity")"
+host="$(jq -c '{endpoint,hostID:.host_id,instanceID:.instance_id}' <<<"$identity")"
 endpoint="$(jq -r .endpoint <<<"$host")"
 rex_args=(--autostart=false -S "$endpoint")
 session=''
@@ -253,13 +255,13 @@ if [[ "$role" == coordinator ]]; then
 	command -v mtn >/dev/null || fail 'mtn is required'
 	# Coordinator ownership is phase-local. A deliberate transfer changes the
 	# host-sticky phase owner while preserving the prior runtime reservation.
-	transfer_run="$(jq -r '.fromRunId // empty' <<<"$relocation")"
+	transfer_run="$(jq -r '.fromRunID // empty' <<<"$relocation")"
 	prior="$(workflow snapshot "$ref")"
 	jq -e --arg transfer_run "$transfer_run" '.events as $events |
 		all($events[]; . as $event |
 			if .kind=="runtime" and .role=="coordinator" and .stage=="reserved" then
-				(any($events[]; .kind=="release" and .dispatchEventId==$event.eventId) or
-				 ($transfer_run != "" and .runId==$transfer_run))
+				(any($events[]; .kind=="release" and .dispatchEventID==$event.eventID) or
+				 ($transfer_run != "" and .runID==$transfer_run))
 			else true end)' <<<"$prior" >/dev/null ||
 		fail "unreleased coordinator in selected phase; reconcile or provide an explicit ownership transfer"
 	worktree_name="$(label_slug "${worktree##*/}")" || fail 'worktree directory needs an ASCII letter or digit for its label'
@@ -279,9 +281,9 @@ else
 		[[ "$kind" == task ]] || fail 'builder/reviewer requires an implementation task'
 		command -v mtn >/dev/null || fail 'mtn is required'
 		mtn --path "$repo/.tasks" agent hierarchy "$ref" --json | jq -e --arg phase "$phase" '.ok and any(.result.parents[]; .resolution.ref==$phase)' >/dev/null || fail 'task is not in that phase'
-		jq -e --arg id "$(jq -r .dispatchEventId <<<"$request")" --arg hash "$hash" --argjson attempt "$(jq .attempt <<<"$request")" 'any(.events[]; .kind=="dispatch" and .eventId==$id and .specHash==$hash and .attempt==$attempt)' <<<"$snapshot" >/dev/null || fail 'matching dispatch must be published before worker launch'
+		jq -e --arg id "$(jq -r .dispatchEventID <<<"$request")" --arg hash "$hash" --argjson attempt "$(jq .attempt <<<"$request")" 'any(.events[]; .kind=="dispatch" and .eventID==$id and .specHash==$hash and .attempt==$attempt)' <<<"$snapshot" >/dev/null || fail 'matching dispatch must be published before worker launch'
 	fi
-	session="$(jq -r .rexSessionId <<<"$parent")"
+	session="$(jq -r .rexSessionID <<<"$parent")"
 	rex "${rex_args[@]}" session inspect "$session" --json >/dev/null
 	session_name="$(jq -r '.rexSessionName // .sessionName' <<<"$parent")"
 	if [[ "$role" == planner ]]; then
@@ -300,7 +302,7 @@ else
 		display_name="$canonical_name"
 	fi
 fi
-[[ "$run" == "$canonical_name" ]] || fail "runId must match the canonical agent identity: $canonical_name"
+[[ "$run" == "$canonical_name" ]] || fail "runID must match the canonical agent identity: $canonical_name"
 [[ ${#canonical_name} -le 100 ]] || fail 'canonical agent identity exceeds the 100-character Pi run ID limit'
 # Display labels are presentation only; durable run/Pi IDs remain canonical.
 if [[ "$role" != coordinator ]]; then
@@ -318,19 +320,19 @@ dir="$repo/.mtn-tmp/rex/$run"
 	mkdir "$dir"
 ) || fail 'transport already exists; inspect before recovery'
 printf '%s\n' "$request" >"$dir/request.json"
-event="$(jq -c --arg run "$run" --arg dir "$dir" --arg window "$window_name" --arg session "$session_name" --arg worktree "$worktree" --argjson host "$host" '. + {schemaVersion:1,eventId:($run+"/runtime/reserved"),kind:"runtime",stage:"reserved",piSessionId:$run,transportDir:$dir,worktree:$worktree,host:$host,rexSessionName:$session,rexWindowName:$window,piSessionName:$window,sessionName:$session,windowName:$window} | del(.prompt,.server)' <<<"$request")"
+event="$(jq -c --arg run "$run" --arg dir "$dir" --arg window "$window_name" --arg session "$session_name" --arg worktree "$worktree" --argjson host "$host" '. + {schemaVersion:1,eventID:($run+"/runtime/reserved"),kind:"runtime",stage:"reserved",piSessionID:$run,transportDir:$dir,worktree:$worktree,host:$host,rexSessionName:$session,rexWindowName:$window,piSessionName:$window,sessionName:$session,windowName:$window} | del(.prompt,.server)' <<<"$request")"
 # Keep prompts in transport, not durable notes. The event schema validates the launch metadata.
 printf '%s\n' "$event" >"$dir/reserved.json"
 publish "$dir/reserved.json"
 jq -n --arg repo "$repo" --arg window "$window_name" --arg path "$PATH" '{repo:$repo,piSessionName:$window,windowName:$window,path:$path}' >"$dir/context.json"
 if [[ "$role" == coordinator ]]; then
 	rex "${rex_args[@]}" new "$session_name" -c "$worktree" --window "$window_name" --keep-open --shell=none --json -- bash "$self" agent "$dir" >"$dir/created.json"
-	ids="$(jq -ce '{rexSessionId:.session_id,rexWindowId:.initial_windows[0].window_id,rexBlockId:.initial_windows[0].block_ids[0]}' "$dir/created.json")"
+	ids="$(jq -ce '{rexSessionID:.session_id,rexWindowID:.initial_windows[0].window_id,rexBlockID:.initial_windows[0].block_ids[0]}' "$dir/created.json")"
 else
 	rex "${rex_args[@]}" window new -s "$session" "$window_name" -c "$worktree" --keep-open --focus=false --shell=none --json -- bash "$self" agent "$dir" >"$dir/created.json"
-	ids="$(jq -ce --arg session "$session" '{rexSessionId:$session,rexWindowId:.window_id,rexBlockId:.block_ids[0]}' "$dir/created.json")"
+	ids="$(jq -ce --arg session "$session" '{rexSessionID:$session,rexWindowID:.window_id,rexBlockID:.block_ids[0]}' "$dir/created.json")"
 fi
-jq -c --arg run "$run" --argjson ids "$ids" '. + $ids + {eventId:($run+"/runtime/launched"),stage:"launched"}' "$dir/reserved.json" >"$dir/launched.json"
+jq -c --arg run "$run" --argjson ids "$ids" '(. + $ids) as $event | $event + {eventID:($run+"/runtime/launched"),stage:"launched",provider:{name:"rex",displayName:$event.windowName,resources:{endpoint:$event.host.endpoint,session:$event.rexSessionID,window:$event.rexWindowID,block:$event.rexBlockID}}}' "$dir/reserved.json" >"$dir/launched.json"
 publish "$dir/launched.json"
 # Confirm persistence before allowing this new Pi to mutate anything.
 lookup "$ref" "$run" >"$dir/persisted.json"

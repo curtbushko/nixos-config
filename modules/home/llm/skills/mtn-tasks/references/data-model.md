@@ -7,12 +7,12 @@ a future typed implementation is approved.
 
 ## Design principles
 
-- `UUID` is the immutable native record UUID.
+- The `uuid` field is the immutable native record UUID.
 - A stable work-item ID identifies the project, phase, or task and does not change
-  between executions. For tasks this is `TaskID`; phases and projects use the same
-  semantic field with their corresponding type name.
-- `RunID` identifies one ephemeral execution. A retry or replacement execution gets
-  a new `RunID`; attempts are not part of stable work-item identity.
+  between executions. For tasks this is `taskID`; phases and projects use the same
+  semantic field with their corresponding type-specific field (`phaseID` or `projectID`).
+- The `runID` field identifies one ephemeral execution. A retry or replacement execution gets
+  a new `runID`; attempts are not part of stable work-item identity.
 - `DisplayName` and `Description` are presentation fields. Neither is an identity,
   lookup key, or resource selector.
 - Workflow data is grouped by purpose. Provider-specific launcher details are
@@ -66,6 +66,10 @@ execution:
 
 implementation:
   language: docs
+  gates:
+    - ID: documentation-check
+      command: task docs-check
+      required: true
   ownership:
     paths: []
     sharedPaths: []
@@ -117,8 +121,10 @@ execution:
 
 The project may additionally expose the selected coordinator/phase for project-wide
 status, but a coordinator's actual scheduling ownership remains phase-scoped. Worker
-execution projections point to the coordinator `RunID`. Runtime and release events
-remain the authoritative history used to reconcile this projection.
+execution projections point to the coordinator `runID`. Runtime and release events
+remain the authoritative history used to reconcile this projection. A normalized
+facade may expose active run objects under `execution.current.runs`; each run object
+carries its generic provider binding while `runIDs` remains the compact index.
 
 ## Event shape
 
@@ -139,41 +145,28 @@ identity and record targeting remain explicit. `recordRef` is the canonical
 collection-relative reference in protocol data. `ref` and `path` are adapter names
 used when reading native mtn output.
 
-## Compatibility mapping
+## Native mtn adapters
 
-| Current representation | Migration target |
-|---|---|
-| native `id` | `identity.uuid` |
-| native `path`, projection `ref` | `recordRef` / stable file reference |
-| `title` | `presentation.displayName` |
-| record Markdown body / description | `presentation.description` |
-| `workflowKind` | `identity.kind` |
-| `projects` parent links | `structure.parentRef` |
-| `workflowOrder` | `structure.order` |
-| `workflowRequirements` | `scope.requirements` |
-| `workflowDocuments` | `scope.documents` |
-| native `blockedBy` | `scope.dependencies` |
-| `workflowLanguage` | `implementation.language` |
-| `workflowOwnership` | `implementation.ownership` |
-| derived `task_state` and native completion | `lifecycle.state` |
-| runtime/release evidence | `execution.current` and run history |
-| `parentRunId` | `execution.coordinator.runID` reference |
-| Rex/Pi-specific runtime fields | `execution.current.provider` binding |
-| `attempt` | legacy event correlation; not stable identity |
+Native mtn presentation fields (`title`, Markdown body), the native UUID field
+`id`, and native hierarchy/dependency queries are adapted into this grouped model.
+The workflow metadata itself is stored in the grouped fields above. A task or phase
+has exactly one `structure.parentRef`; multiple native parents are invalid and must
+be rejected. Native dependency records are normalized to
+`scope.dependencies[].{ref,relation}`.
 
-During migration, adapters should read both representations, prefer the canonical
-grouped model when present, and reject contradictory values rather than silently
-choosing one. Existing records and evidence must not be rewritten merely to adopt
-this model.
+The facade always prefers grouped values and rejects missing required identity,
+parent, or implementation fields. It does not silently fall back to a second
+workflow schema. Runtime and release evidence materialize `lifecycle` and
+`execution` projections; evidence remains the authoritative history.
 
 ## Type constraints
 
-- A project has no parent and may own phases.
-- A phase has one project parent and may own tasks.
-- A task has one phase parent and owns implementation scope.
+- A project has no parent and may own phases; it has a `projectID`.
+- A phase has exactly one project parent and may own tasks; it has a `phaseID`.
+- A task has exactly one phase parent and owns implementation scope; it has a `taskID`.
 - All work-item types have UUID, stable typed ID, display name, description, scope,
   lifecycle, and execution sections where applicable.
-- Only executions have `RunID`.
-- A display name may change without changing UUID, stable ID, or RunID.
-- A RunID may disappear when an execution ends; the completed work item retains its
+- Only executions have `runID`.
+- A display name may change without changing `uuid`, stable ID, or `runID`.
+- A `runID` may disappear when an execution ends; the completed work item retains its
   final lifecycle and delivery summary, not a live launcher binding.

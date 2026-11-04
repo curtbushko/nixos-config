@@ -10,11 +10,15 @@ mkdir -p "$HOME" "$work/repo/src" "$work/outside"
 git init -q "$work/repo"
 mtn init "$work/repo/.tasks" >/dev/null
 cli() { bash "$script" --repo "$work/repo" "$@"; }
-printf '%s\n' '{"title":"Demo","path":"tasks/demo.md","description":"REQ-001: observable behavior","fields":{"workflowKind":"task","workflowLanguage":"go","workflowOrder":1}}' | mtn --path "$work/repo/.tasks" agent create --input - --json >/dev/null
+printf '%s\n' '{"title":"Initial project","path":"projects/initial.md","description":"REQ-001 project","fields":{"identity":{"kind":"project","projectID":"initial"},"structure":{"order":1},"scope":{"requirements":["REQ-001"]}}}' | mtn --path "$work/repo/.tasks" agent create --input - --json >/dev/null
+printf '%s\n' '{"title":"Demo phase","path":"phases/demo.md","description":"REQ-001 phase","fields":{"identity":{"kind":"phase","phaseID":"demo"},"structure":{"order":1},"scope":{"requirements":["REQ-001"]}}}' | mtn --path "$work/repo/.tasks" agent create --input - --json >/dev/null
+printf '%s\n' '{"target":"projects/initial.md"}' | mtn --path "$work/repo/.tasks" agent project-add phases/demo.md --input - --json >/dev/null
+printf '%s\n' '{"title":"Demo","path":"tasks/demo.md","description":"REQ-001: observable behavior","fields":{"identity":{"kind":"task","taskID":"demo"},"structure":{"order":1},"scope":{"requirements":["REQ-001"]},"implementation":{"language":"go","ownership":{"paths":["src"],"sharedPaths":[],"resources":[],"interfaces":[]}}}}' | mtn --path "$work/repo/.tasks" agent create --input - --json >/dev/null
+printf '%s\n' '{"target":"phases/demo.md"}' | mtn --path "$work/repo/.tasks" agent project-add tasks/demo.md --input - --json >/dev/null
 cli status tasks/demo.md | jq -e '.state=="planned" and .unresolvedBlockers==[]' >/dev/null
 cli task tasks/demo.md | jq -e '.definition.description=="REQ-001: observable behavior" and .currentEvidence==[]' >/dev/null
 first="$(cli fingerprint tasks/demo.md)"
-printf '%s\n' '{"operations":[{"op":"set","field":"title","value":"Editorial title"},{"op":"set","field":"workflowOrder","value":2}]}' | mtn --path "$work/repo/.tasks" agent patch tasks/demo.md --input - --json >/dev/null
+printf '%s\n' '{"operations":[{"op":"set","field":"title","value":"Editorial title"},{"op":"set","field":"structure","value":{"order":2}}]}' | mtn --path "$work/repo/.tasks" agent patch tasks/demo.md --input - --json >/dev/null
 [[ "$first" == "$(cli fingerprint tasks/demo.md)" ]]
 cli paths ./src src/. | jq -e '.==["src","src"]' >/dev/null
 ln -s "$work/repo/src" "$work/repo/alias"
@@ -35,33 +39,33 @@ if cli status tasks/demo.md >/dev/null 2>&1; then
 	exit 1
 fi
 intent="$(mtn --path "$work/repo/.tasks" agent show tasks/demo.md --json | jq -r '.result.evidence[0].intent')"
-jq -n --arg hash "$first" --arg intent "$intent" '{schemaVersion:1,eventId:"history/import1",kind:"historical",recordRef:"tasks/demo.md",specHash:$hash,attempt:1,content:"Approved import",provenance:"fixture original records",gateEligible:false,legacyIntents:[$intent],approvedBy:"test fixture",decisionEvidence:"synthetic approval"}' >"$work/history.json"
+jq -n --arg hash "$first" --arg intent "$intent" '{schemaVersion:1,eventID:"history/import1",kind:"historical",recordRef:"tasks/demo.md",specHash:$hash,attempt:1,content:"Approved import",provenance:"fixture original records",gateEligible:false,legacyIntents:[$intent],approvedBy:"test fixture",decisionEvidence:"synthetic approval"}' >"$work/history.json"
 if cli publish "$work/history.json" >/dev/null 2>&1; then
 	printf 'Workers must not publish\n' >&2
 	exit 1
 fi
 MTN_WORKFLOW_COORDINATOR=1 cli publish "$work/history.json" >/dev/null
 cli status tasks/demo.md | jq -e '.state=="planned"' >/dev/null
-jq -n --arg hash "$first" '{schemaVersion:1,eventId:"editorial/note1",kind:"historical",recordRef:"tasks/demo.md",specHash:$hash,attempt:1,content:"Editorial suggestion only",provenance:"current coordinator annotation",gateEligible:false}' >"$work/comment.json"
+jq -n --arg hash "$first" '{schemaVersion:1,eventID:"editorial/note1",kind:"historical",recordRef:"tasks/demo.md",specHash:$hash,attempt:1,content:"Editorial suggestion only",provenance:"current coordinator annotation",gateEligible:false}' >"$work/comment.json"
 MTN_WORKFLOW_COORDINATOR=1 cli publish "$work/comment.json" >/dev/null
 cli status tasks/demo.md | jq -e '.state=="planned"' >/dev/null
 printf '%*s' 3000000 '' | tr ' ' x >"$work/large-content"
-jq -n --arg hash "$first" --rawfile content "$work/large-content" '{content:({schemaVersion:1,eventId:"large-history",kind:"historical",recordRef:"tasks/demo.md",specHash:$hash,attempt:1,content:$content,provenance:"large evidence fixture",gateEligible:false,approvedBy:"test fixture",decisionEvidence:"synthetic regression evidence"}|tojson),category:"historical",adopt:true,retryKey:"large-history"}' |
+jq -n --arg hash "$first" --rawfile content "$work/large-content" '{content:({schemaVersion:1,eventID:"large-history",kind:"historical",recordRef:"tasks/demo.md",specHash:$hash,attempt:1,content:$content,provenance:"large evidence fixture",gateEligible:false,approvedBy:"test fixture",decisionEvidence:"synthetic regression evidence"}|tojson),category:"historical",adopt:true,retryKey:"large-history"}' |
 	mtn --path "$work/repo/.tasks" agent note tasks/demo.md --input - --json >/dev/null
-cli snapshot tasks/demo.md | jq -e 'any(.events[];.eventId=="large-history")' >/dev/null
+cli snapshot tasks/demo.md | jq -e 'any(.events[];.eventID=="large-history")' >/dev/null
 # A large project readiness snapshot must use file-backed jq inputs and preserve
 # the real readiness diagnostic instead of cascading from E2BIG.
-jq -n '{title:"Demo project",path:"projects/demo.md",description:"REQ-001 project",fields:{workflowKind:"project",workflowOrder:1,workflowRequirements:["REQ-001"]}}' |
+jq -n '{title:"Demo project",path:"projects/demo.md",description:"REQ-001 project",fields:{identity:{kind:"project",projectID:"demo"},structure:{order:1},scope:{requirements:["REQ-001"]}}}' |
 	mtn --path "$work/repo/.tasks" agent create --input - --json >/dev/null
-jq -n '{title:"Demo PRD",path:"prds/demo.md",description:"REQ-001 document",fields:{workflowKind:"prd"}}' |
+jq -n '{title:"Demo PRD",path:"prds/demo.md",description:"REQ-001 document",fields:{identity:{kind:"prd"}}}' |
 	mtn --path "$work/repo/.tasks" agent create --input - --json >/dev/null
 prd_hash="$(cli fingerprint prds/demo.md)"
-jq -n --arg hash "$prd_hash" '{title:"Demo phase",path:"phases/demo-01.md",description:"REQ-001 phase",fields:{workflowKind:"phase",workflowOrder:1,workflowRequirements:["REQ-001"],workflowDocuments:[{ref:"prds/demo.md",hash:$hash}]}}' |
+jq -n --arg hash "$prd_hash" '{title:"Demo phase",path:"phases/demo-01.md",description:"REQ-001 phase",fields:{identity:{kind:"phase",phaseID:"demo-01"},structure:{order:1},scope:{requirements:["REQ-001"],documents:[{ref:"prds/demo.md",hash:$hash}]}}}' |
 	mtn --path "$work/repo/.tasks" agent create --input - --json >/dev/null
 printf '%s\n' '{"target":"projects/demo.md"}' |
 	mtn --path "$work/repo/.tasks" agent project-add phases/demo-01.md --input - --json >/dev/null
 phase_hash="$(cli fingerprint phases/demo-01.md)"
-jq -n --arg hash "$phase_hash" --rawfile content "$work/large-content" '{content:({schemaVersion:1,eventId:"large-phase-history",kind:"historical",recordRef:"phases/demo-01.md",specHash:$hash,attempt:1,content:$content,provenance:"large readiness fixture",gateEligible:false,approvedBy:"test fixture",decisionEvidence:"synthetic regression evidence"}|tojson),category:"historical",adopt:true,retryKey:"large-phase-history"}' |
+jq -n --arg hash "$phase_hash" --rawfile content "$work/large-content" '{content:({schemaVersion:1,eventID:"large-phase-history",kind:"historical",recordRef:"phases/demo-01.md",specHash:$hash,attempt:1,content:$content,provenance:"large readiness fixture",gateEligible:false,approvedBy:"test fixture",decisionEvidence:"synthetic regression evidence"}|tojson),category:"historical",adopt:true,retryKey:"large-phase-history"}' |
 	mtn --path "$work/repo/.tasks" agent note phases/demo-01.md --input - --json >/dev/null
 if cli ready projects/demo.md >"$work/ready.out" 2>"$work/ready.err"; then
 	printf 'Expected unapproved project readiness to fail\n' >&2

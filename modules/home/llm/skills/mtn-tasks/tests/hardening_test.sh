@@ -4,12 +4,12 @@ for command in jq dirname; do command -v "$command" >/dev/null || exit 1; done
 skill="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 jq -n -e -L "$skill/scripts" '
 include "workflow";
-def e($id;$kind):{schemaVersion:1,eventId:$id,kind:$kind,recordRef:"tasks/demo.md",specHash:"spec1",attempt:1};
+def e($id;$kind):{schemaVersion:1,eventID:$id,kind:$kind,recordRef:"tasks/demo.md",specHash:"spec1",attempt:1};
 def snapshot($events):{ref:"tasks/demo.md",specHash:"spec1",language:"go",events:$events};
 def blocker($id):e($id;"blocker")+{reason:"external decision"};
-def resume($id):e(("resume-"+$id);"resume")+{blockerEventId:$id};
-def dispatch:e("d1";"dispatch")+{runId:"run1",baseCommit:"base",branch:"work",worktree:"/tmp/work",targetBranch:"main"};
-def blocked:e("build1";"build")+{dispatchEventId:"d1",head:"base",tree:"tree",outcome:"blocked"};
+def resume($id):e(("resume-"+$id);"resume")+{blockerEventID:$id};
+def dispatch:e("d1";"dispatch")+{runID:"run1",baseCommit:"base",branch:"work",worktree:"/tmp/work",targetBranch:"main"};
+def blocked:e("build1";"build")+{dispatchEventID:"d1",head:"base",tree:"tree",outcome:"blocked"};
 def owner($path):{paths:[$path],sharedPaths:[],resources:[],interfaces:[]};
 def candidate($ref;$path):{ref:$ref,phaseOrder:1,order:1,incomplete:true,statusAllowed:true,dependencyReady:true,phaseReady:true,documentsApproved:true,planApproved:true,state:"planned",agentEligible:null,ownership:owner($path)};
 [

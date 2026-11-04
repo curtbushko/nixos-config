@@ -16,7 +16,7 @@ for skill in prd rfc to-prd to-phases write-phase go-team node-team zig-team go-
 		exit 1
 	fi
 done
-for policy in "mtn --path \"\$TASK_ROOT\"" 'explicit approval' 'single writer' 'agentEligible' 'workflowKind' 'workflowOrder' 'Do not hand-edit' 'never use --force'; do
+for policy in "mtn --path \"\$TASK_ROOT\"" 'explicit approval' 'single writer' 'agentEligible' 'identity.kind' 'structure.order' 'Do not hand-edit' 'never use --force'; do
 	grep -Fq "$policy" "$skills/mtn-tasks/SKILL.md" || {
 		printf 'Missing shared policy: %s\n' "$policy" >&2
 		exit 1

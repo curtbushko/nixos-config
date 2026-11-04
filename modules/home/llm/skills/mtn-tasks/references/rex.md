@@ -29,19 +29,19 @@ or integration checks.
   worktree name. Builders use `builder`; reviewers use their skill without its language prefix:
   `go-reviewer` becomes `reviewer`, `zig-code-reviewer` becomes `code-reviewer`.
   Numbers come from the stable numeric segments in phase/task refs, not
-  `workflowOrder`, and the attempt is zero-padded to at least two digits. They are
+  `structure.order`, and the attempt is zero-padded to at least two digits. They are
   labels, not prerequisite edges. For an unnumbered ref, the request must provide
   explicit positive `phaseNumber` and/or `taskNumber`; the launcher never falls
   back to scheduling priority.
 - Phase planners use `p<NN>-planner-a<NN>`, for example
   `p01-planner-a01`, and attach evidence to their phase. Each worker's
   phase prefix is its actual phase, not the coordinator's anchor phase.
-- For every NEW run, `runId` and `piSessionId` MUST be the same canonical agent string:
+- For every NEW run, `runID` and `piSessionID` MUST be the same canonical agent string:
   `<project>-p<NN>-t<NN>-<agent>-a<NN>` for task workers, or
   `<project>-p<NN>-<role>-a<NN>` for coordinators/planners. Coordinator
   `piSessionName` and `rexWindowName` are `coordinator`; worker display names
   remain scoped labels. Display names are not identity or resource selectors; the Rex session
-  already supplies that context. Supply the full canonical `runId` in launch
+  already supplies that context. Supply the full canonical `runID` in launch
   requests and dispatch evidence; the launcher rejects a mismatched scope/name
   before reserving a run or creating Rex resources. Do not silently change the
   run ID after publication. Each Rex window runs one Pi conversation; phase
@@ -64,23 +64,29 @@ on PATH and run both helpers through Bash wrappers if they are not executable.
 
 ## Identity contract
 
-| Field | Meaning |
-|---|---|
-| `runId` | Unique immutable canonical agent identity for this attempt |
-| `piSessionId` | Same canonical string as `runId`, passed to `pi --session-id` |
-| `rexSessionId` | Server-returned `session:...`; selects the Rex session |
-| `rexWindowId` | Server-returned `window:...`; selects the Rex window/tab |
-| `rexBlockId` | Server-returned `block:...`; selects the terminal running Pi |
-| `rexSessionName` | Human-readable project/worktree label |
-| `rexWindowName`, `piSessionName` | Matching display label passed to Rex and `pi --name`; `coordinator` for coordinators, scoped worker label otherwise. Not an identity or resource selector |
+### Provider contract
 
-New runtime events publish these explicit names. `sessionName` and `windowName`
-remain compatibility aliases for `rexSessionName` and `rexWindowName`; historical
-runtime events without the explicit names remain readable. Do not rewrite them.
-Rex-generated IDs stay distinct and authoritative; never use the shared agent
-string as a Rex resource selector. Never pass a Rex resource ID to a Pi
-conversation selector. Old runs keep their original IDs/names, including spaces;
-normalization applies only to new launches, not history or live resources.
+`RunID` is the immutable identity of one execution attempt. It is not the task's
+stable ID and is never derived from a display name for lookup. A runtime binding
+uses the generic provider shape:
+
+```json
+{"provider":{"name":"rex","displayName":"p01-t01-builder-a01","resources":{"session":"session:...","window":"window:...","block":"block:..."}}}
+```
+
+The provider owns resource meanings and reconciliation. `displayName` is
+presentation only; selectors use exact provider resource IDs. The current Rex
+adapter also emits these compatibility aliases:
+
+| Compatibility field | Meaning |
+|---|---|
+| `runID`, `piSessionID` | Canonical execution ID and Pi session ID |
+| `rexSessionID`, `rexWindowID`, `rexBlockID` | Provider resource IDs |
+| `rexSessionName`, `rexWindowName`, `piSessionName` | Provider/display labels, never identity or selectors |
+
+Historical runtime events without `provider` remain readable and are not rewritten.
+Rex-generated IDs stay distinct and authoritative; never use a display label as a
+resource selector or pass a Rex resource ID to a Pi conversation selector.
 
 ## Initial handoff: exactly one coordinator
 
@@ -133,7 +139,7 @@ A coordinator request is JSON (create it with jq, not string interpolation):
   "recordRef": "phases/demo-02-authentication.md",
   "specHash": "sha256:CURRENT_FACADE_FINGERPRINT",
   "attempt": 1,
-  "runId": "demo-p02-coordinator-a01",
+  "runID": "demo-p02-coordinator-a01",
   "role": "coordinator",
   "skill": "go-team",
   "worktree": "/absolute/path/to/demo-auth",
@@ -142,7 +148,7 @@ A coordinator request is JSON (create it with jq, not string interpolation):
   "handoff": true,
   "collectionRelocation": {
     "fromRoot": "/old/checkout/.tasks",
-    "fromRunId": "demo-p02-coordinator-a01",
+    "fromRunID": "demo-p02-coordinator-a01",
     "approvedBy": "explicit user authorization",
     "reason": "authorized move to the designated execution host"
   },
@@ -153,9 +159,9 @@ A coordinator request is JSON (create it with jq, not string interpolation):
 Use `mtn-workflow --repo "$REPO_ROOT" fingerprint "$REF"` for `specHash`.
 Transport requests retain the prompt, but published runtime notes deliberately
 exclude it. Do not put tokens, decrypted secrets or credentials in either.
-New `runId` values must use the canonical pattern above and be unique across the
+New `runID` values must use the canonical pattern above and be unique across the
 collection. Stable phase/task numbers are identity derived from refs (for example,
-`demo-02-client.md` and `demo-02-01-login.md`); changing `workflowOrder` must not
+`demo-02-client.md` and `demo-02-01-login.md`); changing `structure.order` must not
 change a new run’s identity. Increase the attempt for retries; never reuse a previous Pi conversation
 for a fresh worker. Existing Pi-compatible IDs remain valid historical evidence.
 Use `pi --session-id ID` for exact create-or-open semantics, NOT `--session ID`
@@ -177,13 +183,12 @@ its prompt. A fix uses a new task dispatch/build attempt and new worker run IDs.
   "recordRef": "tasks/demo-02-01-login.md",
   "specHash": "sha256:CURRENT_TASK_FINGERPRINT",
   "attempt": 1,
-  "runId": "demo-p02-t01-builder-a01",
+  "runID": "demo-p02-t01-builder-a01",
   "role": "builder",
   "skill": "go-builder",
   "phaseRef": "phases/demo-02-authentication.md",
-  "coordinatorPhaseRef": "phases/demo-02-authentication.md",
-  "parentRunId": "demo-p02-coordinator-a01",
-  "dispatchEventId": "demo-task1/dispatch/1",
+  "coordinator": {"runID": "demo-p02-coordinator-a01", "phaseRef": "phases/demo-02-authentication.md"},
+  "dispatchEventID": "demo-task1/dispatch/1",
   "worktree": "/absolute/path/to/p01-t01-builder-a01",
   "model": "provider/exact-authenticated-model-id",
   "thinking": "high",
@@ -191,16 +196,16 @@ its prompt. A fix uses a new task dispatch/build attempt and new worker run IDs.
 }
 ```
 
-`phaseRef` is the worker task's actual parent phase. `coordinatorPhaseRef` is
+`phaseRef` is the worker task's actual parent phase. `coordinator.phaseRef` is
 where the original coordinator's runtime notes live (defaults to `phaseRef`).
-When scheduling another ready phase, supply that original coordinatorPhaseRef;
+When scheduling another ready phase, supply that original coordinator.phaseRef;
 all workers still join the same Rex session, without introducing a second writer.
 Each worker has a separate Pi conversation; it must not resume the coordinator's
 Pi conversation or create any Rex resources itself.
 
 For a reviewer use `role:reviewer`, its specialty skill and unique run ID. For a
 read-only Task Manager use `role:planner`, `skill:mtn-tasks`, phase recordRef and
-phaseRef, parentRunId, and a planning-proposal prompt; no task dispatch is needed.
+phaseRef, coordinator.runID, and a planning-proposal prompt; no task dispatch is needed.
 The caller remains responsible for bounded planner/reviewer capacity as well as
 builder slots. Launch each Zig specialty as a separate Rex window running a
 separate Pi conversation.
@@ -307,7 +312,7 @@ semantic fingerprints. Runtime notes do not satisfy prerequisites or reviews.
 - After server restart, instance mismatch stops attachment/dispatch; inspect and
   explicitly reconcile instead of trusting stale IDs or recreating the session.
 - After confirming a coordinator stopped/finished, publish a normal `release`
-  event on its phase with `dispatchEventId:<runId>/runtime/reserved`, actual
+  event on its phase with `dispatchEventID:<runID>/runtime/reserved`, actual
   process evidence, and outcome stopped/finished. Only then hand off a new run ID.
   Worker task reservations still require their normal task-dispatch release and
   delivery evidence; releasing the phase does not release live builders.

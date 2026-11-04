@@ -43,32 +43,37 @@ fingerprint() {
 }
 event() {
 	jq -n --arg ref "$1" --arg hash "$(fingerprint "$1")" --arg kind "$2" --arg id "$3" --argjson attempt "$4" \
-		'{schemaVersion:1,eventId:$id,kind:$kind,recordRef:$ref,specHash:$hash,attempt:$attempt}'
+		'{schemaVersion:1,eventID:$id,kind:$kind,recordRef:$ref,specHash:$hash,attempt:$attempt}'
 }
 publish() {
 	local payload="$1"
 	printf '%s\n' "$payload" | jq -e -L "$skill/scripts" 'include "workflow"; valid_event' >/dev/null
 	jq -n --argjson e "$payload" \
-		'{content:($e|tojson),role:"coordinator",category:$e.kind,adopt:true,retryKey:$e.eventId}' |
+		'{content:($e|tojson),role:"coordinator",category:$e.kind,adopt:true,retryKey:$e.eventID}' |
 		mtn --path "$TASK_ROOT" agent note "$(jq -r .recordRef <<<"$payload")" --input - --json >/dev/null
 }
 state() {
 	mtn --path "$TASK_ROOT" agent show "$1" --json |
-		jq --arg hash "$(fingerprint "$1")" '{ref:.result.ref,specHash:$hash,language:.result.frontmatter.workflowLanguage,events:[.result.evidence[].content|fromjson]}' |
+		jq --arg hash "$(fingerprint "$1")" '{ref:.result.ref,specHash:$hash,language:.result.frontmatter.implementation.language,events:[.result.evidence[].content|fromjson]}' |
 		jq -r -L "$skill/scripts" 'include "workflow"; task_state'
 }
 for request in \
-	'{"title":"Demo","path":"projects/demo.md","fields":{"workflowKind":"project","workflowRequirements":["REQ-001","REQ-002","REQ-003"]}}' \
-	'{"title":"Requirements","path":"prds/demo.md","description":"REQ-001: deliver A. REQ-002: deliver B. REQ-003: verify together.","fields":{"workflowKind":"prd"}}' \
-	'{"title":"Design","path":"designs/demo.md","description":"REQ-001/002 have independent immutable CLI outputs; REQ-003 combines them.","fields":{"workflowKind":"design"}}' \
-	'{"title":"Final verification","path":"phases/final.md","fields":{"workflowKind":"phase","workflowOrder":1,"workflowRequirements":["REQ-003"]}}' \
-	'{"title":"Independent components","path":"phases/components.md","fields":{"workflowKind":"phase","workflowOrder":2,"workflowRequirements":["REQ-001","REQ-002"]}}'; do printf '%s\n' "$request" | create; done
+	'{"title":"Demo","path":"projects/demo.md","fields":{"identity":{"kind":"project","projectID":"demo"},"structure":{"order":1},"scope":{"requirements":["REQ-001","REQ-002","REQ-003"]}}}' \
+	'{"title":"Requirements","path":"prds/demo.md","description":"REQ-001: deliver A. REQ-002: deliver B. REQ-003: verify together.","fields":{"identity":{"kind":"prd"}}}' \
+	'{"title":"Design","path":"designs/demo.md","description":"REQ-001/002 have independent immutable CLI outputs; REQ-003 combines them.","fields":{"identity":{"kind":"design"}}}' \
+	'{"title":"Final verification","path":"phases/final.md","fields":{"identity":{"kind":"phase","phaseID":"final"},"structure":{"order":1},"scope":{"requirements":["REQ-003"]}}}' \
+	'{"title":"Independent components","path":"phases/components.md","fields":{"identity":{"kind":"phase","phaseID":"components"},"structure":{"order":2},"scope":{"requirements":["REQ-001","REQ-002"]}}}'; do printf '%s\n' "$request" | create; done
 for doc in prds/demo.md designs/demo.md; do
 	publish "$(event "$doc" approval "$doc/approval/1" 1 | jq '.+{decision:"approved",approvedBy:"test fixture",decisionEvidence:"synthetic approval, not a real stakeholder decision"}')"
 done
 documents="$(jq -n --arg prd "$(fingerprint prds/demo.md)" --arg design "$(fingerprint designs/demo.md)" '[{ref:"prds/demo.md",hash:$prd},{ref:"designs/demo.md",hash:$design}]')"
 for ref in projects/demo.md phases/final.md phases/components.md; do
-	jq -n --argjson docs "$documents" '{operations:[{op:"set",field:"workflowDocuments",value:$docs}]}' |
+	case "$ref" in
+		projects/demo.md) requirements='["REQ-001","REQ-002","REQ-003"]' ;;
+		phases/final.md) requirements='["REQ-003"]' ;;
+		phases/components.md) requirements='["REQ-001","REQ-002"]' ;;
+	esac
+	jq -n --argjson docs "$documents" --argjson requirements "$requirements" '{operations:[{op:"set",field:"scope",value:{requirements:$requirements,documents:$docs}}]}' |
 		mtn --path "$TASK_ROOT" agent patch "$ref" --input - --json >/dev/null
 done
 for phase in phases/final.md phases/components.md; do link "$phase" projects/demo.md project-add; done
@@ -91,8 +96,10 @@ for id in a b c; do
 		;;
 	esac
 	jq -n --arg id "$id" --arg language "$language" --arg requirement "$requirement" --argjson docs "$documents" \
-		'{title:("Task "+$id),path:("tasks/"+$id+".md"),description:("Implement "+$requirement+" with a behavioral test and integration check"),fields:{workflowKind:"task",workflowLanguage:$language,workflowOrder:(if $id=="b" then 2 else 1 end),workflowRequirements:[$requirement],workflowDocuments:$docs,workflowOwnership:{paths:[("src/"+$id+".sh")],sharedPaths:[],resources:[],interfaces:[]}}}' | create
+		'{title:("Task "+$id),path:("tasks/"+$id+".md"),description:("Implement "+$requirement+" with a behavioral test and integration check"),fields:{identity:{kind:"task",taskID:$id},structure:{order:(if $id=="b" then 2 else 1 end)},scope:{requirements:[$requirement],documents:$docs},implementation:{language:$language,ownership:{paths:[("src/"+$id+".sh")],sharedPaths:[],resources:[],interfaces:[]}}}}' | create
 	link "tasks/$id.md" "phases/$phase.md" project-add
+	jq -n --arg requirement "$requirement" --argjson docs "$documents" '{operations:[{op:"set",field:"scope",value:{requirements:[$requirement],documents:$docs}}]}' |
+		mtn --path "$TASK_ROOT" agent patch "tasks/$id.md" --input - --json >/dev/null
 done
 link tasks/c.md tasks/a.md depends-add
 link tasks/c.md tasks/b.md depends-add
@@ -100,7 +107,7 @@ original_hash_a="$(fingerprint tasks/a.md)"
 metadata='[]'
 while read -r ref; do
 	parents="$(mtn --path "$TASK_ROOT" agent hierarchy "$ref" --json | jq '[.result.parents[].resolution.ref]')"
-	data="$(mtn --path "$TASK_ROOT" agent show "$ref" --json | jq --argjson parents "$parents" '.result|{ref,kind:.frontmatter.workflowKind,parentRefs:$parents,order:.frontmatter.workflowOrder,language:.frontmatter.workflowLanguage,requirements:.frontmatter.workflowRequirements,documents:.frontmatter.workflowDocuments,ownership:.frontmatter.workflowOwnership}')"
+	data="$(mtn --path "$TASK_ROOT" agent show "$ref" --json | jq --argjson parents "$parents" '.result|{ref,identity:({uuid:(.frontmatter.identity.uuid // .frontmatter.id),kind:.frontmatter.identity.kind} + (if .frontmatter.identity.kind=="project" then {projectID:.frontmatter.identity.projectID} elif .frontmatter.identity.kind=="phase" then {phaseID:.frontmatter.identity.phaseID} elif .frontmatter.identity.kind=="task" then {taskID:.frontmatter.identity.taskID} else {} end)),kind:.frontmatter.identity.kind,parentRef:($parents[0] // null),order:.frontmatter.structure.order,language:.frontmatter.implementation.language,requirements:.frontmatter.scope.requirements,documents:.frontmatter.scope.documents,ownership:.frontmatter.implementation.ownership}')"
 	metadata="$(jq -n --argjson items "$metadata" --argjson data "$data" '$items+[$data]')"
 done < <(mtn --path "$TASK_ROOT" list --json | jq -r '.[].path')
 jq -n -e -L "$skill/scripts" --argjson records "$metadata" 'include "workflow"; {requirements:["REQ-001","REQ-002","REQ-003"],records:$records}|metadata_valid' >/dev/null
@@ -120,11 +127,11 @@ plan_ready() {
 		docs="$(jq -n --argjson items "$docs" --argjson data "$data" '$items+[$data]')"
 	done
 	while read -r child; do
-		data="$(mtn --path "$TASK_ROOT" agent show "$child" --json | jq --arg hash "$(fingerprint "$child")" '{ref:.result.ref,specHash:$hash,requirements:.result.frontmatter.workflowRequirements}')"
+		data="$(mtn --path "$TASK_ROOT" agent show "$child" --json | jq --arg hash "$(fingerprint "$child")" '{ref:.result.ref,specHash:$hash,requirements:.result.frontmatter.scope.requirements}')"
 		records="$(jq -n --argjson items "$records" --argjson data "$data" '$items+[$data]')"
 	done < <(mtn --path "$TASK_ROOT" agent hierarchy "$ref" --json | jq -r '.result.children[]')
 	mtn --path "$TASK_ROOT" agent show "$ref" --json |
-		jq --arg hash "$(fingerprint "$ref")" --argjson docs "$docs" --argjson records "$records" '{ref:.result.ref,specHash:$hash,documents:$docs,records:$records,requirements:.result.frontmatter.workflowRequirements,events:[.result.evidence[].content|fromjson]}' |
+		jq --arg hash "$(fingerprint "$ref")" --argjson docs "$docs" --argjson records "$records" '{ref:.result.ref,specHash:$hash,documents:$docs,records:$records,requirements:.result.frontmatter.scope.requirements,events:[.result.evidence[].content|fromjson]}' |
 		jq -e -L "$skill/scripts" 'include "workflow"; plan_approved' >/dev/null
 }
 plan_ready projects/demo.md
@@ -136,8 +143,8 @@ for id in a b c; do
 	if [[ "$id" == c ]]; then phase=final; else phase=components; fi
 	phase_ready="$(mtn --path "$TASK_ROOT" agent dependencies "phases/$phase.md" --json | jq '.result.dependencyReady')"
 	task_ready="$(mtn --path "$TASK_ROOT" agent dependencies "tasks/$id.md" --json | jq '.result.dependencyReady')"
-	phase_order="$(mtn --path "$TASK_ROOT" agent show "phases/$phase.md" --json | jq '.result.frontmatter.workflowOrder')"
-	data="$(mtn --path "$TASK_ROOT" agent show "tasks/$id.md" --json | jq --argjson phaseOrder "$phase_order" --argjson phase "$phase_ready" --argjson dependency "$task_ready" '{ref:.result.ref,phaseOrder:$phaseOrder,order:.result.frontmatter.workflowOrder,incomplete:true,statusAllowed:true,dependencyReady:$dependency,phaseReady:$phase,documentsApproved:true,planApproved:true,state:"planned",agentEligible:null,ownership:.result.frontmatter.workflowOwnership}')"
+	phase_order="$(mtn --path "$TASK_ROOT" agent show "phases/$phase.md" --json | jq '.result.frontmatter.structure.order')"
+	data="$(mtn --path "$TASK_ROOT" agent show "tasks/$id.md" --json | jq --argjson phaseOrder "$phase_order" --argjson phase "$phase_ready" --argjson dependency "$task_ready" '{ref:.result.ref,phaseOrder:$phaseOrder,order:.result.frontmatter.structure.order,incomplete:true,statusAllowed:true,dependencyReady:$dependency,phaseReady:$phase,documentsApproved:true,planApproved:true,state:"planned",agentEligible:null,ownership:.result.frontmatter.implementation.ownership}')"
 	candidates="$(jq -n --argjson items "$candidates" --argjson data "$data" '$items+[$data]')"
 done
 jq -n -e -L "$skill/scripts" --argjson candidates "$candidates" 'include "workflow"; {maxParallel:2,active:[],candidates:$candidates}|ready_batch|map(.ref)==["tasks/a.md","tasks/b.md"]' >/dev/null
@@ -170,19 +177,19 @@ dispatch() {
 	for ref in "tasks/$id.md" "$phase_ref" projects/demo.md; do
 		printf '%s\n' '{"status":"in-progress"}' | mtn --path "$TASK_ROOT" agent status "$ref" --input - --json >/dev/null
 	done
-	publish "$(event "tasks/$id.md" dispatch "$id/dispatch/$attempt" "$attempt" | jq --arg worktree "$checkout" --arg base "$start" --arg branch "worker-$id" --arg run "$id-$attempt" '.+{runId:$run,baseCommit:$base,branch:$branch,worktree:$worktree,targetBranch:"main"}')"
+	publish "$(event "tasks/$id.md" dispatch "$id/dispatch/$attempt" "$attempt" | jq --arg worktree "$checkout" --arg base "$start" --arg branch "worker-$id" --arg run "$id-$attempt" '.+{runID:$run,baseCommit:$base,branch:$branch,worktree:$worktree,targetBranch:"main"}')"
 }
 built() {
 	local id="$1" attempt="$2"
-	publish "$(event "tasks/$id.md" build "$id/build/$attempt" "$attempt" | jq --argjson data "$(<"$work/results/$id-$attempt.json")" --arg dispatch "$id/dispatch/$attempt" '.+$data+{dispatchEventId:$dispatch}')"
+	publish "$(event "tasks/$id.md" build "$id/build/$attempt" "$attempt" | jq --argjson data "$(<"$work/results/$id-$attempt.json")" --arg dispatch "$id/dispatch/$attempt" '.+$data+{dispatchEventID:$dispatch}')"
 }
 build_record() {
 	mtn --path "$TASK_ROOT" agent show "tasks/$1.md" --json |
-		jq -c --arg id "$1/build/$2" '.result.evidence[].content|fromjson|select(.kind=="build" and .eventId==$id)'
+		jq -c --arg id "$1/build/$2" '.result.evidence[].content|fromjson|select(.kind=="build" and .eventID==$id)'
 }
 review() {
 	local id="$1" attempt="$2" verdict="$3"
-	publish "$(event "tasks/$id.md" review "$id/review/$attempt" "$attempt" | jq --argjson data "$(build_record "$id" "$attempt")" --arg build "$id/build/$attempt" --arg verdict "$verdict" '.+{buildEventId:$build,head:$data.head,tree:$data.tree,reviewer:"combined",verdict:$verdict,changes_required:(if $verdict=="APPROVED" then [] else [{id:"R-001",evidence:"fixture requests second behavior revision"}] end),validation:[{command:"fixture independent review",result:"pass"}]}')"
+	publish "$(event "tasks/$id.md" review "$id/review/$attempt" "$attempt" | jq --argjson data "$(build_record "$id" "$attempt")" --arg build "$id/build/$attempt" --arg verdict "$verdict" '.+{buildEventID:$build,head:$data.head,tree:$data.tree,reviewer:"combined",verdict:$verdict,changes_required:(if $verdict=="APPROVED" then [] else [{id:"R-001",evidence:"fixture requests second behavior revision"}] end),validation:[{command:"fixture independent review",result:"pass"}]}')"
 }
 for id in a b; do
 	git -C "$target" worktree add -q -b "worker-$id" "$work/worker-$id" "$base"
@@ -214,8 +221,8 @@ integrate() {
 	[[ "$(state "tasks/$id.md")" == awaiting-integration ]]
 	data="$(build_record "$id" "$attempt")"
 	head="$(jq -r .head <<<"$data")"
-	dispatch_id="$(jq -r .dispatchEventId <<<"$data")"
-	start="$(mtn --path "$TASK_ROOT" agent show "tasks/$id.md" --json | jq -r --arg id "$dispatch_id" '.result.evidence[].content|fromjson|select(.kind=="dispatch" and .eventId==$id)|.baseCommit')"
+	dispatch_id="$(jq -r .dispatchEventID <<<"$data")"
+	start="$(mtn --path "$TASK_ROOT" agent show "tasks/$id.md" --json | jq -r --arg id "$dispatch_id" '.result.evidence[].content|fromjson|select(.kind=="dispatch" and .eventID==$id)|.baseCommit')"
 	# Worker changes cannot smuggle task metadata or unrelated files into integration.
 	[[ "$(git -C "$target" diff --name-only "$start" "$head")" == "src/$id.sh" ]]
 	before="$(git -C "$target" rev-parse HEAD)"
@@ -227,7 +234,7 @@ integrate() {
 	if [[ "$fail" == true ]]; then
 		# Deliberate combined-check failure: retain candidate without advancing main.
 		if (cd "$candidate" && bash -c 'exit 1'); then exit 1; fi
-		publish "$(event "tasks/$id.md" integration "$id/integration-failed/$attempt-$try" "$attempt" | jq --argjson data "$data" --arg build "$id/build/$attempt" --arg review "$id/review/$attempt" --arg base "$before" --arg commit "$commit" --arg tree "$tree" '.+{buildEventId:$build,head:$data.head,tree:$data.tree,reviewEventIds:[$review],targetBranch:"main",targetBase:$base,candidateCommit:$commit,candidateTree:$tree,outcome:"failed",validation:[{command:"deliberately failing combined check",result:"fail"}]}')"
+		publish "$(event "tasks/$id.md" integration "$id/integration-failed/$attempt-$try" "$attempt" | jq --argjson data "$data" --arg build "$id/build/$attempt" --arg review "$id/review/$attempt" --arg base "$before" --arg commit "$commit" --arg tree "$tree" '.+{buildEventID:$build,head:$data.head,tree:$data.tree,reviewEventIDs:[$review],targetBranch:"main",targetBase:$base,candidateCommit:$commit,candidateTree:$tree,outcome:"failed",validation:[{command:"deliberately failing combined check",result:"fail"}]}')"
 		[[ "$(git -C "$target" rev-parse HEAD)" == "$before" ]]
 		[[ "$(state "tasks/$id.md")" == awaiting-integration ]]
 		return
@@ -236,9 +243,9 @@ integrate() {
 	[[ "$(git -C "$target" rev-parse HEAD)" == "$before" ]]
 	git -C "$target" merge --ff-only "candidate-$id-$attempt-$try" >/dev/null
 	git -C "$target" merge-base --is-ancestor "$commit" main
-	publish "$(event "tasks/$id.md" integration "$id/integration/$attempt" "$attempt" | jq --argjson data "$data" --arg build "$id/build/$attempt" --arg review "$id/review/$attempt" --arg base "$before" --arg commit "$commit" --arg tree "$tree" '.+{buildEventId:$build,head:$data.head,tree:$data.tree,reviewEventIds:[$review],targetBranch:"main",targetBase:$base,integratedCommit:$commit,integratedTree:$tree,outcome:"passed",validation:[{command:"combined target scoped check",result:"pass"}]}')"
+	publish "$(event "tasks/$id.md" integration "$id/integration/$attempt" "$attempt" | jq --argjson data "$data" --arg build "$id/build/$attempt" --arg review "$id/review/$attempt" --arg base "$before" --arg commit "$commit" --arg tree "$tree" '.+{buildEventID:$build,head:$data.head,tree:$data.tree,reviewEventIDs:[$review],targetBranch:"main",targetBase:$base,integratedCommit:$commit,integratedTree:$tree,outcome:"passed",validation:[{command:"combined target scoped check",result:"pass"}]}')"
 	[[ "$(state "tasks/$id.md")" == integrated ]]
-	publish "$(event "tasks/$id.md" completion "$id/completion/$attempt" "$attempt" | jq --arg integration "$id/integration/$attempt" '.+{integrationEventId:$integration}')"
+	publish "$(event "tasks/$id.md" completion "$id/completion/$attempt" "$attempt" | jq --arg integration "$id/integration/$attempt" '.+{integrationEventID:$integration}')"
 	mtn --path "$TASK_ROOT" agent complete "tasks/$id.md" --json >/dev/null
 	[[ "$(state "tasks/$id.md")" == complete ]]
 }

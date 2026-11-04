@@ -35,10 +35,12 @@ publishes events. Automation is Bash plus Unix tools/jq, never JS or Python.
 
 `.tasks/` is the single source of workflow truth. Do not hand-edit managed records.
 Native calls always use `mtn --path "$TASK_ROOT"`. Diagnose before initialization;
-never use --force. Records use workflowKind project/prd/design/phase/task;
-workflowOrder is scheduling preference, not a prerequisite. Native memberships and
-explicit dependencies are distinct. Prefer task edges; phase edges mean a genuine
-whole-milestone barrier.
+never use --force. Workflow records follow [data-model](references/data-model.md):
+identity (UUID and stable typed ID; for example `identity.kind` and `identity.taskID`), presentation, structure (including `structure.order`), scope, lifecycle,
+execution, and implementation are distinct. New code must use those grouped fields exclusively. `RunID` identifies one
+execution only; display names and provider resource IDs are never work-item or run
+identity. Native memberships and explicit dependencies are distinct. Prefer task
+edges; phase edges mean a genuine whole-milestone barrier.
 
 A single writer serializes collection mutations and target integration. Independent
 builders use worktrees and bounded ownership. Separate builder/reviewer/gate limits

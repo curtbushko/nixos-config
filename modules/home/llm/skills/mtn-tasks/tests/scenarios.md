@@ -70,8 +70,8 @@ and a disposable native collection. It never repairs an existing project.
 
 A v1 `kind:recovery` event requires `decision:approved`, actual `approvedBy` and
 string `decisionEvidence`, canonical absolute `collectionRoot`,
-`disposition:quarantine-malformed-approval`, a `replacementEventId`, and
-`target:{eventId,specHash,intent,contentDigest}`. `specHash` binds the recovery to
+`disposition:quarantine-malformed-approval`, a `replacementEventID`, and
+`target:{eventID,specHash,intent,contentDigest}`. `specHash` binds the recovery to
 the current document; `target.specHash` binds the original malformed approval.
 `contentDigest` is lowercase `sha256:` over the exact UTF-8 native content string,
 including trailing newlines, without reserializing its JSON. No token, approval
@@ -98,7 +98,7 @@ recovery authority; multiple explicitly imported object notes retain distinct ge
 IDs. Duplicate effective IDs still fail closed after projection.
 Recovery is fingerprint-bound: semantic document changes fail closed rather than
 silently carrying its authorization forward. A separately authorized reassessment
-appends another recovery with `supersedesRecoveryEventId` naming the latest link,
+appends another recovery with `supersedesRecoveryEventID` naming the latest link,
 the identical original target, a new current fingerprint and a fresh designated
 replacement identity. Only the active tip governs approval; old authorizations and
 original envelopes remain visible. With multiple targets, exact reassessments can

@@ -3,10 +3,15 @@
 This is the normative cross-skill contract. Read alongside commands and execution.
 mtn is storage/graph infrastructure, not a scheduler, task-claim service, review
 authority, or Git integration engine. The coordinator enforces this protocol.
+The domain model is grouped by concern: `identity`, `presentation`, `structure`,
+`scope`, `lifecycle`, `execution`, and `implementation`; see `data-model.md`.
+The `uuid` field and stable typed work-item ID fields identify records; only executions have
+an ephemeral `runID`. Provider resource maps are generic and exact IDs are
+authoritative.
 
 ## Document model and approval
 
-Use native task records, distinguished by schema-permitted `workflowKind`:
+Use native task records, distinguished by the grouped `identity.kind` field:
 
 | Kind | Path | Meaning |
 |---|---|---|
@@ -17,7 +22,7 @@ Use native task records, distinguished by schema-permitted `workflowKind`:
 | task | `tasks/<project>-<NN>-<NN>-<slug>.md` | Independently verifiable delegated TDD unit |
 
 Documents stay outside the delivery progress tree. Link PRD/design refs in prose
-and typed `workflowDocuments:[{ref,hash}]` on phases/tasks. Do not duplicate design
+and typed `scope.documents:[{ref,hash}]` on phases/tasks. Do not duplicate design
 in the PRD. Simple work can explicitly omit a design with rationale recorded in the
 approved project plan; material interface/security/persistence changes need a design.
 `prd` supplies requirements-writing guidance; `to-prd` synthesizes conversation into
@@ -45,8 +50,10 @@ do not silently classify a changed requirement as cosmetic to retain approval.
 Assign stable `REQ-001`, `REQ-002`, etc. IDs in PRD prose; never renumber surviving
 requirements. Each has observable acceptance criteria and required verification.
 Design sections reference those IDs and define stable interface IDs where useful.
-Phases/tasks use `workflowRequirements:["REQ-001"]`; descriptions explain which
-portion is covered. Tests stay in every implementation task; the user clarifies
+Phases/tasks use `scope.requirements:["REQ-001"]`; each phase has exactly one
+`structure.parentRef` to a project and each task has exactly one
+`structure.parentRef` to a phase. Multiple parents are invalid. Descriptions explain
+which portion is covered. Tests stay in every implementation task; the user clarifies
 strategy and constraints, not whether acceptance behavior needs testing at all.
 
 An approved project plan lists document refs/fingerprints, phase refs/fingerprints,
@@ -91,16 +98,22 @@ Every task has schema-permitted typed metadata:
 
 ```json
 {
-  "workflowKind":"task",
-  "workflowLanguage":"go",
-  "workflowOrder":1,
-  "workflowRequirements":["REQ-001"],
-  "workflowDocuments":[{"ref":"prds/demo.md","hash":"sha256:..."}],
-  "workflowOwnership":{
-    "paths":["internal/parser"],
-    "sharedPaths":[],
-    "resources":[],
-    "interfaces":[]
+  "identity": {"kind":"task","taskID":"demo-01-01-parser"},
+  "structure": {"order":1},
+  "scope": {
+    "requirements":["REQ-001"],
+    "documents":[{"ref":"prds/demo.md","hash":"sha256:..."}],
+    "dependencies":[]
+  },
+  "implementation": {
+    "language":"go",
+    "gates":[{"ID":"unit-tests","command":"task test","required":true}],
+    "ownership":{
+      "paths":["internal/parser"],
+      "sharedPaths":[],
+      "resources":[],
+      "interfaces":[]
+    }
   }
 }
 ```
@@ -143,7 +156,7 @@ invoked language team supplies defaults, never silently rewrites a task's langua
 3. Build the eligible task set from every ready phase. Filter kind, actual membership,
    language, native status, current plan/spec approval, blockers, existing sessions,
    and activity eligibility. Null `agentEligible` is not an approval or a claim.
-4. Prefer lower phase/task `workflowOrder` only among eligible candidates; it is not
+4. Prefer lower phase/task `structure.order` only among eligible candidates; it is not
    a barrier. Choose a maximal safe batch within configured concurrency/resource limits
    using ownership/interface conflicts. A greedy deterministic batch is acceptable;
    maximizing theoretical parallelism is not worth unsafe scheduling.
@@ -228,13 +241,13 @@ completion and delivery proof have been checked.
 Each current protocol note contains a JSON object serialized as `agent note` **content**:
 
 ```json
-{"schemaVersion":1,"eventId":"demo-task-01/build/2","kind":"build","recordRef":"tasks/demo-01-01-parser.md","specHash":"sha256:...","attempt":2,"dispatchEventId":"demo-task-01/dispatch/2","head":"git-commit","tree":"git-tree","outcome":"ready-for-review","validation":[{"command":"task test","result":"pass"}]}
+{"schemaVersion":1,"eventID":"demo-task-01/build/2","kind":"build","recordRef":"tasks/demo-01-01-parser.md","specHash":"sha256:...","attempt":2,"dispatchEventID":"demo-task-01/dispatch/2","head":"git-commit","tree":"git-tree","outcome":"ready-for-review","validation":[{"command":"task test","result":"pass"}]}
 ```
 
-Common keys: `schemaVersion`, unique `eventId`, `kind`, exact `recordRef`, `specHash`,
+Common keys: `schemaVersion`, unique `eventID`, `kind`, exact `recordRef`, `specHash`,
 and positive integer `attempt`. Include operator/worker attribution and source of
-claims, but note attribution is not authenticated. Note retry key equals eventId;
-retry an identical payload only. New content/revision/verdict requires a new eventId.
+claims, but note attribution is not authenticated. Note retry key equals eventID;
+retry an identical payload only. New content/revision/verdict requires a new eventID.
 Use `category` corresponding to kind (`approval`, `plan`, `dispatch`, `build`, `review`,
 `integration`, `completion`, `milestone`, `blocker`, `resume`, `release`, `runtime`,
 `summary`). Fixes replace current state with a new attempt; they do not require a
@@ -245,36 +258,36 @@ Per-kind fields:
 - approval: `decision`, approving authority, requirement IDs, actual decision evidence.
 - plan: `decision:"approved"`, nonempty `records:[{ref,specHash}]`, document hashes,
   coverage mapping, dependency refs, actual user approval evidence.
-- dispatch: `runId`, `baseCommit`, `branch`, `targetBranch`, absolute `worktree`;
+- dispatch: `runID`, `baseCommit`, `branch`, `targetBranch`, absolute `worktree`;
   allowed scope/commands. A host-assigned identity returned after launch belongs
   in subsequent build/release evidence; the reserved run label remains immutable.
 - runtime: Rex/Pi locator evidence, as defined in [Rex/Pi execution](rex.md).
-  Common event keys plus `stage` (reserved or launched), `runId`, `role`, `skill`,
-  `worktree`, exact `model`/`thinking`, `piSessionId`, `host` (endpoint/hostId/instanceId),
+  Common event keys plus `stage` (reserved or launched), `runID`, `role`, `skill`,
+  `worktree`, exact `model`/`thinking`, `piSessionID`, `host` (endpoint/hostID/instanceID),
   `rexSessionName`, `rexWindowName`, `piSessionName`, `transportDir`. The Pi
-  session ID remains the immutable canonical `runId`; coordinator display names
+  session ID remains the immutable canonical `runID`; coordinator display names
   are simply `coordinator`, while worker display names are scoped labels. Display
   names are presentation only and never Rex resource selectors. Rex-generated
   resource IDs stay separate. Keep `sessionName`/`windowName` as
   matching compatibility aliases;
   old runtime events lacking the explicit names remain valid and are not rewritten.
   Coordinator entries require `handoff:true`;
-  workers identify `phaseRef` and `parentRunId`; builders/reviewers also identify the
-  governing `dispatchEventId`. Launched entries add full `rexSessionId`, `rexWindowId`,
-  `rexBlockId`. Reserve BEFORE creation and append returned IDs BEFORE Pi startup.
+  workers identify `phaseRef` and `coordinator.runID`; builders/reviewers also identify the
+  governing `dispatchEventID`. Launched entries add full `rexSessionID`, `rexWindowID`,
+  `rexBlockID`. Reserve BEFORE creation and append returned IDs BEFORE Pi startup.
   Store coordinator runs on the phase, worker runs on their task (planners on the phase).
   Never include prompts or credentials. These events do not change task state,
   approval, spec fingerprints, prerequisites, or completion; release still requires
   confirmed stopped/finished process evidence, not a guessed runtime flag.
-- build: `dispatchEventId`, `head`, `tree`, `outcome`, validation command/results,
+- build: `dispatchEventID`, `head`, `tree`, `outcome`, validation command/results,
   files/tests, RED/GREEN evidence, limitations; outcome is ready-for-review or blocked.
-- review: `buildEventId`, identical `head`/`tree`, required `reviewer`, verdict,
+- review: `buildEventID`, identical `head`/`tree`, required `reviewer`, verdict,
   `changes_required`, criterion evidence, independent validation, nonblocking suggestions.
-- integration: `buildEventId`, reviewed `head`/`tree`, exact current `reviewEventIds`,
+- integration: `buildEventID`, reviewed `head`/`tree`, exact current `reviewEventIDs`,
   `targetBranch`, `targetBase`, validation and outcome. Success names actual
   `integratedCommit`/`integratedTree`; failure names preserved `candidateCommit`/
   `candidateTree` and failed checks, without claiming it entered target history.
-- completion: `integrationEventId` of the accepted successful integration.
+- completion: `integrationEventID` of the accepted successful integration.
 - milestone: nonempty completed child `records`, `targetCommit`, `targetTree`,
   requirement coverage and passing combined-revision `validation`; used for parents.
 - historical: original `content`, `provenance`, `gateEligible:false`. To authorize
@@ -284,11 +297,11 @@ Per-kind fields:
   targetBranch, passing verification, approvedBy/decisionEvidence, reviewEquivalent:false.
   Never imply it was reviewed under the new protocol; verify target history before use.
 - blocker: concrete `reason`, affected refs, required human decision/recovery.
-- resume: exact `blockerEventId`, resolution evidence and authorization. ALL unresolved
+- resume: exact `blockerEventID`, resolution evidence and authorization. ALL unresolved
   blockers survive spec changes; resolving a later blocker does not resolve earlier ones.
-  Blocked builds can reference `blockerEventIds`; otherwise their own build ID is an
+  Blocked builds can reference `blockerEventIDs`; otherwise their own build ID is an
   implicit blocker. Resolve reported IDs explicitly, then retry as a new attempt.
-- release: `dispatchEventId`, outcome stopped or finished, confirmed host/process evidence.
+- release: `dispatchEventID`, outcome stopped or finished, confirmed host/process evidence.
 - summary: `summaryVersion:1`, `status:"complete"`, accepted scope, requirement IDs,
   approval authority summary, `targetCommit`/`targetTree`/`targetBranch`, actual
   passing verification commands/results, exact artifact/source file refs, and
@@ -348,7 +361,7 @@ ancestors and reassessing already-completed dependents and document/plan approva
 `scripts/workflow.jq` provides minimum event-shape checks, revision-bound task-state
 reduction, approval/plan coverage checks, ownership conflicts, and deterministic
 safe-batch selection. `metadata_valid` takes `{requirements,records}`; each normalized
-record has ref/kind, resolved `parentRefs`, order, language, requirements, documents
+record has ref/kind, resolved `parentRef`, order, language, requirements, documents
 and ownership. Normalize parents using hierarchy's `parents[].resolution.ref`, not
 raw wikilink parsing. It rejects unknown kinds/languages, missing parents/documents,
 including languages outside `go`, `node`, `zig`, `lua`, `nix`, and `docs`.

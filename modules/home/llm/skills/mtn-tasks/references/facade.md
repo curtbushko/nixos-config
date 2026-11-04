@@ -19,15 +19,21 @@ mtn-workflow --repo "$REPO_ROOT" cleanup-plan
 MTN_WORKFLOW_COORDINATOR=1 mtn-workflow --repo "$REPO_ROOT" publish request.json
 ```
 
-- `status` is a compact task state plus all outstanding blocker IDs.
+- `status` is a compact task state plus all outstanding blocker IDs. Its record
+  projection is grouped as `identity`, `presentation`, `structure`, `scope`,
+  `lifecycle`, `execution`, and `implementation`; active execution bindings are
+  exposed under `execution.current.runs`; `state` is retained as a compatibility
+  convenience.
 - `task` includes the semantic definition and current state, not unrelated history.
   `snapshot` is an explicit normalized diagnostic view; scheduling uses a compact
   current-state projection and does not pass the full view through readiness.
 - `route LANGUAGE` reports the supported leaf builder/reviewer contract. The
   supported values are `go`, `node`, `zig`, `lua`, `nix`, and `docs`; Lua/Nix/docs
   use the independent combined source-review gate without Go TDD routing.
-- `fingerprint` is the canonical semantic hash, excluding administrative title/order,
-  timestamps, execution status and evidence. Ownership paths are filesystem-normalized.
+- `fingerprint` is the canonical semantic hash, excluding presentation display name,
+  structural order, timestamps, lifecycle status, execution bindings and evidence.
+  Ownership paths are filesystem-normalized. Existing flat native fields are read through the
+  grouped compatibility adapter.
 - `paths` resolves aliases/symlinks, permits future in-repository paths and rejects
   escapes/traversal. Conflict comparison conservatively folds case even on Linux;
   case-distinct paths may serialize rather than risk a Mac collision.
