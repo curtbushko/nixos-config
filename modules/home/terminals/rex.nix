@@ -23,7 +23,11 @@
       ])
     (lib.splitString "\n" config.xdg.configFile."ghostty/config".text);
   themeFile = pkgs.writeText "rex-flair-theme" (lib.concatStringsSep "\n" themeLines + "\n");
-  initLua = builtins.readFile ./rex/init.lua;
+  initLua =
+    builtins.replaceStrings
+    ["@rex-whichkey-bin@"]
+    ["${config.programs.rex-whichkey.package}/bin"]
+    (builtins.readFile ./rex/init.lua);
 in {
   imports = [inputs.rex-whichkey.homeManagerModules.default];
 

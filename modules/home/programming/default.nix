@@ -20,6 +20,13 @@ in {
   config = mkIf cfg.enable {
     programs.go = {
       enable = true;
+      package = pkgs.go_1_26.overrideAttrs (_: {
+        version = "1.26.8";
+        src = pkgs.fetchurl {
+          url = "https://go.dev/dl/go1.26.8.src.tar.gz";
+          hash = "sha256-Tjm5jkL5RvoFrIvFtxh335fb23y7Gnd7VBZnrXEX/S4=";
+        };
+      });
     };
     home.packages = [
       pkgs.cargo

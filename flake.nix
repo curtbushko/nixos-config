@@ -44,11 +44,6 @@
       url = "github:numtide/llm-agents.nix";
     };
 
-    llmfit = {
-      url = "github:AlexsJones/llmfit";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     minecraft-servers = {
       url = "github:curtbushko/minecraft-servers";
       inputs.nixpkgs.follows = "nixpkgs";

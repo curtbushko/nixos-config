@@ -81,6 +81,7 @@
     runtimeInputs = [pkgs.jq pkgs.coreutils];
     text = builtins.readFile ./rex-env-render;
   };
+  nix-cache-include = pkgs.writeScriptBin "nix-cache-include" (builtins.readFile ./nix-cache-include);
   rex-theme-install = pkgs.writeScriptBin "rex-theme-install" (builtins.readFile ./rex-theme-install);
   snippet = pkgs.writeScriptBin "snippet" (builtins.readFile ./snippet);
   tailssh = pkgs.writeScriptBin "tailssh" (builtins.readFile ./tailssh);
@@ -154,6 +155,7 @@ in {
         pr-review
         pr-view
         rex-env-render
+        nix-cache-include
         rex-theme-install
         snippet
         tailssh

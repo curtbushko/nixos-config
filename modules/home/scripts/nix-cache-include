@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+custom="${1:-/etc/nix/nix.custom.conf}"
+if ! command -v grep >/dev/null 2>&1; then
+	printf 'grep is required\n' >&2
+	exit 1
+fi
+
+if [[ -e "$custom" ]]; then
+	if grep -Eq '^[[:space:]]*!?include[[:space:]]+nix[.]repo-caches[.]conf([[:space:]]*(#.*)?)?$' "$custom"; then
+		exit 0
+	else
+		status=$?
+		[[ "$status" -eq 1 ]] || exit "$status"
+	fi
+fi
+
+# Always start a new line, including when the existing file has no final newline.
+printf '\ninclude nix.repo-caches.conf\n' >>"$custom"

@@ -263,8 +263,10 @@ and exactly one JSON object is saved, the launcher closes only that worker's
 persisted window on its pinned host/server instance. Blocked/failed outcomes,
 CHANGES_NEEDED reviews, malformed/multiple payloads and close errors retain the
 window for inspection. This is transport cleanup, NOT protocol approval or task
-completion. Coordinator windows remain open. Final results, exit codes, Pi sessions,
-worktrees and runtime notes are retained even after window closure.
+completion. Coordinator windows remain open. Final results, exit codes, Pi sessions
+and runtime notes are retained even after window closure. Worktrees remain through
+review/integration, then the coordinator must perform [Task cleanup](execution.md#task-cleanup)
+after delivery; automatic window closure does not replace worktree cleanup.
 Use saved transport evidence after closure; a missing worker window alone is not
 a failure and does not authorize relaunch.
 
@@ -322,6 +324,11 @@ semantic fingerprints. Runtime notes do not satisfy prerequisites or reviews.
 - A missing result/transport file is missing evidence, not permission to infer
   success. Preserve worktrees, runtime notes, Pi sessions and windows on failure.
 - Automatic closure of successful worker windows follows the policy above.
-  Closing coordinator/failed/unrelated windows or sessions, deleting transport or
-  worktrees, and global cleanup still need separate authorization. Phase completion
-  still includes cleanup planning.
+  Task cleanup is already authorized for confirmed-stopped successful worker windows
+  and clean, delivered, no-longer-needed task worktrees; the coordinator must verify
+  and finish it after each task, without another approval round. Follow
+  [Task cleanup](execution.md#task-cleanup), including runtime releases and retries
+  of the completion facade for already-completed tasks.
+  Closing coordinator/failed/unrelated windows or sessions, deleting transport,
+  discarding dirty worktrees, and global cleanup still need separate authorization.
+  Phase completion still includes cleanup planning for retained resources.

@@ -16,6 +16,7 @@ let
             };
           };
         };
+        programs.rex-whichkey.package = "/test/whichkey";
         home.homeDirectory = "/test/home";
         xdg.configHome = "/test/config";
         xdg.configFile."ghostty/config".text = "";
@@ -82,6 +83,13 @@ in
   assert builtins.elem "192.0.2.1:8000" custom.config.launchd.agents.rex-server.config.ProgramArguments;
   assert module.config.home.file.".local/bin/rex".source == expected;
   assert module.config.programs.rex-whichkey.enable;
+  assert !(module.options.ns.terminals.rex ? whichkeyHelper);
+  assert contains ''development_directory = "/test/whichkey/bin"'' module.config.xdg.configFile."rex/init.lua".text;
+  assert !contains "@rex-whichkey-bin@" module.config.xdg.configFile."rex/init.lua".text;
+  assert contains "whichkey.launch(ctx" module.config.xdg.configFile."rex/init.lua".text;
+  assert !contains "rex_whichkey.defaults" module.config.xdg.configFile."rex/init.lua".text;
+  assert !contains "register_completion" module.config.xdg.configFile."rex/init.lua".text;
+  assert !contains "rex_bin_dir" module.config.xdg.configFile."rex/init.lua".text;
   assert !contains expected module.config.xdg.configFile."rex/init.lua".text;
   assert builtins.attrNames module.config.xdg.configFile == ["rex/cycle.lua" "rex/init.lua"];
   assert module.config.xdg.configFile."rex/cycle.lua".source == ../rex/cycle.lua;

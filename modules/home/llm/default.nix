@@ -183,7 +183,6 @@ in {
   imports = [
     ./claude.nix
     ./codex.nix
-    ./llmfit.nix
     ./openchamber.nix
     ./pi
     ./models/qwen.nix

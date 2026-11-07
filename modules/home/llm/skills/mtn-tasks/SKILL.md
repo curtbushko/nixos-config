@@ -22,7 +22,10 @@ Keep routine coordinator commentary to concise status summaries and artifact pat
 not task Markdown or full payload dumps. Worker Rex terminals still show live Pi
 assistant/tool/error activity; only prompts, task Markdown, and durable payload dumps
 are suppressed. Save machine-readable mutation responses and worker results to files.
-Successful worker windows close automatically. Active records retain only the
+Successful worker windows close automatically; the coordinator must verify closure
+and remove eligible task worktrees after each delivered task using
+[Task cleanup](references/execution.md#task-cleanup), not merely plan phase-end cleanup.
+Active records retain only the
 current delivery state and small file/ref pointers; completed task/phase records
 are compacted to one coordinator-authored delivery summary. Failed or blocked work
 retains only the current blocker and recovery inputs needed to resume. See the Rex

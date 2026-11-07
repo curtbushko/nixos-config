@@ -7,11 +7,14 @@ local function bind(keys, action, args)
 end
 
 local whichkey = require("rex_whichkey")
-whichkey.register_completion("whichkey_complete")
-local whichkey_menu = whichkey.new(require("rex_whichkey.defaults"))
-whichkey_menu.setup()
-whichkey_menu.register_launch("whichkey")
-rex.bind("cmd+space", "whichkey")
+rex.bind("cmd+space", function(ctx)
+	return whichkey.launch(ctx, {
+		width = 0.8,
+		height = 0.2,
+		-- GUI-started servers lack the Nix PATH. This option prepends one directory.
+		development_directory = "@rex-whichkey-bin@",
+	})
+end)
 
 rex.bind("cmd+d", "pane.split", { direction = "right" })
 rex.bind("cmd+shift+d", "pane.split", { direction = "down" })

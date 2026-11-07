@@ -58,6 +58,13 @@ integrations, requiring all four current APPROVED verdicts for each build. In mi
 projects select each task's language; Zig supplies defaults, not a language override. Reconcile conflicting blockers and ask the
 user before scope-changing architectural remedies.
 
+## Task cleanup
+
+The coordinator must perform [Task cleanup](../mtn-tasks/references/execution.md#task-cleanup)
+after each delivered task: close its stopped worker Rex windows and remove its
+clean, no-longer-needed worktrees. Cleanup is part of finishing the task, not an
+optional phase-end plan. Preserve unsafe resources and report the exact blocker.
+
 ## Invariants
 
 - All managed files, frontmatter, descriptions, relationships, and lifecycle writes

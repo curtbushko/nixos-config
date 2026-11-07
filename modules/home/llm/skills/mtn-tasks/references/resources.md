@@ -49,6 +49,11 @@ root/cache/worktree it creates; record ownership and release conditions in evide
 
 ## Cleanup is part of completion
 
+After each delivered task, perform [Task cleanup](execution.md#task-cleanup): verify
+its stopped successful worker windows are closed, release runtime reservations and
+run the completion facade to remove eligible task worktrees. Do not leave these
+resources behind until phase-end cleanup planning. Preserve and report exceptions.
+
 At phase completion/interruption, stop and confirm workers, preserve source and
 referenced artifact files, compact completed task/phase records to concise summaries,
 and run `mtn-workflow --repo "$REPO_ROOT" cleanup-plan`. Review retained worktrees,

@@ -49,19 +49,15 @@ rex = {
 	},
 }
 
+local launch_context, launch_options
+local launch_result = { layer_id = "whichkey-layer" }
 package.preload["rex_whichkey"] = function()
 	return {
-		register_completion = function() end,
-		new = function()
-			return {
-				setup = function() end,
-				register_launch = function() end,
-			}
+		launch = function(ctx, options)
+			launch_context, launch_options = ctx, options
+			return true, launch_result
 		end,
 	}
-end
-package.preload["rex_whichkey.defaults"] = function()
-	return {}
 end
 
 dofile("modules/home/terminals/rex/init.lua")
@@ -85,7 +81,15 @@ binding({ "cmd+l", "cmd+right" }, "cycle_focus", "direction", "right")
 assert(actions.cycle_focus, "retain combined pane/tab/session cycling")
 binding({ "cmd+t" }, "client.tab.new")
 binding({ "cmd+w" }, "client.tab.close")
-binding({ "cmd+space" }, "whichkey")
+local launch = assert(bindings["cmd+space"], "missing whichkey binding").action
+assert(type(launch) == "function", "whichkey must use the public Lua launch API")
+local origin = { session_id = "origin-session", block_id = "origin-block", client_id = "origin-client" }
+local handled, created = launch(origin)
+assert(launch_context == origin, "forward the original invocation context unchanged")
+assert(launch_options.width == 0.8 and launch_options.height == 0.3)
+assert(launch_options.helper == nil, "do not use the removed helper API")
+assert(launch_options.development_directory == "@rex-whichkey-bin@", "Nix supplies the execution-host package bin directory")
+assert(handled == true and created == launch_result, "preserve launch results")
 local action_count = 0
 for _ in pairs(actions) do
 	action_count = action_count + 1

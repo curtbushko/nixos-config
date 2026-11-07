@@ -55,6 +55,13 @@ this team supplies Node defaults, not permission to overwrite task metadata. Cod
 permission to modify source. Use host-native delivery and explicit model/thinking
 choices when supported; follow the shared execution reference for supervision.
 
+## Task cleanup
+
+The coordinator must perform [Task cleanup](../mtn-tasks/references/execution.md#task-cleanup)
+after each delivered task: close its stopped worker Rex windows and remove its
+clean, no-longer-needed worktrees. Cleanup is part of finishing the task, not an
+optional phase-end plan. Preserve unsafe resources and report the exact blocker.
+
 ## Invariants
 
 - All managed files, frontmatter, descriptions, relationships, and lifecycle writes

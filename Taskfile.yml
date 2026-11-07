@@ -309,6 +309,10 @@ tasks:
       - alejandra --check --quiet .
       - bash modules/home/llm/tests/integration_cleanup_test.sh
       - bash modules/home/llm/pi/tests/theme_test.sh
+      - bash modules/home/scripts/tests/nix-cache-include_test.sh
+      - nix-instantiate --eval --strict modules/darwin/nix-caches/tests/caches.nix
+      - shellcheck modules/home/scripts/nix-cache-include modules/home/scripts/tests/nix-cache-include_test.sh
+      - shfmt -d modules/home/scripts/nix-cache-include modules/home/scripts/tests/nix-cache-include_test.sh
       - bash modules/home/terminals/tests/darwin-switch_test.sh
       - bash modules/nixos/nix-cache-gamingrig/tests/cache-removal_test.sh
       - shellcheck modules/nixos/nix-cache-gamingrig/tests/cache-removal_test.sh

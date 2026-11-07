@@ -186,8 +186,18 @@ unreachable presets inside nested splits are skipped. Incremental changes are
 clamped to leave both sides of the split visible. Ctrl+B is no longer a prefix,
 and there is no direct zoom binding. Native Cmd+Q remains application Quit.
 The macOS Hide Rex menu shortcut moves to Ctrl+Shift+Cmd+H so Cmd+H reaches
-navigation. Restart Rex after changing native menu shortcuts. Cmd+Space is
-currently unbound while the replacement menu is developed.
+navigation. Restart Rex after changing native menu shortcuts.
+
+Cmd+Space launches the pinned `rex-whichkey` menu through the shared
+`require("rex_whichkey").launch(ctx, options)` Lua API. Home Manager installs
+both the package and its `rex_whichkey.lua` beside `init.lua`; no legacy defaults,
+completion registration, or local helper path is needed. GUI-started servers
+may lack the Nix profile PATH. The rendered Lua therefore supplies the pinned
+package’s `bin` directory using upstream’s `development_directory` option,
+which prepends that directory to this menu terminal’s PATH. Despite the option’s
+name, the directory is the installed Nix package, not a development checkout.
+Both `rex-whichkey` and its packaged `rex` CLI are available there. Activation
+and `rex config reload` are sufficient; no server restart is needed for PATH.
 
 Ghostty uses the same Cmd/Super tab and split keys, plus its own command menu. H/L selects
 tabs and J/K focuses vertical splits; it does not implement Rex's combined

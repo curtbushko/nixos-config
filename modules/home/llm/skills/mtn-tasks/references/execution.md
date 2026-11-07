@@ -138,6 +138,45 @@ it verifies delivery and removes only clean, stopped Git worktrees recorded for
 that task. Dirty, live, or unrecognized worktrees remain for investigation.
 If native status and versioned evidence disagree, investigate rather than trusting one.
 
+### Task cleanup
+
+The coordinator must clean up after each delivered task, not just at phase completion.
+Successful integration or native completion is not proof that cleanup happened.
+
+1. Inventory the task's worker windows and worktrees from dispatch/runtime evidence,
+   including earlier attempts and any task-only integration worktree. Confirm all
+   consumers (builders, reviewers and checks) stopped; a quiet terminal is not proof.
+   Preserve the reviewed revisions, final results and durable delivery evidence.
+2. Verify successful worker windows auto-closed. If a stopped worker window remains,
+   inspect its persisted endpoint/host/server instance and exact session/window IDs,
+   then close only that owned worker window with Rex's `window close` command. Never
+   select by display name, close the coordinator/session, or close unrelated panes.
+   Failed/blocked windows remain for recovery unless separately authorized.
+3. Publish normal runtime `release` evidence for each confirmed-stopped run, covering
+   every runtime reservation/launch event required by the facade. Include actual
+   process evidence; window disappearance alone does not prove the worker stopped.
+   Do not release a live run merely to make cleanup pass.
+4. From the collection checkout, outside the disposable worktree, run
+   `mtn-workflow --repo "$REPO_ROOT" complete "$TASK_REF"` after delivery evidence is
+   valid. This is required even if the task is already natively complete: retrying
+   the facade verifies delivery and finishes pending worktree cleanup. Remove only
+   recorded, clean, stopped task worktrees with no remaining consumers. For a
+   task-only integration worktree not recorded by the facade, verify target ancestry,
+   ownership and clean status before using non-forced `git worktree remove` on its
+   exact path. Never remove the collection/target checkout or a shared worktree.
+5. Verify both the worker window and worktree are gone using Rex inspection and
+   `git worktree list`; check the removed worktree path no longer exists. Record
+   cleanup results or exact retained IDs/paths and reasons in the task summary.
+   Already-absent resources are a successful no-op only after reconciling ownership,
+   process state and saved results; they never authorize relaunch.
+
+Do not force cleanup, discard dirty/untracked files, delete branches, prune unrelated
+worktrees, or delete transport/results/Pi sessions/runtime history. Dirty, live,
+shared, failed or unrecognized resources must be preserved and reported with the
+smallest recovery action needed. Do not claim cleanup succeeded when resources
+remain; continue unrelated ready work when safe. Routine cleanup of eligible owned
+task resources needs no additional approval; destructive/global maintenance does.
+
 Run phase-final gates after ALL required task integrations, against the combined target
 revision. Query nonempty hierarchy and check requirement coverage before explicitly
 completing a phase. Project completion requires all planned phases, project-wide tests
