@@ -140,12 +140,12 @@ runID: rex-whichkey-14-03-builder
 dispatchEventID: rex-whichkey-14-03/dispatch/1
 ```
 
-The future typed layer can decode this into grouped domain structures, but event
+A future typed representation can decode this into grouped work-item structures, but event
 identity and record targeting remain explicit. `recordRef` is the canonical
-collection-relative reference in protocol data. `ref` and `path` are adapter names
+collection-relative reference in protocol data. `ref` and `path` are field names
 used when reading native mtn output.
 
-## Native mtn adapters
+## Native mtn field mapping
 
 Native mtn presentation fields (`title`, Markdown body), the native UUID field
 `id`, and native hierarchy/dependency queries are adapted into this grouped model.

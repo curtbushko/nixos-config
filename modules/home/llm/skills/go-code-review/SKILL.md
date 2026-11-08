@@ -9,7 +9,7 @@ Auto-triggers when reviewing Go code to catch common mistakes from https://100go
 
 ## Critical Rule
 
-**NEVER disable linting** - Do not modify `.golangci.yml`, `.go-arch-lint.yml`, `.go-ai-lint.yml`, or `Taskfile.yml` to fix lint errors. Do not use `//nolint:` directives. If lint fails, fix the underlying code issue. There are no exceptions. Fix the code, not the rules.
+**NEVER disable linting** - Do not modify `.golangci.yml`, `.go-ai-lint.yml`, or `Taskfile.yml` to fix lint errors. Do not use `//nolint:` directives. If lint fails, fix the underlying code issue. There are no exceptions. Fix the code, not the rules.
 
 ## Review Process
 

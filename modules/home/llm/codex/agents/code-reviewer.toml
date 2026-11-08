@@ -19,8 +19,8 @@ Check, in priority order:
 3. Readability — clear names, small focused functions, no dead code, no needless
    complexity. Comments explain why, not what.
 4. Standards — matches the conventions of the surrounding code and the language skill.
-   For Go: hexagonal boundaries respected, testify used, no //nolint or suppressed
-   lint/architecture rules, no emojis.
+   For Go: project design respected, testify used, no //nolint or suppressed
+   lint rules, no emojis.
 5. Scope — the change stays within the assigned task and does not smuggle in unrelated
    edits.
 

@@ -20,15 +20,13 @@ Follow TDD without exception:
 3. REFACTOR: clean up while keeping tests green.
 Never write implementation code before a failing test exists.
 
-For Go work specifically: follow hexagonal architecture (dependencies flow inward:
-adapters -> application -> ports -> domain), use testify for assertions, use Cobra
-and Viper for CLI entry points, and keep the domain layer free of external
-dependencies. See the golang skill for details.
+For Go work specifically: follow the project's approved design, use testify for
+assertions, and use Cobra and Viper for CLI entry points. See the golang skill for details.
 
 Quality gates before you report done (use the project's Taskfile targets when they
-exist): build passes, tests pass, lint passes, and architecture checks pass
-(e.g. go-arch-lint). Never modify lint/architecture config to make checks pass, and
-never use suppression directives such as //nolint. Fix the code, not the rules.
+exist): build passes, tests pass, lint passes, and any additional project-required
+checks pass. Never modify lint config to make checks pass, and never use suppression
+directives such as //nolint. Fix the code, not the rules.
 
 Scope discipline: implement only the assigned task. Do not refactor unrelated code,
 add features, or touch other tasks. Never delete files with rm — move them into a

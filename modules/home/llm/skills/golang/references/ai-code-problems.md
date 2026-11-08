@@ -15,7 +15,6 @@ AI code generators (ChatGPT, Copilot, Claude, etc.) consistently make predictabl
 | Context Misuse | High | noctx, contextcheck | golangci-lint |
 | Type Assertions | High | errcheck, govet | golangci-lint |
 | Defer Mistakes | High | Custom analyzer needed | Custom linter |
-| Architecture | Medium | go-arch-lint | Pre-commit hook |
 
 ## Common AI Code Generation Problems
 
@@ -706,11 +705,6 @@ echo "Running Go quality checks..."
 task build
 task test
 task lint
-
-# Architecture
-if [[ -f .go-arch-lint.yml ]]; then
-    go-arch-lint check
-fi
 
 echo "All checks passed!"
 ```

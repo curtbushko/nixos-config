@@ -70,7 +70,7 @@ optional phase-end plan. Preserve unsafe resources and report the exact blocker.
 - Require approved PRD/design/plan fingerprints and REQ-to-task/test coverage.
 - Tasks complete only after current review, integration into target history and
   checks on the combined target revision. Branch approval alone is not completion.
-- Follow Go hexagonal architecture, Cobra/Viper, testify, and Taskfile quality gates.
+- Follow the project's approved design, Cobra/Viper, testify, and Taskfile quality gates.
 - Keep phase/task records and evidence for history; migration requires explicit approval.
 
 `to-prd`, `to-phases`, and `write-phase` prepare records; this skill executes them.

@@ -74,176 +74,10 @@ func NewStorage(ctx context.Context, bucketURL string) (*blob.Bucket, error) {
 
 ## Applying Go Cloud Patterns
 
-### 1. Define Portable Interfaces
-
-Follow Go Cloud's pattern of defining portable interfaces in your domain:
-
-```go
-// internal/ports/storage.go
-package ports
-
-import (
-    "context"
-    "io"
-)
-
-// ObjectStorage provides portable object storage operations
-type ObjectStorage interface {
-    // Read reads an object by key
-    Read(ctx context.Context, key string) (io.ReadCloser, error)
-
-    // Write writes data to an object
-    Write(ctx context.Context, key string, r io.Reader, opts *WriteOptions) error
-
-    // Delete removes an object
-    Delete(ctx context.Context, key string) error
-
-    // List lists objects with a prefix
-    List(ctx context.Context, prefix string) ([]ObjectInfo, error)
-
-    // SignedURL returns a signed URL for direct access
-    SignedURL(ctx context.Context, key string, opts *SignedURLOptions) (string, error)
-}
-
-type WriteOptions struct {
-    ContentType string
-    Metadata    map[string]string
-}
-
-type SignedURLOptions struct {
-    Expiry time.Duration
-    Method string // "GET" or "PUT"
-}
-
-type ObjectInfo struct {
-    Key     string
-    Size    int64
-    ModTime time.Time
-}
-```
-
-### 2. Implement with Go Cloud
-
-```go
-// internal/adapters/storage/gocloud/storage.go
-package gocloud
-
-import (
-    "context"
-    "fmt"
-    "io"
-
-    "gocloud.dev/blob"
-    _ "gocloud.dev/blob/fileblob"
-    _ "gocloud.dev/blob/gcsblob"
-    _ "gocloud.dev/blob/s3blob"
-
-    "myapp/internal/ports"
-)
-
-type storage struct {
-    bucket *blob.Bucket
-}
-
-// NewStorage creates a portable storage from a URL
-func NewStorage(ctx context.Context, bucketURL string) (ports.ObjectStorage, error) {
-    bucket, err := blob.OpenBucket(ctx, bucketURL)
-    if err != nil {
-        return nil, fmt.Errorf("open bucket %s: %w", bucketURL, err)
-    }
-    return &storage{bucket: bucket}, nil
-}
-
-func (s *storage) Read(ctx context.Context, key string) (io.ReadCloser, error) {
-    return s.bucket.NewReader(ctx, key, nil)
-}
-
-func (s *storage) Write(ctx context.Context, key string, r io.Reader, opts *ports.WriteOptions) error {
-    wopts := &blob.WriterOptions{}
-    if opts != nil {
-        wopts.ContentType = opts.ContentType
-        wopts.Metadata = opts.Metadata
-    }
-
-    w, err := s.bucket.NewWriter(ctx, key, wopts)
-    if err != nil {
-        return fmt.Errorf("create writer: %w", err)
-    }
-
-    if _, err := io.Copy(w, r); err != nil {
-        w.Close()
-        return fmt.Errorf("write data: %w", err)
-    }
-
-    return w.Close()
-}
-
-func (s *storage) Delete(ctx context.Context, key string) error {
-    return s.bucket.Delete(ctx, key)
-}
-
-func (s *storage) List(ctx context.Context, prefix string) ([]ports.ObjectInfo, error) {
-    var objects []ports.ObjectInfo
-    iter := s.bucket.List(&blob.ListOptions{Prefix: prefix})
-
-    for {
-        obj, err := iter.Next(ctx)
-        if err == io.EOF {
-            break
-        }
-        if err != nil {
-            return nil, fmt.Errorf("list objects: %w", err)
-        }
-        objects = append(objects, ports.ObjectInfo{
-            Key:     obj.Key,
-            Size:    obj.Size,
-            ModTime: obj.ModTime,
-        })
-    }
-
-    return objects, nil
-}
-
-func (s *storage) Close() error {
-    return s.bucket.Close()
-}
-```
-
-### 3. Configuration-Driven Wiring
-
-```go
-// cmd/myapp/main.go
-package main
-
-import (
-    "context"
-    "log"
-    "os"
-
-    "myapp/internal/adapters/storage/gocloud"
-    "myapp/internal/application"
-)
-
-func main() {
-    ctx := context.Background()
-
-    // Configuration determines provider
-    storageURL := os.Getenv("STORAGE_URL")
-    if storageURL == "" {
-        storageURL = "file:///tmp/myapp-storage"  // Local default
-    }
-
-    storage, err := gocloud.NewStorage(ctx, storageURL)
-    if err != nil {
-        log.Fatal(err)
-    }
-    defer storage.Close()
-
-    // Application uses portable interface
-    service := application.NewDocumentService(storage)
-    // ...
-}
-```
+Use the SDK's portable types and URL-based constructors directly where they fit.
+Add an application-specific interface only when a consumer needs a smaller API or
+a substitution point. Do not create separate interface, implementation, and service
+packages just to wrap the SDK.
 
 ---
 
@@ -262,19 +96,10 @@ func main() {
 
 ## Design Principles
 
-### 1. Program Against Interfaces
+### 1. Choose Portable APIs
 
-```go
-// GOOD: Depend on portable interface
-type DocumentService struct {
-    storage ports.ObjectStorage
-}
-
-// BAD: Depend on concrete provider
-type DocumentService struct {
-    s3Client *s3.Client
-}
-```
+Keep provider selection configurable using the SDK's portable APIs. A wrapper is
+not required when `blob.Bucket` or another SDK type already meets the need.
 
 ### 2. URL-Based Configuration
 
@@ -327,35 +152,9 @@ func (a *App) Close() error {
 
 ### Use In-Memory Providers
 
-```go
-func TestDocumentService(t *testing.T) {
-    ctx := context.Background()
-
-    // Use in-memory storage for tests
-    bucket, err := blob.OpenBucket(ctx, "mem://")
-    if err != nil {
-        t.Fatal(err)
-    }
-    defer bucket.Close()
-
-    storage := &gocloudStorage{bucket: bucket}
-    service := application.NewDocumentService(storage)
-
-    // Test actual behavior, not mocks
-    err = service.SaveDocument(ctx, "test.txt", []byte("content"))
-    if err != nil {
-        t.Fatalf("save document: %v", err)
-    }
-
-    doc, err := service.GetDocument(ctx, "test.txt")
-    if err != nil {
-        t.Fatalf("get document: %v", err)
-    }
-    if string(doc) != "content" {
-        t.Errorf("got %q, want %q", doc, "content")
-    }
-}
-```
+Use the SDK's in-memory providers to exercise the behavior under test without
+network access. Test real reads, writes, and error paths through the consumer's
+public API. Register cleanup and use testify for assertions.
 
 ### Use File-Based for Integration Tests
 

@@ -5,7 +5,7 @@ description: Use when a zig-team builder implements or fixes one task. Follows T
 
 # Zig Builder Skill
 
-Read by a subagent dispatched from `zig-team`. **Read the `zig` skill first** — language idioms, TDD workflow, implementation ladder, hexagonal architecture, `build.zig` boundary setup, Zig best practices, and testing patterns all live there. This skill covers file rules, test parallelism, and native mtn build/fix evidence.
+Read by a subagent dispatched from `zig-team`. **Read the `zig` skill first** — language idioms, TDD workflow, implementation ladder, project-specific module design, `build.zig` setup, Zig best practices, and testing patterns all live there. This skill covers file rules, test parallelism, and native mtn build/fix evidence.
 
 ---
 
@@ -19,7 +19,7 @@ Follow the worker contract. Never mutate the collection, initialize another,
 merge branches or complete tasks. Receive isolated worktree/base/target, run/attempt,
 spec hash, ownership/interfaces, commands and commit policy. Work in that checkout.
 
-You MUST follow TDD (RED → GREEN → REFACTOR) and hexagonal architecture as defined in the `zig` skill. Dependencies flow INWARD: adapters → app → ports → domain. Domain has NO external dependencies.
+You MUST follow TDD (RED → GREEN → REFACTOR), the project's approved design, and the Zig practices defined in the `zig` skill.
 
 ---
 

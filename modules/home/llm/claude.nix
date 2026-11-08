@@ -263,8 +263,6 @@ in {
             "Bash(golangci-lint run)"
             "Bash(golangci-lint run:*)"
             "Bash(golangci-lint version:*)"
-            "Bash(go-arch-lint check)"
-            "Bash(go-arch-lint check:*)"
             "Bash(go-ai-lint ./...)"
             "Bash(gofmt:*)"
             "Bash(goimports:*)"

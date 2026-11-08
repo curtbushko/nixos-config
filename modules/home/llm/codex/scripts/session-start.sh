@@ -68,7 +68,6 @@ Before completing any task:
 ## Code Style
 
 - Use Nerd Font icons instead of emojis
-- Follow hexagonal architecture for Go projects
 - Follow language-specific conventions from skills"
 
 escaped_context=$(escape_for_json "$context_message")

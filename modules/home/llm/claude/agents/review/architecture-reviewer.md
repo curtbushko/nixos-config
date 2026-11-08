@@ -1,13 +1,13 @@
 ---
 name: architecture-reviewer
-description: Reviews code for architectural compliance, especially hexagonal architecture for Go projects. Validates dependency flow and layer boundaries.
+description: Reviews code for architectural compliance, against the project's approved design. Validates dependencies and module boundaries.
 ---
 
 # Architecture Reviewer
 
 ## Purpose
 
-Ensures code follows established architectural patterns, with special focus on hexagonal architecture for Go projects.
+Ensures code follows the project's approved design and established package boundaries, without imposing a fixed architecture.
 
 ## Dispatch Prompt
 
@@ -22,33 +22,25 @@ Project structure:
 
 Context:
 - Language: [Go/Node/etc]
-- Architecture: [Hexagonal/Clean/Layered/etc]
+- Approved design: [Project-specific requirements and package boundaries]
 
 Check:
-1. **Layer Boundaries** (Hexagonal)
-   - Domain layer has no external dependencies?
-   - Application layer orchestrates without business logic?
-   - Infrastructure layer implements interfaces?
+1. **Project Boundaries**
+   - Matches approved design and existing module responsibilities?
+   - No implementation details leaking into public APIs?
 
-2. **Dependency Direction**
-   - Dependencies point inward?
+2. **Dependencies**
    - No circular dependencies?
-   - Interfaces defined in domain/application?
+   - Project-defined import boundaries respected?
 
-3. **Interface Usage**
-   - Domain entities use interfaces for external deps?
-   - Adapters implement domain interfaces?
-   - Easy to swap implementations?
+3. **Abstractions**
+   - Interfaces serve actual consumers and testing needs?
+   - No unnecessary indirection?
 
 4. **Package Organization**
-   - Clear separation: domain/, application/, infrastructure/?
    - Related code grouped together?
-   - Ports and adapters clearly identified?
-
-5. **Go-Specific** (if Go project)
-   - Follows go-arch-lint rules?
+   - New packages have clear responsibilities?
    - Internal packages used appropriately?
-   - Handler -> Service -> Repository flow?
 
 Output format:
 ## Architecture Violations
@@ -69,6 +61,6 @@ PASS / NEEDS_CHANGES / BLOCKED
 ## When to Use
 
 - New package/module creation
-- Cross-layer changes
+- Cross-module changes
 - Refactoring efforts
-- When go-arch-lint fails
+- When project-defined boundary checks fail

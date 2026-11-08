@@ -29,7 +29,6 @@ Feature: [Short descriptive name]
     Then [outcome]
 
   # Optional: Notes section for implementation hints
-  # Note: Use existing domain types from internal/domain/
   # Note: Token secret should come from config
 ```
 
@@ -54,7 +53,7 @@ Feature: [Short descriptive name]
 
 1. **Independent**: Each scenario runs in isolation
 2. **Declarative**: Describe WHAT, not HOW
-3. **Business-focused**: Use domain language
+3. **Business-focused**: Use the terminology of the feature
 4. **Testable**: Clear pass/fail criteria
 
 ### Example: User Authentication
@@ -161,82 +160,23 @@ Feature: Product Management API
 
 ---
 
-## Mapping Scenarios to Architecture
+## Mapping Scenarios to Implementation Tasks
 
-### Layer Impact Analysis
+For each feature, identify affected packages, public behavior, and actual
+prerequisites. Follow the project's approved design rather than requiring a fixed
+set of layers.
 
-For each feature, identify affected layers:
+For JWT authentication, reviewable tasks might cover:
 
-```gherkin
-Feature: JWT Authentication
+1. Token validation behavior: valid tokens, expired tokens, invalid signatures,
+   and malformed claims.
+2. HTTP middleware behavior: attach the authenticated user to request context,
+   return 401 for invalid tokens, and preserve documented health-endpoint access.
 
-# DOMAIN LAYER:
-#   - TokenClaims value object
-#   - ErrInvalidToken, ErrExpiredToken errors
-
-# PORTS LAYER:
-#   - TokenValidator interface
-#   - TokenGenerator interface
-
-# APPLICATION LAYER:
-#   - AuthService (validates tokens, extracts claims)
-
-# ADAPTERS LAYER:
-#   - JWTTokenValidator (implements TokenValidator)
-#   - HTTP middleware for authentication
-```
-
-### Task Breakdown Example
-
-From the JWT Authentication feature:
-
-```yaml
-tasks:
-  - id: 1
-    name: "Define auth domain types"
-    layer: domain
-    files:
-      - internal/domain/auth.go
-      - internal/domain/auth_test.go
-    acceptance_criteria:
-      - Define TokenClaims type with UserID, ExpiresAt
-      - Define ErrInvalidToken, ErrExpiredToken errors
-    dependencies: []
-
-  - id: 2
-    name: "Define TokenValidator port"
-    layer: ports
-    files:
-      - internal/ports/auth.go
-    acceptance_criteria:
-      - Define TokenValidator interface with Validate method
-      - Method returns (*TokenClaims, error)
-    dependencies: [1]
-
-  - id: 3
-    name: "Implement auth service"
-    layer: application
-    files:
-      - internal/application/auth.go
-      - internal/application/auth_test.go
-    acceptance_criteria:
-      - Validate JWT signature
-      - Reject expired tokens
-      - Extract user ID from claims
-    dependencies: [1, 2]
-
-  - id: 4
-    name: "Implement HTTP auth middleware"
-    layer: adapters
-    files:
-      - internal/adapters/handlers/http/middleware/auth.go
-      - internal/adapters/handlers/http/middleware/auth_test.go
-    acceptance_criteria:
-      - Attach user to request context
-      - Return 401 for invalid tokens
-      - Skip auth for health endpoints
-    dependencies: [3]
-```
+Each task includes affected files, independently verifiable acceptance criteria,
+test scenarios, and its own TDD cycle. Add interfaces or separate packages only
+when justified by actual consumers or testing needs. Record dependencies only
+where one task genuinely requires another.
 
 ---
 
@@ -294,7 +234,7 @@ func TestValidateEmail(t *testing.T) {
 
 ### DO:
 
-- Use business domain language
+- Use the terminology of the feature
 - Keep scenarios focused on one behavior
 - Write scenarios before implementation
 - Include both happy path and error cases

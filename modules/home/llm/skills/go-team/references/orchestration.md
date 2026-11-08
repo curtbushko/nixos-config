@@ -10,8 +10,8 @@ Do not substitute hand-edited state or a separate task/result format.
 Give the planner the exact phase ref and absolute collection root. It reads phase
 and approved PRD/design descriptions through mtn, explores code, and proposes task records with
 `workflowKind: task`, `workflowLanguage: go`, and phase-scoped `workflowOrder`.
-Use inside-out implementation order: domain → ports → application → adapters →
-wiring. Every task has independently verifiable acceptance criteria, a reviewable
+Order implementation by actual dependencies and the project's approved design.
+Every task has independently verifiable acceptance criteria, a reviewable
 diff, affected files, test scenarios, and its own TDD cycle. Native dependencies,
 not numbering, enforce prerequisite work. Return the graph, ownership/interface boundaries and REQ coverage for coordinator
 publication and actual approval as a v1 plan manifest. Do not mutate the collection.
@@ -26,8 +26,6 @@ follows RED/GREEN/refactor, then runs:
 task build
 task test
 task lint
-# Required when .go-arch-lint.yml exists:
-go-arch-lint check
 ```
 
 Missing Taskfile is a blocker. Do not change lint rules, disable checks, add

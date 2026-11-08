@@ -1,5 +1,5 @@
 # Canonical grouped work-item projection. Native mtn fields such as title, id and
-# hierarchy are adapted into the domain model; workflow metadata is grouped only.
+# hierarchy are mapped into the work-item model; workflow metadata is grouped only.
 def canonical_event:
   walk(if type == "object" then
     with_entries(.key = ({eventId:"eventID",runId:"runID",dispatchEventId:"dispatchEventID",parentRunId:"parentRunID",sourceEventId:"sourceEventID",replacementEventId:"replacementEventID",supersedesRecoveryEventId:"supersedesRecoveryEventID",blockerEventId:"blockerEventID",buildEventId:"buildEventID",integrationEventId:"integrationEventID"}[.key] // .key))

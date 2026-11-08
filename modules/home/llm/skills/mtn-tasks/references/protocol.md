@@ -3,7 +3,7 @@
 This is the normative cross-skill contract. Read alongside commands and execution.
 mtn is storage/graph infrastructure, not a scheduler, task-claim service, review
 authority, or Git integration engine. The coordinator enforces this protocol.
-The domain model is grouped by concern: `identity`, `presentation`, `structure`,
+The work-item model is grouped by concern: `identity`, `presentation`, `structure`,
 `scope`, `lifecycle`, `execution`, and `implementation`; see `data-model.md`.
 The `uuid` field and stable typed work-item ID fields identify records; only executions have
 an ephemeral `runID`. Provider resource maps are generic and exact IDs are

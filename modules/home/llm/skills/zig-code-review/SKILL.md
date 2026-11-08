@@ -36,7 +36,7 @@ The independent `zig-architecture-reviewer` owns architectural verdicts.
 
 **Major (should fix):**
 
-- Allocator misuse: mismatched allocator on `free`, allocator stored in domain type, `page_allocator` in tests
+- Allocator misuse: mismatched allocator on `free`, unclear allocator ownership or lifetime, `page_allocator` in tests
 - API design: hidden allocations without allocator param, returning references to stack memory
 - Comptime misuse: runtime values where comptime required, side effects in comptime blocks
 - Slice safety: unchecked indexing, unbounded slices from raw pointers
@@ -56,10 +56,10 @@ The Zig compiler and `zig build` catch **syntactic** dead code — unreferenced 
 For every new or modified type, function, method, field, module, and public symbol, verify:
 
 1. **Non-test callers exist.** Grep for references outside `test { ... }` blocks and files under `tests/`. If the only callers are tests, the symbol is dead — reject unless it is explicitly a test helper in a `testutil`-style module.
-2. **Callers do meaningful work with it.** A caller that constructs the value and immediately `deinit`s it, or only checks it is non-null, does not count. The value must flow into a real code path (persisted, returned across a port, passed to another live function, or drives a branch).
-3. **Every method on a new type is called from a non-test path.** A struct with 5 methods where tests call all 5 but `main.zig`/app/adapters call 0 is dead. If production calls only 1, flag the other 4 individually.
+2. **Callers do meaningful work with it.** A caller that constructs the value and immediately `deinit`s it, or only checks it is non-null, does not count. The value must flow into a real code path (persisted, returned to a caller, passed to another live function, or drives a branch).
+3. **Every method on a new type is called from a non-test path.** A struct with 5 methods where tests call all 5 but production callers call 0 is dead. If production calls only 1, flag the other 4 individually.
 4. **Every struct field is read somewhere non-trivial.** A field written by `init` and never read (or only read by `std.debug.print("{}", .{self})`-style formatting) is dead.
-5. **Port/interface methods have real adapter implementations exercised in production.** A port method satisfied only by a test-double adapter is dead.
+5. **Interface methods have implementations exercised in production.** An interface method implemented only by a test double is dead.
 6. **`build.zig` modules are actually imported.** A module wired in `build.zig` that no non-test module `@import`s is dead — remove the wiring or wire it in.
 
 **Reject criteria** (report as Critical dead code):
@@ -69,7 +69,7 @@ For every new or modified type, function, method, field, module, and public symb
 - `init`/constructor with no non-test caller.
 - Method on a new type never called outside its own `test` block.
 - Field written but never read (outside format-print debug output).
-- Port method with no production-path adapter implementation.
+- Interface method with no implementation exercised by a production path.
 
 When flagging, name the specific symbol, list every reference found, and state which of the six checks it fails. Do not accept "it's for future use" — delete it (move to `.trash/`) or wire it in now.
 
@@ -82,7 +82,7 @@ See `knowledge-base.md` for the full pattern reference.
 ```
 **Issue**: Missing errdefer on error path
 **Severity**: Critical
-**Location**: src/adapters/sqlite_repo.zig:47
+**Location**: src/storage/sqlite_repo.zig:47
 **Category**: resource-leak
 **Fix**: Add `errdefer allocator.free(buf);` after `const buf = try allocator.alloc(u8, n);`
 **Pattern**: Every allocation that could be followed by a fallible operation needs `errdefer` cleanup.

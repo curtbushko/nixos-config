@@ -64,7 +64,7 @@ task lint            # REQUIRED - error if Taskfile not found
 
 **IMPORTANT**: Always use `task lint` for linting. If no Taskfile exists, STOP and report an error requesting one be added.
 
-**DO NOT MODIFY** linting configuration files (`.golangci.yml`, `.go-arch-lint.yml`, `.go-ai-lint.yml`, `Taskfile.yml`). These are project-level standards. If code fails lint, fix the code, not the rules.
+**DO NOT MODIFY** linting configuration files (`.golangci.yml`, `.go-ai-lint.yml`, `Taskfile.yml`). These are project-level standards. If code fails lint, fix the code, not the rules.
 
 **NEVER disable linting** — Do not use `//nolint:` directives. Do not remove, comment out, or disable lint rules in config files. If lint fails, fix the underlying code issue. There are no exceptions.
 
@@ -152,20 +152,10 @@ for i := 0; i < 10; i++ {
 
 ## Major Issues
 
-### Architecture Violations
+### Project Design Compliance
 
-- Domain importing adapters (`database/sql`, `net/http`)
-- Service depending on concrete type instead of interface
-- Business logic in handlers
-
-```go
-// BAD: Domain imports adapter
-package domain
-import "database/sql"  // NO!
-
-// BAD: Concrete dependency
-func NewUserService(repo *postgres.UserRepository) // NO!
-```
+- Check against the project's approved design and existing package boundaries.
+- Do not require a particular layering scheme or directory layout unless the project requires it.
 
 ### Interface Design
 
@@ -212,7 +202,7 @@ Use wrappers/decorators instead of inheritance-like patterns.
 ```go
 // GOOD: Decorator pattern
 type LoggingRepository struct {
-    ports.Repository
+    Repository
     logger *slog.Logger
 }
 ```

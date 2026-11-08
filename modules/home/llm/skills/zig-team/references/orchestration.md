@@ -10,7 +10,7 @@ focused on graph/status/evidence metadata, not source or full specifications.
 Pass the absolute collection root and exact phase/project refs. The planner reads
 phase/approved PRD/design descriptions through mtn, explores code/module boundaries/tests, and
 proposes `workflowKind: task`, `workflowLanguage: zig`, and phase-scoped integer
-`workflowOrder` records. Work inside out: domain → ports → app → adapters → wiring.
+`workflowOrder` records. Order work by actual dependencies and the project's approved design.
 Each task states files, criteria, tests, constraints, and its own TDD cycle.
 Return proposed native links, ownership/interface boundaries and REQ coverage.
 Coordinator validates and serially publishes the approved v1 plan manifest; planners

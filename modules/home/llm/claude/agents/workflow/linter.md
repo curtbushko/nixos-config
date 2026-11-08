@@ -36,7 +36,7 @@ Tasks:
    - Prioritize by importance
 
 Language-specific:
-- Go: golangci-lint, gofmt, go-arch-lint
+- Go: golangci-lint, gofmt
 - Node: eslint, prettier
 - Zig: zig fmt
 

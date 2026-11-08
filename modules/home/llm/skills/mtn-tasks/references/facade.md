@@ -33,7 +33,7 @@ MTN_WORKFLOW_COORDINATOR=1 mtn-workflow --repo "$REPO_ROOT" publish request.json
 - `fingerprint` is the canonical semantic hash, excluding presentation display name,
   structural order, timestamps, lifecycle status, execution bindings and evidence.
   Ownership paths are filesystem-normalized. Existing flat native fields are read through the
-  grouped compatibility adapter.
+  grouped compatibility mapping.
 - `paths` resolves aliases/symlinks, permits future in-repository paths and rejects
   escapes/traversal. Conflict comparison conservatively folds case even on Linux;
   case-distinct paths may serialize rather than risk a Mac collision.

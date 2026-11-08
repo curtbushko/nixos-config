@@ -10,7 +10,7 @@ records. Coordinator publishes/approves their manifests through mtn. Two tasks o
 prerequisites and resources are independent. Shared build wiring is serialized.
 
 Each Go builder receives exact root/ref/spec hash, base/target/worktree and dispatch
-identity, runs TDD plus Taskfile/architecture gates, commits only scoped source, and
+identity, runs TDD plus Taskfile gates, commits only scoped source, and
 returns a v1 build payload. Coordinator publishes it and freezes that checkout.
 Combined reviewer checks spec then quality/semantic dead code and independently runs
 lint against that exact build. Coordinator publishes its v1 review payload.

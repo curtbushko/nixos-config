@@ -28,7 +28,7 @@ if errors.As(err, &notFoundErr) {
 }
 
 // Check for sentinel error
-if errors.Is(err, domain.ErrUserNotFound) {
+if errors.Is(err, ErrNotFound) {
     // Handle not found
 }
 ```
@@ -54,28 +54,9 @@ if err != nil {
 
 ### Define Where Used
 
-```go
-// GOOD: Interface defined in consumer package
-// internal/application/user_service.go
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (*domain.User, error)
-    Save(ctx context.Context, user *domain.User) error
-}
-
-type userService struct {
-    repo UserRepository
-}
-
-// BAD: Interface defined with implementation
-// internal/adapters/repositories/postgres/user_repo.go
-type UserRepository interface {  // Wrong place!
-    // ...
-}
-
-type postgresUserRepo struct {
-    // ...
-}
-```
+Define an interface in the package that consumes it when substitution is needed.
+Name it for the behavior required by that consumer. No separate interface package
+or service/repository hierarchy is required.
 
 ### Keep Interfaces Small
 

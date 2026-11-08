@@ -15,7 +15,7 @@ Names and structure explain mechanics. Comments explain intent, rationale, const
 Require comments where code alone cannot safely preserve:
 
 - public contracts or caller obligations
-- domain invariants and intentionally unsupported behavior
+- data constraints and intentionally unsupported behavior
 - ownership, lifetime, ordering, concurrency, retry, or idempotency guarantees
 - security and trust-boundary assumptions
 - compatibility constraints, workarounds, and non-obvious architectural choices

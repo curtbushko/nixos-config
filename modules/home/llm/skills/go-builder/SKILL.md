@@ -96,31 +96,13 @@ Before completing, ALL must pass:
 task build           # REQUIRED - error if Taskfile not found
 task test            # REQUIRED - error if Taskfile not found
 task lint            # REQUIRED - error if Taskfile not found
-go-arch-lint check   # if config exists
 ```
 
 **IMPORTANT**: Always use Taskfile targets. If no Taskfile exists, STOP and report an error.
 
-**DO NOT MODIFY** linting configuration files (`.golangci.yml`, `.go-arch-lint.yml`, `.go-ai-lint.yml`).
+**DO NOT MODIFY** linting configuration files (`.golangci.yml`, `.go-ai-lint.yml`).
 **NEVER use `//nolint:` directives** - there are no exceptions.
 Fix the code, not the rules.
-
----
-
-## Architecture Quick Reference
-
-```
-Dependencies flow INWARD: adapters -> application -> ports -> domain
-Domain layer has NO external dependencies
-```
-
-| Layer | Path | Contains |
-|-------|------|----------|
-| Domain | `internal/domain/` | Entities, value objects, domain errors |
-| Ports | `internal/ports/` | Interface definitions |
-| Application | `internal/application/` | Business logic, use cases |
-| Handlers | `internal/adapters/handlers/` | HTTP/gRPC entry points |
-| Repositories | `internal/adapters/repositories/` | Database implementations |
 
 ---
 
@@ -175,7 +157,7 @@ If build/test fails repeatedly:
 
 Return a protocol v1 `build` JSON payload to the coordinator: common event keys,
 dispatchEventId, exact Git head/tree, task specHash, ready-for-review or blocked,
-created/modified files, REQ/test coverage, exact RED/GREEN/build/test/lint/architecture
+created/modified files, REQ/test coverage, exact RED/GREEN/build/test/lint
 commands and results, limitations, integration checks, commits and summary. Coordinator
 validates and serially publishes it; workers never append notes or patch managed state.
 Commit only authorized implementation files; exclude `.tasks/`. Freeze the worktree

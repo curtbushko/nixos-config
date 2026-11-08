@@ -122,8 +122,8 @@ use(x);
 ### mismatched-allocator
 Allocated with allocator A, freed with allocator B.
 
-### stored-allocator-in-domain
-Domain types must accept allocators as parameters, not store them (and certainly not use a global one).
+### unclear-allocator-ownership
+Allocation APIs must make allocator ownership and lifetime explicit; avoid hidden global allocators.
 
 ### page-allocator-in-tests
 Tests must use `std.testing.allocator` (leak-detecting), never `std.heap.page_allocator`.
@@ -168,20 +168,12 @@ Converting a raw C pointer to a slice without knowing the length.
 
 ## architecture
 
-### domain-imports-infrastructure
-`@import("std").net`, `@import("std").fs`, `@cImport`, or any adapter/port module inside `src/domain/`.
+### project-boundary-violation
+An import or dependency violates a boundary explicitly required by the project's
+approved design. Review against that design, not a universal layer matrix.
 
-### adapter-holds-business-logic
-Validation, computation, or business rules inside an adapter. Adapters translate formats and do I/O — nothing else.
-
-### app-imports-adapters
-Application layer must depend on ports, not on concrete adapters.
-
-### build-zig-cross-layer-import
-`build.zig` grants a module more imports than the layer rules allow (e.g. `domain_mod.addImport("adapters", …)`). Reject.
-
-### missing-adapter-lifecycle
-Adapter holds resources but has no `init()`/`deinit()` pair, or the caller wires it without `defer`.
+### missing-resource-lifecycle
+Type holds resources but has no `init()`/`deinit()` pair, or the caller wires it without `defer`.
 
 ---
 
@@ -212,7 +204,7 @@ See the six-check dead code review in `SKILL.md`. Common patterns:
 - **instantiated-but-unused**: Constructor called, methods never called on the result.
 - **method-never-called-outside-test**: Method on a new type has no non-test caller.
 - **field-written-never-read**: Field assigned in `init` and never read except by format-print.
-- **orphan-port-method**: Port method with no production adapter implementation.
+- **orphan-interface-method**: Interface method with no production implementation.
 - **orphan-build-module**: `build.zig` wires a module no non-test module imports.
 
 ---

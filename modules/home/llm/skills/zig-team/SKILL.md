@@ -72,9 +72,8 @@ optional phase-end plan. Preserve unsafe resources and report the exact blocker.
 - Native membership is hierarchy; explicit dependencies are prerequisites.
 - Preserve focused RED/GREEN loops, configurable test jobs, one full-suite run
   before review, and phase-final exhaustive gates.
-- Dependencies flow adapters → app → ports → domain, enforced by `build.zig`
-  modules. Domain has no I/O/external dependencies. Resource-owning adapters have
-  explicit `init`/`deinit`; allocator ownership is explicit.
+- Follow the project's approved design and module boundaries.
+  Resource-owning types have explicit `init`/`deinit`; allocator ownership is explicit.
 - Require approved document/plan fingerprints and REQ-to-task/test coverage.
 - Complete only after current reviews, successful target integration and combined-
   revision checks; no missing evidence, failing tests or stale/negative approvals.

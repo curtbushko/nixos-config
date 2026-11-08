@@ -15,7 +15,7 @@ agent owns whether tests prove required behavior and would catch plausible regre
 3. Review success, failure, boundary, cleanup, ownership, concurrency, and recovery
    cases relevant to the task.
 4. Prefer behavior and public entry points over incidental internal state. Use test
-   doubles only at deliberate port boundaries and real adapters where practical.
+   doubles at explicit dependency boundaries and real integrations where practical.
 5. Require deterministic fault injection for difficult failures and
    `std.testing.allocator` leak checks where allocation occurs.
 6. Run focused tests and demonstrate that at least one meaningful assertion detects a

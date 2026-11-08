@@ -25,58 +25,18 @@ graph LR
 
 ### 1. RED: Write a Failing Test
 
-```go
-import (
-    "testing"
-    "github.com/stretchr/testify/assert"
-    "github.com/stretchr/testify/require"
-)
-
-func TestUserService_CreateUser(t *testing.T) {
-    repo := newMockUserRepo()
-    svc := application.NewUserService(repo)
-
-    user, err := svc.CreateUser(context.Background(), "test@example.com", "Test User")
-
-    require.NoError(t, err)
-    assert.Equal(t, "test@example.com", user.Email)
-}
-```
-
-**Run the test and confirm it FAILS for the right reason.**
+Write a test for required observable behavior using testify. Run it and confirm
+it fails for the intended reason, not an unrelated setup failure.
 
 ### 2. GREEN: Write Minimal Code to Pass
 
-```go
-func (s *userService) CreateUser(ctx context.Context, email, name string) (*domain.User, error) {
-    user := &domain.User{
-        Email: email,
-        Name:  name,
-    }
-    return user, nil
-}
-```
-
-**Run the test and confirm it PASSES.**
+Implement only enough behavior to satisfy the failing test. Use the existing
+package structure and avoid introducing speculative abstractions.
 
 ### 3. REFACTOR: Clean Up While Green
 
-```go
-func (s *userService) CreateUser(ctx context.Context, email, name string) (*domain.User, error) {
-    user, err := domain.NewUser(email, name)
-    if err != nil {
-        return nil, fmt.Errorf("create user: %w", err)
-    }
-
-    if err := s.repo.Save(ctx, user); err != nil {
-        return nil, fmt.Errorf("save user: %w", err)
-    }
-
-    return user, nil
-}
-```
-
-**Run tests after each change to ensure they still pass.**
+Improve naming, duplication, and clarity without adding new behavior. Run tests
+after each change. A new requirement starts another RED/GREEN cycle.
 
 ---
 
@@ -220,63 +180,17 @@ func TestCalculateTotal(t *testing.T) {
 
 ### Test Helpers
 
-```go
-func TestUserHandler(t *testing.T) {
-    handler, cleanup := setupTestHandler(t)
-    defer cleanup()
-
-    // ... test code
-}
-
-func setupTestHandler(t *testing.T) (*UserHandler, func()) {
-    t.Helper()
-
-    repo := newMockUserRepo()
-    svc := application.NewUserService(repo)
-    handler := NewUserHandler(svc)
-
-    cleanup := func() {
-        // cleanup resources
-    }
-
-    return handler, cleanup
-}
-```
+Mark helpers with `t.Helper()` and register resource cleanup with `t.Cleanup()`.
+Share setup only when it improves clarity; do not introduce a fixed chain of
+repositories, services, and handlers just to arrange a test.
 
 ---
 
 ## Mocking Strategies
 
-### Interface-Based Mocks
-
-```go
-// Port interface
-type UserRepository interface {
-    FindByID(ctx context.Context, id string) (*domain.User, error)
-    Save(ctx context.Context, user *domain.User) error
-}
-
-// Mock implementation
-type mockUserRepo struct {
-    users map[string]*domain.User
-}
-
-func newMockUserRepo() *mockUserRepo {
-    return &mockUserRepo{users: make(map[string]*domain.User)}
-}
-
-func (m *mockUserRepo) FindByID(ctx context.Context, id string) (*domain.User, error) {
-    if user, ok := m.users[id]; ok {
-        return user, nil
-    }
-    return nil, domain.ErrUserNotFound
-}
-
-func (m *mockUserRepo) Save(ctx context.Context, user *domain.User) error {
-    m.users[user.ID] = user
-    return nil
-}
-```
+Define small dependency interfaces at the consumer when substitution is useful.
+Test doubles should preserve the behavior needed by the test without duplicating
+production logic. No particular package hierarchy is required.
 
 ### Function-Based Mocks
 
@@ -379,7 +293,6 @@ Before considering any task complete:
 task build
 task test
 task lint
-go-arch-lint check   # if config exists
 ```
 
 ### Coverage Goals

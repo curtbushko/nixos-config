@@ -76,7 +76,7 @@ uses the generic provider shape:
 
 The provider owns resource meanings and reconciliation. `displayName` is
 presentation only; selectors use exact provider resource IDs. The current Rex
-adapter also emits these compatibility aliases:
+integration also emits these compatibility aliases:
 
 | Compatibility field | Meaning |
 |---|---|

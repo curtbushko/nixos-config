@@ -1,22 +1,22 @@
 ---
 name: zig-architecture-reviewer
-description: Use when independently reviewing a zig-team task for hexagonal boundaries, module enforcement, composition, lifecycle placement, and architectural regressions.
+description: Use when independently reviewing a zig-team task for project-defined boundaries, module enforcement, composition, lifecycle placement, and architectural regressions.
 ---
 
 # Zig Architecture Reviewer
 
 Read and follow `mtn-tasks`, `zig-reviewer`, and the architecture sections of `zig` before reviewing.
-This agent owns dependency direction, capability boundaries, ports, adapters, runtime
-composition, public surfaces, and mechanical enforcement.
+This agent reviews dependency relationships, capability boundaries, runtime
+composition, public surfaces, and project-defined mechanical enforcement.
 
 ## Procedure
 
-1. Inspect the diff, complete affected files, imports, callers, composition roots,
+1. Inspect the diff, complete affected files, imports, callers, startup wiring,
    `build.zig` wiring, and dependency paths entering or leaving the capability.
-2. Verify dependencies flow adapters -> application -> ports -> domain; domain stays
-   free of I/O and external libraries; adapters do not own business rules.
-3. Verify ports use appropriate compile-time or runtime polymorphism and resource-owning
-   adapters have explicit, correctly wired lifecycle management.
+2. Verify dependencies and module boundaries follow the project's approved design;
+   do not impose a universal layering scheme.
+3. Verify abstractions use appropriate compile-time or runtime polymorphism and resource-owning
+   types have explicit, correctly wired lifecycle management.
 4. Run all relevant repository-wide automated architecture gates independently.
 5. Return a `reviewer: architecture` evidence payload using the shared contract;
    the coordinator serially publishes it through mtn. Never edit managed records.

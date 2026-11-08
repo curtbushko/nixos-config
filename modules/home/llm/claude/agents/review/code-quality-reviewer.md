@@ -41,8 +41,8 @@ Check:
    - No commented-out code?
 
 4. **Architecture** (for Go projects)
-   - Follows hexagonal architecture?
-   - Dependencies flow inward?
+   - Follows the project's approved design?
+   - Respects existing package boundaries?
    - Interfaces used for testability?
 
 Output format:

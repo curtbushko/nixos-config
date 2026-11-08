@@ -107,7 +107,6 @@ main() {
 
     # Ensure required configs exist
     ensure_config "$target_dir" ".golangci.yml" "golangci.yml"
-    ensure_config "$target_dir" ".go-arch-lint.yml" "go-arch-lint.yml"
 
     exit 0
 }
