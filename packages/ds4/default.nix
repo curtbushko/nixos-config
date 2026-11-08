@@ -46,7 +46,7 @@ in
       else [
         cudaPackages.cuda_cudart
         cudaPackages.libcublas
-        cudaPackages.cuda_cccl
+        cudaPackages.cccl
       ];
 
     buildPhase =

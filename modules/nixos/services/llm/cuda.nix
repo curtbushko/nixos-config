@@ -16,7 +16,7 @@ in {
       cuda.cudatoolkit
       cuda.cuda_nvcc
       cuda.cuda_cudart
-      cuda.cuda_cccl
+      cuda.cccl
       cuda.libcublas
       ds4
       pkgs.binutils
