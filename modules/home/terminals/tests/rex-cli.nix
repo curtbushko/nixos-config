@@ -55,11 +55,17 @@ let
   localOnly = mkModule true false "0.0.0.0:7297";
   custom = mkModule true true "192.0.2.1:8000";
   linux = mkModule false false "0.0.0.0:7297";
+  workHome = import (../../../../homes/aarch64-darwin + "/curtbushko@curtbushko-K4W6XK6XND/default.nix") {
+    pkgs = {};
+    inputs = {};
+    lib.mkForce = value: value;
+  };
   contains = needle: text: builtins.replaceStrings [needle] [""] text != text;
 in
   assert module.config.targets.darwin.defaults."com.superlogical.rex"."Workspace.terminalFontName" == "JetBrainsMono Nerd Font";
   assert module.config.targets.darwin.defaults."com.superlogical.rex"."Workspace.terminalFontStyle" == "Medium";
   assert module.config.targets.darwin.defaults."com.superlogical.rex"."Workspace.terminalFontPointSize" == 12.0;
+  assert workHome.targets.darwin.defaults."com.superlogical.rex"."Workspace.terminalFontPointSize" == 13.0;
   assert module.config.targets.darwin.defaults."com.superlogical.rex"."Workspace.inactivePaneFadeMode" == "none";
   assert !module.config.targets.darwin.defaults."com.superlogical.rex"."Workspace.usesStandardInactiveWindowPaneStyles";
   assert module.config.targets.darwin.defaults."com.superlogical.rex".NSUserKeyEquivalents."Hide Rex Beta" == "@$^h";

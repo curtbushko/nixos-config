@@ -1,6 +1,7 @@
 {
   pkgs,
   inputs,
+  lib,
   ...
 }: {
   home.enableNixpkgsReleaseCheck = false;
@@ -9,6 +10,8 @@
   # Let home manager manage itself
   programs.home-manager.enable = true;
   xdg.enable = true;
+
+  targets.darwin.defaults."com.superlogical.rex"."Workspace.terminalFontPointSize" = lib.mkForce 13.0;
 
   #---------------------------------------------------------------------
   # Home Options
