@@ -12,7 +12,8 @@ def dispatch: common("d1";"dispatch") + {runID:"run-1",baseCommit:"base",branch:
 def build: common("b1";"build") + {dispatchEventID:"d1",head:"head-1",tree:"tree-1",outcome:"ready-for-review",validation:[{command:"tests",result:"pass"}]};
 def review: common("r1";"review") + {buildEventID:"b1",head:"head-1",tree:"tree-1",reviewer:"combined",verdict:"APPROVED",changes_required:[],validation:[{command:"lint",result:"pass"}]};
 def integration: common("i1";"integration") + {buildEventID:"b1",head:"head-1",tree:"tree-1",reviewEventIDs:["r1"],targetBranch:"main",targetBase:"base",integratedCommit:"merged",integratedTree:"merged-tree",outcome:"passed",validation:[{command:"integration",result:"pass"}]};
-def snapshot($events): {ref:"tasks/demo.md",specHash:"spec-1",language:"go",events:$events};
+# General lifecycle fixtures use legacy docs inspection; scoped policies have dedicated tests.
+def snapshot($events): {ref:"tasks/demo.md",specHash:"spec-1",language:"docs",events:$events};
 def document: {ref:"prds/demo.md",specHash:"doc-1",events:[common("approve-1";"approval")+{recordRef:"prds/demo.md",specHash:"doc-1",decision:"approved",approvedBy:"test fixture",decisionEvidence:"synthetic approval"}]};
 def plan: {ref:"phases/demo.md",specHash:"phase-1",requirements:["REQ-001"],documents:[document],records:[{ref:"tasks/demo.md",specHash:"spec-1",requirements:["REQ-001"]}],events:[common("plan-1";"plan")+{recordRef:"phases/demo.md",specHash:"phase-1",decision:"approved",approvedBy:"test fixture",decisionEvidence:"synthetic approval",records:[{ref:"tasks/demo.md",specHash:"spec-1"}],documents:[{ref:"prds/demo.md",hash:"doc-1"}],coverage:{"REQ-001":["tasks/demo.md"]}}]};
 def task($ref; $path; $order): {ref:$ref,phaseOrder:1,order:$order,incomplete:true,statusAllowed:true,dependencyReady:true,phaseReady:true,documentsApproved:true,planApproved:true,state:"planned",agentEligible:null,ownership:{paths:[$path],sharedPaths:[],resources:[],interfaces:[]}};
@@ -25,7 +26,7 @@ def metadata: {requirements:["REQ-001"],records:[{ref:"projects/demo.md",kind:"p
   ((metadata | .records[3].language="docs") | metadata_valid),
   ((metadata | .records[3].language="unknown") | metadata_valid | not),
   (language_route("lua") == {language:"lua",builder:"mtn-tasks",reviewer:"mtn-tasks",support:[]}),
-  (language_route("nix") == {language:"nix",builder:"mtn-tasks",reviewer:"mtn-tasks",support:["nix"]}),
+  (language_route("nix") | .builder == "repo-maintainer" and .reviewers == ["nix-code-reviewer","nix-test-reviewer"]),
   (language_route("docs") | .reviewer == "mtn-tasks"),
   (required_reviewers("lua") == ["combined"] and required_reviewers("nix") == ["combined"] and required_reviewers("docs") == ["combined"]),
   ((metadata | .records[3].parentRef="missing.md") | metadata_valid | not),

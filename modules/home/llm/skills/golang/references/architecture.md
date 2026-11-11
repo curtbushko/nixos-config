@@ -22,6 +22,7 @@ projects in this skill.
 
 ## Verification
 
-Use `task build`, `task test`, and `task lint`. Honor any additional checks
+Use the project's supported build/lint/test commands and environment. Taskfile,
+Cobra/Viper and a particular test framework are not requirements. Honor checks
 required by the project without imposing new architecture tooling or changing
 existing lint rules to make failures disappear.

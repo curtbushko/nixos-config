@@ -16,13 +16,19 @@ agent owns whether tests prove required behavior and would catch plausible regre
    cases relevant to the task.
 4. Prefer behavior and public entry points over incidental internal state. Use test
    doubles at explicit dependency boundaries and real integrations where practical.
-5. Require deterministic fault injection for difficult failures and
-   `std.testing.allocator` leak checks where allocation occurs.
+5. Seek genuine RED, pre-fix replay or targeted fault evidence for important changed
+   behavior; failure must concern the intended behavior. Use authorized disposable
+   copies for mutations. Check `std.testing.allocator` leaks where allocation occurs;
+   do not require mutation testing of every test.
 6. Run focused tests and demonstrate that at least one meaningful assertion detects a
    plausible broken implementation. Broaden validation when risk or missing evidence
    warrants it.
-7. Return a `reviewer: test` evidence payload using the shared contract;
+7. Return an assigned `reviewer: zig:test` evidence payload using the shared contract;
    the coordinator serially publishes it through mtn. Never edit managed records.
+
+Untested behavior matters more than coverage percentages; honor explicit project
+gates, not universal numbers. Shared contracts serve actual consistency promises,
+not every interface. No artificial hooks or assertions to satisfy a metric.
 
 Passing weak tests is not approval. Flaky, timing-dependent, order-dependent, or
 environment-sensitive tests are blocking unless variability is the explicit contract.

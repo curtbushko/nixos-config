@@ -109,15 +109,19 @@ and freezes THAT worktree for review. Other disjoint workers may continue elsewh
 Reviewers inspect the supplied worktree/base/head/tree, acceptance criteria, and current
 build evidence. They never modify source/managed records or run overlapping mutable
 checks in the same directory. Isolate reviewer build outputs/resources or serialize
-those checks while retaining independent review contexts. Go/Node use combined spec-
-then-quality review; Zig uses four specialties. Match every review to the same build.
+those checks while retaining independent review contexts. Use the approved review plan's distinct language code/test scopes and triggered
+specialist scopes. Include materially affected embedded code, not just the primary
+language. Match every required verdict to the same build.
 
 Coordinator publishes every full review payload; a two-line verdict is insufficient.
 Missing/stale/negative verdicts block integration. Reconcile conflicting findings;
 scope-changing fixes require user approval. Fix workers read published findings and
 produce a new dispatch/build attempt. All required reviews must cover that new build;
 never combine approvals across builds. Reuse reviewer context if supported, but obtain
-new explicit verdicts. Maximum 10 fix cycles before user escalation.
+new explicit verdicts. Unaffected specialist carry-forward requires a current-build
+attestation with prior review/build linkage and scope/assumption evidence. No silent
+waiver or downgrade; Block/Advise/Escalate govern findings. Maximum 10 fix cycles
+before user escalation.
 
 ## 5. Integrate, verify, complete
 
@@ -179,7 +183,9 @@ task resources needs no additional approval; destructive/global maintenance does
 
 Run phase-final gates after ALL required task integrations, against the combined target
 revision. Query nonempty hierarchy and check requirement coverage before explicitly
-completing a phase. Project completion requires all planned phases, project-wide tests
+completing a phase. Product management supplies scenario-level actual workflow/E2E
+evidence on that revision, with outcomes demonstrated/unmet/unverified. Code approval
+alone is not product acceptance. Project completion requires all planned phases, project-wide tests
 and accepted requirement coverage. Write the final summary, compact completed records
 after workers stop, then run disk/cleanup planning and inventory retained worktrees,
 environment roots and caches. Request approval for destructive/global maintenance.

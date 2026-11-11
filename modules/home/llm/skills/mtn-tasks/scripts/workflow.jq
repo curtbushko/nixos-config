@@ -48,6 +48,9 @@ def positive_integer: type == "number" and . >= 1 and floor == .;
 def checks_pass:
   type == "array" and length > 0 and all(.[];
     (.command | nonempty) and .result == "pass");
+def validation_entries:
+  type == "array" and all(.[];
+    (.command | nonempty) and (.result as $r | ["pass","fail","unavailable"] | index($r) != null));
 def summary_event:
   .summaryVersion == 1 and .status == "complete" and
   ([.acceptedScope,.targetCommit,.targetTree,.targetBranch] | all(.[]; nonempty)) and
@@ -89,8 +92,15 @@ def valid_event:
      (.outcome == "blocked" or (.outcome == "ready-for-review" and (.validation | checks_pass)))
    elif .kind == "review" then
      ([.buildEventID,.head,.tree,.reviewer] | all(.[]; nonempty)) and
-     (.reviewer as $r | ["combined","code","comment","architecture","test"] | index($r) != null) and
+     (.reviewer | test("^(combined|code|comment|test|architecture|security|usability|maintenance|(go|node|zig|nix|bash):(code|test)|(lua|docs):combined)$")) and
+     (if has("carriedForwardFrom") or has("carryForwardRationale") then
+        ([.carriedForwardFrom,.carryForwardRationale] | all(.[]; nonempty)) and
+        (.reviewer as $r | ["architecture","security","usability","maintenance"] | index($r) != null)
+      else true end) and
      (.changes_required | type == "array") and
+     (if (.reviewer | contains(":")) or
+         (.reviewer as $r | ["security","usability","maintenance"] | index($r) != null)
+      then (.validation | validation_entries) else true end) and
      ((.verdict == "APPROVED" and (.changes_required | length == 0) and (.validation | checks_pass)) or
       (.verdict == "CHANGES_NEEDED" and (.changes_required | length > 0)))
    elif .kind == "integration" then
@@ -176,25 +186,86 @@ def plan_approved:
     all($record.requirements[]; . as $req |
       ($s.requirements | index($req) != null) and ($coverage[$req] | index($record.ref) != null)));
 def language_route($language):
-  if $language == "go" then {language:$language,builder:"go-builder",reviewer:"go-reviewer",support:["golang"]}
-  elif $language == "node" then {language:$language,builder:"node-builder",reviewer:"node-reviewer",support:[]}
-  elif $language == "zig" then {language:$language,builder:"zig-builder",reviewer:"zig-reviewer",support:["zig"]}
+  if $language == "go" then {language:$language,builder:"go-developer",reviewer:"go-reviewer",reviewers:["go-code-reviewer","go-test-reviewer"],support:["golang"]}
+  elif $language == "node" then {language:$language,builder:"node-developer",reviewer:"node-reviewer",reviewers:["node-code-reviewer","node-test-reviewer"],support:[]}
+  elif $language == "zig" then {language:$language,builder:"zig-developer",reviewer:"zig-reviewer",reviewers:["zig-code-reviewer","zig-test-reviewer"],support:["zig"]}
+  elif $language == "nix" then {language:$language,builder:"repo-maintainer",reviewer:"nix-code-reviewer",reviewers:["nix-code-reviewer","nix-test-reviewer"],support:["nix"]}
+  elif $language == "bash" then {language:$language,builder:"repo-maintainer",reviewer:"bash-code-reviewer",reviewers:["bash-code-reviewer","bash-test-reviewer"],support:["bash"]}
   elif $language == "lua" then {language:$language,builder:"mtn-tasks",reviewer:"mtn-tasks",support:[]}
-  elif $language == "nix" then {language:$language,builder:"mtn-tasks",reviewer:"mtn-tasks",support:["nix"]}
   elif $language == "docs" then {language:$language,builder:"mtn-tasks",reviewer:"mtn-tasks",support:[]}
   else error("Unsupported task language") end;
+# New language and specialist seats retain their full names so mixed-language runs cannot collide.
+# Explicit old entry names retain their historical labels; existing runs are never renamed.
+def reviewer_agent_label($skill):
+  if ["go-reviewer","node-reviewer","zig-reviewer"] | index($skill) != null then "reviewer"
+  elif $skill == "go-code-review" then "code-review"
+  elif $skill == "zig-comment-reviewer" then "comment-reviewer"
+  elif $skill == "zig-architecture-reviewer" then "architecture-reviewer"
+  else $skill end;
 def supported_language($language):
   try (language_route($language) | true) catch false;
+def language_review_roles($language):
+  if ["go","node","zig","nix","bash"] | index($language) != null then ["code","test"]
+  elif supported_language($language) then ["combined"]
+  else error("Unsupported task language") end;
+# Preserve original unscoped evidence policy for historical inspection, not new dispatch.
 def required_reviewers($language):
   if $language == "zig" then ["code","comment","architecture","test"]
   elif supported_language($language) then ["combined"]
   else error("Unsupported task language") end;
+# A declared review plan is part of the approved semantic specification.
+def review_plan_valid($primary):
+  try (
+    type == "object" and
+    (.languages | type == "array" and length > 0) and
+    ([.languages[].language] | length == (unique | length)) and
+    any(.languages[]; .language == $primary) and
+    all(.languages[];
+      supported_language(.language) and
+      (.paths | type == "array" and length > 0 and all(.[];
+        type == "string" and length > 0 and . != ".." and
+        (startswith("/") | not) and
+        (. == "." or (split("/") | all(.[]; . != "" and . != "." and . != ".."))) and
+        (test("[\\\\*\\\\?\\\\[\\\\]]") | not)))) and
+    (.specialists | type == "object" and
+      (keys | sort) == (["architecture","security","usability","maintenance"] | sort) and
+      all(.[]; (.required | type == "boolean") and (.reason | nonempty)))
+  ) catch false;
+def required_review_scopes:
+  . as $s |
+  if (.implementation // {} | has("reviewPlan")) then
+    .implementation.reviewPlan as $plan |
+    if ($plan | review_plan_valid($s.language) | not) then error("Invalid review plan")
+    else
+      ([$plan.languages[] | .language as $language |
+        language_review_roles($language)[] | $language + ":" + .] +
+       ["architecture","security","usability","maintenance"] | .) as $all |
+      $all | map(select(contains(":") or $plan.specialists[.].required))
+    end
+  else required_reviewers($s.language) end;
 def following($events; $event):
   if $event == null then [] else $events[(($events | index($event)) + 1):] end;
-def current_reviews($events; $build; $language):
-  [required_reviewers($language)[] as $role |
+def carry_forward_valid($events; $review):
+  if $review == null then false
+  elif ($review | has("carriedForwardFrom") | not) then true
+  else
+    ([$events[:($events | index($review))][] |
+      select(.kind == "review" and .reviewer == $review.reviewer)] | last) as $prior |
+    $prior != null and $prior.eventID == $review.carriedForwardFrom and
+    $prior.verdict == "APPROVED" and $prior.specHash == $review.specHash and
+    $prior.recordRef == $review.recordRef and
+    any($events[:($events | index($prior))][];
+      .kind == "build" and .eventID == $prior.buildEventID and
+      .head == $prior.head and .tree == $prior.tree and .attempt == $prior.attempt)
+  end;
+def current_scope_reviews($events; $build; $scopes):
+  [$scopes[] as $role |
     ([following($events; $build)[] | select(.kind == "review" and .reviewer == $role and
-       .buildEventID == $build.eventID and .attempt == $build.attempt and .head == $build.head and .tree == $build.tree)] | last)];
+       .buildEventID == $build.eventID and .attempt == $build.attempt and .head == $build.head and .tree == $build.tree)] | last) |
+    . as $review | if carry_forward_valid($events; $review) then . else null end];
+# Compatibility for inspecting unscoped historical query fixtures.
+def current_reviews($events; $build; $language):
+  current_scope_reviews($events; $build; required_reviewers($language));
 def approved_reviews($reviews):
   all($reviews[]; . != null and .verdict == "APPROVED");
 def unresolved_blockers:
@@ -225,7 +296,8 @@ def task_state:
         any($s.events[]; .recordRef == $s.ref and .kind == "blocker" and .eventID == $id))
       then "retryable" else "blocked" end
     else
-      current_reviews($events; $build; $s.language) as $reviews |
+      ($s | required_review_scopes) as $scopes |
+      current_scope_reviews($events; $build; $scopes) as $reviews |
       if any($reviews[]; .verdict == "CHANGES_NEEDED") then "fixing"
       elif (approved_reviews($reviews) | not) then "reviewing"
       else
@@ -271,7 +343,9 @@ def metadata_valid:
       (.documents | type == "array" and length > 0 and all(.[]; . as $doc |
         (.hash | nonempty) and any($s.records[]; .ref == $doc.ref and (.kind == "prd" or .kind == "design")))) and
       (if .kind == "task" then
-        (supported_language(.language)) and (.ownership | ownership_valid)
+        (supported_language(.language)) and (.ownership | ownership_valid) and
+        (if (.implementation // {} | has("reviewPlan")) then
+           (.implementation.reviewPlan | review_plan_valid($r.language)) else true end)
        else true end)
     else false end);
 def conflicts($a; $b):

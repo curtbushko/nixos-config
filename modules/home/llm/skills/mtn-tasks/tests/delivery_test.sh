@@ -54,7 +54,7 @@ publish() {
 }
 state() {
 	mtn --path "$TASK_ROOT" agent show "$1" --json |
-		jq --arg hash "$(fingerprint "$1")" '{ref:.result.ref,specHash:$hash,language:.result.frontmatter.implementation.language,events:[.result.evidence[].content|fromjson]}' |
+		jq --arg hash "$(fingerprint "$1")" '{ref:.result.ref,specHash:$hash,language:.result.frontmatter.implementation.language,implementation:.result.frontmatter.implementation,events:[.result.evidence[].content|fromjson]}' |
 		jq -r -L "$skill/scripts" 'include "workflow"; task_state'
 }
 for request in \
@@ -69,9 +69,9 @@ done
 documents="$(jq -n --arg prd "$(fingerprint prds/demo.md)" --arg design "$(fingerprint designs/demo.md)" '[{ref:"prds/demo.md",hash:$prd},{ref:"designs/demo.md",hash:$design}]')"
 for ref in projects/demo.md phases/final.md phases/components.md; do
 	case "$ref" in
-		projects/demo.md) requirements='["REQ-001","REQ-002","REQ-003"]' ;;
-		phases/final.md) requirements='["REQ-003"]' ;;
-		phases/components.md) requirements='["REQ-001","REQ-002"]' ;;
+	projects/demo.md) requirements='["REQ-001","REQ-002","REQ-003"]' ;;
+	phases/final.md) requirements='["REQ-003"]' ;;
+	phases/components.md) requirements='["REQ-001","REQ-002"]' ;;
 	esac
 	jq -n --argjson docs "$documents" --argjson requirements "$requirements" '{operations:[{op:"set",field:"scope",value:{requirements:$requirements,documents:$docs}}]}' |
 		mtn --path "$TASK_ROOT" agent patch "$ref" --input - --json >/dev/null
@@ -96,7 +96,7 @@ for id in a b c; do
 		;;
 	esac
 	jq -n --arg id "$id" --arg language "$language" --arg requirement "$requirement" --argjson docs "$documents" \
-		'{title:("Task "+$id),path:("tasks/"+$id+".md"),description:("Implement "+$requirement+" with a behavioral test and integration check"),fields:{identity:{kind:"task",taskID:$id},structure:{order:(if $id=="b" then 2 else 1 end)},scope:{requirements:[$requirement],documents:$docs},implementation:{language:$language,ownership:{paths:[("src/"+$id+".sh")],sharedPaths:[],resources:[],interfaces:[]}}}}' | create
+		'{title:("Task "+$id),path:("tasks/"+$id+".md"),description:("Implement "+$requirement+" with a behavioral test and integration check"),fields:{identity:{kind:"task",taskID:$id},structure:{order:(if $id=="b" then 2 else 1 end)},scope:{requirements:[$requirement],documents:$docs},implementation:{language:$language,reviewPlan:{languages:[{language:$language,paths:[("src/"+$id+".sh")]}],specialists:{architecture:{required:false,reason:"Synthetic isolated behavior"},security:{required:false,reason:"No untrusted input"},usability:{required:false,reason:"Fixture internal output"},maintenance:{required:false,reason:"No environment change"}}},ownership:{paths:[("src/"+$id+".sh")],sharedPaths:[],resources:[],interfaces:[]}}}}' | create
 	link "tasks/$id.md" "phases/$phase.md" project-add
 	jq -n --arg requirement "$requirement" --argjson docs "$documents" '{operations:[{op:"set",field:"scope",value:{requirements:[$requirement],documents:$docs}}]}' |
 		mtn --path "$TASK_ROOT" agent patch "tasks/$id.md" --input - --json >/dev/null
@@ -107,7 +107,7 @@ original_hash_a="$(fingerprint tasks/a.md)"
 metadata='[]'
 while read -r ref; do
 	parents="$(mtn --path "$TASK_ROOT" agent hierarchy "$ref" --json | jq '[.result.parents[].resolution.ref]')"
-	data="$(mtn --path "$TASK_ROOT" agent show "$ref" --json | jq --argjson parents "$parents" '.result|{ref,identity:({uuid:(.frontmatter.identity.uuid // .frontmatter.id),kind:.frontmatter.identity.kind} + (if .frontmatter.identity.kind=="project" then {projectID:.frontmatter.identity.projectID} elif .frontmatter.identity.kind=="phase" then {phaseID:.frontmatter.identity.phaseID} elif .frontmatter.identity.kind=="task" then {taskID:.frontmatter.identity.taskID} else {} end)),kind:.frontmatter.identity.kind,parentRef:($parents[0] // null),order:.frontmatter.structure.order,language:.frontmatter.implementation.language,requirements:.frontmatter.scope.requirements,documents:.frontmatter.scope.documents,ownership:.frontmatter.implementation.ownership}')"
+	data="$(mtn --path "$TASK_ROOT" agent show "$ref" --json | jq --argjson parents "$parents" '.result|{ref,identity:({uuid:(.frontmatter.identity.uuid // .frontmatter.id),kind:.frontmatter.identity.kind} + (if .frontmatter.identity.kind=="project" then {projectID:.frontmatter.identity.projectID} elif .frontmatter.identity.kind=="phase" then {phaseID:.frontmatter.identity.phaseID} elif .frontmatter.identity.kind=="task" then {taskID:.frontmatter.identity.taskID} else {} end)),kind:.frontmatter.identity.kind,parentRef:($parents[0] // null),order:.frontmatter.structure.order,language:.frontmatter.implementation.language,implementation:.frontmatter.implementation,requirements:.frontmatter.scope.requirements,documents:.frontmatter.scope.documents,ownership:.frontmatter.implementation.ownership}')"
 	metadata="$(jq -n --argjson items "$metadata" --argjson data "$data" '$items+[$data]')"
 done < <(mtn --path "$TASK_ROOT" list --json | jq -r '.[].path')
 jq -n -e -L "$skill/scripts" --argjson records "$metadata" 'include "workflow"; {requirements:["REQ-001","REQ-002","REQ-003"],records:$records}|metadata_valid' >/dev/null
@@ -188,8 +188,15 @@ build_record() {
 		jq -c --arg id "$1/build/$2" '.result.evidence[].content|fromjson|select(.kind=="build" and .eventID==$id)'
 }
 review() {
-	local id="$1" attempt="$2" verdict="$3"
-	publish "$(event "tasks/$id.md" review "$id/review/$attempt" "$attempt" | jq --argjson data "$(build_record "$id" "$attempt")" --arg build "$id/build/$attempt" --arg verdict "$verdict" '.+{buildEventID:$build,head:$data.head,tree:$data.tree,reviewer:"combined",verdict:$verdict,changes_required:(if $verdict=="APPROVED" then [] else [{id:"R-001",evidence:"fixture requests second behavior revision"}] end),validation:[{command:"fixture independent review",result:"pass"}]}')"
+	local id="$1" attempt="$2" verdict="$3" role
+	while IFS= read -r role; do
+		publish "$(event "tasks/$id.md" review "$id/review/$attempt/$role" "$attempt" | jq --arg role "$role" --argjson data "$(build_record "$id" "$attempt")" --arg build "$id/build/$attempt" --arg verdict "$verdict" '.+{buildEventID:$build,head:$data.head,tree:$data.tree,reviewer:$role,verdict:$verdict,changes_required:(if $verdict=="APPROVED" then [] else [{id:"R-001",evidence:"fixture requests second behavior revision"}] end),validation:[{command:"fixture independent review",result:"pass"}]}')"
+	done < <(mtn --path "$TASK_ROOT" agent show "tasks/$id.md" --json | jq -r -L "$skill/scripts" 'include "workflow"; .result.frontmatter as $f | {language:$f.implementation.language,implementation:$f.implementation} | required_review_scopes[]')
+}
+review_ids() {
+	local id="$1" attempt="$2"
+	mtn --path "$TASK_ROOT" agent show "tasks/$id.md" --json |
+		jq -c -L "$skill/scripts" --argjson build "$(build_record "$id" "$attempt")" 'include "workflow"; .result as $r | {language:$r.frontmatter.implementation.language,implementation:$r.frontmatter.implementation} | required_review_scopes as $scopes | current_scope_reviews([$r.evidence[].content|fromjson];$build;$scopes) | map(.eventID)'
 }
 for id in a b; do
 	git -C "$target" worktree add -q -b "worker-$id" "$work/worker-$id" "$base"
@@ -234,7 +241,7 @@ integrate() {
 	if [[ "$fail" == true ]]; then
 		# Deliberate combined-check failure: retain candidate without advancing main.
 		if (cd "$candidate" && bash -c 'exit 1'); then exit 1; fi
-		publish "$(event "tasks/$id.md" integration "$id/integration-failed/$attempt-$try" "$attempt" | jq --argjson data "$data" --arg build "$id/build/$attempt" --arg review "$id/review/$attempt" --arg base "$before" --arg commit "$commit" --arg tree "$tree" '.+{buildEventID:$build,head:$data.head,tree:$data.tree,reviewEventIDs:[$review],targetBranch:"main",targetBase:$base,candidateCommit:$commit,candidateTree:$tree,outcome:"failed",validation:[{command:"deliberately failing combined check",result:"fail"}]}')"
+		publish "$(event "tasks/$id.md" integration "$id/integration-failed/$attempt-$try" "$attempt" | jq --argjson data "$data" --arg build "$id/build/$attempt" --argjson reviews "$(review_ids "$id" "$attempt")" --arg base "$before" --arg commit "$commit" --arg tree "$tree" '.+{buildEventID:$build,head:$data.head,tree:$data.tree,reviewEventIDs:$reviews,targetBranch:"main",targetBase:$base,candidateCommit:$commit,candidateTree:$tree,outcome:"failed",validation:[{command:"deliberately failing combined check",result:"fail"}]}')"
 		[[ "$(git -C "$target" rev-parse HEAD)" == "$before" ]]
 		[[ "$(state "tasks/$id.md")" == awaiting-integration ]]
 		return
@@ -243,7 +250,7 @@ integrate() {
 	[[ "$(git -C "$target" rev-parse HEAD)" == "$before" ]]
 	git -C "$target" merge --ff-only "candidate-$id-$attempt-$try" >/dev/null
 	git -C "$target" merge-base --is-ancestor "$commit" main
-	publish "$(event "tasks/$id.md" integration "$id/integration/$attempt" "$attempt" | jq --argjson data "$data" --arg build "$id/build/$attempt" --arg review "$id/review/$attempt" --arg base "$before" --arg commit "$commit" --arg tree "$tree" '.+{buildEventID:$build,head:$data.head,tree:$data.tree,reviewEventIDs:[$review],targetBranch:"main",targetBase:$base,integratedCommit:$commit,integratedTree:$tree,outcome:"passed",validation:[{command:"combined target scoped check",result:"pass"}]}')"
+	publish "$(event "tasks/$id.md" integration "$id/integration/$attempt" "$attempt" | jq --argjson data "$data" --arg build "$id/build/$attempt" --argjson reviews "$(review_ids "$id" "$attempt")" --arg base "$before" --arg commit "$commit" --arg tree "$tree" '.+{buildEventID:$build,head:$data.head,tree:$data.tree,reviewEventIDs:$reviews,targetBranch:"main",targetBase:$base,integratedCommit:$commit,integratedTree:$tree,outcome:"passed",validation:[{command:"combined target scoped check",result:"pass"}]}')"
 	[[ "$(state "tasks/$id.md")" == integrated ]]
 	publish "$(event "tasks/$id.md" completion "$id/completion/$attempt" "$attempt" | jq --arg integration "$id/integration/$attempt" '.+{integrationEventID:$integration}')"
 	mtn --path "$TASK_ROOT" agent complete "tasks/$id.md" --json >/dev/null

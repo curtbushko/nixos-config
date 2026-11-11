@@ -1,97 +1,74 @@
 # Zig Team Orchestration
 
-Read `mtn-tasks`, its commands, migration rules, and shared execution reference
-`../../mtn-tasks/references/execution.md` completely. It owns the selection/resume,
-single-writer, lifecycle, supervision, and completion loop. Keep the coordinator
-focused on graph/status/evidence metadata, not source or full specifications.
+Read `delivery-coordinator`, `mtn-tasks` and its protocol/execution/resource/Rex
+references. The coordinator owns selection, resume, supervision, serial writes,
+integration, outcome evidence and cleanup. Workers read their exact task and role.
 
-## Task Manager
+## Planning and handoff
 
-Pass the absolute collection root and exact phase/project refs. The planner reads
-phase/approved PRD/design descriptions through mtn, explores code/module boundaries/tests, and
-proposes `workflowKind: task`, `workflowLanguage: zig`, and phase-scoped integer
-`workflowOrder` records. Order work by actual dependencies and the project's approved design.
-Each task states files, criteria, tests, constraints, and its own TDD cycle.
-Return proposed native links, ownership/interface boundaries and REQ coverage.
-Coordinator validates and serially publishes the approved v1 plan manifest; planners
-never mutate the collection. Mark final gates in the task graph with dependencies
-on ALL required phase work, not merely the highest task number.
+Product management leads discovery and consolidates architect/security/usability/
+maintenance input. Planning specialists assess the approach and shape accepted
+constraints/test scenarios before implementation; new scope needs user approval.
+Prepare the native task graph, ownership, REQ coverage and verification cadence.
 
-## Verification Strategy
+Each new task contains approved `implementation.reviewPlan`; see
+[review planning](../../delivery-coordinator/references/review-plans.md).
+Record every materially affected language/path and all specialist trigger
+booleans/reasons. Validate this against actual changes, including embedded scripts.
+A changed review plan affects specHash and follows the approval-impact process.
+
+Developer: `zig-developer` plus relevant language guidance and `mtn-tasks`
+worker contract. Pass exact refs, owned files, approved constraints, base/target,
+attempt/run, semantic hash, commit policy, review plan and gate allocation.
+Repository/infrastructure work is implemented by `repo-maintainer` with the
+relevant Nix/Bash/tooling knowledge; application changes use language developers.
+
+## Verification cadence
 
 Run the narrowest relevant test first during RED, GREEN, and each fix cycle.
-Run the full test suite once after the implementation is ready for review.
-Re-run the full test suite after a fix only when the fix has broad impact
-(shared infrastructure, public contracts, build wiring, persistence, concurrency,
-or multiple capabilities), or a reviewer explicitly requests it. Otherwise record
-why prior full-suite evidence still applies to the reviewed revision.
+Before EACH review candidate, satisfy its project-required build/lint/test gates
+using the supported environment/command surface. Taskfile and application
+frameworks are not universal requirements. Preserve real RED/GREEN/results;
+unavailable checks are not passes. The plan identifies expensive/platform/
+packaged-runtime checks and their integrated-delivery boundary; do not run every
+full-system build after every edit or silently omit required gates.
 
-Reserve exhaustive project-specific, packaged-runtime, and full-system gates for the final task of the phase.
-Earlier tasks run focused tests plus standard build/full suite; the final task
-records all release-matrix evidence for final review.
+Honor `ZIG_TEAM_TEST_JOBS` within the coordinator's shared per-gate allocation.
+Use one job if no reliable allocation exists, not host-wide resources per worker.
+Check disk before Nix/build preparation; reuse the approved environment.
 
-Select/export `ZIG_TEAM_TEST_JOBS` from the coordinator's shared per-gate allocation
-(`mtn-workflow budget`), not full host resources per worker. Validate/cap explicit
-overrides; use one job if no reliable allocation exists. Heavy commands share the
-same gate slots across builders AND reviewers. Check `mtn-workflow disk` before
-preparing Nix environments/builds; keep cleanup planning in the phase completion flow.
+## Independent review
 
-```bash
-zig build
-zig build test -j"$ZIG_TEAM_TEST_JOBS"
-```
+Dispatch `zig-code-reviewer` and `zig-test-reviewer` in fresh separate
+contexts, plus pairs for other materially affected languages and triggered
+`architecture-reviewer`, `security-reviewer`, `usability-reviewer`,
+`repo-maintenance-reviewer`. All receive exact build identity, assigned scoped
+review key, bounded paths, accepted criteria and gate budget.
 
-Use actual project-defined focused test targets/filters, not guessed Zig flags.
-Record exact commands, job count, RED failure, GREEN success, and full-suite result
-in protocol v1 build payloads. Fixes are new dispatch/build attempts. Coordinator
-publishes ALL evidence; workers never mutate the collection or complete native tasks.
+Each follows the common evidence/authority contract, but retains language/specialty
+judgment. Queue or parallelize within reviewer/gate limits and isolate mutable
+outputs. The coordinator serially publishes each using `agent note` and confirms
+the current required scope set; code/test or specialist approvals cannot replace
+each other. Use Block/Advise/Escalate and preserve unresolved material findings.
 
-## Build and Review
+## Fix and delivery
 
-Builder handoff: `mtn-tasks`, `zig-builder`, `zig`, exact task/phase refs, absolute
-collection root, isolated worktree/base/head/target branch, allowed ownership scope,
-interfaces, verification/integration gates, attempt/run ID, spec hash and commit policy.
+Route fixes to implementers; never fix source in the coordinator. New build IDs
+need current language code/test verdicts. Re-dispatch affected specialists; an
+unaffected assessment can carry only through a new evidenced current-build
+attestation linked to the latest approved review and its recorded build.
+No stale approval, hidden downgrade or round-limit waiver.
 
-Dispatch all four initial reviewers in parallel against the same frozen code revision
-only if the allocated reviewer limit permits four. Otherwise queue fresh independent
-contexts within that limit; heavy commands still consume shared gate slots. Each reads `mtn-tasks` and `zig-reviewer` plus:
+Integrate serially, verify combined behavior/compatibility/operations and planned
+broader checks, then record completion. Product management assesses integrated
+phase scenarios as demonstrated/unmet/unverified; code approval alone is not
+product acceptance. Actual blocker resolution, not routine reapproval prompts,
+governs authorized progress. Preserve identities/history and perform task cleanup.
 
-| Specialty | Additional skills | Evidence role |
-|---|---|---|
-| Code | `zig-code-reviewer`, `zig-code-review`, `zig` | code |
-| Comment | `zig-comment-reviewer` | comment |
-| Architecture | `zig-architecture-reviewer`, `zig` | architecture |
-| Test | `zig-test-reviewer`, `zig` | test |
-
-Reviewers are read-only for source and managed records. Return full review payloads;
-the coordinator serially publishes each using `agent note` category `review`, with
-role, attempt, revision, findings, and verdict. Do not concurrently append to one
-record. Confirm all four evidence entries survived with `show` before proceeding.
-
-All four reviewers MUST return `APPROVED` for the accepted revision.
-`NON_BLOCKING_SUGGESTIONS` are preserved as follow-up evidence, not blocking findings.
-Conflicting blockers require focused reviewer reconciliation; unresolved conflicts
-or scope-changing remedies require user decision before further implementation.
-
-## Fix, Resume, Complete
-
-Fix workers read every published specialty finding through mtn and return a new v1
-build attempt after required verification; the coordinator publishes it. Re-dispatch only reviewers whose concerns could be affected
-by the fix; broad changes to architecture, behavior, shared infrastructure, or several
-capabilities require all four. Every required specialty must issue a fresh explicit v1 verdict for the NEW build
-ID/head/tree; unchanged reasoning may be reused by its reviewer, not by the coordinator.
-Never mix approvals across builds. Ten cycles without resolution require user escalation.
-
-Only the coordinator serially integrates approved results, checks the combined
-revision, publishes integration/completion events and verifies target history before
-native task completion. After ALL required integrations, run phase-final gates and
-REQ coverage checks before completing nonempty parents. Do not keep manual counters.
-
-## Progress and Recovery
+## Progress and recovery
 
 PROGRESS_INTERVAL = 2 minutes
 
-While long work runs, report stage, exact command, elapsed time, and fresh evidence.
-Use host-native automatic delivery, not polling loops on event-driven hosts. Follow
-the shared recovery thresholds; confirm a writer stopped before replacement.
-An alive process is not proof of progress; fresh output is not a reason to interrupt.
+Follow shared supervision/recovery thresholds. Report stage, command, elapsed time
+and fresh evidence; liveness alone is not progress. Confirm stopped writers before
+replacement. No silent live-collection migration.

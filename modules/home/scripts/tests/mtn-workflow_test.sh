@@ -18,6 +18,12 @@ printf '%s\n' '{"target":"phases/demo.md"}' | mtn --path "$work/repo/.tasks" age
 cli status tasks/demo.md | jq -e '.state=="planned" and .unresolvedBlockers==[]' >/dev/null
 cli task tasks/demo.md | jq -e '.definition.description=="REQ-001: observable behavior" and .currentEvidence==[]' >/dev/null
 first="$(cli fingerprint tasks/demo.md)"
+# Legacy evidence remains inspectable, but a new dispatch cannot omit its review plan.
+jq -n --arg hash "$first" --arg wt "$work/repo" '{schemaVersion:1,eventID:"missing-plan/dispatch",kind:"dispatch",recordRef:"tasks/demo.md",specHash:$hash,attempt:1,runID:"fixture",baseCommit:"base",branch:"work",targetBranch:"main",worktree:$wt}' >"$work/missing-plan.json"
+if MTN_WORKFLOW_COORDINATOR=1 cli publish "$work/missing-plan.json" >"$work/missing-plan.out" 2>&1; then
+	printf 'New dispatch bypassed the review plan\n' >&2
+	exit 1
+fi
 printf '%s\n' '{"operations":[{"op":"set","field":"title","value":"Editorial title"},{"op":"set","field":"structure","value":{"order":2}}]}' | mtn --path "$work/repo/.tasks" agent patch tasks/demo.md --input - --json >/dev/null
 [[ "$first" == "$(cli fingerprint tasks/demo.md)" ]]
 cli paths ./src src/. | jq -e '.==["src","src"]' >/dev/null

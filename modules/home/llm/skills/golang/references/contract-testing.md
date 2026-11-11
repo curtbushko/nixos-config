@@ -8,7 +8,9 @@ inconsistent edge cases and inaccurate substitutes.
 
 ## Requirements
 
-- Write contract tests for dependency interfaces, even with one implementation.
+- Use shared contract suites when implementations/substitutes promise consistent behavior.
+- Ordinary tests may already establish a single implementation's behavior; no separate
+  contract structure or new interface is required.
 - Document valid inputs, observable results, error behavior, cancellation, and
   resource ownership alongside the interface.
 - Use testify assertions and table-driven subtests where useful.
@@ -41,5 +43,5 @@ contracts against real dependencies when practical, using the project's integrat
 test targets and isolation rules. A passing mock contract does not replace testing
 the real implementation.
 
-Use `task build`, `task test`, and `task lint`. Record the exact checks run and any
-integration checks unavailable in the current environment.
+Use the project's supported commands and environment for required gates; Taskfile
+is not required. Record exact checks and unavailable integration environments.

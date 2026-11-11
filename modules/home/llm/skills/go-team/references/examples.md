@@ -12,8 +12,9 @@ prerequisites and resources are independent. Shared build wiring is serialized.
 Each Go builder receives exact root/ref/spec hash, base/target/worktree and dispatch
 identity, runs TDD plus Taskfile gates, commits only scoped source, and
 returns a v1 build payload. Coordinator publishes it and freezes that checkout.
-Combined reviewer checks spec then quality/semantic dead code and independently runs
-lint against that exact build. Coordinator publishes its v1 review payload.
+Independent code and test reviewers assess that exact build in separate contexts.
+Code review checks spec/correctness and runs lint; test review challenges regression
+strength and runs focused tests. Coordinator publishes both v1 review payloads.
 
 CHANGES_NEEDED produces a new dispatch/build attempt and fresh explicit review.
 APPROVED means ready for serialized integration, not completion. Coordinator integrates,

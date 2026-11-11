@@ -179,7 +179,9 @@ integration, completion, blocker, resume, release and summary schemas. Fixes rep
 current state with a new attempt; they do not require retaining prior progress in the
 record. Each review event must include common v1 keys and:
 
-- `reviewer`: combined, code, comment, architecture, or test; `buildEventID`, exact head/tree
+- `reviewer`: exact assigned scope, e.g. `go:code`, `bash:test`, `architecture`,
+  `security`, `usability`, or `maintenance`; `buildEventID`, exact head/tree.
+  Unqualified combined/code/test/comment remain only for historical inspection.
 - `verdict`: APPROVED or CHANGES_NEEDED; `user_decision_required`
 - criterion-by-criterion evidence; independent verification commands/results
 - `changes_required`: stable ID, file:line, rule, evidence, impact, required outcome,

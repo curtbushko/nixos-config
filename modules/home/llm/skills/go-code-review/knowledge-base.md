@@ -2,6 +2,11 @@
 
 Source: https://100go.co/
 
+These patterns are investigation prompts, not universal defects or mandatory design
+recipes. Evaluate against accepted contracts, supported Go versions and actual
+correctness/maintenance risk. Numeric heuristics alone do not block approval, and
+intentional external APIs do not need manufactured internal callers.
+
 ## Code Organization (1-16)
 
 | # | Issue | Check For |

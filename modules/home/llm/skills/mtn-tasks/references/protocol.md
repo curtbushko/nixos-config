@@ -139,11 +139,20 @@ Phases are milestones, not arbitrary agent-sized chunks. Tasks are primary execu
 units. Different ready phases may overlap; a Task Manager can plan each independently,
 but one project coordinator still schedules the entire graph and publishes changes.
 Mixed-language projects select worker/reviewer skills per task language, not per project.
-Supported languages are `go`, `node`, `zig`, `lua`, `nix`, and `docs`. Lua uses the
-shared `mtn-tasks` builder/reviewer contract; Nix uses `mtn-tasks` with the `nix`
-support skill; documentation uses the shared `mtn-tasks` contract. Lua/Nix/docs use
-one independent `combined` source-review gate and do not inherit Go TDD gates. The
-invoked language team supplies defaults, never silently rewrites a task's language.
+Supported languages are `go`, `node`, `zig`, `nix`, `bash`, `lua` and `docs`.
+Go/Node/Zig use their language developers and separate customizable code/test
+reviewers. Nix/Bash repository implementation uses `repo-maintainer` plus its
+language-specific code/test reviewers. Existing Lua/docs source-only routing uses
+the shared contract, without importing Go framework/command mandates.
+
+Each NEW task records approved `implementation.reviewPlan`: materially affected
+languages with bounded paths and explicit required/reason entries for architecture,
+security, usability and maintenance. See [review plans](../../delivery-coordinator/references/review-plans.md).
+Planning roles shape accepted constraints before coding; matching reviewers assess
+implementation independently. New scope and changes to the review plan follow
+the existing approval-impact process. Review-plan fields participate in specHash;
+their omission from an old record remains historical compatibility, not authority
+to bypass the new planning contract.
 
 ## Dependency-ready scheduling
 
@@ -308,9 +317,15 @@ Per-kind fields:
   outstanding limitations. Phase summaries additionally contain exact completed
   child refs.
 
-APPROVED requires zero blocking findings and passing independent validation. Go/Node
-require combined review; Zig requires code/comment/architecture/test. New build IDs
-invalidate previous approvals even if filenames did not change. A later negative
+APPROVED requires zero blocking findings and passing required independent validation.
+New review plans require a separately keyed code/test pair for every materially
+affected language, plus triggered specialist scopes. Keys such as `go:code` and
+`bash:test` prevent one language's verdict overwriting another's. New candidates
+need current verdicts; specialist carry-forward is a new current-build attestation
+with `carriedForwardFrom`, `carryForwardRationale` and scope/assumption evidence.
+The prior latest approved review and its build must be available. Existing completed
+summaries remain proof; inspect/replan active legacy work without rewriting history.
+No old unqualified or combined verdict can satisfy a declared scoped plan. A later negative
 review supersedes that specialty's earlier positive verdict for the same build.
 All required reviewers approve the same current build; no mixing attempts.
 
@@ -364,7 +379,7 @@ safe-batch selection. `metadata_valid` takes `{requirements,records}`; each norm
 record has ref/kind, resolved `parentRef`, order, language, requirements, documents
 and ownership. Normalize parents using hierarchy's `parents[].resolution.ref`, not
 raw wikilink parsing. It rejects unknown kinds/languages, missing parents/documents,
-including languages outside `go`, `node`, `zig`, `lua`, `nix`, and `docs`.
+including languages outside `go`, `node`, `zig`, `nix`, `bash`, `lua`, and `docs`.
 invalid ownership/requirement IDs and duplicate sibling orders. `document_approved`
 uses `{ref,specHash,events}`.
 `plan_approved` additionally takes `documents` (current document snapshots), `records`

@@ -1,82 +1,51 @@
 ---
 name: zig-team
-description: Use when implementing Zig project phases with a Task Manager, TDD Builder, and independent code, comment, architecture, and test reviewers. Coordinates mtn records and evidence in the repository-local .tasks collection.
+description: Use when executing approved Zig project phases or tasks through delegated workers.
 ---
 
 # Zig Team
 
-Read `mtn-tasks`, its delivery protocol, and `references/orchestration.md` completely before dispatch.
-The coordinator dispatches and tracks metadata, graph readiness, and persisted
-verdicts; workers read source and detailed descriptions. Worker skill bodies and
-worked examples are not normal coordinator context.
+Read `delivery-coordinator`, `mtn-tasks`, and
+[Zig orchestration](references/orchestration.md) before dispatch.
+This is the Zig entry point, not a second coordinator or language handbook.
 
 ## Pi / Rex startup
 
-Use Pi for every agent. Before dispatch, read
-`../mtn-tasks/references/rex.md` completely. Unless `MTN_REX_COORDINATOR_RUN`
-is already set for this collection, hand off to a new coordinator Pi process in
-one Rex session labelled `<project>-<worktree>` (plain project checkouts use the
-project name). Use one Rex session per project execution/worktree, not per phase.
-Stop coordinating after handoff; do not also execute the team in this caller.
-The handed-off coordinator launches each planner/builder/reviewer through `mtn-rex`
-in a separate phase/task-labelled Rex window, with a separate Pi conversation.
-Use one lowercase hyphenated agent identity for `runId` and Pi session ID:
-`<project>-p<NN>-t<NN>-<agent>-a<NN>` for task workers; coordinators/planners
-omit the task segment and use their role. Rex window and Pi display names omit
-the project prefix: `p<NN>-t<NN>-<agent>-a<NN>` or `p<NN>-<role>-a<NN>`.
-No spaces. Supply the canonical `runId` when launching; mismatches are rejected
-before Rex creation. Do not rename historical/live runs.
-Rex-generated session/window/block IDs stay separate. The launcher supplies them
-before Pi starts: agents must not recreate their own sessions/windows. Never substitute
-hidden/background subagents or start another coordinator.
+Read `../mtn-tasks/references/rex.md` completely. Unless
+`MTN_REX_COORDINATOR_RUN` is already set for this collection, hand off once to
+the required new coordinator Pi process and stop coordinating in this caller.
+Use one Rex session per execution/worktree, not per phase.
+Use one lowercase hyphenated agent identity with the exact supplied run/session
+identity and role labels defined in that reference. Do not rename historical runs,
+substitute background agents or recreate launcher-owned Rex resources.
 
-## Invocation
+## Selection
 
-- No arguments: select dependency-ready tasks across all eligible phases in the
-  chosen project; phase/task order is a preference, not a barrier.
-- `phase=<N or exact ref>`: select a phase within that project.
-- `task=<N or exact ref>`: select one task within that phase; never bypass dependencies.
+- No arguments: select dependency-ready tasks in the chosen project.
+- `phase=<N or exact ref>`: restrict phase scope.
+- `task=<N or exact ref>`: restrict task scope; never bypass prerequisites.
 
-Ambiguous projects/numbers require clarification. All children receive the absolute
-collection root and exact refs; no child initializes a competing collection.
+Ambiguous refs need clarification. Existing approved work needs no repeated approval.
+Use task languages in mixed projects; this team does not overwrite metadata.
 
-## Roles
+## Roles and evidence
 
-| Role | Required skills |
+| Role | Skills |
 |---|---|
-| Task Manager | `mtn-tasks`, Zig architecture context |
-| Builder | `mtn-tasks`, `zig-builder`, `zig` |
-| Code reviewer | `mtn-tasks`, `zig-reviewer`, `zig-code-reviewer`, `zig-code-review`, `zig` |
-| Comment reviewer | `mtn-tasks`, `zig-reviewer`, `zig-comment-reviewer` |
-| Architecture reviewer | `mtn-tasks`, `zig-reviewer`, `zig-architecture-reviewer`, `zig` |
-| Test reviewer | `mtn-tasks`, `zig-reviewer`, `zig-test-reviewer`, `zig` |
+| Coordinator | `delivery-coordinator`, `mtn-tasks` |
+| Task planner | `mtn-tasks`, Zig project context |
+| Developer | `zig-developer`, `zig`, `mtn-tasks` |
+| Code reviewer | `zig-code-reviewer`, `zig-reviewer`, `zig` |
+| Test reviewer | `zig-test-reviewer`, `zig-reviewer`, `zig` |
 
-Independent builders run in isolated worktrees with approved nonconflicting scopes.
-Four initial reviews inspect each frozen worktree revision in parallel when capacity
-and check-output isolation permit. Coordinator serializes ALL collection writes and
-integrations, requiring all four current APPROVED verdicts for each build. In mixed
-projects select each task's language; Zig supplies defaults, not a language override. Reconcile conflicting blockers and ask the
-user before scope-changing architectural remedies.
+Shared product/design/security/maintenance/usability roles provide input when relevant.
+Use an approved review plan for every new task. Every materially affected language
+needs its separate code/test reviewers; triggered specialists independently review
+their concerns. All current scopes govern the same frozen build. A legacy
+combined verdict cannot replace them. Coordinator serializes managed-record writes,
+integration and combined-target verification. A worker never approves its own work,
+pushes, integrates or completes native status.
 
-## Task cleanup
-
-The coordinator must perform [Task cleanup](../mtn-tasks/references/execution.md#task-cleanup)
-after each delivered task: close its stopped worker Rex windows and remove its
-clean, no-longer-needed worktrees. Cleanup is part of finishing the task, not an
-optional phase-end plan. Preserve unsafe resources and report the exact blocker.
-
-## Invariants
-
-- All managed files, frontmatter, descriptions, relationships, and lifecycle writes
-  use mtn. No hand-edited state or duplicate result store.
-- Native membership is hierarchy; explicit dependencies are prerequisites.
-- Preserve focused RED/GREEN loops, configurable test jobs, one full-suite run
-  before review, and phase-final exhaustive gates.
-- Follow the project's approved design and module boundaries.
-  Resource-owning types have explicit `init`/`deinit`; allocator ownership is explicit.
-- Require approved document/plan fingerprints and REQ-to-task/test coverage.
-- Complete only after current reviews, successful target integration and combined-
-  revision checks; no missing evidence, failing tests or stale/negative approvals.
-- Keep records and evidence for history; migration requires explicit approval.
-
-`to-prd`, `to-phases`, and `write-phase` prepare records; this skill executes them.
+Perform [Task cleanup](../mtn-tasks/references/execution.md#task-cleanup) after
+each delivered task. Preserve unsafe resources and report actual blockers.
+Recovery examples are in [examples](references/examples.md).

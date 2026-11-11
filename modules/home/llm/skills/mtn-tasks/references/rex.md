@@ -22,12 +22,18 @@ or integration checks.
   later phases. Never rename/reidentify a live coordinator to imply a fresh run.
 - Every worker occupies a new Rex window in that same Rex session, named
   `p<NN>-t<NN>-<agent>-a<NN>`, for example
-  `p01-t01-builder-a01` or `p01-t01-reviewer-a01`. The prepared worker
-  worktree directory basename MUST be the same scoped display name, without the
-  project prefix (for example `p01-t01-builder-a01`, not
-  `rex-whichkey-p01-t01-builder-a01`). The launcher rejects a mismatched worker
-  worktree name. Builders use `builder`; reviewers use their skill without its language prefix:
-  `go-reviewer` becomes `reviewer`, `zig-code-reviewer` becomes `code-reviewer`.
+  `p01-t01-builder-a01` or `p01-t01-go-code-reviewer-a01`. Use the exact prepared
+  checkout from the handoff; multiple reviewers may share its frozen source while
+  isolating mutable check outputs. Do not rename a checkout to match each review
+  window or use display labels as filesystem ownership proof.
+  Builders use `builder`; reviewers follow these canonical agent-label rules:
+  Compatibility `go-reviewer`/`node-reviewer`/`zig-reviewer` become `reviewer`;
+  `go-code-review`, `zig-comment-reviewer` and `zig-architecture-reviewer` keep
+  their historical short labels. NEW language seats retain the FULL skill name:
+  `go-code-reviewer`, `bash-code-reviewer`, etc. Shared specialist seats also keep
+  full names, including `repo-maintenance-reviewer`. Stripping language prefixes
+  would collapse mixed-language pairs to the same run/window identity. Do not
+  rename existing stored runtime identities; this rule governs new launches.
   Numbers come from the stable numeric segments in phase/task refs, not
   `structure.order`, and the attempt is zero-padded to at least two digits. They are
   labels, not prerequisite edges. For an unnumbered ref, the request must provide

@@ -1,6 +1,6 @@
 ---
 name: mtn-tasks
-description: Use when planning documents, phases or delegated tasks in one repository-local .tasks mtn collection. Coordinates reviewed delivery with native relationships and shell-based workflow helpers.
+description: Use when planning or delivering managed documents, phases, or delegated tasks in one repository-local .tasks collection.
 ---
 
 # Repository Delivery

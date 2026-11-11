@@ -7,7 +7,7 @@ description: Use when reviewing Zig code for memory safety, resource leaks, erro
 
 Auto-triggers when reviewing Zig code. Catches memory-safety, resource,
 error-handling, allocator, undefined-behavior, and semantic dead-code mistakes.
-The independent `zig-architecture-reviewer` owns architectural verdicts.
+The triggered independent `architecture-reviewer` owns architectural verdicts.
 
 ## Critical Rule
 
@@ -55,19 +55,19 @@ The Zig compiler and `zig build` catch **syntactic** dead code — unreferenced 
 
 For every new or modified type, function, method, field, module, and public symbol, verify:
 
-1. **Non-test callers exist.** Grep for references outside `test { ... }` blocks and files under `tests/`. If the only callers are tests, the symbol is dead — reject unless it is explicitly a test helper in a `testutil`-style module.
+1. **Intended consumers exist.** Inspect actual callers and the accepted public API/extension contract. Test-only callers can be valid for supported externally consumed APIs; require purpose, a consumer scenario and behavior tests. Investigate unused internal code separately.
 2. **Callers do meaningful work with it.** A caller that constructs the value and immediately `deinit`s it, or only checks it is non-null, does not count. The value must flow into a real code path (persisted, returned to a caller, passed to another live function, or drives a branch).
-3. **Every method on a new type is called from a non-test path.** A struct with 5 methods where tests call all 5 but production callers call 0 is dead. If production calls only 1, flag the other 4 individually.
+3. **Methods serve accepted behavior.** Check internal use or supported external consumption; do not invent callers for public APIs or reject legitimate extension points solely from repository-local call counts.
 4. **Every struct field is read somewhere non-trivial.** A field written by `init` and never read (or only read by `std.debug.print("{}", .{self})`-style formatting) is dead.
 5. **Interface methods have implementations exercised in production.** An interface method implemented only by a test double is dead.
 6. **`build.zig` modules are actually imported.** A module wired in `build.zig` that no non-test module `@import`s is dead — remove the wiring or wire it in.
 
 **Reject criteria** (report as Critical dead code):
 
-- Symbol referenced only from `test` blocks or `tests/` files.
+- Unused internal symbol with no accepted purpose or supported external contract.
 - Symbol instantiated but no method/field is used by a non-test caller doing real work.
 - `init`/constructor with no non-test caller.
-- Method on a new type never called outside its own `test` block.
+- Speculative method with no accepted consumer behavior or implementation need.
 - Field written but never read (outside format-print debug output).
 - Interface method with no implementation exercised by a production path.
 

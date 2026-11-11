@@ -6,7 +6,7 @@ for command in grep dirname; do
 done
 skills="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 
-for skill in prd rfc to-prd to-phases write-phase go-team node-team zig-team go-builder node-builder zig-builder go-reviewer node-reviewer zig-reviewer zig-code-reviewer zig-comment-reviewer zig-architecture-reviewer zig-test-reviewer; do
+for skill in prd rfc to-prd to-phases write-phase product-manager delivery-coordinator code-architect security-analyst repo-maintainer usability-designer go-team node-team zig-team go-developer go-code-reviewer go-test-reviewer go-builder node-builder zig-builder go-reviewer node-reviewer zig-reviewer zig-code-reviewer zig-comment-reviewer zig-architecture-reviewer zig-test-reviewer; do
 	grep -Fq 'mtn-tasks' "$skills/$skill/SKILL.md" || {
 		printf 'Missing mtn contract: %s\n' "$skill" >&2
 		exit 1

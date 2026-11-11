@@ -157,7 +157,7 @@ materialize_lifecycle() {
 		if data="$(snapshot "$ref" 2>/dev/null)"; then break; fi
 		: "$attempt"
 		sleep 0.1
-done
+	done
 	[[ -n "$data" ]] || fail 'could not read the newly published evidence for lifecycle materialization'
 	state="$(derive_state "$data")"
 	source="$(jq -r '[.events[] | .eventID // empty] | last // empty' <<<"$data")"
@@ -527,6 +527,13 @@ publish)
 	load_show "$ref"
 	hash="$(fingerprint_show <<<"$SHOW")"
 	[[ "$hash" == "$(jq -r .specHash <<<"$payload")" ]] || fail 'stale semantic fingerprint; re-read the record'
+	if [[ "$(jq -r .kind <<<"$payload")" == dispatch ]] &&
+		! jq -e --argjson event "$payload" 'any(.result.evidence[]?; .retryKey==$event.eventID and .content==($event|tojson))' <<<"$SHOW" >/dev/null; then
+		jq -e -L "$lib" 'include "workflow"; include "facade"; canonical_work_item as $item |
+			$item.identity.kind=="task" and
+			($item.implementation.reviewPlan | review_plan_valid($item.implementation.language))' <<<"$SHOW" >/dev/null ||
+			fail 'new dispatch requires an approved task review plan; inspect/replan legacy work'
+	fi
 	if jq -e '.kind=="historical" and has("legacyIntents")' <<<"$payload" >/dev/null; then
 		jq -e '(.legacyIntents|type=="array") and (.approvedBy|type=="string" and length>0) and (.decisionEvidence|type=="string" and length>0)' <<<"$payload" >/dev/null || fail 'historical import requires explicit approval and legacy intent IDs'
 		jq -e --slurpfile requested <(jq -c .legacyIntents <<<"$payload") '.result.evidence as $notes|all($requested[0][];. as $intent|any($notes[];.intent==$intent))' <<<"$SHOW" >/dev/null || fail 'historical authorization names an absent note intent'

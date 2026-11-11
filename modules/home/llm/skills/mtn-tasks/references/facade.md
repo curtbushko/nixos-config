@@ -28,8 +28,13 @@ MTN_WORKFLOW_COORDINATOR=1 mtn-workflow --repo "$REPO_ROOT" publish request.json
   `snapshot` is an explicit normalized diagnostic view; scheduling uses a compact
   current-state projection and does not pass the full view through readiness.
 - `route LANGUAGE` reports the supported leaf builder/reviewer contract. The
-  supported values are `go`, `node`, `zig`, `lua`, `nix`, and `docs`; Lua/Nix/docs
-  use the independent combined source-review gate without Go TDD routing.
+  supported values are `go`, `node`, `zig`, `nix`, `bash`, `lua` and `docs`.
+  Go/Node/Zig route to their developers and separate language reviewer pairs.
+  Nix/Bash infrastructure routes to `repo-maintainer` plus its language pairs.
+  `reviewers` lists actual separate skills; singular `reviewer` is a compatibility
+  entry, not a substitute for every required scope. Lua/docs retain source-only
+  combined inspection. New task scopes come from approved
+  `implementation.reviewPlan`, not the primary-language route alone.
 - `fingerprint` is the canonical semantic hash, excluding presentation display name,
   structural order, timestamps, lifecycle status, execution bindings and evidence.
   Ownership paths are filesystem-normalized. Existing flat native fields are read through the

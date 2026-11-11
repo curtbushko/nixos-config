@@ -18,7 +18,7 @@ mtn init "$work/feature worktree/.tasks" >/dev/null
 root="$work/feature worktree"
 jq -n '{title:"Demo",path:"projects/demo.md",description:"REQ-001",fields:{identity:{kind:"project",projectID:"demo"},structure:{order:1},scope:{requirements:["REQ-001"]}}}' | mtn --path "$root/.tasks" agent create --input - --json >/dev/null
 for kind in phase task; do
-	jq -n --arg kind "$kind" '{title:"Authentication",path:($kind+"s/demo.md"),description:"REQ-001",fields:{identity:({kind:$kind} + (if $kind=="phase" then {phaseID:"demo"} else {taskID:"demo"} end)),structure:{order:9},scope:{requirements:["REQ-001"]},implementation:{language:"go",ownership:{paths:["src"],sharedPaths:[],resources:[],interfaces:[]}}}}' | mtn --path "$root/.tasks" agent create --input - --json >/dev/null
+	jq -n --arg kind "$kind" '{title:"Authentication",path:($kind+"s/demo.md"),description:"REQ-001",fields:{identity:({kind:$kind} + (if $kind=="phase" then {phaseID:"demo"} else {taskID:"demo"} end)),structure:{order:9},scope:{requirements:["REQ-001"]},implementation:{language:"go",ownership:{paths:["src"],sharedPaths:[],resources:[],interfaces:[]}}}} | if $kind=="task" then .fields.implementation.reviewPlan={languages:[{language:"go",paths:.fields.implementation.ownership.paths},{language:"bash",paths:.fields.implementation.ownership.paths}],specialists:{architecture:{required:false,reason:"Synthetic fixture"},security:{required:false,reason:"No untrusted input"},usability:{required:false,reason:"No interface change"},maintenance:{required:false,reason:"No environment change"}}} else . end' | mtn --path "$root/.tasks" agent create --input - --json >/dev/null
 done
 printf '%s\n' '{"target":"projects/demo.md"}' | mtn --path "$root/.tasks" agent project-add phases/demo.md --input - --json >/dev/null
 printf '%s\n' '{"target":"phases/demo.md"}' | mtn --path "$root/.tasks" agent project-add tasks/demo.md --input - --json >/dev/null
@@ -113,7 +113,7 @@ jq -s -e 'last|index("--session-id") as $id | index("--name") as $name | index("
 [[ "$(jq -s '[.[]|select(index("window"))|select(index("new"))]|length' "$work/rex.jsonl")" == 1 ]]
 # Dependency-ready work in another phase still belongs to this one coordinator.
 for kind in phase task; do
-	jq -n --arg kind "$kind" '{title:"Other phase",path:($kind+"s/other.md"),description:"REQ-002",fields:{identity:({kind:$kind} + (if $kind=="phase" then {phaseID:"other"} else {taskID:"other"} end)),structure:{order:1},scope:{requirements:["REQ-002"]},implementation:{language:"go",ownership:{paths:["src/other"],sharedPaths:[],resources:[],interfaces:[]}}}}' | mtn --path "$root/.tasks" agent create --input - --json >/dev/null
+	jq -n --arg kind "$kind" '{title:"Other phase",path:($kind+"s/other.md"),description:"REQ-002",fields:{identity:({kind:$kind} + (if $kind=="phase" then {phaseID:"other"} else {taskID:"other"} end)),structure:{order:1},scope:{requirements:["REQ-002"]},implementation:{language:"go",ownership:{paths:["src/other"],sharedPaths:[],resources:[],interfaces:[]}}}} | if $kind=="task" then .fields.implementation.reviewPlan={languages:[{language:"go",paths:.fields.implementation.ownership.paths}],specialists:{architecture:{required:false,reason:"Synthetic fixture"},security:{required:false,reason:"No untrusted input"},usability:{required:false,reason:"No interface change"},maintenance:{required:false,reason:"No environment change"}}} else . end' | mtn --path "$root/.tasks" agent create --input - --json >/dev/null
 done
 printf '%s\n' '{"target":"projects/demo.md"}' | mtn --path "$root/.tasks" agent project-add phases/other.md --input - --json >/dev/null
 printf '%s\n' '{"target":"phases/other.md"}' | mtn --path "$root/.tasks" agent project-add tasks/other.md --input - --json >/dev/null
@@ -133,6 +133,13 @@ jq '.role="reviewer" | .skill="go-reviewer" | .runID="demo-project-p01-t01-revie
 MTN_REX_COORDINATOR_RUN=demo-project-p01-coordinator-a01 cli launch "$work/reviewer.json" | jq -e '.runID=="demo-project-p01-t01-reviewer-a01" and .rexWindowName=="p01-t01-reviewer-a01" and .piSessionName==.rexWindowName and .piSessionID==.runID' >/dev/null
 bash "$scripts/mtn-rex" agent "$root/.mtn-tmp/rex/demo-project-p01-t01-reviewer-a01" >/dev/null
 jq -s -e 'last|index("--session-id") as $id | index("--name") as $name | .[$id+1]=="demo-project-p01-t01-reviewer-a01" and .[$name+1]=="p01-t01-reviewer-a01"' "$work/pi.jsonl" >/dev/null
+# Every materially affected language has distinct code/test launch identities.
+for review_skill in go-code-reviewer bash-code-reviewer go-test-reviewer bash-test-reviewer; do
+	jq --arg skill "$review_skill" '.skill=$skill | .runID=("demo-project-p01-t01-"+$skill+"-a01")' "$work/reviewer.json" >"$work/$review_skill.json"
+	MTN_REX_COORDINATOR_RUN=demo-project-p01-coordinator-a01 cli launch "$work/$review_skill.json" |
+		jq -e --arg skill "$review_skill" '.runID==("demo-project-p01-t01-"+$skill+"-a01") and .rexWindowName==("p01-t01-"+$skill+"-a01") and .piSessionID==.runID' >/dev/null
+	[[ -d "$root/.mtn-tmp/rex/demo-project-p01-t01-$review_skill-a01" ]]
+done
 # The next coordinator requires an explicit release after confirmed process exit.
 jq -n --arg hash "$phase_hash" '{schemaVersion:1,eventID:"demo-project-p01-coordinator-a01/release",kind:"release",recordRef:"phases/demo.md",specHash:$hash,attempt:1,dispatchEventID:"demo-project-p01-coordinator-a01/runtime/reserved",outcome:"finished",processEvidence:"fixture child exited"}' >"$work/release.json"
 workflow publish "$work/release.json" >/dev/null

@@ -326,7 +326,8 @@ func processFile(path string) error {
 
 ## Testing Patterns
 
-**All tests MUST use [testify](https://github.com/stretchr/testify):**
+The following optional examples use [testify](https://github.com/stretchr/testify).
+Preserve the project's existing framework; native `testing` is also appropriate.
 - `require` for fatal assertions (stops test on failure)
 - `assert` for non-fatal assertions (continues test)
 - **Exception**: Kubernetes e2e tests may use k8s e2e framework
@@ -438,7 +439,8 @@ func TestRepository(t *testing.T) {
 
 ## CLI Framework (Cobra + Viper)
 
-**All service CLI entry points MUST use Cobra and Viper.**
+Cobra and Viper are optional choices for larger command/configuration needs.
+Use the project's established framework; simpler CLIs may use the standard library.
 
 ### Root Command Pattern
 

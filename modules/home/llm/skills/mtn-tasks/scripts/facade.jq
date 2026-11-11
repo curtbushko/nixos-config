@@ -29,7 +29,8 @@ def canonical_work_item:
    scope:{requirements:($f.scope.requirements // []),documents:($f.scope.documents // []),dependencies:normalized_dependencies($f; ($r.dependencies // {}))},
    lifecycle:{state:($f.lifecycle.state // null),sourceEventID:($f.lifecycle.sourceEventID // null),changedAt:($f.lifecycle.changedAt // null),nativeStatus:($f.status // null)},
    execution:($f.execution // {}),
-   implementation:{language:$f.implementation.language,ownership:$f.implementation.ownership,gates:($f.implementation.gates // [])}}) as $item |
+   implementation:({language:$f.implementation.language,ownership:$f.implementation.ownership,gates:($f.implementation.gates // [])} +
+     (if ($f.implementation // {} | has("reviewPlan")) then {reviewPlan:$f.implementation.reviewPlan} else {} end))}) as $item |
   if ($parents | length) > 1 then error("Work item has multiple parents")
   elif ($kind == "project" or $kind == "prd" or $kind == "design") and ($parents | length) != 0 then error("Root work item has a parent")
   elif ($kind == "phase" or $kind == "task") and ($parents | length) != 1 then error("Phase/task must have exactly one parent")
@@ -141,5 +142,6 @@ def semantic_spec($mapping):
   (if $item.identity.kind == "prd" or $item.identity.kind == "design" then {}
    else {language:$item.implementation.language,requirements:$item.scope.requirements,
      documents:$item.scope.documents,ownership:$item.implementation.ownership,gates:$item.implementation.gates,
-     parentRef:$item.structure.parentRef,dependencies:$item.scope.dependencies}
+     parentRef:$item.structure.parentRef,dependencies:$item.scope.dependencies} +
+     (if ($item.implementation | has("reviewPlan")) then {reviewPlan:$item.implementation.reviewPlan} else {} end)
    end);

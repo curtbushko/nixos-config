@@ -12,7 +12,7 @@ readonly SCRIPT_DIR
 SKILL_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 readonly SKILL_DIR
 readonly ORCHESTRATION="${SKILL_DIR}/references/orchestration.md"
-readonly BUILDER_CONTEXT="${SKILL_DIR}/../zig-builder/SKILL.md"
+readonly BUILDER_CONTEXT="${SKILL_DIR}/../zig-developer/SKILL.md"
 readonly SHARED_REVIEWER="${SKILL_DIR}/../zig-reviewer/SKILL.md"
 readonly CODE_REVIEWER="${SKILL_DIR}/../zig-code-reviewer/SKILL.md"
 readonly COMMENT_REVIEWER="${SKILL_DIR}/../zig-comment-reviewer/SKILL.md"
@@ -41,9 +41,8 @@ assert_not_contains() {
 
 main() {
 	assert_contains "$ORCHESTRATION" 'Run the narrowest relevant test first during RED, GREEN, and each fix cycle.'
-	assert_contains "$ORCHESTRATION" 'Run the full test suite once after the implementation is ready for review.'
-	assert_contains "$ORCHESTRATION" 'Re-run the full test suite after a fix only when the fix has broad impact'
-	assert_contains "$ORCHESTRATION" 'Reserve exhaustive project-specific, packaged-runtime, and full-system gates for the final task of the phase.'
+	assert_contains "$ORCHESTRATION" 'Before EACH review candidate'
+	assert_contains "$ORCHESTRATION" 'full-system build after every edit'
 	assert_contains "$ORCHESTRATION" 'ZIG_TEAM_TEST_JOBS'
 	assert_contains "$ORCHESTRATION" 'PROGRESS_INTERVAL = 2 minutes'
 	assert_contains "$BUILDER_CONTEXT" 'Focused development loop'
@@ -51,13 +50,13 @@ main() {
 	assert_contains "$BUILDER_CONTEXT" 'Final phase task only'
 	assert_not_contains "$ORCHESTRATION" 'zig build test -j1  # MUST pass (serial to avoid race conditions)'
 	assert_not_contains "$BUILDER_CONTEXT" 'zig build test -j1     # limit parallelism to avoid OOM'
-	assert_contains "$ORCHESTRATION" 'Dispatch all four initial reviewers in parallel'
-	assert_contains "$ORCHESTRATION" "All four reviewers MUST return \`APPROVED\`"
-	assert_contains "$ORCHESTRATION" 'Re-dispatch only reviewers whose concerns could be affected'
-	assert_contains "$ORCHESTRATION" '| Code |'
-	assert_contains "$ORCHESTRATION" '| Comment |'
-	assert_contains "$ORCHESTRATION" '| Architecture |'
-	assert_contains "$ORCHESTRATION" '| Test |'
+	assert_contains "$ORCHESTRATION" 'implementation.reviewPlan'
+	assert_contains "$ORCHESTRATION" 'zig-code-reviewer'
+	assert_contains "$ORCHESTRATION" 'zig-test-reviewer'
+	assert_contains "$ORCHESTRATION" 'architecture-reviewer'
+	assert_contains "$ORCHESTRATION" 'security-reviewer'
+	assert_contains "$ORCHESTRATION" 'usability-reviewer'
+	assert_contains "$ORCHESTRATION" 'repo-maintenance-reviewer'
 	assert_contains "$ORCHESTRATION" "coordinator serially publishes each using \`agent note\`"
 	assert_contains "$SHARED_REVIEWER" 'mtn-tasks'
 	assert_not_contains "$SHARED_REVIEWER" 'result-{task.id}'

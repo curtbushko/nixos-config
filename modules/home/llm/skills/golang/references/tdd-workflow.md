@@ -2,9 +2,9 @@
 
 Test-Driven Development (TDD) is MANDATORY for all Go code. This document defines the workflow and patterns.
 
-## Testing Framework (NON-NEGOTIABLE)
+## Testing Framework
 
-**All tests MUST use [testify](https://github.com/stretchr/testify):**
+Preserve the project's established framework. The optional testify examples use:
 - `require` for fatal assertions (stops test on failure)
 - `assert` for non-fatal assertions (continues test)
 - `mock` package for mock generation
@@ -286,24 +286,22 @@ If depends on side effects: Mock at LOWER level, not the method test depends on.
 
 ## Quality Gates
 
-Before considering any task complete:
+Use focused tests during RED/GREEN/refactoring and review fixes. Before each
+candidate handoff, run its project-required build/lint/test gates using the supported
+command surface/environment; Taskfile is not required. Record actual commands,
+revision and results. Run planned broader checks against the integrated revision.
 
-```bash
-# All must pass
-task build
-task test
-task lint
-```
+### Behavior Coverage
 
-### Coverage Goals
-
-- New code: 80%+ coverage
-- Critical paths: 100% coverage
-- Edge cases: Covered by specific tests
+Prioritize important untested behavior and failure/recovery paths, not percentages.
+Honor explicit project coverage gates, but impose no universal number. Explain which
+plausible failure escapes the assertions. Do not add production hooks or trivial
+assertions to satisfy a metric. Seek concrete failure evidence for important changed
+behavior using genuine RED, pre-fix replay or safe targeted faults where practical.
 
 ### Race Detection
 
-Always run tests with race detector in CI:
+Use race detection on supported targets where concurrency risk or project CI requires it:
 
 ```bash
 go test -race ./...

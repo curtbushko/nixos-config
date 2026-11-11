@@ -296,7 +296,7 @@ else
 		agent_label="$role"
 		if [[ "$role" == reviewer ]]; then
 			skill="$(jq -r .skill <<<"$request")"
-			agent_label="${skill#*-}"
+			agent_label="$(jq -nr -L "$lib" --arg skill "$skill" 'include "workflow"; reviewer_agent_label($skill)')"
 		fi
 		printf -v canonical_name '%s-p%02d-t%02d-%s-a%02d' "$project_name" "$phase_number" "$task_number" "$agent_label" "$(jq -r .attempt <<<"$request")"
 		display_name="$canonical_name"

@@ -47,7 +47,7 @@ Run `task agent-verify-mtn`:
    shellcheck and shfmt.
 2. **Protocol guards:** document/plan fingerprints, REQ coverage, metadata shape and
    unique sibling ordering, supported languages/parents, build/review ordering,
-   stale spec/head/attempt rejection, all four Zig specialties, negative verdicts,
+   stale spec/head/attempt rejection, scoped language/specialist reviews, negative verdicts,
    blockers/resume, stopped dispatches, integration/completion linkage, ownership
    overlap and resource conflicts, duplicate-run exclusion and safe-batch selection.
    Hardening regressions additionally cover multiple blockers, blocker persistence

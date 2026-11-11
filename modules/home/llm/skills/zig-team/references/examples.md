@@ -1,27 +1,26 @@
-# Zig Parallel Delivery Example
+# Zig Delivery Example
 
-Read `mtn-tasks` and protocol v1. The coordinator owns all mtn writes and target
-integrations. Planning/build/review workers are bounded leaves. Multiple independent
-ready tasks may build concurrently in isolated worktrees with nonconflicting scopes.
+An approved plan includes each task's semantic review plan: materially affected
+languages/paths and all specialist trigger booleans/reasons. A mixed-language task
+is not reviewed only according to its primary label.
 
-Each builder runs focused RED/GREEN, standard build/full suite and records jobs,
-source head/tree/spec identity and dispatch ID in a returned v1 build payload.
-Four reviewers inspect the same frozen worktree/head; other isolated builders may
-continue. Reviewer command outputs/resources must be isolated or checks serialized.
-Coordinator publishes all four review payloads serially.
+The developer (or repo maintainer for infrastructure) implements one owned task,
+records focused RED/GREEN and candidate-required checks, and freezes the build.
+Separate language code/test reviewers and triggered specialist reviewers assess
+that exact candidate in fresh contexts. The coordinator publishes each required
+scoped verdict serially; one language's approval cannot replace another's.
 
-Code/test blockers require a new fix dispatch/build. Reinvestigate affected specialties;
-every required specialty provides a current explicit verdict for the new build. Never
-mix old build approvals. Scope-changing historical architecture debt requires user
-approval; reviewers cannot invent exceptions or silently broaden implementation.
+Blocking findings route to the implementer. Material risks or conflicts escalate;
+preferences/unrelated debt are recorded as advice. No reviewer fixes source.
+A new build needs current language verdicts. Unaffected specialist assessments may
+carry only through a fresh attestation with explicit scope/assumption evidence and
+available prior review/build linkage.
 
-After all four current approvals, coordinator integrates one candidate at a time,
-checks the combined revision and records actual target base/integrated commit/tree.
-Conflict adaptations require renewed review against the actual adapted candidate.
-Only then publish completion and native-complete. Phase-final release checks depend
-on all required task integrations, not the highest task number finishing first.
+After all current scopes approve, the coordinator integrates serially and verifies
+the combined target. Product management assesses accepted phase scenarios with
+actual workflow/E2E evidence as demonstrated, unmet or unverified. Record delivery
+and perform authorized cleanup; do not confuse a closed worker with completion.
 
-An interruption after three review results resumes the missing fourth; after all
-reviews it resumes integration, not another build. Unknown writer state requires
-host reconciliation before replacement. Persisted history and requirement coverage
-survive phase changes; no automatic archive or migration.
+After interruption, reconcile persisted identities, blockers, live resources and
+current scope verdicts. Resume missing reviews or integration rather than launching
+duplicate workers. Preserve historical evidence; live migration needs authorization.
