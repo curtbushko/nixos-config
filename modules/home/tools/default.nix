@@ -53,7 +53,6 @@ in {
         pkgs.jq
         pkgs.lima
         pkgs.lsd
-        pkgs.mermaid-cli
         pkgs.miller
         pkgs.mutagen
         pkgs.nil # language server

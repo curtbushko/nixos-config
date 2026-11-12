@@ -30,7 +30,6 @@
       # Model configuration for Qwen (GGUF for llama-cpp)
       models.qwen = {
         enable = true;
-        autoDownload = false; # Download manually to avoid timeout
       };
     };
     programming.enable = true;
@@ -51,7 +50,6 @@
   # Packages
   #---------------------------------------------------------------------
   home.packages = [
-    (pkgs.callPackage ../../../packages/tasknotes-tools {})
     inputs.mtn.packages.${pkgs.stdenv.hostPlatform.system}.default
     # Darwin only
     pkgs.cachix

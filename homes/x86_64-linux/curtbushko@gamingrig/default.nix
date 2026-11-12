@@ -45,7 +45,6 @@
         enable = true;
         # Uses default variant: "2.5-coder-7b-instruct-gguf" from bartowski
         # Uses default modelFile: "Qwen2.5-Coder-7B-Instruct-Q4_K_M.gguf"
-        autoDownload = false; # Disabled - download manually to avoid timeout
       };
     };
     programming.enable = true;
@@ -67,7 +66,6 @@
   # Packages
   #---------------------------------------------------------------------
   home.packages = [
-    (pkgs.callPackage ../../../packages/tasknotes-tools {})
     inputs.mtn.packages.${pkgs.stdenv.hostPlatform.system}.default
     pkgs.crawl
     pkgs.crawlTiles

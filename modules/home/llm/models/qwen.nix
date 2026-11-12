@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }: let
   inherit (lib) mkIf mkOption types;
@@ -16,20 +15,6 @@
 
   # Specific model directory
   modelDir = "${qwenModelsDir}/${cfg.variant}";
-
-  # HuggingFace repository mapping
-  variantRepos = {
-    # GGUF formats (for llama.cpp)
-    "2.5-coder-7b-instruct-gguf" = "bartowski/Qwen2.5-Coder-7B-Instruct-GGUF";
-    "2.5-coder-14b-instruct-gguf" = "bartowski/Qwen2.5-Coder-14B-Instruct-GGUF";
-    "2.5-coder-32b-instruct-gguf" = "bartowski/Qwen2.5-Coder-32B-Instruct-GGUF";
-    # GPTQ formats (safetensors - not for llama.cpp)
-    "2.5-coder-7b-instruct-gptq-int4" = "Qwen/Qwen2.5-Coder-7B-Instruct-GPTQ-Int4";
-    "2.5-coder-14b-instruct-gptq-int4" = "Qwen/Qwen2.5-Coder-14B-Instruct-GPTQ-Int4";
-    "2.5-coder-32b-instruct-gptq-int4" = "Qwen/Qwen2.5-Coder-32B-Instruct-GPTQ-Int4";
-  };
-
-  hfRepo = variantRepos.${cfg.variant} or cfg.variant;
 in {
   options.ns.llm.models.qwen = {
     enable = mkOption {
@@ -56,7 +41,8 @@ in {
           - 2.5-coder-14b-instruct-gptq-int4
           - 2.5-coder-32b-instruct-gptq-int4
 
-        Or specify a custom HuggingFace repository path.
+        Or specify a custom local variant subdirectory. Model files must be
+        downloaded separately and placed in the configured model directory.
       '';
     };
 
@@ -74,14 +60,6 @@ in {
       '';
     };
 
-    autoDownload = mkOption {
-      type = types.bool;
-      default = true;
-      description = ''
-        Automatically download the model on first activation if not present.
-      '';
-    };
-
     # Expose the model path for use by server config
     modelPath = mkOption {
       type = types.str;
@@ -94,32 +72,6 @@ in {
   };
 
   config = mkIf (llmCfg.enable && cfg.enable) {
-    # Add huggingface-hub for downloading models
-    home.packages = with pkgs; [
-      python3Packages.huggingface-hub
-    ];
-
-    # Auto-download model on activation if enabled
-    home.activation.downloadQwenModel = mkIf cfg.autoDownload (
-      lib.hm.dag.entryAfter ["writeBoundary"] ''
-        MODEL_DIR="${modelDir}"
-        MODEL_FILE="$MODEL_DIR/${cfg.modelFile}"
-        HF_REPO="${hfRepo}"
-
-        if [ ! -f "$MODEL_FILE" ]; then
-          echo "Qwen model not found at $MODEL_FILE"
-          echo "Downloading from HuggingFace: $HF_REPO"
-          echo "This may take several minutes..."
-
-          $DRY_RUN_CMD mkdir -p "$MODEL_DIR"
-          $DRY_RUN_CMD ${pkgs.python3Packages.huggingface-hub}/bin/hf download \
-            "$HF_REPO" \
-            --local-dir "$MODEL_DIR" \
-            || echo "Warning: Failed to download Qwen model. You can manually download it later with: llama-model-download qwen/${cfg.variant}"
-        fi
-      ''
-    );
-
     programs.zsh = {
       sessionVariables = {
         QWEN_MODEL_DIR = modelDir;

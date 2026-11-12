@@ -24,7 +24,6 @@
       # Model configuration for Qwen (GGUF for llama-cpp)
       models.qwen = {
         enable = false;
-        autoDownload = false; # Download manually to avoid timeout
       };
     };
     programming.enable = true;

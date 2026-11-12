@@ -20,4 +20,13 @@ else
 	status=$?
 	[[ "$status" -eq 1 ]] || exit "$status"
 fi
+# Retired tools must not be installed, wrapped or invoked by Nix modules.
+retired_tools='huggingface-hub|mermaid-cli|tasknotes-tools|kb-node|openchamber|oc-ui|llama-model-download|downloadQwenModel'
+if git grep -nIE "$retired_tools" -- '*.nix' ':!secrets/**'; then
+	printf 'Retired tool configuration remains\n' >&2
+	exit 1
+else
+	status=$?
+	[[ "$status" -eq 1 ]] || exit "$status"
+fi
 printf 'Integration cleanup checks passed\n'
