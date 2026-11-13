@@ -137,21 +137,6 @@
       };
     };
 
-    # Keep Git at the minimum supported version until nixpkgs catches up.
-    gitOverlay = _final: prev: {
-      git =
-        if prev.lib.versionAtLeast prev.git.version "2.56.1"
-        then prev.git
-        else
-          prev.git.overrideAttrs (_old: {
-            version = "2.56.1";
-            src = prev.fetchurl {
-              url = "https://www.kernel.org/pub/software/scm/git/git-2.56.1.tar.xz";
-              hash = "sha256-8LC/iSZLm9LhxkA2PnUpZDmJ2nYoFgBHPFB0XNNKYH8=";
-            };
-          });
-    };
-
     # Generate devShells for all supported systems
     devShells =
       inputs.nixpkgs.lib.genAttrs
@@ -160,7 +145,6 @@
         pkgs = import inputs.nixpkgs {
           inherit system;
           config.allowUnfree = true;
-          overlays = [gitOverlay];
         };
         make-wrapper = pkgs.writeShellScriptBin "make" ''
           exec ${pkgs.go-task}/bin/task "$@"
@@ -274,7 +258,6 @@
 
       overlays = with inputs; [
         zig.overlays.default
-        gitOverlay
       ];
 
       systems.modules.darwin = with inputs; [

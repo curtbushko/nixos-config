@@ -307,7 +307,6 @@ tasks:
     desc: Run fast deterministic checks for an agent workflow
     cmds:
       - alejandra --check --quiet .
-      - bash modules/home/git/tests/version_test.sh
       - bash modules/home/llm/tests/integration_cleanup_test.sh
       - bash modules/home/llm/pi/tests/theme_test.sh
       - bash modules/home/scripts/tests/nix-cache-include_test.sh
@@ -324,8 +323,8 @@ tasks:
       - bash modules/home/scripts/tests/worktrunk_clone_test.sh
       - shellcheck modules/home/scripts/workspace-to-worktrees modules/home/scripts/workspace-sync-main modules/home/scripts/tests/workspace_test.sh modules/home/scripts/tests/worktrunk_clone_test.sh modules/home/scripts/tests/fixtures/workspace-tg
       - shfmt -d modules/home/scripts/workspace-to-worktrees modules/home/scripts/workspace-sync-main modules/home/scripts/tests/workspace_test.sh modules/home/scripts/tests/worktrunk_clone_test.sh modules/home/scripts/tests/fixtures/workspace-tg
-      - shellcheck modules/home/git/tests/version_test.sh modules/home/llm/tests/integration_cleanup_test.sh modules/home/llm/pi/tests/theme_test.sh modules/home/terminals/tests/darwin-switch_test.sh
-      - shfmt -d modules/home/git/tests/version_test.sh modules/home/llm/tests/integration_cleanup_test.sh modules/home/llm/pi/tests/theme_test.sh modules/home/terminals/tests/darwin-switch_test.sh
+      - shellcheck modules/home/llm/tests/integration_cleanup_test.sh modules/home/llm/pi/tests/theme_test.sh modules/home/terminals/tests/darwin-switch_test.sh
+      - shfmt -d modules/home/llm/tests/integration_cleanup_test.sh modules/home/llm/pi/tests/theme_test.sh modules/home/terminals/tests/darwin-switch_test.sh
 
   agent-verify-mtn:
     desc: Check mtn workflow skills against the installed CLI
