@@ -22,6 +22,36 @@ in {
     ./yazi.nix
   ];
   options.ns.tools = {
+    nil.enable = mkOption {
+      type = types.bool;
+      default = true;
+      description = "Whether to install nil when tools are enabled";
+    };
+    lima.enable = mkOption {
+      type = types.bool;
+      default = true;
+      description = "Whether to install Lima when tools are enabled";
+    };
+    remmina.enable = mkOption {
+      type = types.bool;
+      default = true;
+      description = "Whether to install Remmina when tools are enabled on Linux";
+    };
+    zathura.enable = mkOption {
+      type = types.bool;
+      default = true;
+      description = "Whether to install Zathura when tools are enabled on Linux";
+    };
+    yt-dlp.enable = mkOption {
+      type = types.bool;
+      default = true;
+      description = "Whether to install yt-dlp when tools are enabled";
+    };
+    sshuttle.enable = mkOption {
+      type = types.bool;
+      default = true;
+      description = "Whether to install sshuttle when tools are enabled";
+    };
     enable = mkOption {
       type = types.bool;
       default = false;
@@ -51,11 +81,9 @@ in {
         pkgs.gum
         pkgs.htop
         pkgs.jq
-        pkgs.lima
         pkgs.lsd
         pkgs.miller
         pkgs.mutagen
-        pkgs.nil # language server
         pkgs.nixd #language server for nix
         pkgs.nodejs
         pkgs.presenterm
@@ -63,20 +91,24 @@ in {
         pkgs.shellcheck
         pkgs.shfmt
         pkgs.stylua
-        pkgs.sshuttle
         pkgs.go-task
         pkgs.tree
         pkgs.watch
         pkgs.watchexec
         pkgs.wakeonlan
         pkgs.wget
-        ytDlpPkgs.yt-dlp
         pkgs.yq-go
         pkgs.unison
         pkgs.unzip
         pkgs.zoxide
         pkgs.zstd
       ]
+      ++ (lib.optionals cfg.nil.enable [pkgs.nil])
+      ++ (lib.optionals cfg.lima.enable [pkgs.lima])
+      ++ (lib.optionals (isLinux && cfg.remmina.enable) [pkgs.remmina])
+      ++ (lib.optionals (isLinux && cfg.zathura.enable) [pkgs.zathura])
+      ++ (lib.optionals cfg.yt-dlp.enable [ytDlpPkgs.yt-dlp])
+      ++ (lib.optionals cfg.sshuttle.enable [pkgs.sshuttle])
       ++ (lib.optionals isDarwin [
         pkgs.cachix
       ])
@@ -84,9 +116,7 @@ in {
         #pkgs.rofi-firefox-wrapper
         pkgs.d2
         pkgs.ddcutil
-        pkgs.zathura
         pkgs.lsof
-        pkgs.remmina # remote desktop client
       ]);
   };
 }

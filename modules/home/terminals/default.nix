@@ -6,16 +6,14 @@ in {
       type = types.bool;
       default = false;
       description = ''
-        Whether to enable Ghostty, Rex (macOS), Starship, and tmux
+        Whether to enable Ghostty configuration, Rex (macOS), and Starship
       '';
     };
   };
 
   imports = [
-    ./alacritty.nix
     ./ghostty.nix
     ./rex.nix
     ./starship.nix
-    ./tmux.nix
   ];
 }

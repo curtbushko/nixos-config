@@ -110,11 +110,6 @@ in {
           ztitle = "zellij action rename-tab";
           zkill = "zellij kill-session coding";
           tg = "wt";
-          tattach = "tmux attach -t home";
-          tkill = "tmuxinator stop home && tmux kill-server";
-          tux = "tmuxinator start home";
-          mux = "tmuxinator start home";
-          tdetach = "tmux detach";
           local-claude = "TMUX= ANTHROPIC_AUTH_TOKEN=lmstudio ANTHROPIC_BASE_URL=http://localhost:1234 ANTHROPIC_MODEL=local CLAUDE_CODE_ATTRIBUTION_HEADER=0 claude";
         }
         # monitor switching

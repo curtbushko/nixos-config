@@ -29,7 +29,15 @@
     secrets.enable = true;
     shells.enable = true;
     terminals.enable = true;
-    tools.enable = true;
+    tools = {
+      enable = true;
+      nil.enable = false;
+      lima.enable = false;
+      remmina.enable = false;
+      zathura.enable = false;
+      yt-dlp.enable = false;
+      sshuttle.enable = false;
+    };
     wm = {
       tools.enable = false;
       niri.enable = false;
