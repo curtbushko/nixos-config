@@ -191,7 +191,7 @@
             echo -e "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
             echo ""
             echo -e "''${BOLD}Repository:''${NC} curtbushko/nixos-config"
-            echo -e "''${BOLD}Current host:''${NC} $(hostname -s)"
+            echo -e "''${BOLD}Current host:''${NC} $(host="$(uname -n)"; printf '%s\n' "''${host%%.*}")"
             echo -e "''${BOLD}System:''${NC} $(uname -m)-$(uname -s | tr '[:upper:]' '[:lower:]')"
             echo ""
 

@@ -8,7 +8,7 @@ vars:
   ARCH:
     sh: uname -m | tr '[:upper:]' '[:lower:]'
   HOST:
-    sh: hostname -s
+    sh: host="$(uname -n)"; printf '%s\n' "${host%%.*}"
   DATELOG:
     sh: echo "[$(date -u +'%Y-%m-%dT%H:%M:%SZ')]"
 
@@ -24,7 +24,7 @@ vars:
   # Set NIXUSER based on hostname
   NIXUSER:
     sh: |
-      if [ "$(hostname -s)" = "steamdeck" ]; then
+      if [ "{{.HOST}}" = "steamdeck" ]; then
         echo "deck"
       else
         echo "${NIXUSER:-$(whoami)}"
@@ -314,6 +314,7 @@ tasks:
       - shellcheck modules/home/scripts/nix-cache-include modules/home/scripts/tests/nix-cache-include_test.sh
       - shfmt -d modules/home/scripts/nix-cache-include modules/home/scripts/tests/nix-cache-include_test.sh
       - bash modules/home/terminals/tests/darwin-switch_test.sh
+      - bash modules/home/terminals/tests/hostname_test.sh
       - bash modules/nixos/nix-cache-gamingrig/tests/cache-removal_test.sh
       - shellcheck modules/nixos/nix-cache-gamingrig/tests/cache-removal_test.sh
       - shfmt -d modules/nixos/nix-cache-gamingrig/tests/cache-removal_test.sh
@@ -323,8 +324,8 @@ tasks:
       - bash modules/home/scripts/tests/worktrunk_clone_test.sh
       - shellcheck modules/home/scripts/workspace-to-worktrees modules/home/scripts/workspace-sync-main modules/home/scripts/tests/workspace_test.sh modules/home/scripts/tests/worktrunk_clone_test.sh modules/home/scripts/tests/fixtures/workspace-tg
       - shfmt -d modules/home/scripts/workspace-to-worktrees modules/home/scripts/workspace-sync-main modules/home/scripts/tests/workspace_test.sh modules/home/scripts/tests/worktrunk_clone_test.sh modules/home/scripts/tests/fixtures/workspace-tg
-      - shellcheck modules/home/llm/tests/integration_cleanup_test.sh modules/home/llm/pi/tests/theme_test.sh modules/home/terminals/tests/darwin-switch_test.sh
-      - shfmt -d modules/home/llm/tests/integration_cleanup_test.sh modules/home/llm/pi/tests/theme_test.sh modules/home/terminals/tests/darwin-switch_test.sh
+      - shellcheck modules/home/llm/tests/integration_cleanup_test.sh modules/home/llm/pi/tests/theme_test.sh modules/home/terminals/tests/darwin-switch_test.sh modules/home/terminals/tests/hostname_test.sh
+      - shfmt -d modules/home/llm/tests/integration_cleanup_test.sh modules/home/llm/pi/tests/theme_test.sh modules/home/terminals/tests/darwin-switch_test.sh modules/home/terminals/tests/hostname_test.sh
 
   agent-verify-mtn:
     desc: Check mtn workflow skills against the installed CLI
