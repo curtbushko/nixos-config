@@ -28,6 +28,10 @@
 in {
   ns.terminals.rex.enable = true;
   home.packages = [rexPackage];
+  # Avoid installing which-key's separately pinned bin/rex into the same profile.
+  programs.rex-whichkey.package = inputs.rex-whichkey.packages.${pkgs.stdenv.hostPlatform.system}.rex-whichkey.override {
+    rex-cli = rexPackage;
+  };
 
   systemd.user.services.rex-server = {
     Unit = {

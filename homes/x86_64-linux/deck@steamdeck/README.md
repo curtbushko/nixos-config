@@ -27,6 +27,8 @@ available in Gaming Mode.
 
 This does not install the macOS GUI, login server, or system service. The package
 uses the same `patchelf` workaround and executable smoke test as Gamingrig.
+Which-key reuses this exact Rex package so its `bin/rex` does not conflict with
+the standalone CLI in the Home Manager profile.
 
 ## Decky Loader and Unifideck
 

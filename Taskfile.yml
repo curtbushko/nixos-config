@@ -310,6 +310,7 @@ tasks:
       - shellcheck homes/x86_64-linux/deck@steamdeck/tests/rex-tailnet_test.sh
       - shfmt -d homes/x86_64-linux/deck@steamdeck/tests/rex-tailnet_test.sh
       - nix-instantiate --read-write-mode --eval --strict homes/x86_64-linux/deck@steamdeck/tests/rex.nix
+      - nix-build --no-out-link homes/x86_64-linux/deck@steamdeck/tests/rex-profile.nix
       - nix-instantiate --read-write-mode --eval --strict homes/x86_64-linux/deck@steamdeck/tests/flair.nix
       - nix-instantiate --read-write-mode --eval --strict homes/x86_64-linux/deck@steamdeck/tests/ai-tools.nix
       - bash homes/x86_64-linux/deck@steamdeck/tests/decky_test.sh
