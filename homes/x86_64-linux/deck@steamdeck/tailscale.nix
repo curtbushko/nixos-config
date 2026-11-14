@@ -3,6 +3,25 @@
   inputs,
   ...
 }: {
+  # SteamOS owns NetworkManager; only repair its link to the active resolver.
+  home.activation.configureTailscaleDns = inputs.home-manager.lib.hm.dag.entryAfter ["setupTailscale"] ''
+    if [ "$(readlink -f /etc/resolv.conf)" != /run/systemd/resolve/stub-resolv.conf ]; then
+      if ! /usr/bin/systemctl is-active --quiet systemd-resolved.service || [ ! -f /run/systemd/resolve/stub-resolv.conf ]; then
+        echo "Cannot configure Tailscale DNS: systemd-resolved must be active with a DNS stub file." >&2
+        exit 1
+      fi
+
+      echo "Linking resolv.conf to systemd-resolved for Tailscale MagicDNS..."
+      if [ -e /etc/resolv.conf ] || [ -L /etc/resolv.conf ]; then
+        if [ ! -e /etc/resolv.conf.before-tailscale ] && [ ! -L /etc/resolv.conf.before-tailscale ]; then
+          $DRY_RUN_CMD /usr/bin/sudo cp -a --no-clobber /etc/resolv.conf /etc/resolv.conf.before-tailscale
+        fi
+      fi
+      $DRY_RUN_CMD /usr/bin/sudo ln -sfnT /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+      $DRY_RUN_CMD /usr/bin/sudo systemctl restart tailscaled.service
+    fi
+  '';
+
   #---------------------------------------------------------------------
   # Tailscale systemd service - Protected from SteamOS updates
   #---------------------------------------------------------------------
