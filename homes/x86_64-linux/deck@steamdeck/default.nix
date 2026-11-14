@@ -85,6 +85,7 @@
   imports = [
     inputs.stylix.homeModules.stylix
     ./tailscale.nix
+    ./shell.nix
   ];
 
   # Disable stylix for KDE Plasma to prevent desktop breaking
