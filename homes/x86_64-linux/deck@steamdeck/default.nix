@@ -63,7 +63,10 @@
   home.packages = [
     pkgs.cachix
     pkgs.tailscale
-    inputs.flair.packages.${pkgs.stdenv.hostPlatform.system}.default
+    # Correct the stale dependency hash in the pinned upstream package.
+    (inputs.flair.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (_: {
+      vendorHash = "sha256-T9qKbZyb2h0eW0sCeMtNiWubNhlOw1zFgV8G3pYgUNw=";
+    }))
     inputs.neovim.packages.${pkgs.stdenv.hostPlatform.system}.default
 
     # fonts
