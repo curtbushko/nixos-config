@@ -10,6 +10,11 @@
   isLinux = pkgs.stdenv.hostPlatform.isLinux;
 in {
   options.ns.shells = {
+    primaryMonitorBus = mkOption {
+      type = types.ints.unsigned;
+      default = 5;
+      description = "I2C bus for the primary Dell monitor used by Linux monitor aliases.";
+    };
     enable = mkOption {
       type = types.bool;
       default = false;

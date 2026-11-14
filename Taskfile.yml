@@ -304,6 +304,12 @@ tasks:
       - shfmt -d modules/home/scripts/nix-cache-include modules/home/scripts/tests/nix-cache-include_test.sh
       - bash modules/home/terminals/tests/darwin-switch_test.sh
       - bash modules/home/terminals/tests/hostname_test.sh
+      - nix-instantiate --eval --strict modules/home/shells/tests/monitor-aliases.nix
+      - nix-instantiate --read-write-mode --eval --strict homes/x86_64-linux/deck@steamdeck/tests/monitor.nix
+      - bash homes/x86_64-linux/deck@steamdeck/tests/rex-tailnet_test.sh
+      - shellcheck homes/x86_64-linux/deck@steamdeck/tests/rex-tailnet_test.sh
+      - shfmt -d homes/x86_64-linux/deck@steamdeck/tests/rex-tailnet_test.sh
+      - nix-instantiate --read-write-mode --eval --strict homes/x86_64-linux/deck@steamdeck/tests/rex.nix
       - nix-instantiate --read-write-mode --eval --strict homes/x86_64-linux/deck@steamdeck/tests/flair.nix
       - nix-instantiate --read-write-mode --eval --strict homes/x86_64-linux/deck@steamdeck/tests/ai-tools.nix
       - bash homes/x86_64-linux/deck@steamdeck/tests/decky_test.sh

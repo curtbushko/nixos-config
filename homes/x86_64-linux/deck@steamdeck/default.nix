@@ -37,7 +37,10 @@
     programming.enable = false;
     scripts.enable = true;
     secrets.enable = true;
-    shells.enable = true;
+    shells = {
+      enable = true;
+      primaryMonitorBus = 10;
+    };
     terminals.enable = true;
     tools = {
       enable = true;
@@ -100,6 +103,7 @@
     ./tailscale.nix
     ./shell.nix
     ./decky.nix
+    ./rex.nix
   ];
 
   # Disable stylix for KDE Plasma to prevent desktop breaking

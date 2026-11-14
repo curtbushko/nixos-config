@@ -115,14 +115,14 @@ in {
         # monitor switching
         // lib.optionalAttrs isLinux
         {
-          work = "wakeonlan $CURTBUSHKO_K4W6XK6XND_MAC_ADDRESS; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_USBC --bus 5";
+          work = "wakeonlan $CURTBUSHKO_K4W6XK6XND_MAC_ADDRESS; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_USBC --bus ${toString cfg.primaryMonitorBus}";
           work2 = "wakeonlan $CURTBUSHKO_K4W6XK6XND_MAC_ADDRESS; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI1 --bus 6";
-          workall = "wakeonlan $CURTBUSHKO_K4W6XK6XND_MAC_ADDRESS; ddctuil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI1 --bus 6; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_USBC --bus 5";
-          pc = "wakeonlan $GAMINGRIG_MAC_ADDRESS; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_DP1 --bus 5";
+          workall = "wakeonlan $CURTBUSHKO_K4W6XK6XND_MAC_ADDRESS; ddctuil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI1 --bus 6; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_USBC --bus ${toString cfg.primaryMonitorBus}";
+          pc = "wakeonlan $GAMINGRIG_MAC_ADDRESS; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_DP1 --bus ${toString cfg.primaryMonitorBus}";
           pc2 = "wakeonlan $GAMINGRIG_MAC_ADDRESS; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI2 --bus 6";
-          pcall = "wakeonlan $GAMINGRIG_MAC_ADDRESS; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI2 --bus ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_DP1 --bus 5";
-          steamdeck = "ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_HDMI1 --bus 5";
-          sleepy = "wakeonlan $CURTBUSHKO_K4W6XK6XND_MAC_ADDRESS; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_USBC --bus 5 && systemctl suspend";
+          pcall = "wakeonlan $GAMINGRIG_MAC_ADDRESS; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_S2721QS_HDMI2 --bus ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_DP1 --bus ${toString cfg.primaryMonitorBus}";
+          steamdeck = "ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_HDMI1 --bus ${toString cfg.primaryMonitorBus}";
+          sleepy = "wakeonlan $CURTBUSHKO_K4W6XK6XND_MAC_ADDRESS; ddcutil setvcp $DDCUTIL_DISPLAY_INPUT $DDCUTIL_U3419W_USBC --bus ${toString cfg.primaryMonitorBus} && systemctl suspend";
           startx = "niri-session";
           kill-steam = "kill -KILL $(pidof steam)";
         }
@@ -132,6 +132,7 @@ in {
           work2 = "$M1DDC display 2 set input 17";
           workall = "$M1DDC display 1 set input 27; $M1DDC display 2 set input 17";
           home = "$M1DDC set input 17";
+          steamdeck = "$M1DDC display 1 set input 17";
           pc = "wakeonlan -i 192.168.2.255 $GAMINGRIG_MAC_ADDRESS; sleep 1; $M1DDC display 1 set input 15";
           pc2 = "wakeonlan -i 192.168.2.255 $GAMINGRIG_MAC_ADDRESS; sleep 1; $M1DDC display 2 set input 18";
           pcall = "wakeonlan -i 192.168.2.255 $GAMINGRIG_MAC_ADDRESS; sleep 1; $M1DDC display 2 set input 18; $M1DDC display 1 set input 15";
