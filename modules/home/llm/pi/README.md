@@ -27,10 +27,20 @@ used by Claude Code and Codex. Pi-specific copies are intentionally not created.
 
 ### Per-machine models
 
-`ns.llm.pi.enabledModels` controls Pi's scoped model list with provider/model
-globs. The work Mac exposes `github-copilot/*`. Personal LLM machines expose
-`openai-codex/gpt-6.1-sol` and the three GPT 5.6 models (Luna, Sol, Terra),
-with GPT 6.1 Sol as Pi's default. Authentication remains local to each machine.
+Shared defaults expose `openai-codex/gpt-6.1-sol`, the three GPT 5.6 models
+(Luna, Sol, Terra), and `anthropic/*` for explicitly selecting Claude. Personal
+machines, including Steam Deck, start with OpenAI Codex / GPT 6.1 Sol.
+
+Only the work Mac overrides `ns.llm.pi.defaultProvider` and
+`ns.llm.pi.enabledModels` to use `github-copilot/*`. Its `defaultModel = null`
+omits a fixed model so Pi can choose an available Copilot model. Authentication
+remains local to each machine.
+
+The local Qwen provider, `pi-local` alias, and local prompt are removed. Pi's
+built-in llama.cpp discovery is disabled. No local endpoint is registered.
+Stored GGUF files and session history are not deleted. A resumed session restores
+its prior model, and project settings can override global defaults; start a fresh
+Pi process/session or use `/model` to select Codex after applying these changes.
 
 ### Custom Local Extensions
 - `pi-vim-ex` - Custom vim extension with ex command support (`:q`, `:w`, `:wq`)
@@ -50,7 +60,7 @@ Integrates with flair/stylix for consistent theming using base16 color scheme.
 
 ### Configuration Files
 All configuration files are managed declaratively:
-- `settings.json` - Core pi settings with OpenAI Codex/GPT Sol as the default
+- `settings.json` - Codex/GPT Sol defaults on personal machines; Copilot on work
 - `models.json` - Empty for OAuth providers (auto-configured after `/login`)
 - `themes/flair.json` - Selected Pi theme using flair colors (base16 Gruvbox Material)
 - `extensions/pi-vim-ex/` - Custom vim extension
@@ -85,7 +95,7 @@ To add a new extension:
 Pi is configured to use OAuth authentication. Run `pi /login` to authenticate with:
 - **ChatGPT Plus/Pro (Codex)** - Requires ChatGPT Plus or Pro subscription
 - **Claude Pro/Max** - Requires Anthropic subscription
-- **GitHub Copilot** - Requires GitHub Copilot subscription
+- **GitHub Copilot (work Mac only)** - Requires GitHub Copilot subscription
 
 OAuth credentials are stored in `~/.pi/agent/auth.json` and auto-refresh when expired.
 

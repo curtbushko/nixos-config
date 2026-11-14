@@ -19,15 +19,7 @@
     git.enable = true;
     im.enable = true;
     k8s.enable = true;
-    llm = {
-      enable = true;
-      pi.enabledModels = [
-        "openai-codex/gpt-6.1-sol"
-        "openai-codex/gpt-5.6-luna"
-        "openai-codex/gpt-5.6-sol"
-        "openai-codex/gpt-5.6-terra"
-      ];
-    };
+    llm.enable = true;
     programming.enable = true;
     scripts.enable = true;
     secrets.enable = true;

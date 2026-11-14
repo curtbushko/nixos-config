@@ -136,71 +136,38 @@
         ".pi/agent/AGENTS.md".source = ./AGENTS.md;
 
         # Pi settings - core configuration
-        ".pi/agent/settings.json".source = pkgs.writeText "pi-settings.json" (builtins.toJSON {
-          defaultProvider = "openai-codex";
-          defaultModel = "gpt-6.1-sol";
-          defaultThinkingLevel = "medium";
-          checkForUpdates = false;
-          telemetry = false;
-          quietStartup = true;
-          notifications = true;
-          theme = "flair";
-          enabledModels = cfg.pi.enabledModels;
-          # Pi shells out to npm for `pi install npm:...`. Under Nix, the
-          # default global prefix points into the read-only Node store path, so
-          # use a tiny wrapper that redirects npm's global prefix to a writable
-          # location under ~/.pi/agent/.
-          npmCommand = ["${piNpm}/bin/pi-npm"];
-          # Declarative package list. Pi loads extensions from each entry's manifest.
-          # We declare packages here directly and install them via activation hooks below.
-          packages = [
-            "npm:@burneikis/pi-fzfp"
-          ];
-        });
+        ".pi/agent/settings.json".source = pkgs.writeText "pi-settings.json" (builtins.toJSON ({
+            defaultProvider = cfg.pi.defaultProvider;
+            defaultThinkingLevel = "medium";
+            checkForUpdates = false;
+            telemetry = false;
+            quietStartup = true;
+            notifications = true;
+            theme = "flair";
+            enabledModels = cfg.pi.enabledModels;
+            extensions = ["-builtin:llama.cpp"];
+            # Pi shells out to npm for `pi install npm:...`. Under Nix, the
+            # default global prefix points into the read-only Node store path, so
+            # use a tiny wrapper that redirects npm's global prefix to a writable
+            # location under ~/.pi/agent/.
+            npmCommand = ["${piNpm}/bin/pi-npm"];
+            # Declarative package list. Pi loads extensions from each entry's manifest.
+            # We declare packages here directly and install them via activation hooks below.
+            packages = [
+              "npm:@burneikis/pi-fzfp"
+            ];
+          }
+          // lib.optionalAttrs (cfg.pi.defaultModel != null) {
+            defaultModel = cfg.pi.defaultModel;
+          }));
 
-        # Models configuration - local llama-server providers alongside OAuth.
-        # OAuth providers (ChatGPT Plus/Pro, Claude Pro/Max, GitHub Copilot)
-        # are auto-configured after /login and merged with these entries.
+        # Built-in OAuth providers are configured through /login, not local endpoints.
         ".pi/agent/models.json".source = pkgs.writeText "pi-models.json" (builtins.toJSON {
-          providers = {
-            local = {
-              baseUrl = "http://localhost:8080/v1";
-              api = "openai-completions";
-              apiKey = "local";
-              compat = {
-                supportsDeveloperRole = false;
-                supportsReasoningEffort = false;
-                thinkingFormat = "qwen-chat-template";
-              };
-              models = [
-                {
-                  id = "qwen3.8-27b";
-                  name = "Qwen3.8-27B (local)";
-                  reasoning = true;
-                  contextWindow = 32768;
-                  maxTokens = 8192;
-                }
-              ];
-            };
-          };
+          providers = {};
         });
 
         # Pi consumes the exact canonical skill tree used by Claude and Codex.
         ".pi/agent/skills".source = ../skills;
-
-        # Minimal system prompt for local models. Used by the `pi-local`
-        # wrapper alias to keep the context small so smaller local models
-        # aren't drowned in the default multi-thousand-token prompt.
-        ".pi/agent/prompts/local.md".text = ''
-          You are a coding assistant running in the pi TUI.
-
-          Rules:
-          - Use the available tools to read, edit, and run code. Do not guess file contents.
-          - Be concise. No preamble, no summaries of what you just did.
-          - Prefer editing existing files over creating new ones.
-          - When unsure, ask one short question instead of assuming.
-          - Reference code as `path:line` so the user can jump to it.
-        '';
 
         # Custom theme using flair/stylix colors (base16 scheme)
         # Pi requires ALL 51 color tokens to be defined
@@ -327,22 +294,5 @@
       #       $DRY_RUN_CMD ${piNpm}/bin/pi-npm install -g @burneikis/pi-vim
       #     fi
       #   '';
-
-      # ========================================================================
-      # Shell Integration
-      # ========================================================================
-
-      programs.zsh.shellAliases = {
-        # OAuth provider aliases (will work after /login)
-        # Use the provider name shown in /login (e.g., "openai-codex" for ChatGPT Plus/Pro)
-
-        # Local llama-server on this host, minimal system prompt.
-        pi-local = "pi --provider local --model qwen3.8-27b --system-prompt \"$(cat ~/.pi/agent/prompts/local.md)\"";
-      };
-
-      # Set OpenAI API key environment variable
-      # Note: Add your actual key to secrets or export it in your shell
-      programs.zsh.sessionVariables = {
-      };
     };
 }

@@ -16,9 +16,25 @@ in {
         Whether to enable llm
       '';
     };
+    pi.defaultProvider = mkOption {
+      type = types.str;
+      default = "openai-codex";
+      description = "Pi's startup provider; only the work Mac overrides this with Copilot.";
+    };
+    pi.defaultModel = mkOption {
+      type = types.nullOr types.str;
+      default = "gpt-6.1-sol";
+      description = "Pi's startup model, or null to choose an available model for its provider.";
+    };
     pi.enabledModels = mkOption {
       type = types.listOf types.str;
-      default = [];
+      default = [
+        "openai-codex/gpt-6.1-sol"
+        "openai-codex/gpt-5.6-luna"
+        "openai-codex/gpt-5.6-sol"
+        "openai-codex/gpt-5.6-terra"
+        "anthropic/*"
+      ];
       description = ''
         Provider/model glob patterns exposed by Pi's model cycling interface.
       '';

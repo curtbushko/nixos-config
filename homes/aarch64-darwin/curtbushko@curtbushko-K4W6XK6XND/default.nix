@@ -38,7 +38,11 @@
     tools.enable = true;
     llm = {
       enable = true;
-      pi.enabledModels = ["github-copilot/*"];
+      pi = {
+        defaultProvider = "github-copilot";
+        defaultModel = null;
+        enabledModels = ["github-copilot/*"];
+      };
     };
     wm.rectangle.enable = true;
     # Theme colors managed by flair: run `flair select <theme>`
