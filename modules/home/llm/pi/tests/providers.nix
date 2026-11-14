@@ -35,6 +35,9 @@ let
           writeText = _: text: text;
           writeShellScriptBin = _: _: "/pi-npm";
           nodejs = "/node";
+          fetchzip = args:
+            assert args.url == "https://registry.npmjs.org/pi-openai-codex-device-login/-/pi-openai-codex-device-login-0.1.0.tgz";
+            assert args.hash == "sha256-iB1lvTMDcSpIS0bWMdIy4xvulwFxnVM4GCZbVEpjQgE="; "/pi-openai-codex-device-login-0.1.0";
         };
       }).config.content;
     settings = builtins.fromJSON rendered.home.file.".pi/agent/settings.json".source;
@@ -57,6 +60,8 @@ let
       providerPolicy
       && models.providers == {}
       && builtins.elem "-builtin:llama.cpp" settings.extensions
+      && builtins.elem "/pi-openai-codex-device-login-0.1.0" settings.packages
+      && builtins.elem "npm:@burneikis/pi-fzfp" settings.packages
       && !(builtins.hasAttr "pi-local" (rendered.programs.zsh.shellAliases or {}))
       && !(builtins.hasAttr ".pi/agent/prompts/local.md" rendered.home.file);
   in

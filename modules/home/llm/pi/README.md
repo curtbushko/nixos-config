@@ -17,8 +17,10 @@ pi/
 Uses a custom `pi-npm` wrapper that redirects the global npm prefix to `~/.pi/agent/npm/`, avoiding permission errors from trying to write to the read-only Nix store.
 
 ### Declarative Extensions
-Extensions are declared in `settings.json` packages list and installed via idempotent activation hooks:
-- `@burneikis/pi-fzfp` - Fuzzy find plugin
+Extensions are declared in the `settings.json` package list:
+- `@burneikis/pi-fzfp` - Fuzzy find plugin, bootstrapped by an activation hook.
+- `pi-openai-codex-device-login` 0.1.0 - Checksum-pinned npm archive loaded directly
+  from the Nix store; no runtime dependencies or npm activation hook.
 
 ### Shared Skills
 
@@ -97,7 +99,15 @@ Pi is configured to use OAuth authentication. Run `pi /login` to authenticate wi
 - **Claude Pro/Max** - Requires Anthropic subscription
 - **GitHub Copilot (work Mac only)** - Requires GitHub Copilot subscription
 
-OAuth credentials are stored in `~/.pi/agent/auth.json` and auto-refresh when expired.
+For device-code Codex login, run `/login`, choose **Use a subscription**, then
+**ChatGPT Plus/Pro (Codex Device Code)** and **Device code (recommended)**. Open
+the displayed URL on any browser and enter the one-time code. Browser OAuth is
+still available as a fallback. Use `/reload` after applying the configuration if
+Pi is already running.
+
+The extension overrides only Codex authentication; model scopes and the work
+Mac's Copilot default are unchanged. OAuth credentials are stored by Pi in
+`~/.pi/agent/auth.json` and auto-refresh when expired. Nix does not manage them.
 
 ## Environment Variables
 

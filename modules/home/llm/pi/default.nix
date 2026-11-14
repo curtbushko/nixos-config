@@ -18,6 +18,13 @@
       exec ${pkgs.nodejs}/bin/npm "$@"
     '';
 
+    # No runtime dependencies: load the reviewed release directly from the store.
+    piCodexDeviceLogin = pkgs.fetchzip {
+      name = "pi-openai-codex-device-login-0.1.0";
+      url = "https://registry.npmjs.org/pi-openai-codex-device-login/-/pi-openai-codex-device-login-0.1.0.tgz";
+      hash = "sha256-iB1lvTMDcSpIS0bWMdIy4xvulwFxnVM4GCZbVEpjQgE=";
+    };
+
     # Read colors from flair's style.json (same source as stylix)
     # Note: Requires --impure flag for home-manager switch
     flairStylePath = "${config.home.homeDirectory}/.config/flair/style.json";
@@ -151,10 +158,10 @@
             # use a tiny wrapper that redirects npm's global prefix to a writable
             # location under ~/.pi/agent/.
             npmCommand = ["${piNpm}/bin/pi-npm"];
-            # Declarative package list. Pi loads extensions from each entry's manifest.
-            # We declare packages here directly and install them via activation hooks below.
+            # Store-backed packages load directly; npm entries use activation below.
             packages = [
               "npm:@burneikis/pi-fzfp"
+              "${piCodexDeviceLogin}"
             ];
           }
           // lib.optionalAttrs (cfg.pi.defaultModel != null) {
