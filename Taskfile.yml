@@ -119,7 +119,6 @@ tasks:
     desc: Update all packages
     deps:
       - update-flake
-      - update-llm-agents
       - update-ghostty
       - update-neovim
       - update-minecraft
@@ -153,16 +152,6 @@ tasks:
       - cmd: nix flake update ghostty
         silent: true
       - cmd: echo "{{.DATELOG}} ghostty update complete"
-        silent: true
-
-  update-llm-agents:
-    desc: Update the llm-agents flake
-    cmds:
-      - cmd: echo "{{.DATELOG}} Updating llm-agents flake..."
-        silent: true
-      - cmd: nix flake update llm-agents
-        silent: true
-      - cmd: echo "{{.DATELOG}} llm-agents update complete"
         silent: true
 
   update-minecraft:
@@ -315,6 +304,11 @@ tasks:
       - shfmt -d modules/home/scripts/nix-cache-include modules/home/scripts/tests/nix-cache-include_test.sh
       - bash modules/home/terminals/tests/darwin-switch_test.sh
       - bash modules/home/terminals/tests/hostname_test.sh
+      - nix-instantiate --read-write-mode --eval --strict homes/x86_64-linux/deck@steamdeck/tests/flair.nix
+      - nix-instantiate --read-write-mode --eval --strict homes/x86_64-linux/deck@steamdeck/tests/ai-tools.nix
+      - bash homes/x86_64-linux/deck@steamdeck/tests/decky_test.sh
+      - shellcheck homes/x86_64-linux/deck@steamdeck/tests/decky_test.sh
+      - shfmt -d homes/x86_64-linux/deck@steamdeck/tests/decky_test.sh
       - bash homes/x86_64-linux/deck@steamdeck/tests/default-shell_test.sh
       - shellcheck homes/x86_64-linux/deck@steamdeck/tests/default-shell_test.sh
       - shfmt -d homes/x86_64-linux/deck@steamdeck/tests/default-shell_test.sh

@@ -25,6 +25,15 @@
     cron.enable = true;
     gaming.enable = true;
     git.enable = true;
+    llm = {
+      enable = true;
+      pi.enabledModels = [
+        "openai-codex/gpt-6.1-sol"
+        "openai-codex/gpt-5.6-luna"
+        "openai-codex/gpt-5.6-sol"
+        "openai-codex/gpt-5.6-terra"
+      ];
+    };
     programming.enable = false;
     scripts.enable = true;
     secrets.enable = true;
@@ -54,6 +63,7 @@
   home.packages = [
     pkgs.cachix
     pkgs.tailscale
+    inputs.flair.packages.${pkgs.stdenv.hostPlatform.system}.default
     inputs.neovim.packages.${pkgs.stdenv.hostPlatform.system}.default
 
     # fonts
@@ -86,6 +96,7 @@
     inputs.stylix.homeModules.stylix
     ./tailscale.nix
     ./shell.nix
+    ./decky.nix
   ];
 
   # Disable stylix for KDE Plasma to prevent desktop breaking

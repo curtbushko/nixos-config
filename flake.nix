@@ -40,10 +40,6 @@
       url = "github:ghostty-org/ghostty";
     };
 
-    llm-agents = {
-      url = "github:numtide/llm-agents.nix";
-    };
-
     minecraft-servers = {
       url = "github:curtbushko/minecraft-servers";
       inputs.nixpkgs.follows = "nixpkgs";

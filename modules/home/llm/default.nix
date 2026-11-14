@@ -1,9 +1,7 @@
 {
   config,
-  inputs,
   lib,
   pkgs,
-  system,
   ...
 }: let
   inherit (lib) types mkOption mkIf;
@@ -28,19 +26,9 @@ in {
   };
 
   config = mkIf cfg.enable {
-    home.packages =
-      [
-        # llama-cpp with CUDA is installed at system level (see systems/x86_64-linux/gamingrig/default.nix)
-        # Don't install here to avoid shadowing the CUDA version
-        inputs.llm-agents.packages.${system}.rtk
-        inputs.llm-agents.packages.${system}.ccusage
-      ]
-      ++ lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
-        ds4
-      ];
-
-    # RTK config
-    xdg.configFile."rtk/config.toml".source = ./rtk-config.toml;
+    home.packages = lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
+      ds4
+    ];
 
     # Base model directory environment variable
     programs.zsh.sessionVariables = {

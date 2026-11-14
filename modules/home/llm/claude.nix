@@ -399,7 +399,7 @@ in {
       executable = true;
     };
 
-    # Claude Code hooks (rtk rewrite, etc.)
+    # Claude Code hooks
     home.file.".claude/hooks" = {
       source = ./claude/hooks;
       recursive = true;
